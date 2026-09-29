@@ -267,3 +267,15 @@ if __name__ == "__main__":
     except Exception as err:  # noqa: BLE001 - top-level script, want a clean message
         print(f"ERROR: {err}", file=sys.stderr)
         sys.exit(1)
+    else:
+        # main() has already written the manifest and flushed everything to
+        # disk by this point. On some Linux CI runners, one of the native
+        # GRIB/CV extensions (eccodes/cfgrib, opencv) segfaults during
+        # normal Python interpreter shutdown (exit code 139) even though
+        # all real work already completed successfully. os._exit() skips
+        # that teardown path (atexit handlers, GC, module destructors)
+        # entirely, so a shutdown-time crash in a dependency can't turn a
+        # successful run into a failed CI job.
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(0)

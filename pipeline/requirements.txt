@@ -1,11 +1,20 @@
 # Futurecast pipeline
+#
+# Pinned to exact versions (rather than floors) because a segfault (exit
+# code 139) was observed on GitHub Actions' ubuntu-latest runner that did
+# not reproduce locally — a fresh `pip install` with unbounded ranges can
+# resolve different numpy/cfgrib/eccodes/opencv builds than what's been
+# tested, and a numpy C-API ABI mismatch against a compiled extension
+# (cfgrib's eccodes bindings, opencv) is a classic cause of exactly that
+# crash. These versions are confirmed working together locally.
 
-requests>=2.31        # download from NOAA's public MRMS bucket on AWS
-cfgrib>=0.9.10         # decode GRIB2 (MRMS + HRRR) via xarray
-xarray>=2023.1         # array handling around the decoded GRIB data
-numpy>=1.24            # color-table lookup + reprojection index math
-Pillow>=10.0           # write the colorized frame as a transparent PNG
-herbie-data>=2024.1    # finds + downloads HRRR forecast GRIB2 files
-pyproj>=3.6            # Lambert Conformal -> lat/lon reprojection for HRRR
-opencv-python-headless>=4.8   # dense optical flow for the nowcast (see nowcast.py)
-scipy>=1.11            # semi-Lagrangian advection (map_coordinates) for the nowcast
+requests==2.32.5              # download from NOAA's public MRMS bucket on AWS
+cfgrib==0.9.15.1               # decode GRIB2 (MRMS + HRRR) via xarray
+eccodes==2.48.0                # GRIB2 C library bindings used by cfgrib
+xarray==2024.7.0               # array handling around the decoded GRIB data
+numpy==2.0.2                   # color-table lookup + reprojection index math
+Pillow==11.3.0                  # write the colorized frame as a transparent PNG
+herbie-data==2024.8.0           # finds + downloads HRRR forecast GRIB2 files
+pyproj==3.6.1                   # Lambert Conformal -> lat/lon reprojection for HRRR
+opencv-python-headless==5.0.0.93   # dense optical flow for the nowcast (see nowcast.py)
+scipy==1.13.1                   # semi-Lagrangian advection (map_coordinates) for the nowcast
