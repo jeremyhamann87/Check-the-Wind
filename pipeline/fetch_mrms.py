@@ -133,12 +133,21 @@ def prune_old_frames(keep_ids):
 
 
 def decode_grib(key):
-    """Download + decode one MRMS key, returning (values, lat, lon)."""
+    """Download + decode one MRMS key, returning (values, lat, lon).
+
+    cfgrib's eccodes backend holds a native GRIB handle open for the
+    Dataset's lifetime — it must be closed explicitly (rather than left for
+    the garbage collector) before the underlying file is deleted below, or
+    the handle can outlive the file and corrupt eccodes' internal state
+    later on (observed as a segfault/double-free after many decodes)."""
     with tempfile.TemporaryDirectory() as tmp:
         grib_path = download_grib(key, tmp)
-        ds = xr.open_dataset(grib_path, engine="cfgrib")
-        var_name = list(ds.data_vars)[0]
-        return ds[var_name].values, ds["latitude"].values, ds["longitude"].values
+        with xr.open_dataset(grib_path, engine="cfgrib") as ds:
+            var_name = list(ds.data_vars)[0]
+            values = ds[var_name].values.copy()
+            lat = ds["latitude"].values.copy()
+            lon = ds["longitude"].values.copy()
+        return values, lat, lon
 
 
 def render_one(key, obs_time):

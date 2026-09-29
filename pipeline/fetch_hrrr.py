@@ -76,6 +76,14 @@ def reproject_to_latlon(values, native_lat, native_lon, target_lat, target_lon):
 
 
 def _herbie_frame(run_time, fxx, product, search):
+    """Download + decode one HRRR GRIB file, returning (values, lat, lon)
+    or None if that forecast step isn't available yet.
+
+    cfgrib's eccodes backend holds a native GRIB handle open for the
+    Dataset's lifetime — closing it explicitly (rather than leaving it for
+    the garbage collector) avoids a handle outliving its file and
+    corrupting eccodes' internal state later (observed as a
+    segfault/double-free after many decodes across a run)."""
     # Imported lazily — Herbie prints a one-time config banner on first
     # import, which is noisy if this module is imported but unused.
     from herbie import Herbie
@@ -91,11 +99,14 @@ def _herbie_frame(run_time, fxx, product, search):
         if not H.grib:
             return None
         path = H.download(search, verbose=False)
-        ds = xr.open_dataset(
+        with xr.open_dataset(
             str(path), engine="cfgrib",
             backend_kwargs={"filter_by_keys": {"shortName": "refc"}},
-        )
-    return ds
+        ) as ds:
+            values = ds["refc"].values.copy()
+            lat = ds["latitude"].values.copy()
+            lon = ds["longitude"].values.copy()
+    return values, lat, lon
 
 
 def latest_hrrr_run():
@@ -105,8 +116,7 @@ def latest_hrrr_run():
     now = datetime.now(timezone.utc)
     for hours_back in range(0, 6):
         run_time = (now - timedelta(hours=hours_back)).replace(minute=0, second=0, microsecond=0)
-        ds = _herbie_frame(run_time, 0, "sfc", ":REFC:")
-        if ds is not None:
+        if _herbie_frame(run_time, 0, "sfc", ":REFC:") is not None:
             return run_time
     raise RuntimeError("No HRRR run found in the last 6 hours")
 
@@ -143,13 +153,11 @@ def build_forecast_frames(blend_fn=None):
         else:
             verb = "blending" if blend_fn else "fetching + reprojecting"
             print(f"  {verb} {frame_id} (F{fxx:02d} {product})...")
-            ds = _herbie_frame(run_time, fxx, product, search)
-            if ds is None:
+            result = _herbie_frame(run_time, fxx, product, search)
+            if result is None:
                 print(f"    not available yet, skipping")
                 continue
-            values = ds["refc"].values
-            native_lat = ds["latitude"].values
-            native_lon = ds["longitude"].values
+            values, native_lat, native_lon = result
             reprojected = reproject_to_latlon(values, native_lat, native_lon, target_lat, target_lon)
             final = blend_fn(reprojected, valid_time) if blend_fn else reprojected
             render_frame(final, target_lat, target_lon, png_path, scale=config.RENDER_SCALE)
