@@ -47,7 +47,29 @@ jobs:
           git add futurecast/frames futurecast/manifest.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
-          else
-            git commit -m "Update futurecast frames [skip ci]"
-            git push
+            exit 0
           fi
+          git commit -m "Update futurecast frames [skip ci]"
+
+          # A run that was queued (behind this same concurrency group) can
+          # start with a stale checkout if another run's commit landed on
+          # main while it waited — its push then gets rejected as a
+          # non-fast-forward. Since this step only ever touches
+          # futurecast/frames/ and manifest.json, and the generated content
+          # for THIS run is already fully staged/committed above, a rebase
+          # would risk a real conflict (manifest.json's content differs run
+          # to run) — a soft reset onto the fresh tip + recommit instead
+          # just re-parents the exact same snapshot onto it, which can't
+          # conflict.
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt/5) — retrying against the latest main..."
+            git fetch origin main
+            git reset --soft origin/main
+            git add futurecast/frames futurecast/manifest.json
+            git commit -m "Update futurecast frames [skip ci]"
+          done
+          echo "::error::Failed to push updated frames after 5 attempts"
+          exit 1
