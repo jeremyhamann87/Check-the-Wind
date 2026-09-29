@@ -11,7 +11,9 @@ or bias-correction yet (that's Phase 4), so don't expect the transition
 from the last observed frame to the first forecast frame to look perfectly
 seamless. It's expected to visibly "jump" a bit at that boundary for now.
 """
+import multiprocessing
 import os
+import queue
 import warnings
 from datetime import datetime, timedelta, timezone
 
@@ -75,38 +77,80 @@ def reproject_to_latlon(values, native_lat, native_lon, target_lat, target_lon):
     return out
 
 
+def _herbie_frame_worker(run_time_str, product, fxx, search, result_queue):
+    try:
+        # Imported lazily — Herbie prints a one-time config banner on first
+        # import, which is noisy if this module is imported but unused.
+        from herbie import Herbie
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            H = Herbie(run_time_str, model="hrrr", product=product, fxx=fxx)
+            if not H.grib:
+                result_queue.put(("none",))
+                return
+            path = H.download(search, verbose=False)
+            with xr.open_dataset(
+                str(path), engine="cfgrib",
+                backend_kwargs={"filter_by_keys": {"shortName": "refc"}},
+            ) as ds:
+                values = ds["refc"].values.copy()
+                lat = ds["latitude"].values.copy()
+                lon = ds["longitude"].values.copy()
+        result_queue.put(("ok", values, lat, lon))
+    except Exception as err:  # noqa: BLE001 - relayed to the parent as a message
+        result_queue.put(("error", str(err)))
+
+
 def _herbie_frame(run_time, fxx, product, search):
     """Download + decode one HRRR GRIB file, returning (values, lat, lon)
     or None if that forecast step isn't available yet.
 
-    cfgrib's eccodes backend holds a native GRIB handle open for the
-    Dataset's lifetime — closing it explicitly (rather than leaving it for
-    the garbage collector) avoids a handle outliving its file and
-    corrupting eccodes' internal state later (observed as a
-    segfault/double-free after many decodes across a run)."""
-    # Imported lazily — Herbie prints a one-time config banner on first
-    # import, which is noisy if this module is imported but unused.
-    from herbie import Herbie
-
+    Runs in a fresh subprocess (spawned, not forked, so it starts with
+    clean native-library state rather than inheriting the parent's) for
+    the same reason as fetch_mrms.decode_grib: cfgrib's eccodes backend
+    leaks memory across repeated decode calls within one long-running
+    process, eventually crashing with `std::bad_alloc`. Isolating each
+    decode in its own short-lived process means the leak dies with that
+    process instead of accumulating across a run."""
     # Herbie wants a naive timestamp string (it treats everything as UTC
     # internally) — handing it a tz-aware datetime makes it choke comparing
     # aware vs. naive timestamps somewhere in its own run-time lookup.
     run_time_str = run_time.strftime("%Y-%m-%d %H:%M")
 
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        H = Herbie(run_time_str, model="hrrr", product=product, fxx=fxx)
-        if not H.grib:
-            return None
-        path = H.download(search, verbose=False)
-        with xr.open_dataset(
-            str(path), engine="cfgrib",
-            backend_kwargs={"filter_by_keys": {"shortName": "refc"}},
-        ) as ds:
-            values = ds["refc"].values.copy()
-            lat = ds["latitude"].values.copy()
-            lon = ds["longitude"].values.copy()
-    return values, lat, lon
+    ctx = multiprocessing.get_context("spawn")
+    result_queue = ctx.Queue()
+    proc = ctx.Process(
+        target=_herbie_frame_worker,
+        args=(run_time_str, product, fxx, search, result_queue),
+    )
+    proc.start()
+
+    # Poll rather than a bare result_queue.get(): if the worker dies from a
+    # hard native crash it never puts anything on the queue, and a bare
+    # get() would block forever. Checking is_alive() between polls means a
+    # dead worker with no result is detected instead of hanging.
+    result = None
+    while result is None and proc.is_alive():
+        try:
+            result = result_queue.get(timeout=0.5)
+        except queue.Empty:
+            continue
+    if result is None:
+        try:
+            result = result_queue.get(timeout=2)
+        except queue.Empty:
+            result = None
+    proc.join()
+
+    if result is None:
+        raise RuntimeError(f"HRRR decode subprocess crashed (exit code {proc.exitcode})")
+    status, *payload = result
+    if status == "none":
+        return None
+    if status == "error":
+        raise RuntimeError(f"HRRR decode failed: {payload[0]}")
+    return tuple(payload)
 
 
 def latest_hrrr_run():

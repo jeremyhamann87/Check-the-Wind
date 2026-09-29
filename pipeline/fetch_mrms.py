@@ -12,7 +12,9 @@ python3 fetch_mrms.py
 """
 import gzip
 import json
+import multiprocessing
 import os
+import queue
 import shutil
 import sys
 import tempfile
@@ -132,22 +134,63 @@ def prune_old_frames(keep_ids):
         print(f"Pruned {removed} frame(s) outside the observed window")
 
 
+def _decode_grib_worker(key, result_queue):
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            grib_path = download_grib(key, tmp)
+            with xr.open_dataset(grib_path, engine="cfgrib") as ds:
+                var_name = list(ds.data_vars)[0]
+                values = ds[var_name].values.copy()
+                lat = ds["latitude"].values.copy()
+                lon = ds["longitude"].values.copy()
+        result_queue.put(("ok", values, lat, lon))
+    except Exception as err:  # noqa: BLE001 - relayed to the parent as a message
+        result_queue.put(("error", str(err)))
+
+
 def decode_grib(key):
     """Download + decode one MRMS key, returning (values, lat, lon).
 
-    cfgrib's eccodes backend holds a native GRIB handle open for the
-    Dataset's lifetime — it must be closed explicitly (rather than left for
-    the garbage collector) before the underlying file is deleted below, or
-    the handle can outlive the file and corrupt eccodes' internal state
-    later on (observed as a segfault/double-free after many decodes)."""
-    with tempfile.TemporaryDirectory() as tmp:
-        grib_path = download_grib(key, tmp)
-        with xr.open_dataset(grib_path, engine="cfgrib") as ds:
-            var_name = list(ds.data_vars)[0]
-            values = ds[var_name].values.copy()
-            lat = ds["latitude"].values.copy()
-            lon = ds["longitude"].values.copy()
-        return values, lat, lon
+    Runs in a fresh subprocess (spawned, not forked, so it starts with
+    clean native-library state rather than inheriting the parent's).
+    cfgrib's eccodes backend leaks memory across repeated decode calls
+    within one long-running process — MRMS's non-standard dataTime
+    encoding (logged as an ECCODES ERROR "Truncating time" on every file)
+    appears to trigger it — eventually crashing the whole run with
+    `std::bad_alloc` after ~30 decodes. Isolating each decode in its own
+    short-lived process means the leak dies with that process instead of
+    accumulating across an entire run's worth of files."""
+    ctx = multiprocessing.get_context("spawn")
+    result_queue = ctx.Queue()
+    proc = ctx.Process(target=_decode_grib_worker, args=(key, result_queue))
+    proc.start()
+
+    # Poll rather than a bare result_queue.get(): if the worker dies from a
+    # hard native crash (the exact failure mode this isolation guards
+    # against — e.g. an abort()) it never puts anything on the queue, and a
+    # bare get() would block forever. Checking is_alive() between polls
+    # means a dead worker with no result is detected instead of hanging.
+    result = None
+    while result is None and proc.is_alive():
+        try:
+            result = result_queue.get(timeout=0.5)
+        except queue.Empty:
+            continue
+    if result is None:
+        # One last check in case the worker put its result and exited in
+        # the gap between the last is_alive() check and now.
+        try:
+            result = result_queue.get(timeout=2)
+        except queue.Empty:
+            result = None
+    proc.join()
+
+    if result is None:
+        raise RuntimeError(f"decode subprocess for {key} crashed (exit code {proc.exitcode})")
+    status, *payload = result
+    if status == "error":
+        raise RuntimeError(f"decode subprocess for {key} failed: {payload[0]}")
+    return tuple(payload)
 
 
 def render_one(key, obs_time):
