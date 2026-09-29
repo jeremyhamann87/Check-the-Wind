@@ -1,0 +1,11 @@
+# Futurecast pipeline
+
+requests>=2.31        # download from NOAA's public MRMS bucket on AWS
+cfgrib>=0.9.10         # decode GRIB2 (MRMS + HRRR) via xarray
+xarray>=2023.1         # array handling around the decoded GRIB data
+numpy>=1.24            # color-table lookup + reprojection index math
+Pillow>=10.0           # write the colorized frame as a transparent PNG
+herbie-data>=2024.1    # finds + downloads HRRR forecast GRIB2 files
+pyproj>=3.6            # Lambert Conformal -> lat/lon reprojection for HRRR
+opencv-python-headless>=4.8   # dense optical flow for the nowcast (see nowcast.py)
+scipy>=1.11            # semi-Lagrangian advection (map_coordinates) for the nowcast

@@ -1,0 +1,12 @@
+# Python virtual environment (pipeline/README.md explains how to recreate it)
+pipeline/.venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# futurecast/frames/*.png and futurecast/manifest.json are intentionally
+# NOT ignored — the whole point of Phase 5 is that GitHub Actions commits
+# fresh versions of them back to the repo on a schedule, and GitHub Pages
+# serves directly from repo contents.

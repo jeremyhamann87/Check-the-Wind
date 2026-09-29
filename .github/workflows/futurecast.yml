@@ -1,0 +1,53 @@
+name: Futurecast pipeline
+
+# Runs the radar/forecast pipeline on a schedule and commits whatever
+# changed (new frames pruned/rendered, updated manifest.json) straight
+# back to the repo — GitHub Pages then just serves the updated files, no
+# server or separate storage needed.
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 min, UTC. GitHub may delay this a
+                              # few minutes under load — that's normal.
+  workflow_dispatch: {}       # lets you trigger a run by hand from the
+                              # Actions tab, useful for testing this setup
+
+permissions:
+  contents: write            # needed to commit the updated frames back
+
+concurrency:
+  group: futurecast-pipeline
+  cancel-in-progress: false  # let an in-flight run finish rather than
+                              # clobber a half-written manifest
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Install pipeline dependencies
+        run: pip install -r pipeline/requirements.txt
+
+      - name: Run the pipeline
+        run: python3 pipeline/fetch_mrms.py
+
+      - name: Commit + push updated frames
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add futurecast/frames futurecast/manifest.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update futurecast frames [skip ci]"
+            git push
+          fi

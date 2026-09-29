@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Futurecast — Check the Wind</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root{
+    --bg:#0E1620; --surface:#16212C; --text:#E8EFF3; --text-muted:#A9BCCB;
+    --accent:#FF9A5A; --border:#2A3846;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Nunito', -apple-system, sans-serif;
+    display:flex; flex-direction:column;
+  }
+  header{
+    padding:12px 16px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border); flex:0 0 auto;
+  }
+  header h1{font-size:1.125rem; margin:0}
+  header a{color:var(--text-muted); text-decoration:none; font-size:0.875rem}
+  header a:hover{color:var(--text)}
+  #map{flex:1 1 auto; min-height:0; background:#0a0f16}
+
+  .controls{
+    flex:0 0 auto; padding:10px 16px; border-top:1px solid var(--border);
+    display:flex; align-items:center; gap:12px;
+  }
+  .play-btn{
+    flex:0 0 auto; width:36px; height:36px; border-radius:50%; border:1px solid var(--border);
+    background:var(--surface); color:var(--text); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0;
+  }
+  .play-btn:hover{background:var(--hover, #1D2A37)}
+  .play-btn svg{width:16px; height:16px}
+  .timeline{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px}
+  .timeline-track{position:relative; display:flex; align-items:center; height:20px}
+  .timeline input[type="range"]{
+    -webkit-appearance:none; appearance:none;
+    width:100%; margin:0; height:4px; border-radius:2px; cursor:pointer;
+    background:var(--border); /* overridden inline once frames load, to two-tone observed/forecast */
+  }
+  .timeline input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
+    background:#fff; border:2px solid var(--bg); box-shadow:0 0 0 1px var(--border); cursor:pointer;
+  }
+  .timeline input[type="range"]::-moz-range-thumb{
+    width:14px; height:14px; border-radius:50%;
+    background:#fff; border:2px solid var(--bg); box-shadow:0 0 0 1px var(--border); cursor:pointer;
+  }
+  .timeline-boundary{
+    position:absolute; top:0; bottom:0; width:2px; background:#fff;
+    pointer-events:none; opacity:.9; display:none;
+  }
+  .timeline-boundary::after{
+    content:'now'; position:absolute; top:-2px; left:4px; font-size:0.6875rem;
+    color:var(--text-muted); white-space:nowrap; text-transform:uppercase; letter-spacing:.04em;
+  }
+  .timeline-labels{
+    display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted);
+  }
+  .frame-kind{font-weight:600}
+  .frame-kind.observed{color:#7fd4ff}
+  .frame-kind.forecast{color:#ffb454}
+
+  .status-bar{
+    padding:8px 16px; font-size:0.875rem; color:var(--text-muted);
+    border-top:1px solid var(--border); flex:0 0 auto;
+  }
+  .status-bar.err{color:#ff8a8a}
+  /* Leaflet attribution/zoom controls, restyled to fit the dark shell */
+  .leaflet-control-attribution{background:rgba(22,33,44,.85)!important; color:var(--text-muted)!important}
+  .leaflet-control-attribution a{color:var(--text-muted)!important}
+  .leaflet-bar a{background:var(--surface)!important; color:var(--text)!important; border-color:var(--border)!important}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Futurecast</h1>
+  <a href="../windline.html">&larr; Back to Check the Wind</a>
+</header>
+
+<div id="map" role="application" aria-label="Radar map"></div>
+
+<div class="controls" id="controls" hidden>
+  <button class="play-btn" id="playBtn" type="button" aria-label="Play">
+    <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+  </button>
+  <div class="timeline">
+    <div class="timeline-track">
+      <input type="range" id="scrubber" min="0" max="0" step="1" value="0" aria-label="Frame timeline">
+      <div class="timeline-boundary" id="timelineBoundary"></div>
+    </div>
+    <div class="timeline-labels">
+      <span id="frameTime">—</span>
+      <span class="frame-kind observed" id="frameKind">Observed</span>
+    </div>
+  </div>
+</div>
+
+<div class="status-bar" id="status">Loading radar…</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var statusEl = document.getElementById('status');
+  function setStatus(text, isErr){
+    statusEl.textContent = text;
+    statusEl.classList.toggle('err', !!isErr);
+  }
+
+  // Center on the same "last used location" windline.html saves, so this
+  // page opens already looking at the right part of the country. Falls
+  // back to a CONUS-wide view for a first-ever visitor.
+  var DEFAULT_CENTER = [39.5, -98.35];
+  var DEFAULT_ZOOM = 4;
+  var LOCATION_KEY = 'checkTheWind.lastLocation';
+
+  function getSavedLocation(){
+    try{
+      var raw = localStorage.getItem(LOCATION_KEY);
+      if(!raw) return null;
+      var parsed = JSON.parse(raw);
+      if(parsed && typeof parsed.lat === 'number' && typeof parsed.lon === 'number') return parsed;
+    }catch(err){}
+    return null;
+  }
+
+  var saved = getSavedLocation();
+  var map = L.map('map', {zoomControl: true}).setView(
+    saved ? [saved.lat, saved.lon] : DEFAULT_CENTER,
+    saved ? 9 : DEFAULT_ZOOM
+  );
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+
+  /* ---------- Animation loop ---------- */
+  var FRAME_MS = 200; // time each frame stays on screen while playing
+
+  var frames = [];
+  var frameLayer = null;
+  var index = 0;
+  var playTimer = null;
+
+  var controlsEl = document.getElementById('controls');
+  var playBtn = document.getElementById('playBtn');
+  var playIcon = document.getElementById('playIcon');
+  var pauseIcon = document.getElementById('pauseIcon');
+  var scrubber = document.getElementById('scrubber');
+  var boundaryEl = document.getElementById('timelineBoundary');
+  var frameTimeEl = document.getElementById('frameTime');
+  var frameKindEl = document.getElementById('frameKind');
+
+  // Index of the last observed frame — everything after it is forecast.
+  // -1 if there's no observed data at all (shouldn't normally happen).
+  var boundaryIndex = -1;
+
+  function fmtTime(iso){
+    try{
+      return new Date(iso).toLocaleTimeString([], {hour:'numeric', minute:'2-digit', timeZoneName:'short'});
+    }catch(err){ return iso; }
+  }
+
+  function showFrameAt(i){
+    if(!frames.length) return;
+    index = Math.max(0, Math.min(frames.length - 1, i));
+    var frame = frames[index];
+
+    if(frameLayer){
+      frameLayer.setUrl(frame.url);
+    }else{
+      frameLayer = L.imageOverlay(frame.url, frame.bounds, {opacity: 0.75}).addTo(map);
+    }
+
+    scrubber.value = String(index);
+    frameTimeEl.textContent = fmtTime(frame.time) + (index === boundaryIndex ? ' (now)' : '');
+    frameKindEl.textContent = frame.kind === 'forecast' ? 'Forecast' : 'Observed';
+    frameKindEl.className = 'frame-kind ' + (frame.kind === 'forecast' ? 'forecast' : 'observed');
+  }
+
+  /* Two-tone the track (observed vs forecast) and drop a "now" marker
+     exactly at the boundary, so it's obvious at a glance where real
+     radar stops and the forecast starts — not just from the text label. */
+  function layoutTimeline(){
+    if(frames.length < 2){
+      boundaryEl.style.display = 'none';
+      return;
+    }
+    var pct = boundaryIndex < 0 ? 100 : (boundaryIndex / (frames.length - 1)) * 100;
+    scrubber.style.background =
+      'linear-gradient(to right,' +
+      ' #7fd4ff 0%, #7fd4ff ' + pct + '%,' +
+      ' #ffb454 ' + pct + '%, #ffb454 100%)';
+    if(boundaryIndex >= 0 && boundaryIndex < frames.length - 1){
+      boundaryEl.style.left = 'calc(' + pct + '% - 1px)';
+      boundaryEl.style.display = 'block';
+    }else{
+      boundaryEl.style.display = 'none'; // no forecast frames to mark a boundary against
+    }
+  }
+
+  function stepForward(){
+    var next = index + 1 >= frames.length ? 0 : index + 1;
+    showFrameAt(next);
+  }
+
+  function setPlaying(playing){
+    playIcon.hidden = playing;
+    pauseIcon.hidden = !playing;
+    playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    if(playTimer){ clearInterval(playTimer); playTimer = null; }
+    if(playing){
+      playTimer = setInterval(stepForward, FRAME_MS);
+    }
+  }
+
+  playBtn.addEventListener('click', function(){
+    var isPlaying = !pauseIcon.hidden;
+    setPlaying(!isPlaying);
+  });
+
+  scrubber.addEventListener('input', function(){
+    setPlaying(false);
+    showFrameAt(parseInt(scrubber.value, 10));
+  });
+
+  /* Preload every frame's image so playback doesn't stutter waiting on the
+     network mid-loop. They're small (mostly-transparent PNGs) and the
+     browser caches them, so this only costs real time once per visit. */
+  function preload(frameList){
+    frameList.forEach(function(f){
+      var img = new Image();
+      img.src = f.url;
+    });
+  }
+
+  fetch('manifest.json', {cache: 'no-store'})
+    .then(function(res){
+      if(!res.ok) throw new Error('manifest.json ' + res.status);
+      return res.json();
+    })
+    .then(function(manifest){
+      frames = manifest.frames || [];
+      if(!frames.length) throw new Error('No frames in manifest');
+
+      for(var i = frames.length - 1; i >= 0; i--){
+        if(frames[i].kind !== 'forecast'){ boundaryIndex = i; break; }
+      }
+
+      scrubber.max = String(frames.length - 1);
+      controlsEl.hidden = false;
+      layoutTimeline();
+      showFrameAt(boundaryIndex >= 0 ? boundaryIndex : frames.length - 1); // start on "now"
+
+      var observedCount = boundaryIndex + 1;
+      var forecastCount = frames.length - observedCount;
+      var statusText = observedCount + ' observed frame(s) (' + fmtTime(frames[0].time) + '–' + fmtTime(frames[boundaryIndex].time) + ')';
+      if(forecastCount > 0){
+        statusText += ', ' + forecastCount + ' forecast frame(s) through ' + fmtTime(frames[frames.length - 1].time);
+      }
+      setStatus(statusText);
+      preload(frames);
+    })
+    .catch(function(err){
+      console.error(err);
+      setStatus('Could not load radar data — try refreshing in a bit.', true);
+    });
+})();
+</script>
+</body>
+</html>
