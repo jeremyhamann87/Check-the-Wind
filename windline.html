@@ -110,7 +110,7 @@
     padding-top:44px;
     padding-bottom:48px;
   }
-  .wrap, .hdr-in{max-width:688px; margin:0 auto; padding-inline:24px}
+  .wrap, .hdr-in{max-width:850px; margin:0 auto; padding-inline:24px}
   .num{font-family:'Nunito',monospace;font-variant-numeric:tabular-nums}
   h1,h2,.display{font-family:'Nunito',sans-serif;font-weight:700;letter-spacing:.2px}
 
@@ -203,7 +203,10 @@
   .status:empty{display:none}
 
   section{margin-top:64px}
-  #heroSection{margin-top:3.6px}
+  /* #heroSection's own tight spacing (vs. the search bar above it) is
+     mobile-only now — see the mobile media query below, which still sets
+     this back down to 3.6px. On desktop/tablet it just inherits the
+     normal 64px every other module uses. */
   .section-head{position:relative; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:.25rem 1rem; margin-bottom:12px}
   .section-head h2{font-size:1.25rem; margin:0; color:var(--text); display:inline-flex; align-items:center; gap:6px}
 
@@ -315,37 +318,17 @@
   .radar-modal[hidden]{display:none}
   .radar-modal-backdrop{position:absolute; inset:0; background:rgba(10,16,22,.6); backdrop-filter:blur(2px)}
   .radar-modal-panel{
-    position:relative; z-index:1; width:min(46rem, 100%); max-height:min(46rem, 100%);
+    /* height doubled (was 46rem, capped at 90vh) — the old cap was almost
+       always the binding constraint on typical desktop screens, so the vh
+       ceiling is raised too or doubling the rem value alone would've had
+       no visible effect. */
+    position:relative; z-index:1; width:min(46rem, 100%); height:min(92rem, 95vh);
     background:var(--surface); border-radius:16px; box-shadow:var(--shadow);
     display:flex; flex-direction:column; overflow:hidden;
   }
-  .radar-modal-head{display:flex; align-items:center; gap:12px; padding:16px 16px 12px}
-  .radar-modal-head h2{font-size:1.125rem; margin:0; color:var(--text); flex:1}
-  .radar-modal-tag{
-    display:block; text-align:center; padding:10px 16px 0; flex-shrink:0;
-    font-size:0.875rem; color:var(--text-muted); font-family:'Nunito',monospace;
-    letter-spacing:.02em; border-top:1px solid var(--border);
-  }
-  .radar-modal-close{
-    width:44px; height:44px; flex-shrink:0; padding:0; border-radius:9px;
-    border:1px solid var(--border); background:var(--surface-2); color:var(--text);
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-  }
-  .radar-modal-close:hover{background:var(--hover-bg)}
-  .radar-modal-close:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
-  .radar-modal-close svg{width:18px; height:18px}
-  .radar-modal-map{flex:1 1 auto; min-height:0; aspect-ratio:1; width:100%; background:#0a0a0a}
-  .radar-modal-controls{
-    display:flex; align-items:center; justify-content:center; gap:12px;
-    padding:10px 16px 12px; flex-shrink:0;
-  }
-  .radar-ctrl-btn{
-    width:44px; height:44px; padding:0; border-radius:10px; border:1px solid var(--border);
-    background:var(--surface-2); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer;
-  }
-  .radar-ctrl-btn svg{width:18px; height:18px}
-  .radar-ctrl-btn:hover{background:var(--hover-bg)}
-  .radar-ctrl-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
+  /* The embedded page supplies its own header/title/close/controls now —
+     this is just the iframe filling the whole panel, edge to edge. */
+  .radar-modal-map{flex:1 1 auto; min-height:0; width:100%; height:100%; background:#0a0a0a; border:0}
   @media (max-width:31.1875em){
     .radar-modal{padding:0}
     .radar-modal-panel{width:100%; height:100%; max-height:100%; border-radius:0}
@@ -410,7 +393,7 @@
   .bw-val{font-size:0.875rem; font-weight:500; color:var(--text-muted)}
   .bw-row--top .bw-val{font-weight:600; color:var(--text)}
   .bw-head[hidden]{display:none}
-  .bw-empty{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:24px; color:var(--text)}
+  .bw-empty{display:flex; align-items:center; justify-content:space-between; gap:32px; padding:24px; color:var(--text)}
   .bw-empty-title{display:block; font-size:1.125rem; font-weight:700; line-height:1.3; color:var(--text)}
   .bw-empty-sub{display:block; margin-top:4px; font-size:0.875rem; color:var(--text-muted)}
   .bw-empty svg{flex:0 0 auto; display:block}
@@ -425,7 +408,22 @@
     79%{transform:scale(1.04,.96) skewX(3deg)}
   }
   @keyframes fpGlow{0%,100%{opacity:.16}35%{opacity:.34}65%{opacity:.2}}
-  @media (prefers-reduced-motion: reduce){ .fp-flame, .fp-glow{animation:none} .fp-glow{opacity:.25} }
+  .win-rain{animation:winRain .6s linear infinite}
+  @keyframes winRain{0%{transform:translateY(-6px);opacity:0}15%{opacity:1}100%{transform:translateY(10px);opacity:0}}
+  .win-snow{animation:winSnow 3s ease-in-out infinite}
+  @keyframes winSnow{0%,100%{transform:translate(0,-3px)}50%{transform:translate(3px,4px)}}
+  .win-wind{animation:winWind 1.6s ease-in-out infinite}
+  @keyframes winWind{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+  .win-bolt{animation:winBolt 2.4s steps(1) infinite}
+  @keyframes winBolt{0%,88%,100%{opacity:0}90%,94%{opacity:1}96%{opacity:0}}
+  .tea-steam{transform-box:fill-box; transform-origin:50% 100%; animation:teaSteam 2.2s ease-in-out infinite}
+  @keyframes teaSteam{0%{transform:translateY(0) scaleY(1);opacity:.55}50%{transform:translateY(-4px) scaleY(1.15);opacity:.85}100%{transform:translateY(-8px) scaleY(.9);opacity:0}}
+  .cat-tail{transform-box:fill-box; transform-origin:0% 100%; animation:catTailWag 1.8s ease-in-out infinite}
+  @keyframes catTailWag{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
+  @media (prefers-reduced-motion: reduce){
+    .fp-flame, .fp-glow, .win-rain, .win-snow, .win-wind, .win-bolt, .tea-steam, .cat-tail{animation:none}
+    .fp-glow{opacity:.25} .win-bolt{opacity:0} .tea-steam{opacity:.5}
+  }
   .skel-bwrow .bw-cell .skel{display:block; height:.875rem; width:70%}
   .skel-bwrow .bw-medal .skel{width:2.25rem; height:2.25rem; border-radius:50%}
   .skel-bwrow .bw-window .skel:first-child{width:6rem}
@@ -929,7 +927,7 @@
         </template>
         <template x-if="$store.best.state === 'empty'">
           <div class="bw-empty" role="row">
-            <div role="cell"><span class="bw-empty-title">Time to stay inside for a while.</span><span class="bw-empty-sub">No good window in the next 48 hours. Rain, wet ground, strong wind or poor air quality are in the way. This updates when the forecast does.</span></div>
+            <div role="cell"><span class="bw-empty-title" x-text="$store.best.emptyTitle"></span><span class="bw-empty-sub" x-text="$store.best.emptySub"></span></div>
             <div role="cell" aria-hidden="true" x-html="$store.best.fireplace"></div>
           </div>
         </template>
@@ -1012,28 +1010,13 @@
 
 <div class="radar-modal" id="radarModal" hidden x-data :hidden="!$store.radar.open" @keydown.escape.window="$store.radar.close()">
   <div class="radar-modal-backdrop" id="radarModalBackdrop" @click="$store.radar.close()"></div>
-  <div class="radar-modal-panel" role="dialog" aria-modal="true" aria-labelledby="radarModalTitle">
-    <div class="radar-modal-head">
-      <h2 id="radarModalTitle">Weather Radar</h2>
-      <button type="button" class="radar-modal-close" id="radarModalClose" aria-label="Close radar view" @click="$store.radar.close()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="radar-modal-map" id="radarModalMapEl"></div>
-    <span class="radar-modal-tag" id="radarModalTag"></span>
-    <div class="radar-modal-controls">
-      <button type="button" class="radar-ctrl-btn" id="radarModalStepBack" aria-label="Step to previous frame" @click="$store.radar.stepBack()">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><rect x="5" y="5" width="2.5" height="14" rx="1"/><path d="M19 5.5v13l-11-6.5z"/></svg>
-      </button>
-      <button type="button" class="radar-ctrl-btn" id="radarModalPlayPause" aria-label="Pause radar loop" aria-pressed="true"
-        :aria-label="$store.radar.playing ? 'Pause radar loop' : 'Play radar loop'" :aria-pressed="$store.radar.playing" @click="$store.radar.toggle()">
-        <svg x-show="$store.radar.playing" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><rect x="6" y="5" width="4.5" height="14" rx="1"/><rect x="13.5" y="5" width="4.5" height="14" rx="1"/></svg>
-        <svg x-show="!$store.radar.playing" style="display:none" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8 5.5v13l11-6.5z"/></svg>
-      </button>
-      <button type="button" class="radar-ctrl-btn" id="radarModalStepFwd" aria-label="Step to next frame" @click="$store.radar.stepForward()">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M5 5.5v13l11-6.5z"/><rect x="16.5" y="5" width="2.5" height="14" rx="1"/></svg>
-      </button>
-    </div>
+  <div class="radar-modal-panel" role="dialog" aria-modal="true" aria-label="Weather radar">
+    <!-- The embedded page (futurecast/index.html) carries its own header,
+         title, close (X) button and playback controls now — it's the
+         "main radar modal" per se, this shell just provides the backdrop/
+         escape-to-close/click-outside-to-close affordances as a fallback
+         in case the iframe is still loading or fails to. -->
+    <iframe class="radar-modal-map" id="radarModalMapEl" title="Weather radar" allow="geolocation"></iframe>
   </div>
 </div>
 
@@ -1360,7 +1343,6 @@
   var lastHourly = null;
   var radarLat = null;
   var radarLon = null;
-  var modalRadarLoop = null;
 
   function locTimeOpts(){
     var opts = {hour:'numeric', minute:'2-digit', timeZoneName:'short'};
@@ -1674,55 +1656,47 @@
     radarLoop = buildRadarMap(mapEl, tag, lat, lon, false);
   }
 
-  function stopModalRadarLoop(){
-    if(modalRadarLoop){ modalRadarLoop.destroy(); modalRadarLoop = null; }
-  }
-
   var radarModalLastFocus = null;
 
+  // The modal now just embeds futurecast/index.html, which has its own
+  // header/controls/playback — this store only tracks open/closed and
+  // (re)points the iframe. A fresh cache-busting src on every open forces
+  // a real reload (setting the same src string again is a no-op in most
+  // browsers) so the embedded page's own manifest.json fetch is never
+  // stale; resetting to about:blank on close tears down its Leaflet map
+  // and playback timers rather than leaving them running off-screen.
   pendingStores.radar = {
     open: false,
-    playing: true,
     show: function(){
-      if(radarLat == null || radarLon == null || typeof L === 'undefined') return;
+      if(radarLat == null || radarLon == null) return;
       var self = this;
       radarModalLastFocus = document.activeElement;
       self.open = true;
       document.body.style.overflow = 'hidden';
       window.Alpine.nextTick(function(){
         if(!self.open) return;
-        stopModalRadarLoop();
-        modalRadarLoop = buildRadarMap(document.getElementById('radarModalMapEl'), document.getElementById('radarModalTag'), radarLat, radarLon, true);
-        self.playing = modalRadarLoop.isPlaying();
-        setTimeout(function(){
-          if(modalRadarLoop) modalRadarLoop.map.invalidateSize();
-          document.getElementById('radarModalClose').focus();
-        }, 60);
+        document.getElementById('radarModalMapEl').src = 'futurecast/index.html?opened=' + Date.now();
       });
     },
     close: function(){
       if(!this.open) return;
-      stopModalRadarLoop();
       this.open = false;
       document.body.style.overflow = '';
+      document.getElementById('radarModalMapEl').src = 'about:blank';
       if(radarModalLastFocus && typeof radarModalLastFocus.focus === 'function') radarModalLastFocus.focus();
-    },
-    toggle: function(){
-      if(!modalRadarLoop) return;
-      if(modalRadarLoop.isPlaying()) modalRadarLoop.pause(); else modalRadarLoop.play();
-      this.playing = modalRadarLoop.isPlaying();
-    },
-    stepBack: function(){
-      if(!modalRadarLoop) return;
-      modalRadarLoop.stepBackward();
-      this.playing = modalRadarLoop.isPlaying();
-    },
-    stepForward: function(){
-      if(!modalRadarLoop) return;
-      modalRadarLoop.stepForward();
-      this.playing = modalRadarLoop.isPlaying();
     }
   };
+
+  // The embedded page's own close (X) button can't reach this page's
+  // Alpine store directly across the iframe boundary, so it posts a
+  // message instead — same-origin only, and gated on the store existing
+  // rather than trusting the message shape alone.
+  window.addEventListener('message', function(e){
+    if(e.origin !== window.location.origin) return;
+    if(e.data && e.data.type === 'ctw:closeRadarModal' && window.Alpine){
+      store('radar').close();
+    }
+  });
 
   document.addEventListener('click', function(e){
     var trigger = e.target.closest ? e.target.closest('#radarExpandBtn, #radarBox') : null;
@@ -1938,7 +1912,7 @@
   }
 
   /* ---------- Best windows outside ---------- */
-  pendingStores.best = {state:'idle', windows:[], note:'', fireplace: fireplaceSvg()};
+  pendingStores.best = {state:'idle', windows:[], note:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear')};
   var BEST_HORIZON_HOURS = 48;
   var BEST_MAX_WINDOWS = 3;
 
@@ -2101,6 +2075,123 @@
     return s.n + ' ' + s.ap + '–' + e.n + ' ' + e.ap;
   }
 
+  // Hour-of-day straight from the ISO string (matches localDate's approach)
+  // rather than `new Date(iso).getHours()` — the NWS timestamp's offset is
+  // the forecast LOCATION's own, and converting through Date would silently
+  // shift to the browser's local timezone instead when they differ.
+  function hourOfIso(iso){ return parseInt(iso.slice(11, 13), 10); }
+
+  function describeHazardTime(iso, todayStr, tomorrowStr){
+    var d = localDate(iso);
+    var t = fmtH12(hourOfIso(iso));
+    var clock = t.n + ' ' + t.ap;
+    if(d === todayStr) return clock;
+    if(d === tomorrowStr) return 'tomorrow at ' + clock;
+    return fmtDow(d) + ' at ' + clock;
+  }
+
+  // Same rain/snow/thunderstorm word-matching as hazardType(), just without
+  // its "chance"-suppression — every precip-bearing hour counts here since
+  // this is summarizing a whole 48h stretch, not a single right-now reading.
+  function hourlyHazard(p){
+    var s = (p.shortForecast || '').toLowerCase();
+    if(/thunder/.test(s)) return 'Thunderstorms';
+    if(/snow|flurr|sleet|blizzard/.test(s)) return 'Snow';
+    if(/shower|rain|drizzle|freezing/.test(s)) return 'Rain';
+    return null;
+  }
+
+  // "Rain" -> "You might want to stay inside because rain is moving
+  // through." "Thunderstorms" gets "are" instead of "is" since it's an
+  // inherently plural noun; everything else (Snow, Heavy rain, Howling
+  // wind, ...) is a singular mass noun and takes "is".
+  function stayInsideTitle(label){
+    var lower = label.charAt(0).toLowerCase() + label.slice(1);
+    var verb = /thunderstorms\b/i.test(label) ? 'are' : 'is';
+    return 'You might want to stay inside because ' + lower + ' ' + verb + ' moving through.';
+  }
+
+  // Replaces the old static "stay inside" placeholder with an explanation
+  // built from the same 48h hourly data scoreBestHours already scans: names
+  // whichever of rain/snow/thunderstorms/wind is actually responsible, how
+  // bad it gets, and when it starts and clears (or that it doesn't clear
+  // within the window at all).
+  function buildEmptyBestNote(hourly){
+    var fallback = {
+      title: 'Time to stay inside for a while.',
+      sub: 'No good window in the next 48 hours. Rain, wet ground, strong wind or poor air quality are in the way. This updates when the forecast does.',
+      kind: 'clear'
+    };
+    if(!hourly || !hourly.length) return fallback;
+
+    var n = Math.min(BEST_HORIZON_HOURS, hourly.length);
+    var todayStr = localDate(hourly[0].startTime);
+    var tomorrowStr = nextDateStr(todayStr);
+
+    var precip = [], counts = {}, windBad = [];
+    for(var i = 0; i < n; i++){
+      var p = hourly[i];
+      var haz = hourlyHazard(p);
+      if(haz){
+        precip.push({i: i, type: haz, p: p});
+        counts[haz] = (counts[haz] || 0) + 1;
+      }
+      var mph = parseWind(p.windSpeed).high;
+      if(mph >= 25) windBad.push({i: i, mph: mph, p: p});
+    }
+
+    var sentences = [];
+    var title = null;
+    var kind = 'clear';
+
+    if(precip.length){
+      // Lead with whichever hazard type shows up in the most hours.
+      var primaryType = Object.keys(counts).sort(function(a, b){ return counts[b] - counts[a]; })[0];
+      var run = precip.filter(function(x){ return x.type === primaryType; });
+      var first = run[0], last = run[run.length - 1];
+      var anyHeavy = run.some(function(x){ return /heavy/.test((x.p.shortForecast || '').toLowerCase()); });
+      var label = anyHeavy ? 'Heavy ' + primaryType.toLowerCase() : primaryType;
+
+      var lead = first.i === 0
+        ? label + ' is already in the forecast'
+        : label + ' moves in around ' + describeHazardTime(first.p.startTime, todayStr, tomorrowStr);
+
+      lead += last.i >= n - 1
+        ? ', continuing through the next 48 hours with no clear break in sight.'
+        : ', clearing up by ' + describeHazardTime(last.p.startTime, todayStr, tomorrowStr) + '.';
+
+      sentences.push(lead);
+      title = stayInsideTitle(label);
+      kind = primaryType === 'Thunderstorms' ? 'storm' : primaryType.toLowerCase();
+    }
+
+    if(windBad.length){
+      var peak = windBad[0];
+      for(var j = 1; j < windBad.length; j++){ if(windBad[j].mph > peak.mph) peak = windBad[j]; }
+      var band = bandFor(peak.mph).label;
+      var peakTime = describeHazardTime(peak.p.startTime, todayStr, tomorrowStr);
+
+      if(sentences.length){
+        // Precipitation already leads the message — wind gets a second clause.
+        sentences.push('Wind picks up too, gusting to ' + peak.mph + ' mph (' + band + ') around ' + peakTime + '.');
+      }else{
+        var wFirst = windBad[0], wLast = windBad[windBad.length - 1];
+        var wLead = wFirst.i === 0
+          ? band + ' wind is already blowing, gusting to ' + peak.mph + ' mph'
+          : band + ' wind picks up around ' + describeHazardTime(wFirst.p.startTime, todayStr, tomorrowStr) + ', gusting to ' + peak.mph + ' mph';
+        wLead += wLast.i >= n - 1
+          ? ', staying gusty through the next 48 hours.'
+          : ', calming down by ' + describeHazardTime(wLast.p.startTime, todayStr, tomorrowStr) + '.';
+        sentences.push(wLead);
+        title = stayInsideTitle(band + ' wind');
+        kind = 'wind';
+      }
+    }
+
+    if(!sentences.length) return fallback;
+    return {title: title || fallback.title, sub: sentences.join(' '), kind: kind};
+  }
+
   var MEDALS = [
     {name:'First place',  tone:'var(--medal-gold)'},
     {name:'Second place', tone:'var(--medal-silver)'},
@@ -2117,16 +2208,82 @@
     '</svg>';
   }
 
-  function fireplaceSvg(){
-    return '<svg width="96" height="80" viewBox="0 0 96 80" fill="none" focusable="false" aria-hidden="true">' +
-      '<rect x="12" y="16" width="72" height="58" rx="2" fill="color-mix(in srgb, var(--text-muted) 22%, var(--surface))" stroke="var(--text-muted)" stroke-width="3"/>' +
-      '<rect x="6" y="8" width="84" height="8" rx="2.5" fill="var(--text-muted)"/>' +
-      '<rect x="6" y="74" width="84" height="5" rx="2.5" fill="var(--text-muted)"/>' +
-      '<path d="M28 74V48a20 20 0 0 1 40 0v26z" fill="#2B2320"/>' +
-      '<ellipse class="fp-glow" cx="48" cy="62" rx="17" ry="12" fill="#FFD23F"/>' +
-      '<path class="fp-flame" d="M48 36c4 8 12 11 12 23a12 12 0 0 1-24 0c0-7 4-9 6-15 2 3 3 4 6-8z" fill="var(--accent)"/>' +
-      '<path class="fp-flame fp-flame-in" d="M48 52c2 5 6 6 6 11a6 6 0 0 1-12 0c0-4 3-6 6-11z" fill="#FFD23F"/>' +
-      '<rect x="33" y="66" width="30" height="5" rx="2.5" fill="#8C5423"/>' +
+  // Sky color + animated weather marks for the window pane, matching
+  // whichever hazard is actually driving the empty state (see
+  // buildEmptyBestNote's `kind`) rather than a fixed decoration.
+  function windowWeatherMarks(kind){
+    var sky = {rain:'#63788F', storm:'#4A5568', snow:'#B9C7D6', wind:'#8FB6DD', clear:'#9FC6E8'}[kind] || '#9FC6E8';
+    var marks = '';
+    if(kind === 'rain' || kind === 'storm'){
+      var drops = [[166,21],[171,19],[176,22.5],[181,20],[185,24],[168,27],[178,29],[183,18]];
+      marks = drops.map(function(d, idx){
+        return '<line class="win-rain" x1="' + d[0] + '" y1="' + d[1] + '" x2="' + (d[0]-2) + '" y2="' + (d[1]+6) +
+          '" stroke="#DCEEFF" stroke-width="1.3" stroke-linecap="round" style="animation-delay:-' + (idx * 0.11) + 's"/>';
+      }).join('');
+      if(kind === 'storm'){
+        marks += '<path class="win-bolt" d="M177 19 L173 29 L177 29 L172 42" stroke="#FFD23F" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+      }
+    }else if(kind === 'snow'){
+      var flakes = [[167,22],[172,19],[177,25],[182,21],[169,30],[175,34],[184,28],[179,38]];
+      marks = flakes.map(function(f, idx){
+        return '<circle class="win-snow" cx="' + f[0] + '" cy="' + f[1] + '" r="1.1" fill="#FFFFFF" style="animation-delay:-' + (idx * 0.3) + 's"/>';
+      }).join('');
+    }else if(kind === 'wind'){
+      var gusts = [24, 34, 44];
+      marks = gusts.map(function(y, idx){
+        return '<path class="win-wind" d="M165 ' + y + ' q4 -3.5 8 0 t8 0" stroke="#EAF3FF" stroke-width="1.4" fill="none" stroke-linecap="round" style="animation-delay:-' + (idx * 0.25) + 's"/>';
+      }).join('');
+    }
+    return '<rect x="158" y="12" width="36" height="50" rx="3" fill="' + sky + '"/><g clip-path="url(#bwWinClip)">' + marks + '</g>';
+  }
+
+  // Cozy-room scene, told left to right as "it's rough out there, but
+  // here's somewhere warm to wait it out": the original animated
+  // fireplace, an armchair (turned slightly toward the window) with tea
+  // at the ready, and a window onto the actual weather outside (see
+  // windowWeatherMarks) — smaller than the other props since it's the
+  // thing you're avoiding, not the point of the scene.
+  function fireplaceSvg(kind){
+    return '<svg width="204" height="94" viewBox="0 0 204 94" fill="none" focusable="false" aria-hidden="true">' +
+      '<defs>' +
+        '<clipPath id="bwWinClip"><rect x="158" y="12" width="36" height="50" rx="3"/></clipPath>' +
+        '<pattern id="bwBrickPat" width="12" height="8" patternUnits="userSpaceOnUse">' +
+          '<rect width="12" height="8" fill="#C9B8A8"/>' +
+          '<rect x="0.5" y="0.5" width="10" height="3" fill="#9A3B2E"/>' +
+          '<rect x="0.5" y="4.5" width="4" height="3" fill="#9A3B2E"/>' +
+          '<rect x="6.5" y="4.5" width="5" height="3" fill="#9A3B2E"/>' +
+        '</pattern>' +
+      '</defs>' +
+
+      /* -- armchair (left), skewed around its own base to lean toward the fire -- */
+      '<g class="chair-turn">' +
+        '<rect x="8" y="34" width="32" height="36" rx="9" fill="#8C6E52"/>' +
+        '<rect x="2" y="50" width="10" height="24" rx="5" fill="#7A5D45"/>' +
+        '<rect x="36" y="50" width="10" height="24" rx="5" fill="#7A5D45"/>' +
+        '<rect x="8" y="62" width="32" height="12" rx="4" fill="var(--accent)"/>' +
+        /* sleeping cat, curled up on the cushion */
+        '<ellipse cx="23" cy="66.5" rx="12" ry="6.5" fill="#1A1A1A"/>' +
+        '<circle cx="11" cy="63" r="5" fill="#1A1A1A"/>' +
+        '<path d="M8 59.5 l1.5 -3.5 l2 3z" fill="#1A1A1A"/>' +
+        '<path d="M13 59.5 l1.5 -3.5 l2 3z" fill="#1A1A1A"/>' +
+        '<path class="cat-tail" d="M33 68q6 -1 4 -7" stroke="#1A1A1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>' +
+        '<rect x="10" y="73" width="4" height="11" fill="#5C4433"/><rect x="34" y="73" width="4" height="11" fill="#5C4433"/>' +
+      '</g>' +
+
+      /* -- fireplace (center) -- */
+      '<rect x="66" y="16" width="72" height="58" rx="2" fill="url(#bwBrickPat)" stroke="#6F2A20" stroke-width="3"/>' +
+      '<rect x="60" y="8" width="84" height="8" rx="2.5" fill="#7C5330"/>' +
+      '<rect x="60" y="74" width="84" height="5" rx="2.5" fill="var(--text-muted)"/>' +
+      '<path d="M82 74V48a20 20 0 0 1 40 0v26z" fill="#2B2320"/>' +
+      '<ellipse class="fp-glow" cx="102" cy="62" rx="17" ry="12" fill="#FFD23F"/>' +
+      '<path class="fp-flame" d="M102 36c4 8 12 11 12 23a12 12 0 0 1-24 0c0-7 4-9 6-15 2 3 3 4 6-8z" fill="var(--accent)"/>' +
+      '<path class="fp-flame fp-flame-in" d="M102 52c2 5 6 6 6 11a6 6 0 0 1-12 0c0-4 3-6 6-11z" fill="#FFD23F"/>' +
+      '<rect x="87" y="66" width="30" height="5" rx="2.5" fill="#8C5423"/>' +
+
+      /* -- window (smaller, on the right, raised; no frame, just glass + cross) -- */
+      windowWeatherMarks(kind || 'clear') +
+      '<rect x="175" y="12" width="2" height="50" fill="var(--text-muted)"/>' +
+      '<rect x="158" y="36" width="36" height="2" fill="var(--text-muted)"/>' +
     '</svg>';
   }
 
@@ -2168,6 +2325,12 @@
     var b = store('best');
     b.windows = windows;
     b.note = notes.join(' ');
+    if(!windows.length){
+      var empty = buildEmptyBestNote(hourly);
+      b.emptyTitle = empty.title;
+      b.emptySub = empty.sub;
+      b.fireplace = fireplaceSvg(empty.kind);
+    }
     b.state = windows.length ? 'ready' : 'empty';
     return windows.length ? windows[0].when : null;
   }
