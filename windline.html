@@ -249,7 +249,7 @@
   .alert-icon{flex:0 0 auto; display:flex}
   .alert-icon svg{width:22px; height:22px}
   .alert-titles{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:0}
-  .alert-title{font-size:1rem; font-weight:700; line-height:1.25}
+  .alert-title{font-size:1.125rem; font-weight:700; line-height:1.25}
   .alert-sub{font-size:1rem; font-weight:400; line-height:1.3; opacity:.92}
   .alert-toggle{flex:0 0 auto; display:flex}
   .alert-toggle svg{width:18px; height:18px}
@@ -262,12 +262,7 @@
   .alert-body dt{font-weight:700; margin-top:14px}
   .alert-body dt:first-child{margin-top:0}
   .alert-body dd{margin:2px 0 0; white-space:pre-wrap; overflow-wrap:anywhere}
-  .alert-chips{flex:0 0 auto; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px}
-  .alert-chip{display:inline-flex; align-items:center; gap:6px; padding:2px 9px; border-radius:99px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:1rem; font-weight:700; white-space:nowrap}
-  .alert-chip i{width:8px; height:8px; border-radius:50%; background:var(--chip)}
-  .alert-chip--warning{--chip:#C62828}
-  .alert-chip--watch{--chip:#E0A800}
-  .alert-chip--advisory{--chip:#2F6DB5}
+  .alert-more{flex:0 0 auto; display:inline-flex; align-items:center; padding:2px 10px; border-radius:99px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:0.875rem; font-weight:700; white-space:nowrap}
   .alert-body--list{padding:0}
   .alert-item{border-top:1px solid var(--table-border)}
   .alert-item:first-child{border-top:0}
@@ -289,10 +284,6 @@
     .alerts:not([hidden]) + #heroSection, .alerts:not([hidden]) + #bestSection{margin-top:24px}
     .alert-head{padding:9px 14px}
     .alert-body{padding:14px 16px 18px}
-    .alert-head{flex-wrap:wrap}
-    .alert-titles{flex:1 1 0}
-    .alert-chips{order:3; flex:1 0 calc(100% - 34px); justify-content:flex-start; margin-left:34px}
-    .alert-toggle{order:2}
     .alert-item-head{padding:8px 14px}
     .alert-item-body{padding:2px 16px 16px 38px}
   }
@@ -540,7 +531,7 @@
   .bw-val{font-size:1rem; font-weight:500; color:var(--text-muted)}
   .bw-row--top .bw-val{font-weight:600; color:var(--text)}
   .bw-head[hidden]{display:none}
-  .bw-empty{display:flex; align-items:center; justify-content:space-between; gap:32px; padding:24px; color:var(--text)}
+  .bw-empty{display:flex; align-items:flex-start; justify-content:space-between; gap:32px; padding:16px 24px; color:var(--text)}
   .bw-empty-title{display:block; font-size:1.125rem; font-weight:700; line-height:1.3; color:var(--text)}
   .bw-empty-sub{display:block; margin-top:4px; font-size:1rem; color:var(--text-muted)}
   .bw-empty svg{flex:0 0 auto; display:block}
@@ -1082,10 +1073,10 @@
           <div role="columnheader">Window</div>
           <div role="columnheader">Temp</div>
           <div role="columnheader">Max wind</div>
-          <div role="columnheader">Precip chance</div>
+          <div role="columnheader">Precip</div>
           <div role="columnheader">Humidity</div>
           <div role="columnheader">Ground</div>
-          <div role="columnheader">Air Quality Index</div>
+          <div role="columnheader">AQI</div>
         </div>
         <template x-for="n in ($store.best.state === 'loading' ? 3 : 0)" :key="n">
           <div class="bw-row skel-bwrow">
@@ -1226,13 +1217,13 @@
     </div>
     <div class="disclaimers-modal-body">
       <p>
-        Wind speed, gusts, and direction are sourced live from the National Weather Service
+        Wind speed, gusts, &amp; direction are sourced live from the National Weather Service
         (<a href="https://api.weather.gov" target="_blank" rel="noopener">api.weather.gov</a>), NOAA — coverage is limited to
-        U.S. locations and territories. Place lookup and basemap tiles via OpenStreetMap / Nominatim (© OpenStreetMap
+        U.S. locations &amp; territories. Place lookup &amp; basemap tiles via OpenStreetMap / Nominatim (© OpenStreetMap
         contributors). Radar imagery from NOAA NEXRAD via Iowa State University's Iowa Environmental Mesonet; forecast radar frames from NOAA's HRRR model. Air Quality
-        Index and Pollutants (PM2.5) are sourced live from AirNow (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>),
+        Index &amp; Pollutants (PM2.5) are sourced live from AirNow (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>),
         EPA — coverage depends on the nearest reporting monitor. Pollen isn't available from any free public U.S. source,
-        so tree/grass/weeds levels are a seasonal estimate based on location and time of year, not a measurement. Forecasts
+        so tree/grass/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement. Forecasts
         update hourly at the source; reload to refresh.
       </p>
     </div>
@@ -1320,6 +1311,9 @@
   function moonMarkup(cx, cy, r){
     return '<path d="M'+(cx+r*0.55)+' '+(cy-r)+'a'+r+' '+r+' 0 1 0 '+(r*0.75)+' '+(r*1.9)+'A'+(r*0.82)+' '+(r*0.82)+' 0 0 1 '+(cx+r*0.55)+' '+(cy-r)+'Z" fill="var(--cloud-2)"/>';
   }
+
+  // Display "and" as "&" in weather descriptions that come from the NWS forecast (e.g. "Showers And Thunderstorms").
+  function ampText(s){ return String(s || '').replace(/\s+and\s+/gi, ' & '); }
 
   function weatherIcon(shortForecast, isDaytime, size){
     size = size || 40;
@@ -1598,7 +1592,7 @@
   /* ---------- Friendly error copy ---------- */
   var COPY = {
     network:   'We can’t reach the weather services right now. Check your internet connection, then try again.',
-    generic:   'Something unexpected got in the way. Give it a moment and try again, or search for a different place.',
+    generic:   'Something unexpected got in the way. Give it a moment & try again, or search for a different place.',
     refresh:   'We couldn’t refresh just now. Pull down to try again in a moment.',
     lookup:    'We couldn’t look up that place right now. Give it a moment, then try searching again.',
     coverage:  'The National Weather Service doesn’t cover this spot. Try a nearby U.S. city or town instead.',
@@ -1626,7 +1620,7 @@
     var res = await fetch(url, {headers:{'Accept':'application/json'}});
     if(!res.ok) throw appError(COPY.lookup);
     var data = await res.json();
-    if(!data || !data.length) throw appError('We couldn’t find “' + query + '” in the U.S. Try a city and state, like “Denver, CO”, or a ZIP code.', true);
+    if(!data || !data.length) throw appError('We couldn’t find “' + query + '” in the U.S. Try a city & state, like “Denver, CO”, or a ZIP code.', true);
     return {
       lat: parseFloat(data[0].lat),
       lon: parseFloat(data[0].lon),
@@ -1767,7 +1761,7 @@
           '</div>' +
           '<div class="weather-now">' +
             '<div class="wicon">' + weatherIcon(current.shortForecast, current.isDaytime, 38) + '</div>' +
-            '<div class="wtext"><b>' + Math.round(current.temperature) + '°'+ (current.temperatureUnit||'F') + '</b> · ' + (current.shortForecast || '') +
+            '<div class="wtext"><b>' + Math.round(current.temperature) + '°'+ (current.temperatureUnit||'F') + '</b> · ' + ampText(current.shortForecast) +
               (outlook ? ' <span class="hazard-eta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' + outlook + '</span>' : '') + '</div>' +
           '</div>' +
           '<div class="ground-now">' +
@@ -2182,7 +2176,7 @@
         bandPillInk: band.pillInk,
         gust: extractGust(p.detailedForecast) || '',
         icon: weatherIcon(p.shortForecast, true, 28),
-        short: p.shortForecast || '',
+        short: ampText(p.shortForecast),
         temp: p.temperature + '°'
       };
     });
@@ -2786,7 +2780,7 @@
       };
     });
 
-    var notes = ['Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness, and air quality. Skips rain, icy/snowy ground and darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average and doesn’t affect the ranking.'];
+    var notes = ['Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average & doesn’t affect the ranking.'];
     if(!inputs.aqi) notes.push('We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.');
     if(!inputs.past) notes.push('We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.');
 
@@ -2950,19 +2944,10 @@
     head.appendChild(alertTitles(top));
 
     if(multi){
-      var chips = document.createElement('span');
-      chips.className = 'alert-chips';
-      ['warning', 'watch', 'advisory'].forEach(function(kind){
-        var n = list.filter(function(p){ return alertKind(p.event) === kind; }).length;
-        if(!n) return;
-        var chip = document.createElement('span');
-        chip.className = 'alert-chip alert-chip--' + kind;
-        var dot = document.createElement('i');
-        chip.appendChild(dot);
-        chip.appendChild(document.createTextNode(kindLabel(kind, n)));
-        chips.appendChild(chip);
-      });
-      head.appendChild(chips);
+      var more = document.createElement('span');
+      more.className = 'alert-more';
+      more.textContent = (list.length - 1) + ' more';
+      head.appendChild(more);
     }
     head.appendChild(alertToggle());
 
@@ -3109,7 +3094,7 @@
     var nowW = parseWind(hourly[0].windSpeed), nowBand = bandFor(nowW.high);
     announce('Forecast updated for ' + hdrLoc.textContent + '. Wind now ' + nowW.high + ' miles per hour' +
       (dirWord(hourly[0].windDirection) ? ' from the ' + dirWord(hourly[0].windDirection) : '') + ', ' + nowBand.label.toLowerCase() + '. ' +
-      (hourly[0].shortForecast || '') + ', ' + Math.round(hourly[0].temperature) + ' degrees. ' +
+      ampText(hourly[0].shortForecast) + ', ' + Math.round(hourly[0].temperature) + ' degrees. ' +
       (bestWhen ? 'Best window outside: ' + bestWhen + '.' : 'No good window outside in the next 48 hours.'));
     window.dispatchEvent(new Event('resize'));
   }
@@ -3159,7 +3144,7 @@
       setLoadErrorBusy(false);
     }catch(err){
       await new Promise(function(r){ setTimeout(r, Math.max(0, 900 - (Date.now() - t0))); });
-      var msg = errText(err) + ' We just tried again and it still didn’t work. Give it a moment, then use Refresh, or search for a different place.';
+      var msg = errText(err) + ' We just tried again & it still didn’t work. Give it a moment, then use Refresh, or search for a different place.';
       loadErrorText.textContent = msg;
       setLoadErrorBusy(false);
       announce(msg);
