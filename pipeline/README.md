@@ -12,9 +12,9 @@ Running `python3 fetch_mrms.py` does the whole pipeline in one go:
 1. Keeps a rolling ~1 hour window of **observed** MRMS composite
    reflectivity frames (only fetching genuinely new ones each run, and
    pruning anything that's aged out).
-2. Fetches the latest **HRRR forecast** run and appends ~3 hours of
+2. Fetches the latest **HRRR forecast** run and appends ~6 hours of
    **forecast** frames after the observed ones — sub-hourly (15 min) steps
-   for the first hour, then hourly for hours 2–3.
+   for the first hour, then hourly for hours 2–6.
 3. Writes one combined `futurecast/manifest.json` covering both, each
    frame tagged `"kind": "observed"` or `"kind": "forecast"`.
 

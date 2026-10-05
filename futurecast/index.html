@@ -2,13 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Futurecast — Check the Wind</title>
+<title>Weather Radar — Check the Wind</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
+  /* Same token set + light/dark split as windline.html, so this page reads
+     as the same product rather than a bolted-on dark-only viewer. */
   :root{
-    --bg:#0E1620; --surface:#16212C; --text:#E8EFF3; --text-muted:#A9BCCB;
-    --accent:#FF9A5A; --border:#2A3846;
+    --bg:#FAFAFA; --surface:#FFFFFF; --surface-2:#E7EEF2;
+    --text:#333333; --text-muted:#54697A;
+    --accent:#E06A2C; --accent-ink:#FFFFFF;
+    --border:#7E8F98; --hover-bg:#BFCED8; --focus-ring:#5E7280;
+    --shadow: 0 1px 2px rgba(16,28,38,.06), 0 8px 24px -12px rgba(16,28,38,.18);
+    --observed:#2060BE; --forecast:#E06A2C;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0E1620; --surface:#16212C; --surface-2:#1D2A37;
+      --text:#E8EFF3; --text-muted:#A9BCCB;
+      --accent:#FF9A5A; --accent-ink:#1A1006;
+      --border:#5A7284; --hover-bg:#324759; --focus-ring:#8FA3B3;
+      --observed:#5CB4FF; --forecast:#FF9A5A;
+    }
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -19,103 +38,302 @@
   }
   header{
     padding:12px 16px; display:flex; align-items:center; justify-content:space-between;
-    border-bottom:1px solid var(--border); flex:0 0 auto;
+    border-bottom:1px solid var(--border); flex:0 0 auto; background:var(--surface);
   }
-  header h1{font-size:1.125rem; margin:0}
-  header a{color:var(--text-muted); text-decoration:none; font-size:0.875rem}
-  header a:hover{color:var(--text)}
-  #map{flex:1 1 auto; min-height:0; background:#0a0f16}
+  header h1{font-size:1.125rem; margin:0; font-weight:700; letter-spacing:.2px}
+  /* Matches windline.html's own .radar-modal-close convention — this page
+     is meant to stand in for that modal, so its own close control should
+     look like the one it's replacing. */
+  .close-btn{
+    width:44px; height:44px; flex-shrink:0; padding:0; border-radius:9px;
+    border:1px solid var(--border); background:var(--surface-2); color:var(--text);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .close-btn:hover{background:var(--hover-bg)}
+  .close-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
+  .close-btn svg{width:18px; height:18px}
+  /* #map and the floating controls card share this wrapper so the card can
+     be positioned relative to the map area alone — the actual page-bottom
+     attribution strip is a separate flex sibling below both, in normal
+     document flow, not a floating overlay on top of the radar. */
+  .map-wrap{position:relative; flex:1 1 auto; min-height:0}
+  #map{position:absolute; inset:0; background:#0a0f16}
 
-  .controls{
-    flex:0 0 auto; padding:10px 16px; border-top:1px solid var(--border);
-    display:flex; align-items:center; gap:12px;
+  /* Leaflet's setOpacity() just sets this inline style — the actual
+     dissolve between forecast frames during playback comes from this
+     transition, not from any JS animation loop. */
+  .radar-frame-img{transition:opacity 260ms linear}
+
+  .leaflet-bar a{background:var(--surface)!important; color:var(--text)!important; border-color:var(--border)!important}
+
+  /* ---------- Precipitation legend ---------- */
+  /* Same floating-card language as the controls card below, just docked to
+     the opposite corner. The gradient's stops are the exact 15 colors
+     render.py's COLOR_TABLE maps dBZ to (reversed: extreme/75dBZ at top
+     down to light/5dBZ at bottom) — a real key for this radar's actual
+     color scale, not a generic warm-to-cool gradient. */
+  .precip-legend{
+    position:absolute; top:16px; right:16px; z-index:500; width:max-content;
+    background:color-mix(in srgb, var(--surface) 82%, transparent);
+    backdrop-filter:blur(20px) saturate(140%);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);
+    border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow);
+    padding:14px 16px 16px;
   }
+  .precip-legend h2{
+    margin:0 0 10px; font-size:1rem; font-weight:700; letter-spacing:.01em; color:var(--text);
+    white-space:nowrap; /* the widest line in the card — everything else hugs to its width */
+  }
+  .precip-legend-body{display:flex; gap:12px; height:9.5rem}
+  .precip-gradient{
+    flex:0 0 auto; width:10px; border-radius:5px; border:1px solid var(--border);
+    background:linear-gradient(to bottom,
+      #FFFFFF, #C000C0, #FF00FF, #A00000, #D00000, #FF0000, #FF9000, #E8C000,
+      #FFFF00, #009000, #00C800, #00FF00, #0050E0, #0090F0, #63C8FF);
+  }
+  .precip-labels{position:relative; flex:0 0 auto; font-size:1rem; color:var(--text-muted)}
+  .precip-labels span{position:absolute; left:0; transform:translateY(-50%); white-space:nowrap}
+
+  .map-attribution{
+    flex:0 0 auto; text-align:center; font-size:1rem; color:var(--text-muted);
+    background:var(--surface); border-top:1px solid var(--border);
+    padding:6px 16px max(6px, env(safe-area-inset-bottom, 0px));
+  }
+  .map-attribution a{color:var(--text-muted)}
+
+  /* ---------- Floating controls card ---------- */
+  /* Structured like Apple Weather's forecast bar (floating card, play
+     button, centered title, timeline with hour ticks) but built from Check
+     the Wind's own button/card/shadow tokens instead of copying its look. */
+  .controls{
+    position:absolute; left:16px; right:16px; bottom:16px;
+    z-index:500;
+  }
+  .controls[hidden]{display:none}
+  .controls-card{
+    background:color-mix(in srgb, var(--surface) 82%, transparent);
+    backdrop-filter:blur(20px) saturate(140%);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);
+    border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow);
+    padding:12px 14px 14px;
+  }
+  .controls-header{display:flex; align-items:center; gap:12px}
   .play-btn{
-    flex:0 0 auto; width:36px; height:36px; border-radius:50%; border:1px solid var(--border);
-    background:var(--surface); color:var(--text); cursor:pointer;
+    flex:0 0 auto; width:44px; height:44px; border-radius:10px; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text); cursor:pointer;
     display:flex; align-items:center; justify-content:center; padding:0;
   }
-  .play-btn:hover{background:var(--hover, #1D2A37)}
-  .play-btn svg{width:16px; height:16px}
-  .timeline{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px}
-  .timeline-track{position:relative; display:flex; align-items:center; height:20px}
+  .play-btn:hover{background:var(--hover-bg)}
+  .play-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
+  .play-btn svg{width:18px; height:18px}
+  /* Browsers don't apply the default [hidden]{display:none} UA rule to
+     SVG elements the way they do for HTML ones — without this, both the
+     play and pause icons render at once instead of toggling. */
+  .play-btn svg[hidden]{display:none}
+  .controls-title{flex:0 1 auto; min-width:0; text-align:left}
+  .controls-title-main{font-size:1rem; font-weight:700; letter-spacing:.01em}
+  .controls-title-main.observed{color:var(--observed)}
+  .controls-title-main.forecast{color:var(--forecast)}
+  .controls-title-sub{
+    margin-top:1px; font-size:1rem; color:var(--text-muted);
+    font-family:'Nunito',monospace; font-variant-numeric:tabular-nums;
+  }
+  /* "You are here" marker for the saved/last-used location, shared with
+     windline.html via the same localStorage key. Leaflet's divIcon ships
+     its own default white box/border — reset that so only this dot shows. */
+  .location-dot-wrap{background:none; border:0}
+  .location-dot{
+    width:14px; height:14px; border-radius:50%;
+    background:var(--accent); border:2px solid #fff;
+    box-shadow:0 0 0 1px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.4);
+  }
+
+  .timeline{margin-top:12px}
+  .timeline-track{position:relative; display:flex; align-items:center; height:28px}
   .timeline input[type="range"]{
     -webkit-appearance:none; appearance:none;
-    width:100%; margin:0; height:4px; border-radius:2px; cursor:pointer;
-    background:var(--border); /* overridden inline once frames load, to two-tone observed/forecast */
+    width:100%; margin:0; height:16px; border-radius:8px; cursor:pointer;
+    box-sizing:border-box; border:1.5px solid var(--border); background:transparent;
+    /* filled portion (0 to current position) painted inline per-frame, see
+       setFillInstant/animateFillTo — empty track shows just this outline */
   }
+  /* No draggable knob — the colored/empty boundary along the pill itself
+     is the only position indicator, per the reference design. The thumb
+     still exists (native drag/keyboard interaction needs it) but is fully
+     transparent, sized to match the track so it doesn't shrink the grab
+     target. */
   .timeline input[type="range"]::-webkit-slider-thumb{
-    -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
-    background:#fff; border:2px solid var(--bg); box-shadow:0 0 0 1px var(--border); cursor:pointer;
+    -webkit-appearance:none; width:16px; height:16px; border-radius:8px;
+    background:transparent; border:0; cursor:pointer;
   }
   .timeline input[type="range"]::-moz-range-thumb{
-    width:14px; height:14px; border-radius:50%;
-    background:#fff; border:2px solid var(--bg); box-shadow:0 0 0 1px var(--border); cursor:pointer;
+    width:16px; height:16px; border-radius:8px;
+    background:transparent; border:0; cursor:pointer;
   }
   .timeline-boundary{
-    position:absolute; top:0; bottom:0; width:2px; background:#fff;
+    position:absolute; top:0; bottom:0; width:2px; background:var(--text);
     pointer-events:none; opacity:.9; display:none;
   }
-  .timeline-boundary::after{
-    content:'now'; position:absolute; top:-2px; left:4px; font-size:0.6875rem;
-    color:var(--text-muted); white-space:nowrap; text-transform:uppercase; letter-spacing:.04em;
+  .timeline-ticks{position:relative; height:15px; margin-top:3px}
+  .timeline-tick{
+    position:absolute; top:0; transform:translateX(-50%);
+    font-size:1rem; color:var(--text-muted); white-space:nowrap;
+    font-family:'Nunito',monospace; font-variant-numeric:tabular-nums;
   }
-  .timeline-labels{
-    display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted);
+  .timeline-tick::before{
+    content:''; position:absolute; left:50%; top:-5px; width:1px; height:3px;
+    background:var(--border); transform:translateX(-50%);
   }
-  .frame-kind{font-weight:600}
-  .frame-kind.observed{color:#7fd4ff}
-  .frame-kind.forecast{color:#ffb454}
+  .timeline-tick.now{color:var(--text); font-weight:700}
+  .timeline-tick.now::before{background:var(--text); height:5px; top:-7px}
 
-  .status-bar{
-    padding:8px 16px; font-size:0.875rem; color:var(--text-muted);
-    border-top:1px solid var(--border); flex:0 0 auto;
+  /* Floating instead of a bar pinned to the page bottom — sits opposite
+     the precipitation legend, sized to its own content so it never
+     collides with it. */
+  .info-banner{
+    /* left starts past Leaflet's zoom control (~34px wide, at left:10px)
+       rather than the usual 16px edge margin, so it doesn't sit on top of it */
+    position:absolute; top:16px; left:60px; z-index:600;
+    max-width:min(21rem, calc(100% - 76px - 9.5rem));
+    display:flex; align-items:center; gap:10px;
+    background:color-mix(in srgb, var(--surface) 82%, transparent);
+    backdrop-filter:blur(20px) saturate(140%);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);
+    border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow);
+    padding:10px 10px 10px 14px;
   }
-  .status-bar.err{color:#ff8a8a}
-  /* Leaflet attribution/zoom controls, restyled to fit the dark shell */
-  .leaflet-control-attribution{background:rgba(22,33,44,.85)!important; color:var(--text-muted)!important}
-  .leaflet-control-attribution a{color:var(--text-muted)!important}
-  .leaflet-bar a{background:var(--surface)!important; color:var(--text)!important; border-color:var(--border)!important}
+  .info-banner[hidden]{display:none}
+  .info-banner-text{flex:1 1 auto; font-size:1rem; line-height:1.35; color:var(--text)}
+  /* windline.html's own error state (.load-error-title) doesn't use an
+     alarm color either — just var(--text) at full contrast against the
+     muted default, relying on weight/contrast rather than red. */
+  .info-banner.err .info-banner-text{font-weight:600}
+  .info-banner-actions{flex:0 0 auto; display:flex; gap:6px}
+  .info-banner-btn{
+    width:32px; height:32px; padding:0; border-radius:8px; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .info-banner-btn:hover{background:var(--hover-bg)}
+  .info-banner-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
+  .info-banner-btn svg{width:16px; height:16px}
+  .info-banner-btn[hidden]{display:none}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Futurecast</h1>
-  <a href="../windline.html">&larr; Back to Check the Wind</a>
+  <h1>Weather Radar</h1>
+  <button type="button" class="close-btn" id="closeBtn" aria-label="Close radar view">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
 </header>
 
-<div id="map" role="application" aria-label="Radar map"></div>
+<div class="map-wrap">
+  <div id="map" role="application" aria-label="Radar map"></div>
 
-<div class="controls" id="controls" hidden>
-  <button class="play-btn" id="playBtn" type="button" aria-label="Play">
-    <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-    <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-  </button>
-  <div class="timeline">
-    <div class="timeline-track">
-      <input type="range" id="scrubber" min="0" max="0" step="1" value="0" aria-label="Frame timeline">
-      <div class="timeline-boundary" id="timelineBoundary"></div>
+  <div class="info-banner" id="infoBanner" hidden>
+    <span class="info-banner-text" id="infoBannerText"></span>
+    <div class="info-banner-actions">
+      <button type="button" class="info-banner-btn" id="infoBannerRefresh" aria-label="Refresh page" hidden>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4a8 8 0 1 0 7.75 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"/></svg>
+      </button>
+      <button type="button" class="info-banner-btn" id="infoBannerClose" aria-label="Dismiss">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
     </div>
-    <div class="timeline-labels">
-      <span id="frameTime">—</span>
-      <span class="frame-kind observed" id="frameKind">Observed</span>
+  </div>
+
+  <div class="precip-legend">
+    <h2>Precipitation</h2>
+    <div class="precip-legend-body">
+      <div class="precip-gradient" aria-hidden="true"></div>
+      <div class="precip-labels">
+        <span style="top:12.5%">Extreme</span>
+        <span style="top:37.5%">Heavy</span>
+        <span style="top:62.5%">Moderate</span>
+        <span style="top:87.5%">Light</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls" id="controls" hidden>
+    <div class="controls-card">
+      <div class="controls-header">
+        <button class="play-btn" id="stepBackBtn" type="button" aria-label="Previous frame">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+        </button>
+        <button class="play-btn" id="playBtn" type="button" aria-label="Play">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <button class="play-btn" id="stepFwdBtn" type="button" aria-label="Next frame">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6v12z"/></svg>
+        </button>
+        <div class="controls-title">
+          <div class="controls-title-main observed" id="frameKind">Observed</div>
+          <div class="controls-title-sub" id="frameTime">—</div>
+        </div>
+        <button class="play-btn" id="geoBtn" type="button" aria-label="Use my location" title="Use my location" style="margin-left:auto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z"/>
+            <circle cx="12" cy="9.5" r="2.5"/>
+          </svg>
+        </button>
+      </div>
+      <div class="timeline">
+        <div class="timeline-track">
+          <input type="range" id="scrubber" min="0" max="0" step="1" value="0" aria-label="Frame timeline">
+          <div class="timeline-boundary" id="timelineBoundary"></div>
+        </div>
+        <div class="timeline-ticks" id="timelineTicks"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="status-bar" id="status">Loading radar…</div>
+<div class="map-attribution">
+  Radar: NOAA NEXRAD via <a href="https://mesonet.agron.iastate.edu">Iowa Environmental Mesonet</a>; forecast: NOAA HRRR |
+  <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> |
+  &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 (function(){
   "use strict";
 
-  var statusEl = document.getElementById('status');
+  var infoBanner = document.getElementById('infoBanner');
+  var infoBannerText = document.getElementById('infoBannerText');
+  var infoBannerRefresh = document.getElementById('infoBannerRefresh');
+  var infoBannerClose = document.getElementById('infoBannerClose');
+
   function setStatus(text, isErr){
-    statusEl.textContent = text;
-    statusEl.classList.toggle('err', !!isErr);
+    infoBanner.hidden = false;
+    infoBannerText.textContent = text;
+    infoBanner.classList.toggle('err', !!isErr);
+    infoBannerRefresh.hidden = !isErr; // only an error is something "refresh" can fix
   }
+  function hideStatus(){
+    infoBanner.hidden = true;
+  }
+  infoBannerRefresh.addEventListener('click', function(){ location.reload(); });
+  infoBannerClose.addEventListener('click', hideStatus);
+
+  document.getElementById('closeBtn').addEventListener('click', function(){
+    // Embedded in windline.html's radar modal (the common case): its
+    // Alpine store can't be reached directly across the iframe boundary,
+    // so ask it to close via postMessage instead.
+    if(window.self !== window.top){
+      window.parent.postMessage({type: 'ctw:closeRadarModal'}, window.location.origin);
+      return;
+    }
+    // Visited standalone (direct link, new tab, etc.) — behave like a
+    // normal close: go back if there's somewhere to go back to, otherwise
+    // land on the main site rather than a dead end.
+    if(window.history.length > 1){ window.history.back(); }
+    else{ window.location.href = '../windline.html'; }
+  });
 
   // Center on the same "last used location" windline.html saves, so this
   // page opens already looking at the right part of the country. Falls
@@ -135,23 +353,92 @@
   }
 
   var saved = getSavedLocation();
-  var map = L.map('map', {zoomControl: true}).setView(
+  // Attribution renders in the page's own footer strip (below the controls
+  // card, in normal document flow) instead of Leaflet's default floating
+  // corner control, so it's disabled here rather than just repositioned.
+  var map = L.map('map', {zoomControl: true, attributionControl: false}).setView(
     saved ? [saved.lat, saved.lon] : DEFAULT_CENTER,
     saved ? 9 : DEFAULT_ZOOM
   );
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 19
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, referrerPolicy: 'strict-origin-when-cross-origin'
   }).addTo(map);
 
+  // windline.html's own read of this key requires a truthy `label` or it
+  // treats the saved location as invalid — so this always writes one too
+  // (via the same free Nominatim reverse-geocode windline.html uses),
+  // rather than risk breaking that page's "last used location" on return.
+  function saveLocation(lat, lon, label){
+    try{ localStorage.setItem(LOCATION_KEY, JSON.stringify({lat: lat, lon: lon, label: label})); }catch(err){}
+  }
+
+  function reverseGeocode(lat, lon){
+    var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&zoom=10';
+    return fetch(url, {headers: {'Accept': 'application/json'}})
+      .then(function(res){ if(!res.ok) throw new Error('reverse lookup failed'); return res.json(); })
+      .then(function(data){
+        var a = data.address || {};
+        var city = a.city || a.town || a.village || a.hamlet || a.county || '';
+        var state = a.state || '';
+        return [city, state].filter(Boolean).join(', ');
+      });
+  }
+
+  var locationMarker = null;
+  function setLocationMarker(lat, lon){
+    if(locationMarker){ map.removeLayer(locationMarker); }
+    locationMarker = L.marker([lat, lon], {
+      icon: L.divIcon({className: 'location-dot-wrap', html: '<div class="location-dot"></div>', iconSize: [16, 16], iconAnchor: [8, 8]}),
+      keyboard: false,
+      interactive: false
+    }).addTo(map);
+  }
+
+  if(saved){ setLocationMarker(saved.lat, saved.lon); }
+
+  document.getElementById('geoBtn').addEventListener('click', function(){
+    if(!navigator.geolocation){
+      setStatus('Location isn’t available in this browser.', true);
+      return;
+    }
+    setStatus('Finding your location…');
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var lat = pos.coords.latitude, lon = pos.coords.longitude;
+      map.setView([lat, lon], 9);
+      setLocationMarker(lat, lon);
+      hideStatus();
+      reverseGeocode(lat, lon)
+        .then(function(label){ saveLocation(lat, lon, label || 'My Location'); })
+        .catch(function(){ saveLocation(lat, lon, 'My Location'); });
+    }, function(err){
+      var code = err && err.code;
+      var msg = code === 1 ? 'Location access was denied.'
+        : code === 2 ? 'Your location is unavailable right now.'
+        : 'Finding your location timed out.';
+      setStatus(msg, true);
+    });
+  });
+
   /* ---------- Animation loop ---------- */
-  var FRAME_MS = 200; // time each frame stays on screen while playing
+  var FRAME_MS = 450; // per-frame dwell during observed playback (frames are 5 min apart, like the main page's loop)
+
+  // Forecast frames are spaced 15-60+ min apart, vs. ~2 min for observed —
+  // advancing through them at the same flat FRAME_MS made the "future"
+  // portion blow by far faster than the time it actually represents.
+  // Forecast steps instead dwell for a duration scaled to how much
+  // simulated time they cover (clamped so a single step can't vanish or
+  // stall the loop), and crossfade into the next frame rather than
+  // popping, so a big jump reads as a dissolve instead of a jump cut.
+  var MS_PER_SIM_MINUTE = 90;
+  var MIN_FORECAST_STEP_MS = 400;
+  var MAX_FORECAST_STEP_MS = 2200;
 
   var frames = [];
-  var frameLayer = null;
+  var frameLayers = [null, null]; // two overlays, alternated so the incoming one can fade in
+  var activeLayerIdx = 0;
   var index = 0;
-  var playTimer = null;
+  var playTimer = null; // a setTimeout handle — steps are variable-length, so not setInterval
 
   var controlsEl = document.getElementById('controls');
   var playBtn = document.getElementById('playBtn');
@@ -159,6 +446,7 @@
   var pauseIcon = document.getElementById('pauseIcon');
   var scrubber = document.getElementById('scrubber');
   var boundaryEl = document.getElementById('timelineBoundary');
+  var ticksEl = document.getElementById('timelineTicks');
   var frameTimeEl = document.getElementById('frameTime');
   var frameKindEl = document.getElementById('frameKind');
 
@@ -166,42 +454,227 @@
   // -1 if there's no observed data at all (shouldn't normally happen).
   var boundaryIndex = -1;
 
+  // The scrubber's domain is real elapsed minutes (frames[0].time = 0),
+  // not frame count — observed frames land every ~2 min while forecast
+  // frames are spaced 15-60+ min apart, so an index-based track would give
+  // ~60 min of observed history the same width as ~6 hours of forecast.
+  // Sizing by time instead means the past/future split actually reflects
+  // how much real time each side covers.
+  var startMs = null;
+
+  function minutesSince(iso){
+    return (new Date(iso).getTime() - startMs) / 60000;
+  }
+
+  function nearestFrameIndexForMinutes(mins){
+    var best = 0, bestDiff = Infinity;
+    for(var i = 0; i < frames.length; i++){
+      var diff = Math.abs(minutesSince(frames[i].time) - mins);
+      if(diff < bestDiff){ bestDiff = diff; best = i; }
+    }
+    return best;
+  }
+
   function fmtTime(iso){
     try{
       return new Date(iso).toLocaleTimeString([], {hour:'numeric', minute:'2-digit', timeZoneName:'short'});
     }catch(err){ return iso; }
   }
 
+  function fmtClockTick(d){
+    try{
+      // On-the-hour ticks stay terse ("1 PM"); half-hour ticks need the
+      // minute so they don't read as the same label twice ("1 PM" x2).
+      var opts = d.getMinutes() === 0 ? {hour:'numeric'} : {hour:'numeric', minute:'2-digit'};
+      return d.toLocaleTimeString([], opts);
+    }catch(err){ return ''; }
+  }
+
+  function updateChrome(frame){
+    scrubber.value = String(minutesSince(frame.time));
+    frameTimeEl.textContent = fmtTime(frame.time);
+    var isForecast = frame.kind === 'forecast';
+    frameKindEl.textContent = isForecast ? 'Forecast' : 'Observed';
+    frameKindEl.className = 'controls-title-main ' + (isForecast ? 'forecast' : 'observed');
+  }
+
+  function pctForFrame(frame){
+    if(frames.length < 2) return 0;
+    var totalMinutes = minutesSince(frames[frames.length - 1].time) || 1;
+    return (minutesSince(frame.time) / totalMinutes) * 100;
+  }
+
+  function currentBoundaryPct(){
+    if(frames.length < 2) return 100;
+    var totalMinutes = minutesSince(frames[frames.length - 1].time) || 1;
+    return boundaryIndex < 0 ? 100 : (minutesSince(frames[boundaryIndex].time) / totalMinutes) * 100;
+  }
+
+  // The observed (blue) segment always covers 0%-to-"Now" once reached —
+  // it never gets overwritten — and a separate orange segment grows from
+  // "Now" onward only once the given position actually passes it into
+  // forecast territory. Anything beyond stays empty (just the outline).
+  function computeFillBackground(currentPct, boundaryPct){
+    var bluePct = Math.min(currentPct, boundaryPct);
+    var orangePct = currentPct > boundaryPct ? currentPct : bluePct;
+    return 'linear-gradient(to right,' +
+      ' var(--observed) 0%, var(--observed) ' + bluePct + '%,' +
+      ' var(--forecast) ' + bluePct + '%, var(--forecast) ' + orangePct + '%,' +
+      ' transparent ' + orangePct + '%, transparent 100%)';
+  }
+
+  var lastFillPct = 0;
+  var fillAnimHandle = null;
+
+  function stopFillAnim(){
+    if(fillAnimHandle){ cancelAnimationFrame(fillAnimHandle); fillAnimHandle = null; }
+  }
+
+  // Used by scrubbing/keyboard/initial load — position should follow the
+  // pointer/key immediately, not ease into place.
+  function setFillInstant(pct){
+    stopFillAnim();
+    scrubber.style.background = computeFillBackground(pct, currentBoundaryPct());
+    lastFillPct = pct;
+  }
+
+  // Used by the play loop: eases the fill from wherever it last stopped up
+  // to `pct` over `durationMs` (the same duration the step itself dwells
+  // for — see stepDelayFor) instead of jumping straight there, so advancing
+  // through a big forecast time-gap reads as continuous motion rather than
+  // a series of snaps.
+  function animateFillTo(pct, durationMs){
+    stopFillAnim();
+    var fromPct = lastFillPct;
+    var boundaryPct = currentBoundaryPct();
+    if(!(durationMs > 0) || fromPct === pct){
+      scrubber.style.background = computeFillBackground(pct, boundaryPct);
+      lastFillPct = pct;
+      return;
+    }
+    var start = performance.now();
+    function tick(now){
+      var t = Math.min(1, (now - start) / durationMs);
+      var current = fromPct + (pct - fromPct) * t;
+      scrubber.style.background = computeFillBackground(current, boundaryPct);
+      // Keep lastFillPct in sync on every tick, not just on natural
+      // completion — steps can fire back-to-back close enough together
+      // (observed steps dwell for exactly the same duration they animate
+      // over) that this animation gets cancelled by the next one before
+      // reaching t=1. Without updating it here, the next animation would
+      // start from a stale earlier position instead of wherever the bar
+      // actually is, causing a visible backward jump.
+      lastFillPct = current;
+      if(t < 1){
+        fillAnimHandle = requestAnimationFrame(tick);
+      }else{
+        fillAnimHandle = null;
+      }
+    }
+    fillAnimHandle = requestAnimationFrame(tick);
+  }
+
+  // `fade`: true crossfades from whichever overlay is currently on top into
+  // the other (which is swapped to the new frame's image first); false
+  // swaps the active overlay's image directly. Scrubbing/keyboard/initial
+  // load use the instant path — a fade would feel laggy while dragging.
+  // Observed frames are IEM NEXRAD tiles — the same source and offsets as the main page's map — one
+  // tile layer per frame, created on first use and then just faded in/out (so after the first
+  // loop, playback doesn't wait on the network). Forecast frames are the pipeline's HRRR PNGs.
+  var observedLayers = {};
+  var shownObserved = null;
+
+  function observedLayerFor(url){
+    if(!observedLayers[url]){
+      observedLayers[url] = L.tileLayer(url, {opacity: 0, className: 'radar-frame-img', maxNativeZoom: 12, maxZoom: 19}).addTo(map);
+    }
+    return observedLayers[url];
+  }
+
+  function hideForecastOverlays(){
+    if(frameLayers[0]){ frameLayers[0].setOpacity(0); frameLayers[1].setOpacity(0); }
+  }
+
+  function renderFrameImage(frame, fade){
+    if(frame.tileUrl){
+      var tl = observedLayerFor(frame.tileUrl);
+      hideForecastOverlays();
+      if(shownObserved && shownObserved !== tl){ shownObserved.setOpacity(0); }
+      tl.setOpacity(0.75);
+      shownObserved = tl;
+      return;
+    }
+    if(shownObserved){ shownObserved.setOpacity(0); shownObserved = null; }
+    if(!frameLayers[0]){
+      frameLayers[0] = L.imageOverlay(frame.url, frame.bounds, {opacity: 0.75, className: 'radar-frame-img'}).addTo(map);
+      frameLayers[1] = L.imageOverlay(frame.url, frame.bounds, {opacity: 0, className: 'radar-frame-img'}).addTo(map);
+      return;
+    }
+    // Capture both layers as locals *before* activeLayerIdx flips below —
+    // reading frameLayers[activeLayerIdx] from inside the deferred rAF
+    // callback would resolve to the wrong (already-flipped) layer, making
+    // "outgoing" alias "incoming" and silently cancel the fade.
+    var outgoing = frameLayers[activeLayerIdx];
+    var incoming = frameLayers[1 - activeLayerIdx];
+    if(!fade){
+      outgoing.setUrl(frame.url);
+      outgoing.setOpacity(0.75);
+      incoming.setOpacity(0);
+      return;
+    }
+    incoming.setUrl(frame.url);
+    // Defer the opacity flip a tick so the browser registers the new src
+    // before the transition starts — otherwise it can coalesce the src
+    // swap and the opacity change into one paint and skip the fade.
+    requestAnimationFrame(function(){
+      incoming.setOpacity(0.75);
+      outgoing.setOpacity(0);
+    });
+    activeLayerIdx = 1 - activeLayerIdx;
+  }
+
   function showFrameAt(i){
     if(!frames.length) return;
     index = Math.max(0, Math.min(frames.length - 1, i));
     var frame = frames[index];
-
-    if(frameLayer){
-      frameLayer.setUrl(frame.url);
-    }else{
-      frameLayer = L.imageOverlay(frame.url, frame.bounds, {opacity: 0.75}).addTo(map);
-    }
-
-    scrubber.value = String(index);
-    frameTimeEl.textContent = fmtTime(frame.time) + (index === boundaryIndex ? ' (now)' : '');
-    frameKindEl.textContent = frame.kind === 'forecast' ? 'Forecast' : 'Observed';
-    frameKindEl.className = 'frame-kind ' + (frame.kind === 'forecast' ? 'forecast' : 'observed');
+    updateChrome(frame);
+    setFillInstant(pctForFrame(frame));
+    renderFrameImage(frame, false);
   }
 
-  /* Two-tone the track (observed vs forecast) and drop a "now" marker
-     exactly at the boundary, so it's obvious at a glance where real
-     radar stops and the forecast starts — not just from the text label. */
+  // Used only by the play loop (see setPlaying) — forecast frames fade in
+  // and dwell proportionally to the simulated time they cover, and the
+  // fill bar eases toward the new position over that same `durationMs`
+  // instead of jumping there.
+  function playAdvanceTo(i, durationMs){
+    index = Math.max(0, Math.min(frames.length - 1, i));
+    var frame = frames[index];
+    updateChrome(frame);
+    animateFillTo(pctForFrame(frame), durationMs);
+    renderFrameImage(frame, frame.kind === 'forecast');
+  }
+
+  function stepDelayFor(fromIndex, toIndex){
+    var toFrame = frames[toIndex];
+    if(toFrame.kind !== 'forecast') return FRAME_MS;
+    var fromT = new Date(frames[fromIndex].time).getTime();
+    var toT = new Date(toFrame.time).getTime();
+    var simMinutes = Math.abs(toT - fromT) / 60000;
+    return Math.max(MIN_FORECAST_STEP_MS, Math.min(MAX_FORECAST_STEP_MS, simMinutes * MS_PER_SIM_MINUTE));
+  }
+
+  /* Drop a "now" marker exactly at the boundary, so it's obvious at a
+     glance where real radar stops and the forecast starts, independent of
+     wherever the fill happens to be — the fill itself now tracks the
+     current scrub position (see setFillInstant/animateFillTo), not this
+     boundary. */
   function layoutTimeline(){
     if(frames.length < 2){
       boundaryEl.style.display = 'none';
       return;
     }
-    var pct = boundaryIndex < 0 ? 100 : (boundaryIndex / (frames.length - 1)) * 100;
-    scrubber.style.background =
-      'linear-gradient(to right,' +
-      ' #7fd4ff 0%, #7fd4ff ' + pct + '%,' +
-      ' #ffb454 ' + pct + '%, #ffb454 100%)';
+    var totalMinutes = minutesSince(frames[frames.length - 1].time) || 1;
+    var pct = boundaryIndex < 0 ? 100 : (minutesSince(frames[boundaryIndex].time) / totalMinutes) * 100;
     if(boundaryIndex >= 0 && boundaryIndex < frames.length - 1){
       boundaryEl.style.left = 'calc(' + pct + '% - 1px)';
       boundaryEl.style.display = 'block';
@@ -210,29 +683,156 @@
     }
   }
 
-  function stepForward(){
+  var TICK_STEP_MS = 30 * 60 * 1000; // on the hour and the half-hour
+
+  /* Clock-aligned ticks generated directly from calendar time rather than
+     snapped to whichever frame happens to land nearest each mark, so they
+     come out genuinely evenly spread across the track regardless of how
+     frames happen to be sampled (dense ~2min observed vs. hourly forecast
+     steps). Half-hour marks only appear on the observed (past) side —
+     forecast frames only ever land on the hour, so a ":30" tick past "Now"
+     wouldn't correspond to an actual forecast step, just clutter. A
+     dedicated "Now" tick is added at the exact boundary frame's own time
+     so it lines up with the vertical marker line. */
+  function buildClockTicks(){
+    var ticks = [];
+    if(frames.length < 2) return ticks;
+    var startTime = startMs;
+    var endTime = new Date(frames[frames.length - 1].time).getTime();
+    var boundaryTime = boundaryIndex >= 0 ? new Date(frames[boundaryIndex].time).getTime() : null;
+
+    var first = new Date(startTime);
+    first.setSeconds(0, 0);
+    var mins = first.getMinutes();
+    var toNextStep = mins % 30 === 0 ? 0 : (30 - (mins % 30));
+    var t = first.getTime() + toNextStep * 60000;
+
+    for(; t <= endTime; t += TICK_STEP_MS){
+      var d = new Date(t);
+      var isFuture = boundaryTime !== null && t > boundaryTime;
+      if(isFuture && d.getMinutes() !== 0) continue;
+      ticks.push({date: d});
+    }
+    if(boundaryIndex >= 0){
+      ticks.push({date: new Date(frames[boundaryIndex].time), isNow: true});
+    }
+    return ticks;
+  }
+
+  // Minimum gap (as % of the track) between adjacent tick labels before one
+  // gets dropped — otherwise "Now" and the next hour crossing can land only
+  // a few frames apart (forecast steps are sparse) and their text overlaps.
+  var MIN_TICK_GAP_PCT = 9;
+
+  function renderTicks(){
+    ticksEl.innerHTML = '';
+    var totalMinutes = minutesSince(frames[frames.length - 1].time) || 1;
+    var ticks = buildClockTicks().map(function(t){
+      var tickMinutes = (t.date.getTime() - startMs) / 60000;
+      return {isNow: !!t.isNow, date: t.date, pct: (tickMinutes / totalMinutes) * 100};
+    });
+    // The "Now" tick is appended out of chronological order in
+    // buildClockTicks() — sort by position so the adjacent-gap thinning
+    // below (which only compares each tick to its immediate predecessor)
+    // sees them left-to-right.
+    ticks.sort(function(a, b){ return a.pct - b.pct; });
+
+    // "Now" always wins a collision — drop whichever neighbor(s) land too
+    // close to it, then thin any other pair that's still crowded.
+    var nowTick = ticks.filter(function(t){ return t.isNow; })[0];
+    if(nowTick){
+      ticks = ticks.filter(function(t){
+        return t.isNow || Math.abs(t.pct - nowTick.pct) >= MIN_TICK_GAP_PCT;
+      });
+    }
+    var kept = [];
+    ticks.forEach(function(t){
+      var prev = kept[kept.length - 1];
+      if(prev && !prev.isNow && !t.isNow && (t.pct - prev.pct) < MIN_TICK_GAP_PCT) return;
+      kept.push(t);
+    });
+
+    kept.forEach(function(t){
+      var el = document.createElement('span');
+      el.className = 'timeline-tick' + (t.isNow ? ' now' : '');
+      el.style.left = t.pct + '%';
+      // Anchor edge labels inward instead of centering them, so they can't
+      // spill past the track and get clipped by the card's own edge.
+      if(t.pct < 6){ el.style.transform = 'translateX(0)'; }
+      else if(t.pct > 94){ el.style.transform = 'translateX(-100%)'; }
+      el.textContent = t.isNow ? 'Now' : fmtClockTick(t.date);
+      ticksEl.appendChild(el);
+    });
+  }
+
+  // Schedules itself again after each step (rather than a flat
+  // setInterval) since forecast steps need a longer, variable dwell time
+  // than observed ones — see stepDelayFor.
+  function scheduleNextStep(){
     var next = index + 1 >= frames.length ? 0 : index + 1;
-    showFrameAt(next);
+    var isWrap = next === 0;
+    var delay = isWrap ? FRAME_MS : stepDelayFor(index, next);
+    playTimer = setTimeout(function(){
+      // Looping back to the start has no meaningful "gap" to ease across —
+      // animating it would just sweep the fill backwards from full to
+      // empty, which reads as a glitch rather than motion. Snap instead.
+      playAdvanceTo(next, isWrap ? 0 : delay);
+      scheduleNextStep();
+    }, delay);
   }
 
   function setPlaying(playing){
-    playIcon.hidden = playing;
-    pauseIcon.hidden = !playing;
-    playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
-    if(playTimer){ clearInterval(playTimer); playTimer = null; }
+    // Toggle the attribute directly (not the .hidden IDL property, which
+    // isn't reliably wired up for SVG elements) — shows only the icon for
+    // the action a click will now perform: pause icon while playing,
+    // play icon while paused.
     if(playing){
-      playTimer = setInterval(stepForward, FRAME_MS);
+      playIcon.setAttribute('hidden', '');
+      pauseIcon.removeAttribute('hidden');
+    }else{
+      pauseIcon.setAttribute('hidden', '');
+      playIcon.removeAttribute('hidden');
+    }
+    playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    if(playTimer){ clearTimeout(playTimer); playTimer = null; }
+    if(!playing && frames.length){
+      // Otherwise a fill animation already in flight (up to ~2.2s for a
+      // forecast step) keeps drifting for a while after pause is clicked,
+      // which reads as the button not actually working.
+      setFillInstant(pctForFrame(frames[index]));
+    }
+    if(playing){
+      scheduleNextStep();
     }
   }
 
   playBtn.addEventListener('click', function(){
-    var isPlaying = !pauseIcon.hidden;
+    var isPlaying = !pauseIcon.hasAttribute('hidden');
     setPlaying(!isPlaying);
+  });
+
+  document.getElementById('stepBackBtn').addEventListener('click', function(){
+    setPlaying(false); showFrameAt(index - 1);
+  });
+  document.getElementById('stepFwdBtn').addEventListener('click', function(){
+    setPlaying(false); showFrameAt(index + 1);
   });
 
   scrubber.addEventListener('input', function(){
     setPlaying(false);
-    showFrameAt(parseInt(scrubber.value, 10));
+    showFrameAt(nearestFrameIndexForMinutes(parseFloat(scrubber.value)));
+  });
+
+  // The native range's own arrow-key stepping moves by minutes (see below),
+  // which barely budges anything in the sparse forecast section — handle
+  // arrow keys ourselves so they always move exactly one frame, same as
+  // before this became a time-proportional track.
+  scrubber.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'ArrowUp'){
+      e.preventDefault(); setPlaying(false); showFrameAt(index + 1);
+    }else if(e.key === 'ArrowLeft' || e.key === 'ArrowDown'){
+      e.preventDefault(); setPlaying(false); showFrameAt(index - 1);
+    }
   });
 
   /* Preload every frame's image so playback doesn't stutter waiting on the
@@ -240,36 +840,56 @@
      browser caches them, so this only costs real time once per visit. */
   function preload(frameList){
     frameList.forEach(function(f){
+      if(!f.url) return;
       var img = new Image();
       img.src = f.url;
     });
   }
 
+  // Same IEM NEXRAD tile source and minute offsets the main page's map uses, so "now" matches.
+  function iemTileUrl(minutesAgo){
+    var suffix = minutesAgo === 0 ? '' : ('-m' + (minutesAgo < 10 ? '0' : '') + minutesAgo + 'm');
+    return 'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913' + suffix + '/{z}/{x}/{y}.png';
+  }
+
+  function buildObservedFrames(nowMs){
+    var out = [];
+    for(var m = 55; m >= 0; m -= 5){
+      out.push({kind: 'observed', time: new Date(nowMs - m * 60000).toISOString(), tileUrl: iemTileUrl(m)});
+    }
+    return out;
+  }
+
+  setStatus('Loading radar…');
+  var loadNowMs = Date.now();
+  // Forecast frames are optional — if the manifest can't be read, the observed radar still shows.
   fetch('manifest.json', {cache: 'no-store'})
     .then(function(res){
       if(!res.ok) throw new Error('manifest.json ' + res.status);
       return res.json();
     })
+    .catch(function(err){ console.error(err); return {frames: []}; })
     .then(function(manifest){
-      frames = manifest.frames || [];
-      if(!frames.length) throw new Error('No frames in manifest');
+      var forecast = (manifest.frames || []).filter(function(f){
+        return f.kind === 'forecast' && new Date(f.time).getTime() > loadNowMs;
+      });
+      frames = buildObservedFrames(loadNowMs).concat(forecast);
 
       for(var i = frames.length - 1; i >= 0; i--){
         if(frames[i].kind !== 'forecast'){ boundaryIndex = i; break; }
       }
 
-      scrubber.max = String(frames.length - 1);
+      startMs = new Date(frames[0].time).getTime();
+      scrubber.min = "0";
+      scrubber.max = String(minutesSince(frames[frames.length - 1].time));
+      scrubber.step = "1";
       controlsEl.hidden = false;
       layoutTimeline();
-      showFrameAt(boundaryIndex >= 0 ? boundaryIndex : frames.length - 1); // start on "now"
+      renderTicks();
+      showFrameAt(0); // start at the earliest observed frame, all the way to the left
+      setPlaying(true); // and start playing immediately, not waiting for a click
 
-      var observedCount = boundaryIndex + 1;
-      var forecastCount = frames.length - observedCount;
-      var statusText = observedCount + ' observed frame(s) (' + fmtTime(frames[0].time) + '–' + fmtTime(frames[boundaryIndex].time) + ')';
-      if(forecastCount > 0){
-        statusText += ', ' + forecastCount + ' forecast frame(s) through ' + fmtTime(frames[frames.length - 1].time);
-      }
-      setStatus(statusText);
+      hideStatus(); // the controls card now carries this info live
       preload(frames);
     })
     .catch(function(err){

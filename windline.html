@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="color-scheme" content="light dark">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%221.05%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10.10%209.8L6.71%2022.6M11.90%209.8L15.29%2022.6M8.83%2014.6H13.17M7.77%2018.6H14.23%22/%3E%3Cpath%20d%3D%22M11%206.6H19%22/%3E%3Crect%20x%3D%2217.6%22%20y%3D%225.3%22%20width%3D%223%22%20height%3D%222.6%22%20rx%3D%22.3%22/%3E%3Cg%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%226.6%22%20r%3D%225.3%22/%3E%3Cpath%20d%3D%22M11%206.6L16.10%206.60M11%206.6L15.42%209.15M11%206.6L13.55%2011.02M11%206.6L11.00%2011.70M11%206.6L8.45%2011.02M11%206.6L6.58%209.15M11%206.6L5.90%206.60M11%206.6L6.58%204.05M11%206.6L8.45%202.18M11%206.6L11.00%201.50M11%206.6L13.55%202.18M11%206.6L15.42%204.05%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%226.6%22%20r%3D%221.1%22%20fill%3D%22%23000%22/%3E%3C/svg%3E">
 <title>Check the Wind</title>
@@ -56,6 +57,18 @@
     --medal-gold:#D4AF37;
     --medal-silver:#A8A9AD;
     --medal-bronze:#B08D57;
+    --aqi-good:#5B9A6F;
+    --aqi-moderate:#C7A93B;
+    --aqi-usg:#C97C3D;
+    --aqi-unhealthy:#C15C54;
+    --aqi-veryunhealthy:#8F5FA3;
+    --aqi-hazardous:#7A4550;
+    --aqi-good-ink:#2F7A4B;
+    --aqi-moderate-ink:#8A6A00;
+    --aqi-usg-ink:#A85A1A;
+    --aqi-unhealthy-ink:#B3403A;
+    --aqi-veryunhealthy-ink:#8F5FA3;
+    --aqi-hazardous-ink:#7A4550;
     --shadow: 0 1px 2px rgba(16,28,38,.06), 0 8px 24px -12px rgba(16,28,38,.18);
   }
   @media (prefers-color-scheme: dark){
@@ -88,6 +101,18 @@
       --medal-gold:#F2C94C;
       --medal-silver:#C9CBD1;
       --medal-bronze:#DCA36A;
+      --aqi-good:#4ED694;
+      --aqi-moderate:#F2C94C;
+      --aqi-usg:#FF9B47;
+      --aqi-unhealthy:#F26B61;
+      --aqi-veryunhealthy:#C084FC;
+      --aqi-hazardous:#D1838F;
+      --aqi-good-ink:#4ED694;
+      --aqi-moderate-ink:#F2C94C;
+      --aqi-usg-ink:#FF9B47;
+      --aqi-unhealthy-ink:#F26B61;
+      --aqi-veryunhealthy-ink:#C084FC;
+      --aqi-hazardous-ink:#D1838F;
       --cloud:#3C4E5E;
       --cloud-2:#4C6072;
       --trend-line:#FAFAFA;
@@ -135,19 +160,19 @@
     100%{stroke-dashoffset:-10; opacity:0}
   }
   @media (prefers-reduced-motion: reduce){ .wm-wheel{animation:none} .wm-wind path{animation:none; opacity:.18; stroke-dasharray:none} }
-  .brand .tag{font-size:0.875rem;color:var(--text-muted);font-family:'Nunito',monospace;letter-spacing:.04em;text-transform:uppercase}
+  .brand .tag{font-size:1rem;color:var(--text-muted);font-family:'Nunito',monospace;letter-spacing:.04em;text-transform:uppercase}
 
   form.search{display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end}
   form.search .actions{display:flex; gap:8px; align-items:flex-end; flex:0 0 auto}
   form.search .field{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px}
   form.search label{
-    font-size:0.875rem; color:var(--text-muted); font-family:'Nunito',monospace;
+    font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace;
     letter-spacing:.04em;
   }
   form.search input{
     background:var(--surface); color:var(--text);
     border:1px solid var(--border); border-radius:10px;
-    padding:11px 13px; min-height:44px; font-size:0.9375rem; font-family:inherit;
+    padding:11px 13px; min-height:44px; font-size:1rem; font-family:inherit;
   }
   .input-wrap{position:relative; display:flex}
   form.search .input-wrap input{width:100%; padding-left:2.5rem; padding-right:2.75rem}
@@ -170,7 +195,7 @@
   .input-wrap:has(.loc-suggestions:not([hidden])) .loc-suggestions{border-top-left-radius:0; border-top-right-radius:0}
   .loc-suggestion{
     padding:13px 10px; border-radius:7px; cursor:pointer;
-    font-size:0.875rem; color:var(--text); line-height:1.3;
+    font-size:1rem; color:var(--text); line-height:1.3;
     display:flex; align-items:center; min-height:44px;
   }
   .loc-suggestion:hover, .loc-suggestion.active{background:var(--hover-bg)}
@@ -179,7 +204,7 @@
   form.search button{
     background:var(--surface-2); color:var(--text);
     border:1px solid var(--border); border-radius:10px;
-    padding:0 14px; min-height:44px; font-size:0.875rem; font-family:'Nunito',sans-serif; font-weight:600;
+    padding:0 14px; min-height:44px; font-size:1rem; font-family:'Nunito',sans-serif; font-weight:600;
     cursor:pointer;
   }
   form.search button:hover{background:var(--hover-bg)}
@@ -194,11 +219,11 @@
   .geo-btn svg{width:21.06px; height:21.06px}
   .hdr-loc{display:none}
   .locbar{
-    text-align:right; white-space:normal; font-size:0.875rem; color:var(--text-muted);
+    text-align:right; white-space:normal; font-size:1rem; color:var(--text-muted);
     font-family:'Nunito',monospace;
   }
   .locbar strong{color:var(--text-muted); font-weight:400}
-  .status{font-size:0.875rem; color:var(--text-muted); margin-top:6px; min-height:16px}
+  .status{font-size:1rem; color:var(--text-muted); margin-top:6px; min-height:16px}
   .status.err{color:var(--band-gale)}
   .status:empty{display:none}
 
@@ -207,6 +232,70 @@
      mobile-only now — see the mobile media query below, which still sets
      this back down to 3.6px. On desktop/tablet it just inherits the
      normal 64px every other module uses. */
+
+  /* NWS alerts: one expand/collapse banner per active warning (red), watch (yellow) or advisory (blue). */
+  .alerts{display:flex; flex-direction:column; gap:12px; margin-top:64px}
+  .alerts[hidden]{display:none}
+  .alerts:not([hidden]) + #heroSection, .alerts:not([hidden]) + #bestSection{margin-top:32px}
+  .alert{--alert-bg:#2F6DB5; --alert-ink:#fff; border:1px solid var(--alert-bg); border-radius:14px; overflow:hidden; background:var(--surface)}
+  .alert--warning{--alert-bg:#C62828; --alert-ink:#fff}
+  .alert--watch{--alert-bg:#F2C230; --alert-ink:#2B2300}
+  .alert--advisory{--alert-bg:#2F6DB5; --alert-ink:#fff}
+  .alert-head{
+    display:flex; align-items:center; gap:12px; width:100%; padding:9px 16px; border:0; cursor:pointer;
+    background:var(--alert-bg); color:var(--alert-ink); font:inherit; text-align:left;
+  }
+  .alert-head:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-4px}
+  .alert-icon{flex:0 0 auto; display:flex}
+  .alert-icon svg{width:22px; height:22px}
+  .alert-titles{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:0}
+  .alert-title{font-size:1rem; font-weight:700; line-height:1.25}
+  .alert-sub{font-size:1rem; font-weight:400; line-height:1.3; opacity:.92}
+  .alert-toggle{flex:0 0 auto; display:flex}
+  .alert-toggle svg{width:18px; height:18px}
+  .alert-toggle .v{transition:opacity .15s}
+  .alert-head[aria-expanded="true"] .alert-toggle .v{opacity:0}
+  .alert-body{padding:16px 20px 20px; color:var(--text); font-size:1rem; line-height:1.5}
+  .alert-body[hidden]{display:none}
+  .alert-count{text-align:right; font-size:1rem; color:var(--text-muted)}
+  .alert-body dl{margin:0}
+  .alert-body dt{font-weight:700; margin-top:14px}
+  .alert-body dt:first-child{margin-top:0}
+  .alert-body dd{margin:2px 0 0; white-space:pre-wrap; overflow-wrap:anywhere}
+  .alert-chips{flex:0 0 auto; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px}
+  .alert-chip{display:inline-flex; align-items:center; gap:6px; padding:2px 9px; border-radius:99px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:1rem; font-weight:700; white-space:nowrap}
+  .alert-chip i{width:8px; height:8px; border-radius:50%; background:var(--chip)}
+  .alert-chip--warning{--chip:#C62828}
+  .alert-chip--watch{--chip:#E0A800}
+  .alert-chip--advisory{--chip:#2F6DB5}
+  .alert-body--list{padding:0}
+  .alert-item{border-top:1px solid var(--table-border)}
+  .alert-item:first-child{border-top:0}
+  .alert-item-head{
+    display:flex; align-items:center; gap:12px; width:100%; padding:8px 16px; border:0; cursor:pointer;
+    background:var(--surface); color:var(--text); font:inherit; text-align:left;
+  }
+  .alert-item-head:hover{background:var(--surface-2)}
+  .alert-item-head:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-4px}
+  .alert-item-head .alert-title{font-size:1rem}
+  .alert-item-head .alert-sub{color:var(--text-muted); opacity:1}
+  .alert-dot{flex:0 0 auto; width:10px; height:10px; border-radius:50%; background:var(--alert-bg)}
+  .alert-item-head .alert-toggle{color:var(--text-muted)}
+  .alert-item-head[aria-expanded="true"] .alert-toggle .v{opacity:0}
+  .alert-item-body{padding:2px 20px 18px 42px; color:var(--text); font-size:1rem; line-height:1.5}
+  .alert-item-body[hidden]{display:none}
+  @media (max-width:31.1875em){
+    .alerts{margin-top:16px}
+    .alerts:not([hidden]) + #heroSection, .alerts:not([hidden]) + #bestSection{margin-top:24px}
+    .alert-head{padding:9px 14px}
+    .alert-body{padding:14px 16px 18px}
+    .alert-head{flex-wrap:wrap}
+    .alert-titles{flex:1 1 0}
+    .alert-chips{order:3; flex:1 0 calc(100% - 34px); justify-content:flex-start; margin-left:34px}
+    .alert-toggle{order:2}
+    .alert-item-head{padding:8px 14px}
+    .alert-item-body{padding:2px 16px 16px 38px}
+  }
   .section-head{position:relative; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:.25rem 1rem; margin-bottom:12px}
   .section-head h2{font-size:1.25rem; margin:0; color:var(--text); display:inline-flex; align-items:center; gap:6px}
 
@@ -225,7 +314,7 @@
     width:min(280px, calc(100vw - 48px));
     padding:12px 14px; border-radius:10px;
     background:var(--surface); border:1px solid var(--table-border); box-shadow:var(--shadow);
-    font-size:0.875rem; font-weight:300; line-height:1.6; color:var(--text-faint);
+    font-size:1rem; font-weight:300; line-height:1.6; color:var(--text-faint);
     opacity:0; visibility:hidden; transform:translateY(-4px);
     transition:opacity .15s, transform .15s, visibility .15s;
     pointer-events:none;
@@ -234,7 +323,7 @@
     opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto;
   }
   @media (prefers-reduced-motion: reduce){ .info-tip{transition:opacity .01s} }
-  .section-head .sub{font-size:0.875rem; color:var(--text-muted); font-family:'Nunito',monospace}
+  .section-head .sub{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace}
 
   .hero{
     --wind-mph: 0;
@@ -269,22 +358,22 @@
   .hero-reading .unit-wrap{display:inline-flex; align-items:center; gap:10px; padding-bottom:10px}
   .hero-reading .unit-top{display:inline-flex; flex-direction:column; align-items:flex-start; gap:4px}
   .hero-reading .unit{font-size:1.3125rem; color:var(--text-muted)}
-  .hero-band-pill{display:inline-block; font-size:0.875rem; font-weight:600; padding:2px 10px; border-radius:99px; white-space:nowrap}
+  .hero-band-pill{display:inline-block; font-size:1rem; font-weight:600; padding:2px 10px; border-radius:99px; white-space:nowrap}
   .date-row-pill{display:none}
   .weather-now{margin-top:18px; display:flex; align-items:center; gap:12px}
   .weather-now .wicon{flex:0 0 2.5rem; width:2.5rem; display:flex; justify-content:flex-start}
-  .weather-now .wtext{min-width:0; font-size:0.875rem; color:var(--text-muted)}
+  .weather-now .wtext{min-width:0; font-size:1rem; color:var(--text-muted)}
   .weather-now .wtext b{color:var(--text); font-weight:600}
   .weather-now .wtext .hazard-eta{
     display:inline-flex; align-items:center; gap:5px; white-space:normal; max-width:100%; vertical-align:middle;
     margin:4px 0 0; padding:3px 9px 3px 7px; border-radius:4px;
-    font-size:0.875rem; font-weight:400; color:var(--text);
+    font-size:1rem; font-weight:400; color:var(--text);
     background:color-mix(in srgb, color-mix(in srgb, color-mix(in srgb, var(--hero-band, var(--band-calm)) var(--tint-hero), var(--surface)) 50%, black) 25%, transparent);
   }
   .hazard-eta svg{width:12px; height:12px; flex-shrink:0}
   .ground-now{margin-top:14px; display:flex; align-items:center; gap:12px}
   .ground-now .gicon{flex:0 0 2.5rem; width:2.5rem; display:flex; justify-content:flex-start}
-  .ground-now .gtext{font-size:0.875rem; color:var(--text-muted)}
+  .ground-now .gtext{font-size:1rem; color:var(--text-muted)}
   .ground-now .gtext b{color:var(--text); font-weight:600}
   .radar{
     position:relative; flex-shrink:0; z-index:1;
@@ -293,12 +382,12 @@
   .radar .radar-map{width:100%; height:100%}
   .radar .radar-tag{
     position:absolute; left:0; right:0; bottom:0; padding:4px 8px; z-index:600;
-    font-family:'Nunito',monospace; font-size:0.875rem; letter-spacing:.03em; text-transform:uppercase;
+    font-family:'Nunito',monospace; font-size:1rem; letter-spacing:.03em; text-transform:uppercase;
     color:#fff; background:rgba(0,0,0,.44); text-align:center; pointer-events:none;
   }
   .radar .radar-empty{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    font-size:0.875rem; color:#9FB0BC; text-align:center; padding:10px; font-family:'Nunito',sans-serif;
+    font-size:1rem; color:#9FB0BC; text-align:center; padding:10px; font-family:'Nunito',sans-serif;
   }
   .radar{cursor:pointer}
   .radar-expand-btn{
@@ -335,8 +424,53 @@
   }
   .today-card{
     background:var(--surface); border-radius:14px; border:1px solid var(--table-border);
-    padding:24px;
+    padding:16px 24px;
   }
+  /* Wind Today sits beside Air Quality & Pollen from 31.25em up; both
+     cards stretch to the taller one's height so they read as a pair. */
+  .wind-row{ margin-top:64px }
+  .wind-row > section{ margin-top:0 }
+  @media (min-width:31.25em){
+    .wind-row{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:stretch }
+    .wind-row > section{ min-width:0 }
+    /* Only Wind Today's card stretches to match Air Quality's (naturally
+       taller, five-gauge) height. flex (not height:100%) so the card
+       fills exactly the space left over after its own section-head,
+       instead of 100% of the section and overflowing past it; giving
+       #airCard the same treatment would make both sides percentage-based
+       with nothing left to size the row from. */
+    #todaySection{ display:flex; flex-direction:column }
+    #todaySection .today-card{
+      flex:1 1 auto; min-height:0; box-sizing:border-box; padding:24px;
+      display:flex; flex-direction:column;
+    }
+    /* Let the hourly strip itself stretch to fill the available height,
+       sizing each bar as a percentage of its own now-variable barwrap
+       height (--pct) instead of a fixed px cap (--h). */
+    #todaySection .today-inner{ display:flex; flex-direction:column; flex:1 1 auto; min-height:0 }
+    #todaySection .hscroll{ flex:1 1 auto; min-height:0 }
+    #todaySection .htile .barwrap{ flex:1 1 auto; min-height:0; height:auto }
+    #todaySection .htile .bar{ height:var(--pct); min-height:6px }
+  }
+  @media (max-width:31.1875em){
+    .wind-row > #airSection{ margin-top:48px }
+  }
+  /* A right-edge fade hints that the hourly strip scrolls horizontally. */
+  .today-card--scrollable{ position:relative; overflow:hidden }
+  .today-card--scrollable::after, .today-card--scrollable::before{
+    content:""; position:absolute; top:1px; bottom:1px; width:80px;
+    pointer-events:none; opacity:0; transition:opacity .15s;
+  }
+  .today-card--scrollable::after{
+    right:1px; background:linear-gradient(to right, transparent, var(--surface));
+    border-radius:0 13px 13px 0;
+  }
+  .today-card--scrollable::before{
+    left:1px; background:linear-gradient(to left, transparent, var(--surface));
+    border-radius:13px 0 0 13px;
+  }
+  .today-card--scrollable.can-scroll-right::after{ opacity:1 }
+  .today-card--scrollable.can-scroll-left::before{ opacity:1 }
   .today-inner{position:relative; overflow-x:auto; overflow-y:hidden; scrollbar-width:thin}
   .today-inner:focus-visible{outline-offset:4px; border-radius:6px}
   .sunset-spacer{height:0}
@@ -352,7 +486,7 @@
     display:flex; flex-direction:column; align-items:center; gap:1px; white-space:nowrap;
   }
   .sun-marker .label .stext{
-    font-size:0.875rem; font-weight:700; color:var(--sun-text); letter-spacing:.02em;
+    font-size:1rem; font-weight:700; color:var(--sun-text); letter-spacing:.02em;
   }
   .hscroll{
     position:relative; display:flex; gap:2px; width:max-content; min-width:100%;
@@ -362,22 +496,35 @@
     flex:1 0 3.4rem; min-width:0;
     padding:10px 2px; display:flex; flex-direction:column; align-items:center; gap:6px;
   }
-  .htile .hr{font-size:0.875rem; color:var(--text-muted); font-family:'Nunito',monospace; white-space:nowrap}
+  .htile .hr{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace; white-space:nowrap}
   .htile .barwrap{height:74px; display:flex; align-items:flex-end}
   .htile .bar{width:14px; height:var(--h); border-radius:5px 5px 3px 3px; min-height:6px}
   .htile .spwrap{display:flex; align-items:baseline; gap:2px; white-space:nowrap}
-  .htile .sp{font-size:0.875rem; font-weight:600; font-family:'Nunito',monospace}
-  .htile .spunit{font-size:0.75rem; font-weight:600; color:var(--text-muted); font-family:'Nunito',monospace}
+  .htile .sp{font-size:1rem; font-weight:600; font-family:'Nunito',monospace}
+  .htile .spunit{font-size:1rem; font-weight:600; color:var(--text-muted); font-family:'Nunito',monospace}
   .htile .hdir{display:flex; margin-top:-2px}
   @media (min-width:31.25em){ .htile .spwrap{flex-direction:column; align-items:center; gap:0; line-height:1.25} }
 
+  /* Air Quality & Pollen: five gauges (Air Quality Index + Pollutants/PM2.5,
+     both real via AirNow/EPA; Tree/Grass/Weed pollen estimated — see
+     pollenEstimate(), since there's no free, CORS-enabled, keyless pollen
+     API with real US coverage). */
+  .air-card{padding:24px}
+  .pollen-list{display:flex; flex-direction:column; gap:16px; min-width:0}
+  .pollen-row-top{display:flex; align-items:center}
+  .pollen-row-icon{flex:0 0 auto; display:flex; margin-right:4px}
+  .pollen-row-label{flex:1 1 auto; margin-right:10px; font-size:1rem; font-weight:600; color:var(--text)}
+  .pollen-row-val{font-size:1rem; font-weight:600; text-align:right}
+  .pollen-bar-track{height:10.2px; border-radius:99px; background:var(--surface-2); overflow:hidden; margin-top:6px}
+  .pollen-bar-fill{height:100%; border-radius:99px}
+
   .bw-head, .bw-row{
-    display:grid; grid-template-columns:2.25rem minmax(6.5rem,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,1.4fr);
+    display:grid; grid-template-columns:2.25rem minmax(6.5rem,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,1.4fr);
     gap:12px; align-items:center;
   }
   .bw-list{background:var(--surface); border-radius:14px; overflow:hidden; border:1px solid var(--table-border)}
-  .bw-head{padding:16px 24px 12px; border-bottom:.5px solid var(--table-border); font-size:0.875rem; color:var(--text-muted)}
-  .bw-row{padding:16px 24px; border-bottom:.5px solid var(--table-border); font-size:0.875rem}
+  .bw-head{padding:16px 24px 12px; border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
+  .bw-row{padding:16px 24px; border-bottom:.5px solid var(--table-border); font-size:1rem}
   .bw-row.bw-row--top{padding:24px}
   .bw-row:last-of-type{border-bottom:none}
   .bw-cell{min-width:0}
@@ -386,16 +533,16 @@
   .bw-medal svg{display:block}
   .bw-stats{display:contents}
   .bw-window{display:flex; flex-direction:column; gap:2px}
-  .bw-time{font-size:0.875rem; font-weight:500; line-height:1.3; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
-  .bw-row--top .bw-time{font-size:0.875rem; font-weight:700; color:var(--text)}
-  .bw-day{font-size:0.875rem; color:var(--text-muted); font-family:'Nunito',monospace}
+  .bw-time{font-size:1rem; font-weight:500; line-height:1.3; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .bw-row--top .bw-time{font-size:1rem; font-weight:700; color:var(--text)}
+  .bw-day{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace}
   .bw-row--top .bw-day{color:var(--text)}
-  .bw-val{font-size:0.875rem; font-weight:500; color:var(--text-muted)}
+  .bw-val{font-size:1rem; font-weight:500; color:var(--text-muted)}
   .bw-row--top .bw-val{font-weight:600; color:var(--text)}
   .bw-head[hidden]{display:none}
   .bw-empty{display:flex; align-items:center; justify-content:space-between; gap:32px; padding:24px; color:var(--text)}
   .bw-empty-title{display:block; font-size:1.125rem; font-weight:700; line-height:1.3; color:var(--text)}
-  .bw-empty-sub{display:block; margin-top:4px; font-size:0.875rem; color:var(--text-muted)}
+  .bw-empty-sub{display:block; margin-top:4px; font-size:1rem; color:var(--text-muted)}
   .bw-empty svg{flex:0 0 auto; display:block}
   .fp-flame{transform-box:fill-box; transform-origin:50% 100%; animation:fpFlicker 1.3s ease-in-out infinite}
   .fp-flame-in{animation-duration:.9s; animation-delay:-.4s}
@@ -430,10 +577,10 @@
   @media (max-width:31.1875em){
     .bw-head{display:none}
     .bw-row{grid-template-columns:auto 1fr; gap:10px; padding-inline:16px}
-    .bw-stats{grid-column:1 / -1; display:grid; grid-template-columns:repeat(4,auto); justify-content:space-between; gap:8px}
+    .bw-stats{grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,auto); justify-content:space-between; gap:8px}
     .bw-stat .bw-lab{
       position:static; width:auto; height:auto; margin:0; overflow:visible; clip:auto; clip-path:none;
-      display:block; font-size:0.875rem; color:var(--text-muted); font-family:'Nunito',monospace; letter-spacing:.02em;
+      display:block; font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace; letter-spacing:.02em;
     }
     .skel-bwrow{min-height:6.5rem}
   }
@@ -445,7 +592,7 @@
     form.search{margin-bottom:0}
   }
   .wind-legend-title{
-    font-size:0.875rem; color:var(--text-muted); font-family:'Nunito',monospace;
+    font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace;
     letter-spacing:.04em; margin-bottom:6px;
   }
   .wind-legend-segs{display:grid; grid-template-columns:repeat(auto-fit,minmax(3.6rem,1fr)); gap:1px}
@@ -458,13 +605,13 @@
   .wind-seg-col:first-child .wind-seg{border-radius:99px 0 0 99px}
   .wind-seg-col:last-child .wind-seg{border-radius:0 99px 99px 0}
   .wind-seg span{
-    font-size:0.875rem; font-weight:600; color:var(--seg-ink);
+    font-size:1rem; font-weight:600; color:var(--seg-ink);
     letter-spacing:.02em; text-align:center; overflow:hidden; text-overflow:ellipsis;
   }
   .wind-range{display:none}
   @media (min-width:31.25em){
     .wind-range{
-      display:block; margin-top:4px; font-size:0.75rem; font-weight:600;
+      display:block; margin-top:4px; font-size:1rem; font-weight:600;
       text-align:center; font-family:'Nunito',monospace; letter-spacing:.02em;
     }
   }
@@ -482,13 +629,13 @@
   .dayrow:last-of-type{border-bottom:none}
   .dayrow-head{
     padding:16px 24px 12px; border-bottom:.5px solid var(--table-border);
-    font-size:0.875rem; font-weight:400; color:var(--text-muted);
+    font-size:1rem; font-weight:400; color:var(--text-muted);
   }
   .dayrow .dnames, .dayrow-head .dnames{width:5.5rem; flex-shrink:0}
   .dlabel{position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap}
   .dayrow .dnames .dval{display:flex; flex-direction:column; align-items:flex-start; gap:2px}
   .dayrow .dname{font-weight:700; font-size:1rem}
-  .dayrow .ddate{font-size:0.875rem; color:var(--text-muted); font-family:'Nunito',monospace}
+  .dayrow .ddate{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace}
   .dayrow .drest, .dayrow-head .drest{display:flex; align-items:center; gap:12px; flex:1; min-width:0}
   .dayrow .dwind, .dayrow-head .dwind{width:8.25rem; flex-shrink:0; margin-left:-16px}
   .dayrow .dwind{font-size:1rem}
@@ -498,7 +645,7 @@
   .wind-forecast-pill{margin-top:.2rem}
   .dayrow .dshort, .dayrow-head .dshort{flex:1; min-width:0; margin-left:-16px}
   .dayrow .dshort{
-    font-size:0.875rem; color:var(--text-muted); text-align:left;
+    font-size:1rem; color:var(--text-muted); text-align:left;
     white-space:normal;
   }
   .dayrow .dshort .dval{display:flex; align-items:center; gap:8px; min-width:0; font-weight:600}
@@ -510,7 +657,7 @@
   .dayrow .temps .lo{color:var(--text-muted)}
   .gustbadge{
     display:block; width:fit-content; margin-top:.25rem;
-    font-size:0.875rem; font-weight:600;
+    font-size:1rem; font-weight:600;
     color:var(--band-verywindy); white-space:nowrap;
   }
 
@@ -579,8 +726,38 @@
   }
 
   footer{margin-top:30px; padding-top:16px}
-  footer p{font-size:0.875rem; font-weight:300; color:var(--text-faint); line-height:1.6; margin:0}
+  footer p{font-size:1rem; font-weight:300; color:var(--text-faint); line-height:1.6; margin:0}
   footer a{color:var(--text-faint); padding-block:.65rem}
+  .footer-bar{display:flex; align-items:center; justify-content:flex-start; gap:16px; flex-wrap:wrap}
+  .disclaimers-link{
+    background:none; border:none; padding:12px 0; min-height:44px; display:inline-flex; align-items:center;
+    font:inherit; font-size:1rem;
+    color:var(--text-faint); text-decoration:underline; text-underline-offset:2px; cursor:pointer;
+  }
+  .disclaimers-link:hover{color:var(--text-muted)}
+  .disclaimers-link:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:2px}
+  .data-asof{font-size:1rem; color:var(--text-faint)}
+  .disclaimers-modal-panel{
+    width:min(34rem, 100%); height:auto; max-height:80vh;
+  }
+  .disclaimers-modal-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 24px; border-bottom:1px solid var(--table-border); flex:0 0 auto;
+  }
+  .disclaimers-modal-head h2{font-size:1.125rem; margin:0; color:var(--text)}
+  .disclaimers-modal-close{
+    background:none; border:none; cursor:pointer; color:var(--text-muted);
+    padding:6px; display:flex; border-radius:6px;
+  }
+  .disclaimers-modal-close:hover{background:var(--hover-bg)}
+  .disclaimers-modal-close:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0}
+  .disclaimers-modal-close svg{width:18px; height:18px}
+  .disclaimers-modal-body{
+    padding:20px 24px; overflow-y:auto; font-size:1rem; font-weight:400;
+    color:var(--text-faint); line-height:1.6;
+  }
+  .disclaimers-modal-body p{margin:0}
+  .disclaimers-modal-body a{color:var(--text-faint)}
 
   .skel-htile, .skel-dayrow{animation:skelRowFade 1.4s ease-in-out infinite}
   @keyframes skelRowFade{0%,100%{opacity:.7}50%{opacity:1}}
@@ -597,7 +774,7 @@
     .brand{margin-bottom:calc(12px - var(--p) * 10px); align-items:center}
     .brand h1{font-size:1.375rem}
     .hdr-loc{
-      display:block; font-size:0.875rem; line-height:20px; font-weight:600; color:var(--text-muted);
+      display:block; font-size:1rem; line-height:20px; font-weight:600; color:var(--text-muted);
       overflow:hidden; opacity:var(--p); max-height:calc(var(--p) * var(--loc-h, 44px));
     }
     form.search{
@@ -610,9 +787,10 @@
     }
     .wind-legend.in-header{display:none}
     .wind-legend.below-header{display:block}
-    .wind-legend-segs{display:flex; flex-wrap:wrap; gap:1px}
-    .wind-seg-col{flex:1 0 auto; min-width:0}
-    .wind-seg span{font-size:0.75rem; overflow:visible; text-overflow:clip}
+    .wind-legend-segs{display:grid; grid-template-columns:repeat(5,minmax(max-content,1fr)); gap:1px}
+    .wind-seg-col{min-width:0}
+    .wind-seg{padding-inline:3px}
+    .wind-seg span{font-size:1rem; overflow:visible; text-overflow:clip}
     .dayrow-head{display:none}
     .daylist{background:transparent; box-shadow:none; border-radius:0; overflow:visible; gap:16px}
     .dayrow{
@@ -622,7 +800,7 @@
     .dayrow .drest{display:contents}
     .dayrow .dnames, .dayrow .dwind, .dayrow .dshort, .dayrow .temps{
       display:flex; flex-direction:row; align-items:center; justify-content:space-between;
-      gap:12px; width:100%; min-width:0; min-height:40px; font-size:0.875rem;
+      gap:12px; width:100%; min-width:0; min-height:40px; font-size:1rem;
       padding:8px 16px; border-bottom:.5px solid var(--table-border);
     }
     .dayrow .temps{border-bottom:none}
@@ -633,7 +811,7 @@
     .dayrow .dnames .dval{display:flex; flex-direction:row; align-items:baseline; gap:6px; flex:0 1 auto}
     .dayrow .dnames .date-row-pill{display:inline-block}
     .dayrow .dwind .wind-forecast-pill{display:none}
-    .dayrow .dnames .dname{font-weight:700; font-size:0.875rem}
+    .dayrow .dnames .dname{font-weight:700; font-size:1rem}
     .dayrow .dwind .dval-group{display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px; min-width:0}
     .dayrow .dwind .dval{flex-wrap:nowrap; justify-content:flex-end}
     .dayrow .dwind .wind-forecast-pill{margin-top:0}
@@ -642,8 +820,8 @@
       position:absolute!important; width:1px; height:1px; margin:-1px; padding:0;
       overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0;
     }
-    .dayrow .dlabel{position:static; width:auto; height:auto; margin:0; overflow:visible; clip:auto; clip-path:none; white-space:normal; font-size:0.875rem; color:var(--text-muted); font-family:'Nunito',monospace; letter-spacing:.02em; flex-shrink:0}
-    .dayrow .temps .dval{font-size:0.875rem}
+    .dayrow .dlabel{position:static; width:auto; height:auto; margin:0; overflow:visible; clip:auto; clip-path:none; white-space:normal; font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace; letter-spacing:.02em; flex-shrink:0}
+    .dayrow .temps .dval{font-size:1rem}
     .dayrow .dval{text-align:right}
     .hero-top{flex-direction:column; align-items:stretch}
     .radar{width:100%; height:auto; aspect-ratio:1 / .85}
@@ -695,7 +873,7 @@
   .ptr-circle svg{width:20px; height:20px; transform:rotate(calc(var(--ptr-p,0) * 300deg))}
   .ptr.refreshing .ptr-circle svg{animation:ptrSpin .8s linear infinite}
   @keyframes ptrSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-  .ptr-text{max-width:calc(100% - 32px); overflow:hidden; text-overflow:ellipsis; font-size:0.875rem; font-weight:400; color:var(--text-muted); white-space:nowrap; opacity:var(--ptr-o,0); transition:opacity .15s}
+  .ptr-text{max-width:calc(100% - 32px); overflow:hidden; text-overflow:ellipsis; font-size:1rem; font-weight:400; color:var(--text-muted); white-space:nowrap; opacity:var(--ptr-o,0); transition:opacity .15s}
   html.ptr-anim .ptr{transition:height .32s cubic-bezier(.25,.85,.3,1.08)}
   html.ptr-drag, html.ptr-drag *{-webkit-user-select:none!important; user-select:none!important}
   @media (prefers-reduced-motion: reduce){
@@ -713,7 +891,7 @@
   .load-error-btn{
     margin-top:12px; min-height:44px; padding:0 20px; display:inline-flex; align-items:center; gap:8px;
     border:1px solid var(--border); border-radius:10px; background:var(--surface-2); color:var(--text);
-    font-family:inherit; font-size:0.875rem; font-weight:600; cursor:pointer;
+    font-family:inherit; font-size:1rem; font-weight:600; cursor:pointer;
   }
   .load-error-btn:hover{background:var(--hover-bg)}
   .load-error-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
@@ -721,10 +899,14 @@
   .load-error-btn svg{width:18px; height:18px}
   .load-error-btn.busy svg{animation:ptrSpin .8s linear infinite}
   @media (prefers-reduced-motion: reduce){ .load-error-btn.busy svg{animation:none} }
+  @media (max-width:23.9em){
+    .wind-legend-segs{grid-template-columns:repeat(3,1fr)}
+  }
 </style>
 </head>
 <body>
 <div id="srLive" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+<div id="alertsLive" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <header class="top" id="topbar">
   <div class="hdr-in">
@@ -843,6 +1025,8 @@
 <div class="wrap">
 <main>
 
+  <div class="alerts" id="alertsBanner" role="region" aria-label="Active weather alerts" hidden></div>
+
   <section id="heroSection">
     <div class="section-head">
       <h2>Current Conditions</h2>
@@ -898,6 +1082,8 @@
           <div role="columnheader">Window</div>
           <div role="columnheader">Temp</div>
           <div role="columnheader">Max wind</div>
+          <div role="columnheader">Precip chance</div>
+          <div role="columnheader">Humidity</div>
           <div role="columnheader">Ground</div>
           <div role="columnheader">Air Quality Index</div>
         </div>
@@ -906,6 +1092,8 @@
             <div class="bw-cell bw-medal"><span class="skel"></span></div>
             <div class="bw-cell bw-window"><span class="skel"></span><span class="skel"></span></div>
             <div class="bw-stats">
+              <div class="bw-cell"><span class="skel"></span></div>
+              <div class="bw-cell"><span class="skel"></span></div>
               <div class="bw-cell"><span class="skel"></span></div>
               <div class="bw-cell"><span class="skel"></span></div>
               <div class="bw-cell"><span class="skel"></span></div>
@@ -920,6 +1108,8 @@
             <div class="bw-stats">
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Temp</span><span class="bw-val" x-text="w.temp"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Max wind</span><span class="bw-val" x-text="w.wind"></span></div>
+              <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Precip</span><span class="bw-val" x-text="w.precip"></span></div>
+              <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Humidity</span><span class="bw-val" x-text="w.humidity"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Ground</span><span class="bw-val" x-text="w.ground"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">AQI</span><span class="bw-val" x-text="w.aqi"></span></div>
             </div>
@@ -935,18 +1125,26 @@
     </div>
   </section>
 
+  <div class="wind-row">
   <section id="todaySection" hidden>
     <div class="section-head">
       <h2>Wind Today</h2>
-      <span class="sub" id="todayDate"></span>
     </div>
-    <div class="today-card">
+    <div class="today-card today-card--scrollable">
       <div class="today-inner" id="todayInner" tabindex="0" role="region" aria-label="Hourly wind for the next 10 hours, scrollable">
         <div class="sunset-spacer" id="sunsetSpacer"></div>
         <div class="hscroll" id="hourlyStrip" role="list"></div>
       </div>
     </div>
   </section>
+
+  <section id="airSection" hidden>
+    <div class="section-head">
+      <h2>Air Quality &amp; Pollen</h2>
+    </div>
+    <div class="today-card air-card" id="airCard"></div>
+  </section>
+  </div>
 
   <section id="weekSection" hidden x-data :hidden="$store.week.state === 'idle'" :aria-hidden="$store.week.state === 'loading' ? 'true' : null">
     <div class="section-head">
@@ -998,13 +1196,10 @@
 </main>
 
   <footer>
-    <p>
-      Wind speed, gusts, and direction are sourced live from the National Weather Service
-      (<a href="https://api.weather.gov" target="_blank" rel="noopener">api.weather.gov</a>), NOAA — coverage is limited to
-      U.S. locations and territories. Place lookup and basemap tiles via OpenStreetMap / Nominatim (© OpenStreetMap
-      contributors). Radar imagery from NOAA NEXRAD via Iowa State University's Iowa Environmental Mesonet. Forecasts
-      update hourly at the source; reload to refresh.
-    </p>
+    <div class="footer-bar">
+      <button type="button" class="disclaimers-link" id="disclaimersOpenBtn" aria-haspopup="dialog">Disclaimers &amp; Data Sources</button>
+      <span class="data-asof">Data as of <span id="dataAsOf">—</span></span>
+    </div>
   </footer>
 </div>
 
@@ -1017,6 +1212,30 @@
          escape-to-close/click-outside-to-close affordances as a fallback
          in case the iframe is still loading or fails to. -->
     <iframe class="radar-modal-map" id="radarModalMapEl" title="Weather radar" allow="geolocation"></iframe>
+  </div>
+</div>
+
+<div class="radar-modal" id="disclaimersModal" hidden>
+  <div class="radar-modal-backdrop" id="disclaimersModalBackdrop"></div>
+  <div class="radar-modal-panel disclaimers-modal-panel" role="dialog" aria-modal="true" aria-labelledby="disclaimersModalTitle">
+    <div class="disclaimers-modal-head">
+      <h2 id="disclaimersModalTitle">Disclaimers &amp; Data Sources</h2>
+      <button type="button" class="disclaimers-modal-close" id="disclaimersModalClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="disclaimers-modal-body">
+      <p>
+        Wind speed, gusts, and direction are sourced live from the National Weather Service
+        (<a href="https://api.weather.gov" target="_blank" rel="noopener">api.weather.gov</a>), NOAA — coverage is limited to
+        U.S. locations and territories. Place lookup and basemap tiles via OpenStreetMap / Nominatim (© OpenStreetMap
+        contributors). Radar imagery from NOAA NEXRAD via Iowa State University's Iowa Environmental Mesonet; forecast radar frames from NOAA's HRRR model. Air Quality
+        Index and Pollutants (PM2.5) are sourced live from AirNow (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>),
+        EPA — coverage depends on the nearest reporting monitor. Pollen isn't available from any free public U.S. source,
+        so tree/grass/weeds levels are a seasonal estimate based on location and time of year, not a measurement. Forecasts
+        update hourly at the source; reload to refresh.
+      </p>
+    </div>
   </div>
 </div>
 
@@ -1327,12 +1546,14 @@
   var locBar = document.getElementById('locBar');
   var hdrLoc = document.getElementById('hdrLoc');
   var locTime = document.getElementById('locTime');
+  var dataAsOf = document.getElementById('dataAsOf');
   var heroEl = document.getElementById('hero');
   var todaySection = document.getElementById('todaySection');
   var todayInner = document.getElementById('todayInner');
   var sunsetSpacer = document.getElementById('sunsetSpacer');
   var hourlyStrip = document.getElementById('hourlyStrip');
-  var todayDate = document.getElementById('todayDate');
+  var airSection = document.getElementById('airSection');
+  var airCard = document.getElementById('airCard');
   /* Reactive state for the Alpine-driven modules. Writes made before Alpine boots land on these
      plain objects, which are registered as the stores on alpine:init. */
   var pendingStores = {};
@@ -1346,6 +1567,12 @@
 
   function locTimeOpts(){
     var opts = {hour:'numeric', minute:'2-digit', timeZoneName:'short'};
+    if(locationTZ) opts.timeZone = locationTZ;
+    return opts;
+  }
+
+  function dataAsOfOpts(){
+    var opts = {month:'short', day:'numeric', hour:'numeric', minute:'2-digit', timeZoneName:'short'};
     if(locationTZ) opts.timeZone = locationTZ;
     return opts;
   }
@@ -1535,7 +1762,7 @@
                 '<span class="unit">mph</span>' +
                 '<span class="hero-band-pill" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span>' +
               '</span>' +
-              (current.windDirection ? windArrowSvg(current.windDirection, band.css, 42, 0, true) : '') +
+              (current.windDirection ? windArrowSvg(current.windDirection, band.css, 42, 0, true) + srDir(current.windDirection) : '') +
             '</span>' +
           '</div>' +
           '<div class="weather-now">' +
@@ -1548,7 +1775,7 @@
             '<div class="gtext"><b>' + ground.label + ' ground</b> · ' + ground.hint + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="radar" id="radarBox" role="img" aria-label="Weather radar map">' +
+        '<div class="radar" id="radarBox" role="group" aria-label="Weather radar map">' +
           '<div class="radar-map" id="radarMapEl"></div>' +
           '<div class="radar-tag" id="radarTag">Radar</div>' +
           '<button type="button" class="radar-expand-btn" id="radarExpandBtn" aria-label="Expand radar map">' +
@@ -1595,8 +1822,8 @@
       keyboard:interactive, touchZoom:interactive, tap:interactive, fadeAnimation:false
     }).setView([lat, lon], interactive ? 9 : 8);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      subdomains:['a','b','c'], maxZoom:12, minZoom:3
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom:12, minZoom:3, referrerPolicy:'strict-origin-when-cross-origin'
     }).addTo(map);
 
     var radarLayer = L.tileLayer(radarFrameUrl(45), {opacity:0.75}).addTo(map);
@@ -1672,6 +1899,7 @@
       var self = this;
       radarModalLastFocus = document.activeElement;
       self.open = true;
+      setBackgroundInert(true, document.getElementById('radarModal'));
       document.body.style.overflow = 'hidden';
       window.Alpine.nextTick(function(){
         if(!self.open) return;
@@ -1681,6 +1909,7 @@
     close: function(){
       if(!this.open) return;
       this.open = false;
+      setBackgroundInert(false);
       document.body.style.overflow = '';
       document.getElementById('radarModalMapEl').src = 'about:blank';
       if(radarModalLastFocus && typeof radarModalLastFocus.focus === 'function') radarModalLastFocus.focus();
@@ -1706,12 +1935,61 @@
     }
   });
 
+  // Plain vanilla-JS open/close — this modal is static content with no
+  // reactive state to track, so it doesn't need the Alpine store pattern
+  // the radar modal uses.
+  var disclaimersModal = document.getElementById('disclaimersModal');
+  var disclaimersOpenBtn = document.getElementById('disclaimersOpenBtn');
+  var disclaimersModalLastFocus = null;
+
+  // Everything behind an open modal is made inert (no focus, hidden from screen readers), and Tab is
+  // wrapped inside the dialog as a fallback.
+  function setBackgroundInert(on, keepEl){
+    [].forEach.call(document.body.children, function(el){
+      if(el === keepEl || el.tagName === 'SCRIPT') return;
+      if(on){
+        if(!el.inert){ el.inert = true; el.setAttribute('data-was-inert', '1'); }
+      }else if(el.getAttribute('data-was-inert')){
+        el.inert = false;
+        el.removeAttribute('data-was-inert');
+      }
+    });
+  }
+
+  function openDisclaimersModal(){
+    disclaimersModalLastFocus = document.activeElement;
+    disclaimersModal.hidden = false;
+    setBackgroundInert(true, disclaimersModal);
+    document.body.style.overflow = 'hidden';
+    var closeBtn = document.getElementById('disclaimersModalClose');
+    if(closeBtn) closeBtn.focus();
+  }
+  function closeDisclaimersModal(){
+    if(disclaimersModal.hidden) return;
+    disclaimersModal.hidden = true;
+    setBackgroundInert(false);
+    document.body.style.overflow = '';
+    if(disclaimersModalLastFocus && typeof disclaimersModalLastFocus.focus === 'function') disclaimersModalLastFocus.focus();
+  }
+  disclaimersOpenBtn.addEventListener('click', openDisclaimersModal);
+  document.getElementById('disclaimersModalClose').addEventListener('click', closeDisclaimersModal);
+  document.getElementById('disclaimersModalBackdrop').addEventListener('click', closeDisclaimersModal);
+  document.addEventListener('keydown', function(e){
+    if(disclaimersModal.hidden) return;
+    if(e.key === 'Escape'){ closeDisclaimersModal(); return; }
+    if(e.key !== 'Tab') return;
+    var f = [].slice.call(disclaimersModal.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+    if(!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if(!disclaimersModal.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+    else if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
+
   function renderHourly(periods){
     var next10 = periods.slice(0, 10);
     if(!next10.length){ todaySection.hidden = true; return; }
     todaySection.hidden = false;
-    var d0 = localDate(next10[0].startTime);
-    todayDate.textContent = fmtDow(d0) + ' ' + fmtMD(d0);
 
     var maxV = Math.max.apply(null, next10.map(function(p){ return parseWind(p.windSpeed).high; }).concat([10]));
     hourlyStrip.innerHTML = next10.map(function(p){
@@ -1734,7 +2012,19 @@
     lastHourly = next10;
     drawTrendLine();
     drawSunMarkers(next10);
+    updateScrollFade();
   }
+
+  // Edge-fade gradients on the hourly strip only show in the direction
+  // there's actually more to scroll, instead of a static right-only fade.
+  function updateScrollFade(){
+    var card = todayInner.closest('.today-card--scrollable');
+    if(!card) return;
+    var max = todayInner.scrollWidth - todayInner.clientWidth;
+    card.classList.toggle('can-scroll-left', todayInner.scrollLeft > 1);
+    card.classList.toggle('can-scroll-right', todayInner.scrollLeft < max - 1);
+  }
+  todayInner.addEventListener('scroll', updateScrollFade, {passive: true});
 
   var todayMobileMQ = window.matchMedia('(max-width:31.1875em)');
   function updateTodayA11y(){
@@ -1758,6 +2048,7 @@
     relayoutFrame = requestAnimationFrame(function(){
       drawTrendLine();
       drawSunMarkers(lastHourly);
+      updateScrollFade();
     });
   }
   window.addEventListener('resize', relayoutHourly);
@@ -1828,19 +2119,6 @@
         '<div class="line"></div>' +
         '<div class="label">' + sunIconSvg() + '<span class="stext">' + name + ' ' + timeLabel + '</span></div>';
       todayInner.appendChild(marker);
-
-      if(!todayMobileMQ.matches){
-        var labelEl = marker.querySelector('.label');
-        var labelRect = labelEl.getBoundingClientRect();
-        var pad = 4;
-        var overflowRight = labelRect.right - (innerRect.right) + pad;
-        var overflowLeft = (innerRect.left - pad) - labelRect.left;
-        if(overflowRight > 0){
-          labelEl.style.transform = 'translateX(calc(-50% - ' + overflowRight.toFixed(1) + 'px))';
-        } else if(overflowLeft > 0){
-          labelEl.style.transform = 'translateX(calc(-50% + ' + overflowLeft.toFixed(1) + 'px))';
-        }
-      }
     });
 
     if(shown) sunsetSpacer.classList.add('has-sunset');
@@ -1956,6 +2234,34 @@
     return { aqi: toMap(r[0], 'us_aqi'), past: toMap(r[1], 'precipitation') };
   }
 
+  /* AirNow (EPA) powers the real-time "Air Quality Index" and "Pollutants
+     (PM2.5)" gauges — official government monitoring data, CORS-enabled,
+     free. Key requested at https://docs.airnowapi.org/account/request — if
+     it's ever revoked/rotated, swap it below; an empty string just makes
+     those two gauges read "Unavailable" (everything else keeps working). */
+  var AIRNOW_API_KEY = '54B35C41-0764-412E-B6B2-0E407036AA0D';
+
+  async function fetchAirNowCurrent(lat, lon){
+    if(!AIRNOW_API_KEY) return null;
+    // AirNow retired the old /aq/observation/latLong/current/ endpoint on
+    // 2026-10-01; this is its 2026 replacement (same base API, new path +
+    // response field names — no more Category.Number, just a category
+    // name string, and the "distance" param is gone/ignored).
+    var url = 'https://www.airnowapi.org/aq/observation/current/ziplatlong?format=application/json' +
+      '&latitude=' + lat.toFixed(4) + '&longitude=' + lon.toFixed(4) + '&API_KEY=' + AIRNOW_API_KEY;
+    var data = await fetchOptionalJson(url);
+    if(!data || !Array.isArray(data) || !data.length) return null;
+    function aqiOf(o){ return typeof o.nowcastAQI === 'number' ? o.nowcastAQI : o.aqi; }
+    function toEntry(o){ return {aqi: aqiOf(o), catName: o.aqiCategoryName}; }
+    var pm25Raw = data.filter(function(o){ return o.parameterName === 'PM2.5'; })
+      .sort(function(a, b){ return aqiOf(b) - aqiOf(a); })[0];
+    var overallRaw = data.reduce(function(best, o){ return (!best || aqiOf(o) > aqiOf(best)) ? o : best; }, null);
+    return {
+      overall: overallRaw ? toEntry(overallRaw) : null,
+      pm25: pm25Raw ? toEntry(pm25Raw) : null
+    };
+  }
+
   function clamp01(x){ return Math.max(0, Math.min(1, x)); }
   function wetDecay(temp){ return temp >= 75 ? 0.88 : temp >= 55 ? 0.92 : temp > 32 ? 0.95 : 0.97; }
 
@@ -1977,6 +2283,162 @@
   function groundWord(w){ return w < 0.15 ? 'Dry' : w < 0.45 ? 'Damp' : 'Wet'; }
   function aqiWord(v){ return v <= 50 ? 'Good' : v <= 100 ? 'Moderate' : 'Sensitive groups'; }
 
+  /* ---------- Air Quality & Pollen module ----------
+     AQI is real (same Open-Meteo us_aqi feed fetchBestInputs() already
+     pulls). Pollen is an ESTIMATE: there is no free, CORS-enabled,
+     keyless pollen API with real US coverage (Open-Meteo's own pollen
+     field only covers Europe; IQAir/Google/Ambee require a server-side
+     key). pollenEstimate() instead models each pollen type as a
+     triangular season curve centered on its typical US peak day-of-year,
+     shifted/narrowed by latitude (higher latitude = later, shorter
+     season). It's a climatological approximation, not a measurement —
+     the card says so in its footnote. */
+  function dayOfYear(dateStr){
+    var p = dateStr.split('-').map(Number);
+    var start = Date.UTC(p[0], 0, 1);
+    var cur = Date.UTC(p[0], p[1] - 1, p[2]);
+    return Math.round((cur - start) / 86400000) + 1;
+  }
+
+  function seasonCurve(doy, peakDoy, halfWidth){
+    var d = Math.abs(doy - peakDoy);
+    d = Math.min(d, 365 - d);
+    if(d >= halfWidth) return 0;
+    return Math.round(100 * (1 - d / halfWidth));
+  }
+
+  function pollenEstimate(lat, dateStr){
+    var doy = dayOfYear(dateStr);
+    var latAbs = Math.min(55, Math.max(20, Math.abs(lat)));
+    var shiftDays = (latAbs - 38) * 1.1;      // northern latitudes: later spring
+    var widthScale = Math.max(0.6, Math.min(1.15, 1 - (latAbs - 38) * 0.012));
+    return {
+      tree:  seasonCurve(doy, 100 + shiftDays, 70 * widthScale),
+      grass: seasonCurve(doy, 165 + shiftDays, 55 * widthScale),
+      weed:  seasonCurve(doy, 260 - shiftDays, 55 * widthScale)  // ends earlier up north (first frost)
+    };
+  }
+
+  function pollenLevel(score){
+    if(score <= 0)  return {label:'None',      css:'var(--text-faint)',     rank:0};
+    if(score < 20)  return {label:'Low',        css:'var(--aqi-good)',       ink:'var(--aqi-good-ink)', rank:1};
+    if(score < 45)  return {label:'Moderate',   css:'var(--aqi-moderate)',   ink:'var(--aqi-moderate-ink)', rank:2};
+    if(score < 70)  return {label:'High',       css:'var(--aqi-usg)',        ink:'var(--aqi-usg-ink)', rank:3};
+    return                 {label:'Very High',  css:'var(--aqi-unhealthy)',  ink:'var(--aqi-unhealthy-ink)', rank:4};
+  }
+
+  // AirNow reports each pollutant's own EPA category as a name string
+  // (Good/Moderate/Unhealthy for Sensitive Groups/Unhealthy/Very
+  // Unhealthy/Hazardous); gauges built from it are colored/ranked off
+  // that name rather than re-deriving bands from a raw AQI number.
+  var AQI_CAT_INFO = {
+    'Good':                           {css:'var(--aqi-good)', ink:'var(--aqi-good-ink)',          rank:0},
+    'Moderate':                       {css:'var(--aqi-moderate)', ink:'var(--aqi-moderate-ink)',      rank:1},
+    'Unhealthy for Sensitive Groups':{css:'var(--aqi-usg)', ink:'var(--aqi-usg-ink)',           rank:2},
+    'Unhealthy':                      {css:'var(--aqi-unhealthy)', ink:'var(--aqi-unhealthy-ink)',     rank:3},
+    'Very Unhealthy':                 {css:'var(--aqi-veryunhealthy)', ink:'var(--aqi-veryunhealthy-ink)', rank:4},
+    'Hazardous':                      {css:'var(--aqi-hazardous)', ink:'var(--aqi-hazardous-ink)',     rank:4}
+  };
+  function categorySeverity(entry){
+    if(!entry) return {label:'Unavailable', css:'var(--text-faint)', rank:0, fillPct:0};
+    var info = AQI_CAT_INFO[entry.catName] || {css:'var(--text-faint)', rank:0};
+    return {
+      label: entry.catName,
+      css: info.css,
+      ink: info.ink,
+      rank: info.rank,
+      fillPct: Math.max(2, Math.min(100, (entry.aqi / 300) * 100))
+    };
+  }
+
+  function aqiIcon(){
+    return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">' +
+      '<path d="M4 18a8 8 0 0 1 16 0" stroke="var(--icon-blue)" stroke-width="2" stroke-linecap="round" fill="none"/>' +
+      '<path d="M12 18l4-6" stroke="var(--icon-blue)" stroke-width="2" stroke-linecap="round"/>' +
+      '<circle cx="12" cy="18" r="1.6" fill="var(--icon-blue)"/>' +
+    '</svg>';
+  }
+
+  function pollutantIcon(){
+    return '<svg width="22" height="22" viewBox="0 0 24 24" fill="var(--icon-blue)" aria-hidden="true" focusable="false">' +
+      '<circle cx="7" cy="8" r="2.3"/>' +
+      '<circle cx="15" cy="6" r="1.5"/>' +
+      '<circle cx="17" cy="13" r="2.6"/>' +
+      '<circle cx="9" cy="16" r="1.8"/>' +
+      '<circle cx="13.5" cy="18.5" r="1.1"/>' +
+    '</svg>';
+  }
+
+  function pollenIcon(kind){
+    switch(kind){
+      case 'tree':
+        return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">' +
+          '<path d="M12 3L5 13h4l-5 7h16l-5-7h4z" fill="var(--icon-green)"/>' +
+          '<rect x="10.8" y="20" width="2.4" height="3" fill="#8C5423"/>' +
+        '</svg>';
+      case 'grass':
+        return '<svg width="22" height="22" viewBox="0 0 24 24" fill="var(--icon-green)" aria-hidden="true" focusable="false">' +
+          '<path d="M6.5 21c-.5-5.6.2-9.3 2.3-13-1.1 4.2-1 8.6 0 13z"/>' +
+          '<path d="M12 21c-.6-7.4.1-12.1 2-17-1.3 5.4-1.2 11.3.4 17z"/>' +
+          '<path d="M17.5 21c.5-5.6-.2-9.3-2.3-13 1.1 4.2 1 8.6 0 13z"/>' +
+        '</svg>';
+      default: // dandelion (weed pollen)
+        return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">' +
+          '<path d="M12 21Q11 16 12 12" stroke="var(--icon-green)" stroke-width="2" stroke-linecap="round" fill="none"/>' +
+          '<g stroke="var(--text-muted)" stroke-width="1" stroke-linecap="round">' +
+            '<line x1="12" y1="7" x2="17" y2="7"/>' +
+            '<line x1="12" y1="7" x2="15.5" y2="3.5"/>' +
+            '<line x1="12" y1="7" x2="12" y2="2"/>' +
+            '<line x1="12" y1="7" x2="8.5" y2="3.5"/>' +
+            '<line x1="12" y1="7" x2="7" y2="7"/>' +
+            '<line x1="12" y1="7" x2="8.5" y2="10.5"/>' +
+            '<line x1="12" y1="7" x2="15.5" y2="10.5"/>' +
+          '</g>' +
+          '<circle cx="17" cy="7" r="0.9" fill="var(--text-muted)"/>' +
+          '<circle cx="15.5" cy="3.5" r="0.9" fill="var(--text-muted)"/>' +
+          '<circle cx="12" cy="2" r="0.9" fill="var(--text-muted)"/>' +
+          '<circle cx="8.5" cy="3.5" r="0.9" fill="var(--text-muted)"/>' +
+          '<circle cx="7" cy="7" r="0.9" fill="var(--text-muted)"/>' +
+          '<circle cx="8.5" cy="10.5" r="0.9" fill="var(--text-muted)"/>' +
+          '<circle cx="15.5" cy="10.5" r="0.9" fill="var(--text-muted)"/>' +
+          '<circle cx="12" cy="7" r="1.3" fill="var(--text-muted)"/>' +
+        '</svg>';
+    }
+  }
+
+  // Numeric + descriptor, matching the "46 · Good" formatting used by the
+  // Air Quality Index column in the Best Times to Be Outside table.
+  function gaugeRowHtml(iconSvg, label, lv, fillPct, num, max){
+    var valText = (typeof num === 'number' && !isNaN(num)) ? (Math.round(num) + ' / ' + max + ' · ' + lv.label) : lv.label;
+    return '<div class="pollen-row">' +
+      '<div class="pollen-row-top">' +
+        '<span class="pollen-row-icon">' + iconSvg + '</span>' +
+        '<span class="pollen-row-label">' + label + '</span>' +
+        '<span class="pollen-row-val" style="color:' + (lv.ink || lv.css) + '">' + valText + '</span>' +
+      '</div>' +
+      '<div class="pollen-bar-track"><div class="pollen-bar-fill" style="width:' + fillPct + '%; background:' + lv.css + '"></div></div>' +
+    '</div>';
+  }
+
+  function renderAirPollen(lat, dateStr, airNow){
+    var pollen = pollenEstimate(lat, dateStr);
+    var overallLv = categorySeverity(airNow && airNow.overall);
+    var pm25Lv = categorySeverity(airNow && airNow.pm25);
+    var treeLv = pollenLevel(pollen.tree);
+    var grassLv = pollenLevel(pollen.grass);
+    var weedLv = pollenLevel(pollen.weed);
+
+    airCard.innerHTML =
+      '<div class="pollen-list">' +
+        gaugeRowHtml(aqiIcon(), 'Air Quality Index', overallLv, overallLv.fillPct, airNow && airNow.overall ? airNow.overall.aqi : null, 500) +
+        gaugeRowHtml(pollutantIcon(), 'Pollutants (PM2.5)', pm25Lv, pm25Lv.fillPct, airNow && airNow.pm25 ? airNow.pm25.aqi : null, 500) +
+        gaugeRowHtml(pollenIcon('tree'), 'Tree', treeLv, Math.max(2, pollen.tree), pollen.tree, 100) +
+        gaugeRowHtml(pollenIcon('grass'), 'Grass', grassLv, Math.max(2, pollen.grass), pollen.grass, 100) +
+        gaugeRowHtml(pollenIcon('weed'), 'Weeds', weedLv, Math.max(2, pollen.weed), pollen.weed, 100) +
+      '</div>';
+    airSection.hidden = false;
+  }
+
   /* Ground condition: a continuous wetness/dryness value that never by itself rules out a window —
      wet and damp ground are fine to be outside on. A separate, frozen-precipitation tracker (snow, sleet,
      freezing rain, or plain rain/snow at or below freezing) is what disqualifies a window: icy or snowy
@@ -1996,6 +2458,7 @@
       var temp = p.temperature;
       var mph = parseWind(p.windSpeed).high;
       var pop = (p.probabilityOfPrecipitation && typeof p.probabilityOfPrecipitation.value === 'number') ? p.probabilityOfPrecipitation.value : 0;
+      var hum = (p.relativeHumidity && typeof p.relativeHumidity.value === 'number') ? p.relativeHumidity.value : null;
       var text = (p.shortForecast || '').toLowerCase();
       var wetText = /rain|shower|drizzle|thunder|storm|sleet|freezing|snow|flurr|blizzard/.test(text);
       var iceText = /ice|icy|freezing rain|sleet/.test(text);
@@ -2025,7 +2488,7 @@
       wet = Math.min(1, wet * wetDecay(temp) + intensity * 0.6);
       frozen = Math.min(1, frozen * wetDecay(temp) + (frozenText ? intensity * 0.6 : 0));
 
-      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, wet: groundNow, aqi: aqi, ok: ok, score: score};
+      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, pop: pop, hum: hum, wet: groundNow, aqi: aqi, ok: ok, score: score};
     });
   }
 
@@ -2303,6 +2766,9 @@
       var tMax = Math.round(Math.max.apply(null, temps));
       var mph = Math.max.apply(null, h.map(function(x){ return x.mph; }));
       var wetMax = Math.max.apply(null, h.map(function(x){ return x.wet; }));
+      var popMax = Math.max.apply(null, h.map(function(x){ return x.pop; }));
+      var humVals = h.filter(function(x){ return x.hum !== null; }).map(function(x){ return x.hum; });
+      var humAvg = humVals.length ? Math.round(humVals.reduce(function(a, b){ return a + b; }, 0) / humVals.length) : null;
       var aqiVals = h.filter(function(x){ return x.aqi !== null; }).map(function(x){ return x.aqi; });
       var aqiMax = aqiVals.length ? Math.max.apply(null, aqiVals) : null;
       return {
@@ -2313,12 +2779,14 @@
         when: day + ' ' + when,
         temp: (tMin === tMax ? tMax : tMin + '–' + tMax) + '°F',
         wind: mph + ' mph',
+        precip: Math.round(popMax) + '%',
+        humidity: humAvg !== null ? humAvg + '%' : '—',
         ground: groundWord(wetMax),
         aqi: aqiMax !== null ? Math.round(aqiMax) + ' · ' + aqiWord(aqiMax) : '—'
       };
     });
 
-    var notes = ['Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness, and air quality. Skips rain, icy/snowy ground and darkness.'];
+    var notes = ['Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness, and air quality. Skips rain, icy/snowy ground and darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average and doesn’t affect the ranking.'];
     if(!inputs.aqi) notes.push('We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.');
     if(!inputs.past) notes.push('We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.');
 
@@ -2339,17 +2807,243 @@
   var sunCache = null;
 
   /* opts.quiet keeps the current content on screen (no skeletons) while fresh data loads. */
+
+  /* ---------- NWS alerts banners ---------- */
+  var alertsEl = document.getElementById('alertsBanner');
+  var expandedAlerts = {};
+  var alertsLiveEl = document.getElementById('alertsLive');
+  var lastAlertSig = '';
+
+  function alertKind(ev){
+    if(/warning$/i.test(ev)) return 'warning';
+    if(/watch$/i.test(ev)) return 'watch';
+    if(/advisory$/i.test(ev)) return 'advisory';
+    return null;
+  }
+
+  async function fetchAlerts(lat, lon){
+    try{
+      var alertsUrl = 'https://api.weather.gov/alerts/active?point=' + lat.toFixed(4) + ',' + lon.toFixed(4);
+      var data;
+      try{ data = await fetchJson(alertsUrl); }
+      catch(first){ await new Promise(function(r){ setTimeout(r, 1500); }); data = await fetchJson(alertsUrl); }
+      var kindRank = {warning:0, watch:1, advisory:2};
+      var sevRank = {Extreme:0, Severe:1, Moderate:2, Minor:3, Unknown:4};
+      var now = Date.now();
+      return (data.features || []).map(function(f){ return f.properties; }).filter(function(p){
+        if(!alertKind(p.event || '')) return false;
+        if(p.status && p.status !== 'Actual') return false;
+        if(p.messageType === 'Cancel') return false;
+        var end = Date.parse(p.ends || p.expires);
+        return isNaN(end) || end > now;
+      }).sort(function(a, b){
+        return kindRank[alertKind(a.event)] - kindRank[alertKind(b.event)] ||
+          (sevRank[a.severity] != null ? sevRank[a.severity] : 4) - (sevRank[b.severity] != null ? sevRank[b.severity] : 4) ||
+          Date.parse(a.ends || a.expires) - Date.parse(b.ends || b.expires);
+      });
+    }catch(e){ return []; }
+  }
+
+  function alertTime(iso){
+    var opts = {weekday:'short', hour:'numeric', minute:'2-digit', timeZoneName:'short'};
+    if(locationTZ) opts.timeZone = locationTZ;
+    return new Date(iso).toLocaleString('en-US', opts).replace(',', '').replace(/\s?(AM|PM)/, function(m, ap){ return ' ' + ap.toLowerCase(); });
+  }
+
+  function alertSubtitle(p){
+    var end = p.ends || p.expires;
+    var onset = p.onset ? Date.parse(p.onset) : NaN;
+    var until = end ? 'Until ' + alertTime(end) : 'In effect';
+    return (!isNaN(onset) && onset > Date.now() + 60000) ? 'Begins ' + alertTime(p.onset) + ' · ' + until : until;
+  }
+
+  // NWS hard-wraps text mid-sentence; join those lines but keep the blank-line paragraph breaks.
+  function alertText(s){ return String(s).replace(/([^\n])\n(?!\n)/g, '$1 ').trim(); }
+
+  function svgEl(inner){
+    var wrap = document.createElement('span');
+    wrap.innerHTML = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">' + inner + '</svg>';
+    return wrap.firstChild;
+  }
+
+  function kindLabel(kind, n){
+    var names = {warning:['Warning','Warnings'], watch:['Watch','Watches'], advisory:['Advisory','Advisories']}[kind];
+    return n + ' ' + names[n === 1 ? 0 : 1];
+  }
+
+  function alertIcon(){
+    var icon = document.createElement('span');
+    icon.className = 'alert-icon';
+    icon.appendChild(svgEl('<circle cx="12" cy="12" r="11" fill="currentColor"/><rect x="10.8" y="5.5" width="2.4" height="8" rx="1.2" fill="var(--alert-bg)"/><circle cx="12" cy="17.4" r="1.4" fill="var(--alert-bg)"/>'));
+    return icon;
+  }
+
+  function alertToggle(){
+    var tog = document.createElement('span');
+    tog.className = 'alert-toggle';
+    tog.appendChild(svgEl('<g stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><line class="v" x1="12" y1="4" x2="12" y2="20"/></g>'));
+    return tog;
+  }
+
+  function alertTitles(p){
+    var titles = document.createElement('span');
+    titles.className = 'alert-titles';
+    var title = document.createElement('span');
+    title.className = 'alert-title';
+    title.textContent = p.event;
+    var sub = document.createElement('span');
+    sub.className = 'alert-sub';
+    sub.textContent = alertSubtitle(p);
+    titles.appendChild(title);
+    titles.appendChild(sub);
+    return titles;
+  }
+
+  function alertDetails(p){
+    var dl = document.createElement('dl');
+    [['Action Recommended', p.instruction], ['Issued By', p.senderName], ['Affected Area', p.areaDesc], ['Description', p.description]].forEach(function(row){
+      if(!row[1]) return;
+      var dt = document.createElement('dt');
+      dt.textContent = row[0];
+      var dd = document.createElement('dd');
+      dd.textContent = alertText(row[1]);
+      dl.appendChild(dt);
+      dl.appendChild(dd);
+    });
+    return dl;
+  }
+
+  // One alert renders as a plain banner. Several consolidate into one banner colored by the most
+  // severe alert, with count chips; opening it lists the alerts, each expandable to the full NWS text.
+  function announceAlerts(list){
+    var sig = list.map(function(p){ return p.id || p.event; }).join('|');
+    if(sig === lastAlertSig) return;
+    lastAlertSig = sig;
+    var counts = ['warning', 'watch', 'advisory'].map(function(k){
+      var n = list.filter(function(p){ return alertKind(p.event) === k; }).length;
+      return n ? kindLabel(k, n).toLowerCase() : '';
+    }).filter(Boolean).join(', ');
+    var msg = 'Weather alert' + (list.length > 1 ? 's' : '') + ' for ' + (hdrLoc.textContent || 'this location') + ': ' + counts + '. ' +
+      list[0].event + '. ' + alertSubtitle(list[0]) + '. Open the alert banner for details.';
+    alertsLiveEl.textContent = '';
+    setTimeout(function(){ alertsLiveEl.textContent = msg; }, 400);
+  }
+
+  function renderAlerts(list){
+    alertsEl.textContent = '';
+    if(!list || !list.length){ alertsEl.hidden = true; lastAlertSig = ''; alertsLiveEl.textContent = ''; return; }
+    announceAlerts(list);
+    var multi = list.length > 1;
+    var top = list[0];
+    var groupKey = multi ? '__group' : (top.id || top.event);
+    var open = !!expandedAlerts[groupKey];
+
+    var card = document.createElement('div');
+    card.className = 'alert alert--' + alertKind(top.event);
+
+    var head = document.createElement('button');
+    head.type = 'button';
+    head.className = 'alert-head';
+    head.setAttribute('aria-expanded', open ? 'true' : 'false');
+    head.setAttribute('aria-controls', 'alertBody0');
+    head.appendChild(alertIcon());
+    head.appendChild(alertTitles(top));
+
+    if(multi){
+      var chips = document.createElement('span');
+      chips.className = 'alert-chips';
+      ['warning', 'watch', 'advisory'].forEach(function(kind){
+        var n = list.filter(function(p){ return alertKind(p.event) === kind; }).length;
+        if(!n) return;
+        var chip = document.createElement('span');
+        chip.className = 'alert-chip alert-chip--' + kind;
+        var dot = document.createElement('i');
+        chip.appendChild(dot);
+        chip.appendChild(document.createTextNode(kindLabel(kind, n)));
+        chips.appendChild(chip);
+      });
+      head.appendChild(chips);
+    }
+    head.appendChild(alertToggle());
+
+    var body = document.createElement('div');
+    body.className = 'alert-body';
+    body.id = 'alertBody0';
+    body.hidden = !open;
+
+    if(!multi){
+      body.appendChild(alertDetails(top));
+    }else{
+      body.classList.add('alert-body--list');
+      var heads = [];
+      list.forEach(function(p, i){
+        var itemKey = p.id || (p.event + i);
+        var itemOpen = expandedAlerts.__item === itemKey;
+        var item = document.createElement('div');
+        item.className = 'alert-item alert--' + alertKind(p.event);
+
+        var ihead = document.createElement('button');
+        ihead.type = 'button';
+        ihead.className = 'alert-item-head';
+        ihead.setAttribute('aria-expanded', itemOpen ? 'true' : 'false');
+        ihead.setAttribute('aria-controls', 'alertItemBody' + i);
+        var dot = document.createElement('span');
+        dot.className = 'alert-dot';
+        ihead.appendChild(dot);
+        ihead.appendChild(alertTitles(p));
+        ihead.appendChild(alertToggle());
+
+        var ibody = document.createElement('div');
+        ibody.className = 'alert-item-body';
+        ibody.id = 'alertItemBody' + i;
+        ibody.hidden = !itemOpen;
+        ibody.appendChild(alertDetails(p));
+
+        heads.push({head: ihead, body: ibody, key: itemKey});
+        ihead.addEventListener('click', function(){
+          var willOpen = ihead.getAttribute('aria-expanded') !== 'true';
+          heads.forEach(function(h){
+            var on = willOpen && h.head === ihead;
+            h.head.setAttribute('aria-expanded', on ? 'true' : 'false');
+            h.body.hidden = !on;
+          });
+          expandedAlerts.__item = willOpen ? itemKey : null;
+        });
+
+        item.appendChild(ihead);
+        item.appendChild(ibody);
+        body.appendChild(item);
+      });
+    }
+
+    head.addEventListener('click', function(){
+      var nowOpen = head.getAttribute('aria-expanded') !== 'true';
+      head.setAttribute('aria-expanded', nowOpen ? 'true' : 'false');
+      body.hidden = !nowOpen;
+      expandedAlerts[groupKey] = nowOpen;
+    });
+
+    card.appendChild(head);
+    card.appendChild(body);
+    alertsEl.appendChild(card);
+    alertsEl.hidden = false;
+  }
+
   async function loadForLocationCore(lat, lon, label, opts){
     var quiet = !!(opts && opts.quiet);
     lastLoad = {lat: lat, lon: lon, label: label};
     if(!quiet){
+      renderAlerts([]);
       clearLoadFailure();
       renderHeroSkeleton();
       renderHourlySkeleton();
       renderWeekSkeleton();
       renderBestSkeleton();
+      airSection.hidden = true;
     }
     var bestInputsPromise = fetchBestInputs(lat, lon);
+    var airNowPromise = fetchAirNowCurrent(lat, lon);
+    var alertsPromise = fetchAlerts(lat, lon);
     if(!quiet) setStatus('Contacting NOAA/NWS…');
 
     var points = await fetchJson('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4));
@@ -2364,6 +3058,7 @@
     var rl = props.relativeLocation && props.relativeLocation.properties;
     hdrLoc.textContent = rl ? rl.city + ', ' + rl.state : place;
     locTime.textContent = new Date().toLocaleTimeString([], locTimeOpts());
+    dataAsOf.textContent = new Date().toLocaleTimeString([], dataAsOfOpts());
     locBar.hidden = false;
 
     var results = await Promise.all([
@@ -2380,6 +3075,9 @@
     heroEl.removeAttribute('aria-hidden');
     renderHero(hourly[0], daily[0], hourly);
     startRadarLoop(lat, lon);
+    alertsPromise.then(function(list){
+      if(lastLoad && lastLoad.lat === lat && lastLoad.lon === lon) renderAlerts(list);
+    });
 
     var todayStr = localDate(hourly[0].startTime);
     var sunKey = lat.toFixed(2) + ',' + lon.toFixed(2) + ',' + todayStr;
@@ -2403,7 +3101,9 @@
     todaySection.removeAttribute('aria-hidden');
     renderHourly(hourly);
     renderWeek(daily);
-    var bestWhen = renderBest(hourly, await bestInputsPromise);
+    var bestInputs = await bestInputsPromise;
+    var bestWhen = renderBest(hourly, bestInputs);
+    renderAirPollen(lat, todayStr, await airNowPromise);
 
     setStatus('');
     var nowW = parseWind(hourly[0].windSpeed), nowBand = bandFor(nowW.high);
@@ -2431,6 +3131,7 @@
     renderHourlySkeleton();
     renderWeekSkeleton();
     renderBestSkeleton();
+    airSection.hidden = true;
     locBar.hidden = true;
     hdrLoc.textContent = '';
     loadErrorText.textContent = msg;

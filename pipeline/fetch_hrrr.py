@@ -34,10 +34,10 @@ HRRR_LAT1, HRRR_LON1 = 21.138123, 237.280472 - 360  # first grid point (SW corne
 HRRR_LCC_PROJ4 = "+proj=lcc +lat_1=38.5 +lat_2=38.5 +lat_0=38.5 +lon_0=-97.5 +R=6371229 +units=m +no_defs"
 
 # Forecast horizon: sub-hourly (15 min) steps for hour 1, then hourly out
-# to hour 3, matching the "~3-hour forecast" goal and using sub-hourly
+# to hour 6, matching the "~6-hour forecast" goal and using sub-hourly
 # output where HRRR actually provides it.
 SUBHOURLY_MINUTES = [15, 30, 45, 60]
-HOURLY_STEPS = [2, 3]
+HOURLY_STEPS = [2, 3, 4, 5, 6]
 
 
 def _lcc_transformer():
