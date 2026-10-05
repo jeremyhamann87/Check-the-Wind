@@ -171,7 +171,7 @@
   }
   form.search input{
     background:var(--surface); color:var(--text);
-    border:1px solid var(--border); border-radius:4px;
+    border:1px solid var(--border); border-radius:10px;
     padding:11px 13px; min-height:44px; font-size:1rem; font-family:inherit;
   }
   .input-wrap{position:relative; display:flex}
@@ -180,21 +180,21 @@
   form.search .clear-loc-btn{
     position:absolute; right:0; top:50%; margin-top:-22px; z-index:1;
     width:44px; height:44px; min-height:0; padding:0; display:flex; align-items:center; justify-content:center;
-    background:transparent; border:0; border-radius:0 4px 4px 0; color:var(--text); opacity:.6; cursor:pointer;
+    background:transparent; border:0; border-radius:0 10px 10px 0; color:var(--text); opacity:.6; cursor:pointer;
   }
   form.search .clear-loc-btn:hover{opacity:1; background:var(--hover-bg)}
   form.search .clear-loc-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0; opacity:1}
   .clear-loc-btn svg{width:16px; height:16px; pointer-events:none}
   .loc-suggestions{
     position:absolute; top:100%; left:0; right:0; z-index:20;
-    background:var(--surface); border:1px solid var(--border); border-radius:4px;
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
     box-shadow:var(--shadow); max-height:15rem; overflow-y:auto;
     list-style:none; margin:0; padding:4px;
   }
   .input-wrap:has(.loc-suggestions:not([hidden])) input{border-bottom-left-radius:0; border-bottom-right-radius:0}
   .input-wrap:has(.loc-suggestions:not([hidden])) .loc-suggestions{border-top-left-radius:0; border-top-right-radius:0}
   .loc-suggestion{
-    padding:13px 10px; border-radius:4px; cursor:pointer;
+    padding:13px 10px; border-radius:7px; cursor:pointer;
     font-size:1rem; color:var(--text); line-height:1.3;
     display:flex; align-items:center; min-height:44px;
   }
@@ -203,7 +203,7 @@
   form.search input:focus{outline:2px solid var(--focus-ring); outline-offset:-2px; box-shadow:none}
   form.search button{
     background:var(--surface-2); color:var(--text);
-    border:1px solid var(--border); border-radius:4px;
+    border:1px solid var(--border); border-radius:10px;
     padding:0 14px; min-height:44px; font-size:1rem; font-family:'Nunito',sans-serif; font-weight:600;
     cursor:pointer;
   }
@@ -211,7 +211,7 @@
   form.search button[type="submit"]{display:none}
   form.search .geo-btn{
     display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
-    width:44px; height:44px; border-radius:4px;
+    width:44px; height:44px; border-radius:10px;
     background:var(--surface-2); color:var(--text); border:1px solid var(--border);
     cursor:pointer; padding:0;
   }
@@ -237,8 +237,8 @@
   .alerts{display:flex; flex-direction:column; gap:12px; margin-top:64px}
   .alerts[hidden]{display:none}
   .alerts:not([hidden]) + #heroSection, .alerts:not([hidden]) + #bestSection{margin-top:32px}
-  .alerts:not([hidden]) + #bestSection{margin-top:40px}
-  .alert{--alert-bg:#2F6DB5; --alert-ink:#fff; border:1px solid var(--alert-bg); border-radius:4px; overflow:hidden; background:var(--surface)}
+  .alerts:not([hidden]) + #bestSection{margin-top:24px}
+  .alert{--alert-bg:#2F6DB5; --alert-ink:#fff; border:1px solid var(--alert-bg); border-radius:14px; overflow:hidden; background:var(--surface)}
   .alert--warning{--alert-bg:#C62828; --alert-ink:#fff}
   .alert--watch{--alert-bg:#F2C230; --alert-ink:#2B2300}
   .alert--advisory{--alert-bg:#2F6DB5; --alert-ink:#fff}
@@ -250,7 +250,7 @@
   .alert-icon{flex:0 0 auto; display:flex}
   .alert-icon svg{width:22px; height:22px}
   .alert-titles{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:0}
-  .alert-title{font-size:1.125rem; font-weight:700; line-height:1.25}
+  .alert-title{font-size:1rem; font-weight:700; line-height:1.25}
   .alert-sub{font-size:1rem; font-weight:400; line-height:1.3; opacity:.92}
   .alert-toggle{flex:0 0 auto; display:flex}
   .alert-toggle svg{width:18px; height:18px}
@@ -263,7 +263,12 @@
   .alert-body dt{font-weight:700; margin-top:14px}
   .alert-body dt:first-child{margin-top:0}
   .alert-body dd{margin:2px 0 0; white-space:pre-wrap; overflow-wrap:anywhere}
-  .alert-more{flex:0 0 auto; display:inline-flex; align-items:center; padding:2px 10px; border-radius:4px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:0.875rem; font-weight:700; white-space:nowrap}
+  .alert-chips{flex:0 0 auto; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px}
+  .alert-chip{display:inline-flex; align-items:center; gap:6px; padding:2px 9px; border-radius:99px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:1rem; font-weight:700; white-space:nowrap}
+  .alert-chip i{width:8px; height:8px; border-radius:50%; background:var(--chip)}
+  .alert-chip--warning{--chip:#C62828}
+  .alert-chip--watch{--chip:#E0A800}
+  .alert-chip--advisory{--chip:#2F6DB5}
   .alert-body--list{padding:0}
   .alert-item{border-top:1px solid var(--table-border)}
   .alert-item:first-child{border-top:0}
@@ -283,12 +288,14 @@
   @media (max-width:31.1875em){
     .alerts{margin-top:16px}
     .alerts:not([hidden]) + #heroSection, .alerts:not([hidden]) + #bestSection{margin-top:24px}
-    .alerts:not([hidden]) + #bestSection{margin-top:40px}
     .alert-head{padding:9px 14px}
     .alert-body{padding:14px 16px 18px}
-    .alert-body--list{padding:0}
-    .alert-item-head{padding:4px 14px}
-    .alert-item-body{padding:0 16px 10px 38px}
+    .alert-head{flex-wrap:wrap}
+    .alert-titles{flex:1 1 0}
+    .alert-chips{order:3; flex:1 0 calc(100% - 34px); justify-content:flex-start; margin-left:34px}
+    .alert-toggle{order:2}
+    .alert-item-head{padding:8px 14px}
+    .alert-item-body{padding:2px 16px 16px 38px}
   }
   .section-head{position:relative; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:.25rem 1rem; margin-bottom:12px}
   .section-head h2{font-size:1.25rem; margin:0; color:var(--text); display:inline-flex; align-items:center; gap:6px}
@@ -306,7 +313,7 @@
   .info-tip{
     position:absolute; z-index:20; top:calc(100% + 10px); left:0;
     width:min(280px, calc(100vw - 48px));
-    padding:12px 14px; border-radius:4px;
+    padding:12px 14px; border-radius:10px;
     background:var(--surface); border:1px solid var(--table-border); box-shadow:var(--shadow);
     font-size:1rem; font-weight:300; line-height:1.6; color:var(--text-faint);
     opacity:0; visibility:hidden; transform:translateY(-4px);
@@ -319,15 +326,13 @@
   @media (prefers-reduced-motion: reduce){ .info-tip{transition:opacity .01s} }
   .section-head .sub{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace}
 
-  .wind-field{display:none}
-
   .hero{
     --wind-mph: 0;
     --stripe-angle: 115deg;
     --flow-dx: -120px;
     --flow-dy: -52px;
     background: color-mix(in srgb, var(--hero-band, var(--band-calm)) var(--tint-hero), var(--surface));
-    border-radius:4px;
+    border-radius:16px;
     padding:24px; box-shadow:var(--shadow); position:relative; overflow:hidden; z-index:0;
     min-height:242px; display:flex; flex-direction:column; justify-content:center;
   }
@@ -354,7 +359,7 @@
   .hero-reading .unit-wrap{display:inline-flex; align-items:center; gap:10px; padding-bottom:10px}
   .hero-reading .unit-top{display:inline-flex; flex-direction:column; align-items:flex-start; gap:4px}
   .hero-reading .unit{font-size:1.3125rem; color:var(--text-muted)}
-  .hero-band-pill{display:inline-block; font-size:1rem; font-weight:600; padding:2px 10px; border-radius:4px; white-space:nowrap}
+  .hero-band-pill{display:inline-block; font-size:1rem; font-weight:600; padding:2px 10px; border-radius:99px; white-space:nowrap}
   .date-row-pill{display:none}
   .weather-now{margin-top:18px; display:flex; align-items:center; gap:12px}
   .weather-now .wicon{flex:0 0 2.5rem; width:2.5rem; display:flex; justify-content:flex-start}
@@ -373,7 +378,7 @@
   .ground-now .gtext b{color:var(--text); font-weight:600}
   .radar{
     position:relative; flex-shrink:0; z-index:1;
-    border-radius:4px; overflow:hidden; border:1px solid var(--border); background:#0a0a0a;
+    border-radius:10px; overflow:hidden; border:1px solid var(--border); background:#0a0a0a;
   }
   .radar .radar-map{width:100%; height:100%}
   .radar .radar-tag{
@@ -388,13 +393,13 @@
   .radar{cursor:pointer}
   .radar-expand-btn{
     position:absolute; top:8px; right:8px; z-index:650;
-    width:44px; height:44px; padding:0; border-radius:4px; border:0;
+    width:44px; height:44px; padding:0; border-radius:10px; border:0;
     background:rgba(0,0,0,.44); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;
   }
   .radar-expand-btn:hover{background:rgba(0,0,0,.62)}
   .radar-expand-btn:focus-visible{outline:2px solid #fff; outline-offset:-2px}
   .radar-expand-btn svg{width:16px; height:16px}
-  @media (min-width:31.25em){ .radar-expand-btn{width:30px; height:30px; border-radius:4px} }
+  @media (min-width:31.25em){ .radar-expand-btn{width:30px; height:30px; border-radius:8px} }
 
   .radar-modal{
     position:fixed; inset:0; z-index:100;
@@ -408,7 +413,7 @@
        ceiling is raised too or doubling the rem value alone would've had
        no visible effect. */
     position:relative; z-index:1; width:min(46rem, 100%); height:min(92rem, 95vh);
-    background:var(--surface); border-radius:4px; box-shadow:var(--shadow);
+    background:var(--surface); border-radius:16px; box-shadow:var(--shadow);
     display:flex; flex-direction:column; overflow:hidden;
   }
   /* The embedded page supplies its own header/title/close/controls now —
@@ -419,11 +424,11 @@
     .radar-modal-panel{width:100%; height:100%; max-height:100%; border-radius:0}
   }
   .today-card{
-    background:var(--surface); border-radius:4px; border:1px solid var(--table-border);
+    background:var(--surface); border-radius:14px; border:1px solid var(--table-border);
     padding:16px;
   }
   .today-inner{position:relative; overflow-x:auto; overflow-y:hidden; scrollbar-width:thin}
-  .today-inner:focus-visible{outline-offset:4px; border-radius:4px}
+  .today-inner:focus-visible{outline-offset:4px; border-radius:6px}
   .sunset-spacer{height:0}
   .today-card{--sun-h:2.5rem}
   .sunset-spacer.has-sunset{height:var(--sun-h)}
@@ -449,7 +454,7 @@
   }
   .htile .hr{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace; white-space:nowrap}
   .htile .barwrap{height:74px; display:flex; align-items:flex-end}
-  .htile .bar{width:14px; height:var(--h); border-radius:4px 4px 3px 3px; min-height:6px}
+  .htile .bar{width:14px; height:var(--h); border-radius:5px 5px 3px 3px; min-height:6px}
   .htile .spwrap{display:flex; align-items:baseline; gap:2px; white-space:nowrap}
   .htile .sp{font-size:1rem; font-weight:600; font-family:'Nunito',monospace}
   .htile .spunit{font-size:1rem; font-weight:600; color:var(--text-muted); font-family:'Nunito',monospace}
@@ -466,8 +471,8 @@
   .pollen-row-icon{flex:0 0 auto; display:flex; margin-right:4px}
   .pollen-row-label{flex:1 1 auto; margin-right:10px; font-size:1rem; font-weight:600; color:var(--text)}
   .pollen-row-val{font-size:1rem; font-weight:600; text-align:right}
-  .pollen-bar-track{height:7.2px; border-radius:4px; background:var(--surface-2); overflow:hidden; margin-top:6px}
-  .pollen-bar-fill{height:100%; border-radius:4px}
+  .pollen-bar-track{height:7.2px; border-radius:99px; background:var(--surface-2); overflow:hidden; margin-top:6px}
+  .pollen-bar-fill{height:100%; border-radius:99px}
   /* Desktop only: pairs #todaySection with #airSection as an equal-width
      row, to the right of Wind Today — mirrors the old Wind-Today/Gusts
      row this file used before that module was removed. */
@@ -504,11 +509,11 @@
     }
     .today-card--scrollable::after{
       right:1px; background:linear-gradient(to right, transparent, var(--surface));
-      border-radius:0 4px 4px 0;
+      border-radius:0 13px 13px 0;
     }
     .today-card--scrollable::before{
       left:1px; background:linear-gradient(to left, transparent, var(--surface));
-      border-radius:4px 0 0 4px;
+      border-radius:13px 0 0 13px;
     }
     .today-card--scrollable.can-scroll-right::after{ opacity:1 }
     .today-card--scrollable.can-scroll-left::before{ opacity:1 }
@@ -518,7 +523,7 @@
     display:grid; grid-template-columns:2.25rem minmax(6.5rem,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,1.4fr);
     gap:12px; align-items:center;
   }
-  .bw-list{background:var(--surface); border-radius:4px; overflow:hidden; border:1px solid var(--table-border)}
+  .bw-list{background:var(--surface); border-radius:14px; overflow:hidden; border:1px solid var(--table-border)}
   .bw-head{padding:16px 24px 12px; border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
   .bw-row{padding:16px 24px; border-bottom:.5px solid var(--table-border); font-size:1rem}
   .bw-row.bw-row--top{padding:16px 24px}
@@ -536,7 +541,7 @@
   .bw-val{font-size:1rem; font-weight:500; color:var(--text-muted)}
   .bw-row--top .bw-val{font-weight:600; color:var(--text)}
   .bw-head[hidden]{display:none}
-  .bw-empty{display:flex; align-items:flex-start; justify-content:space-between; gap:32px; padding:16px 24px; color:var(--text)}
+  .bw-empty{display:flex; align-items:center; justify-content:space-between; gap:32px; padding:24px; color:var(--text)}
   .bw-empty-title{display:block; font-size:1.125rem; font-weight:700; line-height:1.3; color:var(--text)}
   .bw-empty-sub{display:block; margin-top:4px; font-size:1rem; color:var(--text-muted)}
   .bw-empty svg{flex:0 0 auto; display:block}
@@ -567,7 +572,6 @@
     .fp-flame, .fp-glow, .win-rain, .win-snow, .win-wind, .win-bolt, .tea-steam, .cat-tail{animation:none}
     .fp-glow{opacity:.25} .win-bolt{opacity:0} .tea-steam{opacity:.5}
   }
-  .bw-toggle-cell{display:none}
   .skel-bwrow .bw-cell .skel{display:block; height:.875rem; width:70%}
   .skel-bwrow .bw-medal .skel{width:2.25rem; height:2.25rem; border-radius:50%}
   .skel-bwrow .bw-window .skel:first-child{width:6rem}
@@ -599,8 +603,8 @@
     padding:2px 10px; border-radius:0; white-space:nowrap;
     background:var(--seg);
   }
-  .wind-seg-col:first-child .wind-seg{border-radius:4px 0 0 4px}
-  .wind-seg-col:last-child .wind-seg{border-radius:0 4px 4px 0}
+  .wind-seg-col:first-child .wind-seg{border-radius:99px 0 0 99px}
+  .wind-seg-col:last-child .wind-seg{border-radius:0 99px 99px 0}
   .wind-seg span{
     font-size:1rem; font-weight:600; color:var(--seg-ink);
     letter-spacing:.02em; text-align:center; overflow:hidden; text-overflow:ellipsis;
@@ -615,7 +619,7 @@
 
   .daylist{
     display:flex; flex-direction:column;
-    background:var(--surface); border-radius:4px; overflow:hidden;
+    background:var(--surface); border-radius:14px; overflow:hidden;
     border:1px solid var(--table-border);
   }
   .dayrow, .dayrow-head{display:flex; align-items:center; gap:16px}
@@ -659,12 +663,12 @@
     color:var(--band-verywindy); white-space:nowrap;
   }
 
-  .skel{background:var(--skel-a); border-radius:4px; animation:skelPulse 1.4s ease-in-out infinite}
+  .skel{background:var(--skel-a); border-radius:8px; animation:skelPulse 1.4s ease-in-out infinite}
   .skel-radar{position:absolute; inset:0; border-radius:inherit}
   .skel-hero{background:var(--surface) !important}
   .skel-hero .radar{width:11.25rem; height:11.25rem; position:relative; background:var(--skel-a)}
   .skel-radar{opacity:1; background:transparent !important}
-  .skel-hero .hero-reading .skel{width:6.5rem; height:5.5rem; border-radius:4px}
+  .skel-hero .hero-reading .skel{width:6.5rem; height:5.5rem; border-radius:14px}
   .skel-hero .weather-now .wicon .skel, .skel-hero .ground-now .gicon .skel{width:100%; height:100%; border-radius:50%}
   .skel-hero .weather-now .wtext .skel{width:11rem; height:1rem; max-width:100%}
   .skel-hero .ground-now .gtext .skel{width:13rem; height:1rem; max-width:100%}
@@ -745,7 +749,7 @@
   .disclaimers-modal-head h2{font-size:1.125rem; margin:0; color:var(--text)}
   .disclaimers-modal-close{
     background:none; border:none; cursor:pointer; color:var(--text-muted);
-    padding:6px; display:flex; border-radius:4px;
+    padding:6px; display:flex; border-radius:6px;
   }
   .disclaimers-modal-close:hover{background:var(--hover-bg)}
   .disclaimers-modal-close:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0}
@@ -793,7 +797,7 @@
     .daylist{background:transparent; box-shadow:none; border-radius:0; overflow:visible; gap:16px}
     .dayrow{
       display:flex; flex-direction:column; padding:0;
-      border-radius:4px; background:var(--surface); border:1px solid var(--table-border); overflow:hidden;
+      border-radius:14px; background:var(--surface); border:1px solid var(--table-border); overflow:hidden;
     }
     .dayrow .drest{display:contents}
     .dayrow .dnames, .dayrow .dwind, .dayrow .dshort, .dayrow .temps{
@@ -836,7 +840,7 @@
     }
     .htile .hr{flex:0 0 2.6rem; text-align:left}
     .htile .barwrap{flex:1 1 auto; min-width:0; height:auto; align-items:center}
-    .htile .bar{width:var(--pct); height:10px; min-width:6px; min-height:0; border-radius:3px 4px 4px 3px}
+    .htile .bar{width:var(--pct); height:10px; min-width:6px; min-height:0; border-radius:3px 5px 5px 3px}
     .htile .spwrap{flex:0 0 auto}
     .htile .hdir{margin-top:0}
     .sun-marker{left:0; right:0; top:0; bottom:auto}
@@ -888,7 +892,7 @@
   html.load-failed main, html.load-failed footer{display:none}
   .load-error-btn{
     margin-top:12px; min-height:44px; padding:0 20px; display:inline-flex; align-items:center; gap:8px;
-    border:1px solid var(--border); border-radius:4px; background:var(--surface-2); color:var(--text);
+    border:1px solid var(--border); border-radius:10px; background:var(--surface-2); color:var(--text);
     font-family:inherit; font-size:1rem; font-weight:600; cursor:pointer;
   }
   .load-error-btn:hover{background:var(--hover-bg)}
@@ -912,15 +916,15 @@
   .wind-legend-inhero{
     margin-top:14px;
     background: color-mix(in srgb, var(--hero-band, var(--band-calm)) var(--tint-hero), var(--surface));
-    border-radius:4px;
+    border-radius:16px;
     padding:16px 24px;
   }
   .wind-legend-inhero .wind-legend-segs{
-    border-radius:4px;
+    border-radius:99px;
     overflow:hidden;
   }
   @media (max-width:31.1875em){
-    .wind-legend-inhero{ padding:16px; border-radius:4px }
+    .wind-legend-inhero{ padding:16px; border-radius:14px }
   }
 
   /* 7-Day Wind Outlook as a card grid — desktop only, confined to the
@@ -935,7 +939,7 @@
     #weekSection .dayrow{
       display:flex; flex-direction:column; align-items:stretch; gap:8px;
       padding:16px 14px;
-      border-radius:4px; background:var(--surface); border:1px solid var(--table-border);
+      border-radius:14px; background:var(--surface); border:1px solid var(--table-border);
       border-top:4px solid var(--card-band, var(--table-border));
     }
     #weekSection .dayrow .drest{ display:contents }
@@ -972,45 +976,63 @@
      its normal sticky-to-viewport behavior at every other breakpoint,
      where .db-layout is just a plain block and header.top is a direct,
      unconstrained sticky child same as Design A. At desktop, header.top
-     switches to a static grid item instead. App-shell layout: the grid is exactly one window tall, so the
-     left (hero) column always fits the window height — never the page height — and the right content
-     column scrolls on its own (overflow-y:auto) however tall its modules get. */
+     switches to a static grid item instead. The left (hero) column always
+     fills at least the full window height — min-height:100vh on the grid
+     container plus the 1fr second row makes .hero-wrap stretch to absorb
+     any leftover space. .db-content spans both grid rows but opts out of
+     the default row stretch (align-self:start) so the right column's
+     height stays bound to its own content instead of being pulled down
+     to match a taller left side. */
   @media (min-width:64em){
-    html, body{ height:100%; overflow:hidden }
     body{ padding-top:0; padding-bottom:0 }
     .db-layout{
-      display:grid; grid-template-columns:calc(100% / 3 - 34px) minmax(0,1fr); grid-template-rows:auto minmax(0,1fr);
-      align-items:stretch; height:100vh; height:100dvh; overflow:hidden;
+      display:grid; grid-template-columns:1fr 2fr; grid-template-rows:auto 1fr;
+      align-items:stretch; min-height:100vh;
     }
     .db-layout > header.top{ grid-column:1; grid-row:1 }
     .db-layout > .hero-wrap{ grid-column:1; grid-row:2 }
-    .db-layout > .db-content{ grid-column:2; grid-row:1 / 3; align-self:stretch; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin }
+    .db-layout > .db-content{ grid-column:2; grid-row:1 / 3; align-self:start }
 
-    header.top, .hero-wrap{ background:transparent }
+    header.top, .hero-wrap{
+      background: color-mix(in srgb, var(--hero-band, var(--band-calm)) var(--tint-hero), var(--surface));
+    }
     .db-layout > header.top{
-      position:relative; z-index:2; padding:40px 48px 0; margin:0;
+      position:relative; padding:40px 48px 0; margin:0;
     }
     header.top .hdr-in{ max-width:none; padding-inline:0; position:relative }
     header.top .brand h1{ font-size:1.75rem }
 
-    /* Wind field: ONE canvas layer behind both header.top and .hero-wrap (grid column 1, rows 1-2), so the
-       moving wind lines are a single continuous surface across the whole left column. The inner .hero card's
-       own stripe animation is switched off here so the two never overlap. */
-    .db-layout > .wind-field{
-      display:block; grid-column:1; grid-row:1 / 3; position:relative; overflow:hidden; z-index:0;
-      background: color-mix(in srgb, var(--hero-band, var(--band-calm)) var(--tint-hero), var(--surface));
-      transition: background-color .6s ease;
+    /* Same animated stripe texture as .hero::before (see base rules), but
+       spanning the whole header.top / .hero-wrap box each sits in, so the
+       wind animation fills the entire left column up to the top of the
+       page instead of being confined to the inner current-conditions card.
+       Uses background-position (not transform) to pan the pattern, so the
+       element can exactly fit its box — no oversizing/clipping needed. */
+    header.top::before, .hero-wrap::before{
+      content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+      opacity: clamp(.18, .16 + var(--wind-mph, 0) * .013, .85);
+      background-image: repeating-linear-gradient(
+        var(--stripe-angle, 115deg),
+        color-mix(in srgb, var(--hero-band, var(--band-calm)) 19.36%, transparent) 0 1px,
+        transparent 1px clamp(11px, 34px - var(--wind-mph, 0) * .65px, 34px)
+      );
+      animation: windflowBgPos clamp(1.1s, 6.5s - var(--wind-mph, 0) * .12s, 6.5s) linear infinite;
     }
-    .wind-field canvas{ position:absolute; inset:0; width:100%; height:100%; display:block }
-    .hero-wrap .hero::before{ display:none }
+    @keyframes windflowBgPos{
+      from{ background-position:0 0; }
+      to{ background-position: var(--flow-dx, -120px) var(--flow-dy, -52px); }
+    }
+    @media (prefers-reduced-motion: reduce){
+      header.top::before, .hero-wrap::before{ animation:none; }
+    }
 
-    .hero-wrap{ padding:20px 48px 28px; display:flex; flex-direction:column; position:relative; z-index:1; min-height:0; overflow-y:auto; scrollbar-width:none }
-    .hero-wrap #heroSection{ margin-top:0; flex:1; display:flex; flex-direction:column; min-height:0 }
+    .hero-wrap{ padding:20px 48px 28px; display:flex; flex-direction:column; position:relative }
+    .hero-wrap #heroSection{ margin-top:0; flex:1; display:flex; flex-direction:column }
     .hero-wrap #heroSection .section-head{ display:none }
     .hero-wrap .hero{ background:transparent; box-shadow:none; min-height:0; padding:0 0 20px; flex:1; justify-content:flex-start }
     .hero-wrap .hero-reading .val{ font-size:8rem }
-    .hero-wrap .hero-top{ flex:1; flex-direction:column; align-items:stretch; gap:16px; min-height:0 }
-    .hero-wrap .radar{ flex:1; width:100%; min-height:140px }
+    .hero-wrap .hero-top{ flex:1; flex-direction:column; align-items:stretch; gap:16px }
+    .hero-wrap .radar{ flex:1; width:100%; min-height:0 }
     .hero-wrap .wind-legend-inhero{ display:none }
     .hero-wrap .weather-now .wtext, .hero-wrap .ground-now .gtext{ font-size:1rem }
     .hero-wrap .weather-now .wicon, .hero-wrap .ground-now .gicon{ flex-basis:3.75rem; width:3.75rem }
@@ -1027,9 +1049,9 @@
     .db-content .alerts{ margin-top:0 }
     /* Modules sit on the page background without outlines (inner row dividers stay); a soft shadow lifts them instead. */
     .db-content .bw-list, .db-content .today-card{ border:0 }
-    #weekSection .dayrow{ border:0; border-top:8px solid var(--card-band, var(--table-border)) }
+    #weekSection .dayrow{ border:0 }
     .db-content .bw-list, .db-content .today-card, #weekSection .dayrow, .db-content .alert{ box-shadow:var(--shadow) }
-    .db-content .alerts:not([hidden]) + #bestSection{ margin-top:40px }
+    .db-content .alerts:not([hidden]) + #bestSection{ margin-top:24px }
 
     /* Pull-to-refresh: #ptr normally grows in document flow, pushing
        .wrap down as you pull. At desktop that growth also grows
@@ -1047,115 +1069,6 @@
   @media (max-width:23.9em){
     .wind-legend-segs{grid-template-columns:repeat(3,1fr)}
   }
-
-  /* ============== Mobile (<=499px): same hero as the desktop sidebar ==============
-     The wind field, header and hero stack as one colored block at the top (same markup and styling as the
-     desktop left column), with any NWS alert banner moved in under the search bar. No Wind Key. The
-     7-Day Outlook uses the desktop cards, two across. The hero part also applies at tablet widths. */
-  @media (max-width:63.99em){
-    body{ padding-top:0 }
-    .db-layout{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:auto auto auto }
-    .db-layout > .wind-field{
-      display:block; grid-column:1; grid-row:1 / 3; position:relative; overflow:hidden; z-index:0;
-      background: color-mix(in srgb, var(--hero-band, var(--band-calm)) var(--tint-hero), var(--surface));
-      transition: background-color .6s ease;
-    }
-    .wind-field canvas{ position:absolute; inset:0; width:100%; height:100%; display:block }
-    .db-layout > header.top{
-      grid-column:1; grid-row:1; position:relative; z-index:2; background:transparent; padding:24px 16px 0; margin:0;
-    }
-    header.top .hdr-in{ max-width:none; padding-inline:0; position:relative }
-    header.top .brand h1{ font-size:1.75rem }
-    form.search{ overflow:visible; opacity:1; max-height:none; margin-bottom:0 }
-    header.top .status{ overflow:visible; opacity:1; max-height:none; margin-top:6px }
-    header.top .alerts{ margin-top:24px; margin-bottom:8px }
-    .db-layout > .hero-wrap{
-      grid-column:1; grid-row:2; position:relative; z-index:1; background:transparent;
-      display:flex; flex-direction:column; padding:16px 16px 28px;
-    }
-    .db-layout > .db-content{ grid-column:1; grid-row:3; min-width:0 }
-    .hero-wrap .hero::before{ display:none }
-    .hero-wrap #heroSection{ margin-top:0 }
-    .hero-wrap #heroSection .section-head{ display:none }
-    .hero-wrap .hero{ background:transparent; box-shadow:none; min-height:0; padding:0 0 20px; justify-content:flex-start }
-    .hero-wrap .hero-reading .val{ font-size:8rem }
-    .hero-wrap .hero-top{ flex-direction:column; align-items:stretch; gap:16px }
-    .hero-wrap .radar{ width:100%; height:auto; aspect-ratio:1 / .85 }
-    .hero-wrap .wind-legend-inhero{ display:none }
-    .hero-wrap .weather-now .wicon, .hero-wrap .ground-now .gicon{ flex-basis:3.75rem; width:3.75rem }
-    .hero-wrap .weather-now .wicon svg{ width:57px; height:57px }
-    .hero-wrap .ground-now .gicon svg{ width:54px; height:54px }
-    .hero-wrap .hero-reading .unit-wrap > svg{ width:63px; height:63px }
-    .hero-wrap .hero-reading{ align-items:center }
-    .hero-wrap .hero-reading .unit-wrap{ padding-bottom:0 }
-  }
-  @media (min-width:31.25em) and (max-width:63.99em){
-    .db-layout > header.top{ padding:32px 32px 0 }
-    .db-layout > .hero-wrap{ padding:16px 32px 32px }
-    .hero-wrap .radar{ aspect-ratio:16 / 9 }
-  }
-  @media (max-width:31.1875em){
-    #weekSection .daylist{
-      display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px;
-      background:transparent; border:0; border-radius:0; overflow:visible;
-    }
-    #weekSection .dayrow-head{ display:none }
-    #weekSection .dayrow{
-      display:flex; flex-direction:column; align-items:stretch; gap:8px; overflow:visible;
-      padding:16px 14px; border-radius:4px; background:var(--surface);
-      border:0; border-top:8px solid var(--card-band, var(--table-border)); box-shadow:var(--shadow);
-    }
-    #weekSection .dayrow:nth-child(even):last-child{ grid-column:1 / -1 }
-    #weekSection .dayrow .drest{ display:contents }
-    #weekSection .dayrow .dnames,
-    #weekSection .dayrow .dwind,
-    #weekSection .dayrow .dshort,
-    #weekSection .dayrow .temps{
-      width:auto; flex-shrink:0; margin-left:0; text-align:left;
-      padding:0; min-height:0; border-bottom:0; justify-content:flex-start; gap:6px;
-    }
-    #weekSection .dayrow .dlabel{
-      position:absolute!important; width:1px; height:1px; margin:-1px; padding:0;
-      overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0;
-    }
-    #weekSection .dayrow .dval{ text-align:left }
-    #weekSection .dayrow .dnames .dval{ flex-direction:row; align-items:baseline; gap:6px }
-    #weekSection .dayrow .date-row-pill{ display:none }
-    #weekSection .dayrow .dwind .dval{ justify-content:flex-start }
-    #weekSection .dayrow .dwind .dval-group{ flex-direction:row; flex-wrap:wrap; justify-content:flex-start; gap:4px; min-width:0 }
-    #weekSection .dayrow .dwind .wind-forecast-pill,
-    #weekSection .dayrow .gustbadge{ display:none }
-    #weekSection .dayrow .dshort{ display:none }
-    #weekSection .dayrow .temps .dval{ font-size:1.0625rem; display:flex; align-items:center; gap:6px }
-    #weekSection .dayrow .temps .temp-icon{ display:inline-flex }
-    #weekSection .dayrow .temps .temp-icon svg{ width:1.35em; height:1.35em }
-
-    /* --- mobile module chrome: 16px between modules, no outlines, desktop's soft shadow --- */
-    .db-content section{ margin-top:32px }
-    .db-content .bw-list, .db-content .today-card{ border:0; box-shadow:var(--shadow); border-radius:4px }
-    #weekSection .dayrow, .db-content .alert, header.top .alert{ border-radius:4px }
-
-    /* --- Best Times rows expand/collapse: rank + day/time stay put, +/- sits at the far right --- */
-    .bw-row{ grid-template-columns:auto 1fr auto }
-    .bw-toggle-cell{ display:flex; align-items:center; justify-content:flex-end }
-    .bw-toggle{
-      display:flex; align-items:center; justify-content:center; width:44px; height:44px; margin:-8px -12px -8px 0;
-      border:0; border-radius:50%; background:transparent; color:var(--text-muted); cursor:pointer;
-    }
-    .bw-toggle:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:0 }
-    .bw-toggle svg{ width:20px; height:20px }
-    .bw-toggle .v{ transition:opacity .15s }
-    .bw-row.is-open .bw-toggle .v{ opacity:0 }
-    .bw-stats{ display:none }
-    .bw-row.is-open .bw-stats{ display:grid }
-    .bw-row.bw-row--top{ padding:16px }
-
-    /* --- 7-Day Outlook: one full-width card per day, all data on a single line --- */
-    #weekSection .daylist{ grid-template-columns:minmax(0,1fr) }
-    #weekSection .dayrow:nth-child(even):last-child{ grid-column:auto }
-    #weekSection .dayrow{ flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:12px }
-    #weekSection .dayrow .dnames, #weekSection .dayrow .dwind, #weekSection .dayrow .temps{ flex:0 0 auto }
-  }
 </style>
 </head>
 <body>
@@ -1163,7 +1076,6 @@
 <div id="alertsLive" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <div class="db-layout">
-<div class="wind-field" id="windField" aria-hidden="true"><canvas id="windCanvas"></canvas></div>
 <header class="top" id="topbar">
   <div class="hdr-in">
     <div class="brand">
@@ -1340,10 +1252,10 @@
           <div role="columnheader">Window</div>
           <div role="columnheader">Temp</div>
           <div role="columnheader">Max wind</div>
-          <div role="columnheader">Precip</div>
+          <div role="columnheader">Precip chance</div>
           <div role="columnheader">Humidity</div>
           <div role="columnheader">Ground</div>
-          <div role="columnheader">AQI</div>
+          <div role="columnheader">Air Quality Index</div>
         </div>
         <template x-for="n in ($store.best.state === 'loading' ? 3 : 0)" :key="n">
           <div class="bw-row skel-bwrow">
@@ -1360,15 +1272,10 @@
           </div>
         </template>
         <template x-for="(w, idx) in $store.best.windows" :key="w.key">
-          <div class="bw-row" role="row" x-data="{open:false}" :class="[idx === 0 ? 'bw-row--top' : '', open ? 'is-open' : '']" :data-when="w.when">
+          <div class="bw-row" role="row" :class="idx === 0 ? 'bw-row--top' : ''" :data-when="w.when">
             <div class="bw-cell bw-medal" role="cell" x-html="w.medal"></div>
             <div class="bw-cell bw-window" role="cell"><span class="bw-day" x-text="w.day"></span><span class="bw-time" x-text="w.time"></span></div>
-            <div class="bw-cell bw-toggle-cell" role="cell">
-              <button type="button" class="bw-toggle" :aria-expanded="open" :aria-controls="'bwStats' + idx" :aria-label="(open ? 'Hide' : 'Show') + ' details for ' + w.day + ' ' + w.time" @click="open = !open">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><g stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><line class="v" x1="12" y1="4" x2="12" y2="20"/></g></svg>
-              </button>
-            </div>
-            <div class="bw-stats" :id="'bwStats' + idx">
+            <div class="bw-stats">
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Temp</span><span class="bw-val" x-text="w.temp"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Max wind</span><span class="bw-val" x-text="w.wind"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Precip</span><span class="bw-val" x-text="w.precip"></span></div>
@@ -1479,13 +1386,13 @@
     </div>
     <div class="disclaimers-modal-body">
       <p>
-        Wind speed, gusts, &amp; direction are sourced live from the National Weather Service
+        Wind speed, gusts, and direction are sourced live from the National Weather Service
         (<a href="https://api.weather.gov" target="_blank" rel="noopener">api.weather.gov</a>), NOAA — coverage is limited to
-        U.S. locations &amp; territories. Place lookup &amp; basemap tiles via OpenStreetMap / Nominatim (© OpenStreetMap
+        U.S. locations and territories. Place lookup and basemap tiles via OpenStreetMap / Nominatim (© OpenStreetMap
         contributors). Radar imagery from NOAA NEXRAD via Iowa State University's Iowa Environmental Mesonet; forecast radar frames from NOAA's HRRR model. Air Quality
-        Index &amp; Pollutants (PM2.5) are sourced live from AirNow (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>),
+        Index and Pollutants (PM2.5) are sourced live from AirNow (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>),
         EPA — coverage depends on the nearest reporting monitor. Pollen isn't available from any free public U.S. source,
-        so tree/grass/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement. Forecasts
+        so tree/grass/weeds levels are a seasonal estimate based on location and time of year, not a measurement. Forecasts
         update hourly at the source; reload to refresh.
       </p>
     </div>
@@ -1585,9 +1492,6 @@
   function moonMarkup(cx, cy, r){
     return '<path d="M'+(cx+r*0.55)+' '+(cy-r)+'a'+r+' '+r+' 0 1 0 '+(r*0.75)+' '+(r*1.9)+'A'+(r*0.82)+' '+(r*0.82)+' 0 0 1 '+(cx+r*0.55)+' '+(cy-r)+'Z" fill="var(--cloud-2)"/>';
   }
-
-  // Display "and" as "&" in weather descriptions that come from the NWS forecast (e.g. "Showers And Thunderstorms").
-  function ampText(s){ return String(s || '').replace(/\s+and\s+/gi, ' & '); }
 
   function weatherIcon(shortForecast, isDaytime, size){
     size = size || 40;
@@ -1866,7 +1770,7 @@
   /* ---------- Friendly error copy ---------- */
   var COPY = {
     network:   'We can’t reach the weather services right now. Check your internet connection, then try again.',
-    generic:   'Something unexpected got in the way. Give it a moment & try again, or search for a different place.',
+    generic:   'Something unexpected got in the way. Give it a moment and try again, or search for a different place.',
     refresh:   'We couldn’t refresh just now. Pull down to try again in a moment.',
     lookup:    'We couldn’t look up that place right now. Give it a moment, then try searching again.',
     coverage:  'The National Weather Service doesn’t cover this spot. Try a nearby U.S. city or town instead.',
@@ -1894,7 +1798,7 @@
     var res = await fetch(url, {headers:{'Accept':'application/json'}});
     if(!res.ok) throw appError(COPY.lookup);
     var data = await res.json();
-    if(!data || !data.length) throw appError('We couldn’t find “' + query + '” in the U.S. Try a city & state, like “Denver, CO”, or a ZIP code.', true);
+    if(!data || !data.length) throw appError('We couldn’t find “' + query + '” in the U.S. Try a city and state, like “Denver, CO”, or a ZIP code.', true);
     return {
       lat: parseFloat(data[0].lat),
       lon: parseFloat(data[0].lon),
@@ -1999,134 +1903,6 @@
     return '';
   }
 
-  /* ---------- Wind field: desktop sidebar background ----------
-     A canvas of wind streaks drifting across the whole left column. They travel the way the wind is
-     blowing (a "from the west" wind moves streaks west to east); speed, streak length and density all
-     scale with the current mph, and the color is the current wind band's. Only runs at the desktop
-     sidebar breakpoint, pauses while the tab is hidden, and draws one still frame when the visitor
-     prefers reduced motion. */
-  var windField = (function(){
-    var wrap = document.getElementById('windField');
-    var canvas = document.getElementById('windCanvas');
-    if(!wrap || !canvas || !canvas.getContext) return {set: function(){}};
-    var ctx = canvas.getContext('2d');
-    var wide = window.matchMedia('(min-width:0px)');
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    var W = 0, H = 0, dpr = 1, margin = 180;
-    var streaks = [], raf = 0, lastT = 0, frame = 0, color = '#5A78A5';
-    var target = {mph: 0, ux: 1, uy: 0};
-    var cur = {mph: 0, ux: 1, uy: 0, ready: false};
-
-    function readColor(){
-      var c = getComputedStyle(wrap).getPropertyValue('--hero-band').trim();
-      if(c) color = c;
-    }
-
-    function desiredCount(){
-      var area = Math.max(1, W * H);
-      var base = Math.min(340, Math.max(48, area / 6000));
-      return Math.round(base * (0.5 + Math.min(cur.mph, 40) / 40 * 0.9));
-    }
-
-    function spawn(){
-      return {
-        x: -margin + Math.random() * (W + margin * 2),
-        y: -margin + Math.random() * (H + margin * 2),
-        speed: 0.7 + Math.random() * 0.6,
-        len: 0.7 + Math.random() * 0.6
-      };
-    }
-
-    function resize(){
-      W = wrap.clientWidth; H = wrap.clientHeight;
-      if(!W || !H) return;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(W * dpr);
-      canvas.height = Math.round(H * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      streaks = [];
-      var n = desiredCount();
-      for(var i = 0; i < n; i++) streaks.push(spawn());
-      if(!raf) draw();
-    }
-
-    function draw(){
-      ctx.clearRect(0, 0, W, H);
-      var mph = cur.mph;
-      var len = Math.max(20, Math.min(170, 16 + mph * 3.4));
-      var alpha = (0.18 + Math.min(mph, 40) / 40 * 0.18) * 0.8;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.6;
-      ctx.lineCap = 'butt';
-      for(var k = 0; k < 4; k++){
-        ctx.globalAlpha = alpha * (k + 1) / 4;
-        ctx.beginPath();
-        for(var i = 0; i < streaks.length; i++){
-          var s = streaks[i], L = len * s.len;
-          var hx = s.x, hy = s.y;
-          var tx = hx - cur.ux * L, ty = hy - cur.uy * L;
-          var x0 = tx + (hx - tx) * k / 4, y0 = ty + (hy - ty) * k / 4;
-          var x1 = tx + (hx - tx) * (k + 1) / 4, y1 = ty + (hy - ty) * (k + 1) / 4;
-          ctx.moveTo(x0, y0);
-          ctx.lineTo(x1, y1);
-        }
-        ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
-    }
-
-    function tick(t){
-      raf = requestAnimationFrame(tick);
-      var dt = Math.min(0.05, (t - lastT) / 1000 || 0.016);
-      lastT = t;
-      // Ease toward the latest reading so a location change blends instead of snapping.
-      var e = Math.min(1, dt * 2.5);
-      cur.mph += (target.mph - cur.mph) * e;
-      cur.ux += (target.ux - cur.ux) * e;
-      cur.uy += (target.uy - cur.uy) * e;
-      var m = Math.hypot(cur.ux, cur.uy) || 1;
-      cur.ux /= m; cur.uy /= m;
-      if((++frame % 90) === 0) readColor();
-
-      var want = desiredCount();
-      if(streaks.length < want) streaks.push(spawn());
-      else if(streaks.length > want) streaks.pop();
-
-      var base = 26 + cur.mph * 9;
-      for(var i = 0; i < streaks.length; i++){
-        var s = streaks[i], v = base * s.speed * dt;
-        s.x += cur.ux * v; s.y += cur.uy * v;
-        if(s.x < -margin) s.x += W + margin * 2; else if(s.x > W + margin) s.x -= W + margin * 2;
-        if(s.y < -margin) s.y += H + margin * 2; else if(s.y > H + margin) s.y -= H + margin * 2;
-      }
-      draw();
-    }
-
-    function sync(){
-      var run = wide.matches && !reduce.matches && !document.hidden;
-      if(run && !raf){ lastT = performance.now(); raf = requestAnimationFrame(tick); }
-      else if(!run && raf){ cancelAnimationFrame(raf); raf = 0; }
-      if(!run && wide.matches && W) draw();
-    }
-
-    if(window.ResizeObserver) new ResizeObserver(resize).observe(wrap);
-    wide.addEventListener('change', function(){ resize(); sync(); });
-    reduce.addEventListener('change', sync);
-    document.addEventListener('visibilitychange', sync);
-
-    return {
-      set: function(mph, deg){
-        // Compass degrees are where the wind comes FROM; streaks travel toward the opposite side.
-        var to = ((deg + 180) % 360) * Math.PI / 180;
-        target.mph = mph; target.ux = Math.sin(to); target.uy = -Math.cos(to);
-        if(!cur.ready){ cur.mph = mph; cur.ux = target.ux; cur.uy = target.uy; cur.ready = true; }
-        readColor();
-        if(W && !streaks.length) resize();
-        sync();
-      }
-    };
-  })();
-
   function renderHero(current, todayDaily, hourly){
     var w = parseWind(current.windSpeed);
     var band = bandFor(w.high);
@@ -2145,7 +1921,14 @@
     heroEl.style.setProperty('--stripe-angle', deg + 'deg');
     heroEl.style.setProperty('--flow-dx', (-Math.sin(rad) * dist).toFixed(1) + 'px');
     heroEl.style.setProperty('--flow-dy', (Math.cos(rad) * dist).toFixed(1) + 'px');
-    windField.set(w.high, deg);
+    // Desktop (>=64em) also runs the same stripe texture across header.top and
+    // .hero-wrap directly (see those selectors' ::before rules), so the whole
+    // left sidebar — not just the inner .hero card — reads as one continuous
+    // animated surface. Those rules read the vars below, set on <html> since
+    // header.top isn't a descendant of #hero and wouldn't inherit from it.
+    document.documentElement.style.setProperty('--stripe-angle', deg + 'deg');
+    document.documentElement.style.setProperty('--flow-dx', (-Math.sin(rad) * dist).toFixed(1) + 'px');
+    document.documentElement.style.setProperty('--flow-dy', (Math.cos(rad) * dist).toFixed(1) + 'px');
 
     var ground = groundCondition(current, todayDaily);
     var outlook = hazardOutlook(hourly);
@@ -2165,7 +1948,7 @@
           '</div>' +
           '<div class="weather-now">' +
             '<div class="wicon">' + weatherIcon(current.shortForecast, current.isDaytime, 38) + '</div>' +
-            '<div class="wtext"><b>' + Math.round(current.temperature) + '°'+ (current.temperatureUnit||'F') + '</b> · ' + ampText(current.shortForecast) +
+            '<div class="wtext"><b>' + Math.round(current.temperature) + '°'+ (current.temperatureUnit||'F') + '</b> · ' + (current.shortForecast || '') +
               (outlook ? ' <span class="hazard-eta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' + outlook + '</span>' : '') + '</div>' +
           '</div>' +
           '<div class="ground-now">' +
@@ -2199,7 +1982,7 @@
     /* Design B: the hero panel also stacks text-above-radar (instead of
        side-by-side with a square radar matched to sibling height) once the
        sidebar layout kicks in at desktop, not just on mobile. */
-    var stacked = window.matchMedia('(max-width:63.99em), (min-width:64em)').matches;
+    var stacked = window.matchMedia('(max-width:31.1875em), (min-width:64em)').matches;
     if(leftCol && !stacked){
       box.style.width = '0px';
       box.style.height = '0px';
@@ -2583,7 +2366,7 @@
         bandPillInk: band.pillInk,
         gust: extractGust(p.detailedForecast) || '',
         icon: weatherIcon(p.shortForecast, true, 28),
-        short: ampText(p.shortForecast),
+        short: p.shortForecast || '',
         temp: p.temperature + '°'
       };
     });
@@ -3187,7 +2970,7 @@
       };
     });
 
-    var notes = ['Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average & doesn’t affect the ranking.'];
+    var notes = ['Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness, and air quality. Skips rain, icy/snowy ground and darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average and doesn’t affect the ranking.'];
     if(!inputs.aqi) notes.push('We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.');
     if(!inputs.past) notes.push('We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.');
 
@@ -3213,20 +2996,6 @@
   var alertsEl = document.getElementById('alertsBanner');
   var expandedAlerts = {};
   var alertsLiveEl = document.getElementById('alertsLive');
-  // Below desktop the banner sits inside the hero, right under the search bar; at desktop it stays above Best Times.
-  var alertsMobileMq = window.matchMedia('(max-width:63.99em)');
-  function placeAlerts(){
-    var statusBox = document.getElementById('status');
-    var best = document.getElementById('bestSection');
-    if(!statusBox || !best) return;
-    if(alertsMobileMq.matches){
-      if(statusBox.nextElementSibling !== alertsEl) statusBox.after(alertsEl);
-    }else if(best.previousElementSibling !== alertsEl){
-      best.before(alertsEl);
-    }
-  }
-  placeAlerts();
-  alertsMobileMq.addEventListener('change', placeAlerts);
   var lastAlertSig = '';
 
   function alertKind(ev){
@@ -3365,10 +3134,19 @@
     head.appendChild(alertTitles(top));
 
     if(multi){
-      var more = document.createElement('span');
-      more.className = 'alert-more';
-      more.textContent = (list.length - 1) + ' more';
-      head.appendChild(more);
+      var chips = document.createElement('span');
+      chips.className = 'alert-chips';
+      ['warning', 'watch', 'advisory'].forEach(function(kind){
+        var n = list.filter(function(p){ return alertKind(p.event) === kind; }).length;
+        if(!n) return;
+        var chip = document.createElement('span');
+        chip.className = 'alert-chip alert-chip--' + kind;
+        var dot = document.createElement('i');
+        chip.appendChild(dot);
+        chip.appendChild(document.createTextNode(kindLabel(kind, n)));
+        chips.appendChild(chip);
+      });
+      head.appendChild(chips);
     }
     head.appendChild(alertToggle());
 
@@ -3515,7 +3293,7 @@
     var nowW = parseWind(hourly[0].windSpeed), nowBand = bandFor(nowW.high);
     announce('Forecast updated for ' + hdrLoc.textContent + '. Wind now ' + nowW.high + ' miles per hour' +
       (dirWord(hourly[0].windDirection) ? ' from the ' + dirWord(hourly[0].windDirection) : '') + ', ' + nowBand.label.toLowerCase() + '. ' +
-      ampText(hourly[0].shortForecast) + ', ' + Math.round(hourly[0].temperature) + ' degrees. ' +
+      (hourly[0].shortForecast || '') + ', ' + Math.round(hourly[0].temperature) + ' degrees. ' +
       (bestWhen ? 'Best window outside: ' + bestWhen + '.' : 'No good window outside in the next 48 hours.'));
     window.dispatchEvent(new Event('resize'));
   }
@@ -3565,7 +3343,7 @@
       setLoadErrorBusy(false);
     }catch(err){
       await new Promise(function(r){ setTimeout(r, Math.max(0, 900 - (Date.now() - t0))); });
-      var msg = errText(err) + ' We just tried again & it still didn’t work. Give it a moment, then use Refresh, or search for a different place.';
+      var msg = errText(err) + ' We just tried again and it still didn’t work. Give it a moment, then use Refresh, or search for a different place.';
       loadErrorText.textContent = msg;
       setLoadErrorBusy(false);
       announce(msg);
@@ -3735,9 +3513,7 @@
   (function initHeaderScrub(){
     var hdr = document.querySelector('header.top');
     var form = document.getElementById('searchForm');
-    // The header no longer collapses on scroll (it's a static part of the colored hero at every width where
-    // it was collapsing before), so this never matches.
-    var mq = window.matchMedia('(max-width:0px)');
+    var mq = window.matchMedia('(max-width:31.1875em)');
     var DIST = 110;
     var frame = null;
 
@@ -3791,14 +3567,9 @@
     var armed = false;
     var startX = 0, startY = 0, raw = 0, pull = 0, wheelTimer = null;
 
-    // Desktop sidebar layout scrolls inside .db-content, not the window.
-    var contentScroller = document.querySelector('.db-content');
-    var sidebarMq = window.matchMedia('(min-width:64em)');
-    function pageScroll(){ return (sidebarMq.matches && contentScroller) ? contentScroller.scrollTop : window.scrollY; }
-
     function blocked(target){
       if(state !== 'idle') return true;
-      if(pageScroll() > 0) return true;
+      if(window.scrollY > 0) return true;
       if(window.Alpine && store('radar').open) return true;
       return !!(target && target.closest && target.closest('#radarModal, .loc-suggestions'));
     }
@@ -3902,7 +3673,7 @@
       var dy = e.touches[0].clientY - startY, dx = e.touches[0].clientX - startX;
       if(state === 'idle'){
         if(Math.abs(dx) > Math.abs(dy) || dy < -6){ armed = false; return; }
-        if(dy > 8 && pageScroll() <= 0) begin(); else return;
+        if(dy > 8 && window.scrollY <= 0) begin(); else return;
       }
       if(state === 'pulling'){
         if(e.cancelable) e.preventDefault();
@@ -3927,7 +3698,7 @@
       var dy = e.clientY - startY;
       if(state === 'idle'){
         if(dy < -6){ armed = false; return; }
-        if(dy > 8 && pageScroll() <= 0) begin(); else return;
+        if(dy > 8 && window.scrollY <= 0) begin(); else return;
       }
       if(state === 'pulling'){
         e.preventDefault();
