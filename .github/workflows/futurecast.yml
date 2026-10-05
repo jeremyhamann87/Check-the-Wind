@@ -51,24 +51,34 @@ jobs:
           fi
           git commit -m "Update futurecast frames [skip ci]"
 
-          # A run that was queued (behind this same concurrency group) can
-          # start with a stale checkout if another run's commit landed on
-          # main while it waited — its push then gets rejected as a
-          # non-fast-forward. Since this step only ever touches
-          # futurecast/frames/ and manifest.json, and the generated content
-          # for THIS run is already fully staged/committed above, a rebase
-          # would risk a real conflict (manifest.json's content differs run
-          # to run) — a soft reset onto the fresh tip + recommit instead
-          # just re-parents the exact same snapshot onto it, which can't
-          # conflict.
+          # The push gets rejected as a non-fast-forward when someone else
+          # (or another run) pushed to main after this run checked out. A
+          # rebase would risk a real conflict (manifest.json's content differs
+          # run to run), so instead: set aside ONLY this run's generated
+          # output, hard-reset the whole checkout to the fresh tip, put the
+          # output back, and recommit. Everything else in the repo therefore
+          # comes from the fresh tip — a plain `git reset --soft` here would
+          # keep this run's stale copy of every OTHER file in the index and
+          # silently revert other people's pushes.
+          OUT="$RUNNER_TEMP/futurecast-out"
           for attempt in 1 2 3 4 5; do
             if git push; then
               exit 0
             fi
             echo "Push rejected (attempt $attempt/5) — retrying against the latest main..."
             git fetch origin main
-            git reset --soft origin/main
+            rm -rf "$OUT" && mkdir -p "$OUT"
+            cp -R futurecast/frames "$OUT/frames"
+            cp futurecast/manifest.json "$OUT/manifest.json"
+            git reset --hard origin/main
+            rm -rf futurecast/frames
+            cp -R "$OUT/frames" futurecast/frames
+            cp "$OUT/manifest.json" futurecast/manifest.json
             git add futurecast/frames futurecast/manifest.json
+            if git diff --cached --quiet; then
+              echo "Fresh main already matches this run's output — nothing to push"
+              exit 0
+            fi
             git commit -m "Update futurecast frames [skip ci]"
           done
           echo "::error::Failed to push updated frames after 5 attempts"
