@@ -828,6 +828,7 @@
     color:var(--text-faint); text-decoration:underline; text-underline-offset:2px; cursor:pointer;
   }
   .disclaimers-link:hover{color:var(--text-muted)}
+  @media (min-width:64em){ .hero-wrap .hero-pill-row .wk-btn{ display:none } }
   .disclaimers-link:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:2px}
   .data-asof{font-size:1rem; color:var(--text-faint)}
   .disclaimers-modal-panel{
@@ -1774,6 +1775,7 @@
   <footer>
     <div class="footer-bar">
       <button type="button" class="disclaimers-link" id="disclaimersOpenBtn" aria-haspopup="dialog">Disclaimers &amp; Data Sources</button>
+      <button type="button" class="disclaimers-link" data-info="wind" aria-haspopup="dialog">Wind Key</button>
       <span class="data-asof">Data as of <span id="dataAsOf">—</span></span>
     </div>
   </footer>
