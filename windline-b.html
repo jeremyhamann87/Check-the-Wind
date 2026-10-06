@@ -124,6 +124,84 @@
   }
 
   *{box-sizing:border-box}
+  /* ---- Mobile search: a search button + the location in the header; the search itself lives in a 3/4-screen drawer ---- */
+  .m-loc-row{display:none}
+  .search-drawer, .sd-sheet, .sd-body{display:contents}
+  .sd-backdrop, .sd-head, .sd-card{display:none}
+  @media (max-width:31.1875em){
+    .m-loc-row{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:4px}
+    .m-actions{display:flex; align-items:center}
+    .m-search-btn{
+      flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0;
+      border:0; border-radius:4px; background:transparent; color:var(--text); cursor:pointer;
+    }
+    .m-search-btn:hover{background:var(--hover-bg)}
+    .m-search-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
+    .m-search-btn svg{width:22px; height:22px}
+    .m-loc-name{min-width:0; font-size:1.25rem; font-weight:600; line-height:1.2; color:var(--text); overflow-wrap:anywhere}
+    .search-drawer{
+      display:block; position:fixed; inset:0; z-index:200; visibility:hidden; pointer-events:none;
+      transition:visibility 0s linear .3s;
+    }
+    .search-drawer.open{visibility:visible; pointer-events:auto; transition-delay:0s}
+    .sd-backdrop{display:block; position:absolute; inset:0; background:rgba(10,16,22,.6); opacity:0; transition:opacity .28s}
+    .search-drawer.open .sd-backdrop{opacity:1}
+    .sd-sheet{
+      display:flex; flex-direction:column; position:absolute; left:0; right:0; bottom:0; height:75vh; height:75dvh;
+      background:color-mix(in srgb, var(--text) 5%, var(--surface)); border-radius:12px 12px 0 0; box-shadow:0 -8px 32px rgba(10,16,22,.28); overflow:hidden;
+      transform:translateY(100%); transition:transform .3s cubic-bezier(.2,.8,.2,1);
+    }
+    .search-drawer.open .sd-sheet{transform:none}
+    .sd-head{display:flex; align-items:center; justify-content:space-between; padding:12px 12px 12px 16px; background:var(--surface); border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)); flex:0 0 auto}
+    .sd-head h2{margin:0; font-size:1.125rem; font-weight:500; color:var(--text-muted)}
+    .sd-close{display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--text-muted); cursor:pointer}
+    .sd-close:hover{background:var(--hover-bg)}
+    .sd-close:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0}
+    .sd-close svg{width:22px; height:22px}
+    .sd-body{display:block; flex:1 1 auto; min-height:0; overflow-y:auto; padding:16px}
+    .sd-body form.search{margin:0 0 16px; overflow:visible; max-height:none; opacity:1}
+    /* Current, Favorites and Recents are cards in the same title-in-card style as the main modules */
+    .sd-card{display:block; margin:0 0 16px; background:var(--surface); border-radius:8px; overflow:hidden}
+    .sd-card[hidden]{display:none}
+    .sd-card .card-head{display:flex; align-items:center; justify-content:space-between; min-height:44px; padding-block:0}
+    .sd-card .card-body{padding:4px 16px}
+    .sd-card .sd-item{padding-left:0}
+    .sd-current-body{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .sd-current-name{font-size:1rem; color:var(--text); min-width:0; overflow-wrap:anywhere}
+    .sd-save{flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; gap:6px; min-width:44px; min-height:44px; padding:0; border:0; background:transparent; color:var(--text-muted); font:inherit; font-size:1rem; cursor:pointer}
+    .sd-save svg, .sd-star svg{width:22px; height:22px}
+    .sd-save[aria-pressed="true"] svg, .sd-star[aria-pressed="true"] svg{fill:var(--accent); stroke:var(--accent)}
+    .sd-sheet:focus{outline:none}
+    .sd-clear{min-height:32px; padding:0 4px; border:0; background:transparent; color:var(--text-muted); font:inherit; font-size:1rem; text-decoration:underline; cursor:pointer}
+    .sd-clear[hidden]{display:none}
+    .sd-list{list-style:none; margin:0; padding:0}
+    .sd-row{display:flex; align-items:center; gap:4px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
+    .sd-row:first-child{border-top:0}
+    .sd-item{flex:1 1 auto; min-width:0; min-height:48px; padding:0 4px; border:0; background:transparent; color:var(--text); font:inherit; font-size:1rem; text-align:left; cursor:pointer}
+    .sd-item:hover{background:var(--hover-bg)}
+    .sd-item:focus-visible, .sd-save:focus-visible, .sd-star:focus-visible, .sd-clear:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0}
+    .sd-star{flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:0; background:transparent; color:var(--text-muted); cursor:pointer}
+    .sd-empty{margin:4px 0 0; font-size:1rem; color:var(--text-muted); line-height:1.5}
+    .sd-empty[hidden]{display:none}
+    @media (prefers-reduced-motion: reduce){ .sd-sheet, .sd-backdrop, .search-drawer{transition-duration:.01s} }
+  }
+  .main-head{display:none; align-items:baseline; justify-content:space-between; gap:16px; margin:0 0 20px}  /* 20px below the header box = 24px below the title text (the buttons hang ~4px lower than the title) */
+  .main-head h2{margin:0; font-size:1.5rem; font-weight:500; color:var(--text-muted)}
+  .main-head-tools{display:flex; align-items:center; gap:8px; flex:0 0 auto}
+  .main-clock{font-size:1rem; font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .main-refresh{display:flex; align-items:center; justify-content:center; width:36px; height:36px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--text-muted); cursor:pointer}
+  .main-refresh:hover{background:var(--hover-bg); color:var(--text)}
+  .main-refresh:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
+  .main-refresh svg{width:20px; height:20px}
+  .main-refresh.busy svg{animation:ptrSpin .8s linear infinite}
+  .main-refresh:disabled{cursor:default}
+  .main-pause{margin-left:-6px}  /* refresh and pause sit closer together (2px apart) */
+  /* Paused: every CSS animation freezes in place (the wind canvas and radar loop are stopped from script) */
+  html.anim-paused *, html.anim-paused *::before, html.anim-paused *::after{ animation-play-state:paused !important }
+  @media (prefers-reduced-motion: reduce){ .main-refresh.busy svg{animation:none} }
+  .skip-link{position:absolute; left:16px; top:-100px; z-index:300; padding:12px 16px; border-radius:4px; background:var(--surface); color:var(--text); font-weight:600; text-decoration:underline; box-shadow:var(--shadow)}
+  .skip-link:focus{top:12px; outline:2px solid var(--focus-ring); outline-offset:2px}
+  main:focus{outline:none}
   .sr-only{position:absolute!important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
   :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
   :root{ --page-bg: var(--bg); }
@@ -267,7 +345,7 @@
   .alert-body dt:first-child{margin-top:0}
   .alert-body dd{margin:2px 0 0; white-space:pre-wrap; overflow-wrap:anywhere}
   .alert-side{flex:0 0 auto; display:flex; align-items:center; gap:12px}
-  .alert-more{flex:0 0 auto; display:inline-flex; align-items:center; padding:2px 10px; border-radius:4px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:0.875rem; font-weight:700; white-space:nowrap}
+  .alert-more{flex:0 0 auto; display:inline-flex; align-items:center; padding:2px 10px; border-radius:4px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:1rem; font-weight:700; white-space:nowrap}
   .alert-body--list{padding:0}
   .alert-item{border-top:1px solid var(--table-border)}
   .alert-item:first-child{border-top:0}
@@ -295,7 +373,7 @@
     .alert-side{flex-direction:column; align-items:flex-end; gap:6px}
   }
   .section-head{position:relative; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:.25rem 1rem; margin-bottom:12px}
-  .section-head h2{font-size:1.25rem; margin:0; color:var(--text); display:inline-flex; align-items:center; gap:6px}
+  .section-head h2{font-size:1.25rem; font-weight:500; margin:0; color:var(--text-muted); display:inline-flex; align-items:center; gap:6px}
 
   .info-btn{
     display:flex; align-items:center; justify-content:center; flex-shrink:0;
@@ -463,21 +541,28 @@
   .air-card, #todaySection .today-card{padding:0}
   #airCard.air-card, #todaySection .today-card{border-radius:8px}
   .card-head{padding:12px 24px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
-  .card-head h2{font-size:1.125rem; margin:0; color:var(--text)}
+  .card-head h2, .card-head h3{font-size:1.125rem; font-weight:500; margin:0; color:var(--text-muted); display:inline-flex; align-items:center; gap:6px}
   .card-body{padding:24px}
+  /* Best Times and 7-Day Outlook use the same title-in-card style: the card owns the surface, radius and shadow */
+  .bw-card, .week-card{background:var(--surface); border-radius:8px; box-shadow:var(--shadow); overflow:hidden}
+  .db-content .bw-card .bw-list{background:transparent; border:0; border-radius:0; box-shadow:none}
   .pollen-list{display:flex; flex-direction:column; gap:8px; min-width:0}
   .pollen-row-top{display:flex; align-items:center}
   .pollen-row-icon{flex:0 0 auto; display:flex; margin-right:4px}
   .pollen-row-label{flex:1 1 auto; margin-right:10px; font-size:1rem; font-weight:600; color:var(--text)}
-  .pollen-row-val{font-size:1rem; font-weight:600; text-align:right}
-  .pollen-row-val .pollen-num{font-weight:300}
-  .pollen-bar-track{height:7.2px; border-radius:4px; background:var(--surface-2); overflow:hidden; margin-top:6px}
-  .pollen-bar-fill{height:100%; border-radius:4px}
+  /* Air Quality & Pollen use their own gradient (blue -> pale gold -> amber -> vermilion -> crimson -> plum) so
+     they never read as the wind-range colors. The track shows the whole scale faintly; the fill reveals it up to the value. */
+  .air-card{ --air-gradient:linear-gradient(90deg, #2F9BD8 0%, #F3D56B 20%, #F2A33A 40%, #E4572E 62%, #B3203F 82%, #5E1B4F 100%) }
+  .pollen-row-val{font-size:1rem; font-weight:600; text-align:right; color:var(--text)}
+  .pollen-row-val .pollen-num{font-weight:300; color:var(--text-muted)}
+  .pollen-bar-track{position:relative; height:7.2px; border-radius:4px; background:var(--surface-2); overflow:hidden; margin-top:6px}
+  .pollen-bar-track::before{content:""; position:absolute; inset:0; background:var(--air-gradient); opacity:.25}
+  .pollen-bar-fill{position:relative; height:100%; border-radius:4px; background-image:var(--air-gradient); background-repeat:no-repeat}
   /* Desktop only: pairs #todaySection with #airSection as an equal-width
      row, to the right of Wind Today — mirrors the old Wind-Today/Gusts
      row this file used before that module was removed. */
   @media (min-width:64em){
-    .wind-row{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:stretch; margin-top:60px }
+    .wind-row{ display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:stretch; margin-top:32px }
     .db-content .wind-row > section{ margin-top:0; min-width:0 }
     /* Only Wind Today's card stretches to match Air Quality's (naturally
        taller, five-gauge) height — giving #airCard the same treatment
@@ -523,7 +608,7 @@
     gap:12px; align-items:center;
   }
   .bw-list{background:var(--surface); border-radius:4px; overflow:hidden; border:1px solid var(--table-border)}
-  .bw-head{padding:9px 24px 6.5px; background:color-mix(in srgb, var(--text) 9%, var(--surface)); border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
+  .bw-head{padding:9px 24px 6.5px; background:color-mix(in srgb, var(--text) 5%, var(--surface)); border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
   .bw-row{padding:12px 24px; border-bottom:.5px solid var(--table-border); font-size:1rem}
   .bw-row.bw-row--top{padding:12px 24px}
   .bw-row:last-of-type{border-bottom:none}
@@ -752,7 +837,7 @@
     display:flex; align-items:center; justify-content:space-between;
     padding:20px 24px; border-bottom:1px solid var(--table-border); flex:0 0 auto;
   }
-  .disclaimers-modal-head h2{font-size:1.125rem; margin:0; color:var(--text)}
+  .disclaimers-modal-head h2{font-size:1.125rem; font-weight:500; margin:0; color:var(--text-muted)}
   .disclaimers-modal-close{
     background:none; border:none; cursor:pointer; color:var(--text-muted);
     padding:6px; display:flex; border-radius:4px;
@@ -1029,11 +1114,13 @@
     .hero-wrap .hero-reading{ align-items:center }
     .hero-wrap .hero-reading .unit-wrap{ padding-bottom:0 }
 
-    .db-content{ padding:40px 48px 48px; min-width:0; position:relative }
+    /* Side margins scale with the window: 48px at 1248px wide, growing to 120px by ~1536px */
+    .db-content{ padding:40px clamp(48px, calc(48px + (100vw - 1248px) * .25), 120px) 48px; min-width:0; position:relative }
     .db-content .wrap, .db-content .hdr-in{ max-width:none; padding-inline:0 }
-    .db-content section{ margin-top:60px }
+    .db-content section{ margin-top:32px }
     .db-content #bestSection{ margin-top:0 }
     .db-content .alerts{ margin-top:0 }
+    .db-content .main-head:not([hidden]){ display:flex }
     /* Modules sit on the page background without outlines (inner row dividers stay); a soft shadow lifts them instead. */
     .db-content .bw-list, .db-content .today-card{ border:0 }
     #weekSection .daylist{ gap:16px }
@@ -1204,14 +1291,15 @@
   /* Phone 7-Day Outlook: the day cards are joined into one "super card" — no gaps, shadow on the group,
      only the top of the first card and the bottom of the last card are rounded. */
   @media (max-width:31.1875em){
-    #weekSection .daylist{ gap:0; border-radius:4px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow) }
+    .week-card .card-body{ padding:0 }
+    #weekSection .daylist{ gap:0; border-radius:0; overflow:hidden; background:transparent; box-shadow:none }
     #weekSection .dayrow{ border-radius:0; box-shadow:none }
   }
   @media (min-width:64em) and (max-width:77.9375em){
     .db-layout > header.top{ padding:40px 24px 0 }
     .db-layout > .hero-wrap{ padding:20px 24px 28px }
     .db-layout > .db-content{ padding:40px 24px 48px }
-    .wind-row{ gap:24px }
+    .wind-row{ gap:32px }
     .db-layout{ grid-template-columns:400px minmax(0,1fr) }
     header.top form.search{ flex-wrap:nowrap }
     header.top form.search .field{ flex:1 1 0 }
@@ -1223,9 +1311,118 @@
   #todaySection .htile .hr, #todaySection .htile .spunit{ font-weight:300; color:var(--text-muted) }
   #weekSection .dayrow .dnames .dname{ font-weight:300; color:var(--text-muted) }
   #airCard .pollen-row-label{ font-weight:300; color:var(--text-muted) }
+  /* 7-Day cards sit inside the module card: no individual shadow, a 2px wind-range stroke all around (the 8px top bar stays) */
+  @media (min-width:31.25em){
+    #weekSection .dayrow{ box-shadow:none; border:2px solid var(--card-band, var(--table-border)); border-top-width:8px }
+  }
+  /* Tablet & wide desktop 7-Day cards: day & date sit in a header in the wind range's light shade that fills the top of the card;
+     the text is the standard dark text color in both themes */
+  @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
+    #weekSection .dayrow{ border:2px solid var(--card-band); overflow:hidden }
+    #weekSection .dayrow .dnames{ width:auto; margin:-16px -14px 0; padding:8px 14px; background:var(--card-band) }
+    #weekSection .dayrow .dnames .dname, #weekSection .dayrow .dnames .ddate{ color:#333333 }  /* fixed dark text: the header stays a light pastel in dark mode too */
+    #weekSection .dayrow .dnames .dname{ font-weight:400 }
+  }
+  /* Phone header: logo + title and the search button share one vertically-centered row, location underneath */
+  @media (max-width:31.1875em){
+    .db-layout > header.top{ padding:14px 16px 0 }
+    header.top .hdr-in{ display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:12px; align-items:center }
+    header.top .hdr-in > *{ grid-column:1 / -1 }
+    header.top .brand{ grid-column:1; grid-row:1; margin-bottom:0 }
+    header.top .hdr-loc{ display:none }
+    header.top .m-loc-row{ display:contents }
+    header.top .brand{ align-self:center }
+    header.top .m-loc-name{ grid-column:1 / -1; grid-row:2; margin-top:4px }
+    header.top .m-actions{ grid-column:2; grid-row:1; align-self:center }
+  }
+  /* Phone hero: wind-range tag 15% smaller, mph + tag centered on the wind speed */
+  @media (max-width:31.1875em){
+    .hero-wrap .hero-reading .hero-band-pill{ font-size:.85rem; padding:2px 8.5px }
+    /* no drop shadow on the module cards */
+    .bw-card, .week-card, .db-content .today-card, .db-content .bw-list, #airCard.air-card, #todaySection .today-card{ box-shadow:none }
+    /* 16px between modules (was 32px) */
+    .db-content section{ margin-top:16px }
+    /* hero icons: weather & ground icons match the 24px weather icons in Wind Today; compass 63->47.25px */
+    .hero-wrap .weather-now .wicon svg{ width:24px; height:24px }
+    .hero-wrap .ground-now .gicon svg{ width:24px; height:24px }
+    .hero-wrap .weather-now .wicon, .hero-wrap .ground-now .gicon{ flex-basis:24px; width:24px }
+    .hero-wrap .hero-reading .unit-wrap > svg{ width:47.25px; height:47.25px }
+    /* vertical spacing between the hero's data rows (6.75 / 5.25 / 12px, then +25%, then +15%) */
+    .db-layout > .hero-wrap{ padding-top:12px }
+    .hero-wrap .weather-now{ margin-top:9.70px }
+    .hero-wrap .ground-now{ margin-top:7.55px }
+    .hero-wrap .hero-top{ gap:17.25px }
+    /* centers "mph" + tag on the digits' ink (the digits sit ~1px above their line box's middle) */
+    .hero-wrap .hero-reading .unit-top{ position:relative; top:-1.2px; gap:3.2px }  /* mph-to-tag spacing 20% tighter (4px -> 3.2px) */
+  }
+  /* Phone & tablet: the hero's tinted wind-field is the background of the whole experience — one fixed full-screen layer behind everything */
+  @media (max-width:63.99em){
+    .db-layout > .wind-field{ position:fixed; inset:0; grid-row:auto; z-index:0 }
+    .db-layout > .db-content{ position:relative; z-index:1 }
+  }
+  /* Tablet: equal 24px between the search bar, current conditions and every module */
+  @media (min-width:31.25em) and (max-width:63.99em){
+    .db-layout > .hero-wrap{ padding:24px 32px 0 }
+    .db-content section{ margin-top:24px }
+  }
+  /* Tablet 7-Day headers: day over date on every card, so headers are the same height and the rows below line up */
+  @media (min-width:31.25em) and (max-width:63.99em){
+    #weekSection .dayrow .dnames .dval{ flex-direction:column; align-items:flex-start; gap:0 }
+    /* on narrow tablets the temperature wraps under its icon instead of being clipped */
+    #weekSection .dayrow .temps .dval{ flex-wrap:wrap; gap:2px 6px }
+  }
+  /* Tablet & wide desktop: the seven day cards touch (no gaps) with shared borders, and only the outer corners are rounded */
+  @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
+    #weekSection .daylist{ gap:0 }
+    #weekSection .dayrow{ border-radius:8px 0 0 8px }
+    #weekSection .dayrow ~ .dayrow{ border-radius:0; margin-left:-1px }
+    #weekSection .dayrow:last-of-type{ border-radius:0 8px 8px 0 }
+  }
+  /* 7-Day cards: the 2px wind-range stroke is drawn as inset lines so that, where it runs up through the pastel header, it turns white (a white divider between the headers) */
+  @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
+    #weekSection .dayrow{ border:0; box-shadow:inset 1px 0 0 var(--table-border), inset -1px 0 0 var(--table-border), inset 0 -1px 0 var(--table-border) }  /* normal gray border (was the 2px wind-range color) */
+    /* white dividers only BETWEEN headers: the far-left and far-right headers run colored to the card's outer edge */
+    #weekSection .dayrow .dnames{ box-shadow:inset -1px 0 0 #fff }
+    #weekSection .dayrow ~ .dayrow .dnames{ box-shadow:inset 1px 0 0 #fff, inset -1px 0 0 #fff }
+    #weekSection .dayrow:last-of-type .dnames{ box-shadow:inset 1px 0 0 #fff }
+  }
+  /* Compact Best Times: the whole row is the tap target for expand/collapse */
+  @media (max-width:77.9375em){
+    .bw-row{ cursor:pointer; -webkit-tap-highlight-color:transparent }
+    .bw-row:hover{ background:color-mix(in srgb, var(--text) 3%, transparent) }
+  }
+  /* Desktop preview: the hero's tinted wind-field is the background of the whole page, like phone & tablet */
+  @media (min-width:64em){
+    .db-layout > .wind-field{ position:fixed; inset:0; grid-column:auto; grid-row:auto; z-index:0 }
+    .db-layout > .db-content{ position:relative; z-index:1; background:transparent }
+  }
+  /* Wide desktop: 100px page margin left and right; the hero has no inner side padding (404px of content) and sits 64px from the modules */
+  @media (min-width:78em){
+    .db-layout{ grid-template-columns:404px minmax(0,1fr); padding-left:100px; box-sizing:border-box }
+    .db-layout > header.top{ padding-left:0; padding-right:0 }
+    .db-layout > .hero-wrap{ padding-left:0; padding-right:0 }
+    .db-layout > .db-content{ padding-left:64px; padding-right:100px }
+  }
+  /* Every button is a rounded square (no circles) */
+  .info-btn, .main-refresh, .sd-close, .sd-star, .bw-toggle{ border-radius:4px }
+  /* Phone hero preview: all the current-conditions data is centered horizontally */
+  @media (max-width:31.1875em){
+    .hero-wrap .hero-reading{ justify-content:center }
+    .hero-wrap .weather-now, .hero-wrap .ground-now{ justify-content:center; text-align:center }
+    .hero-wrap .weather-now .wtext, .hero-wrap .ground-now .gtext{ flex:0 1 auto }
+    header.top .m-loc-name{ text-align:center }
+  }
+  /* Phones: the wind tag is the link to the wind key; the separate (?) button is hidden */
+  @media (max-width:31.1875em){
+    .hero-wrap .hero-pill-row .wk-btn{ display:none }
+    .hero-wrap .wk-tag[role="button"]{ position:relative; cursor:pointer }
+    .hero-wrap .wk-tag[role="button"]::after{ content:""; position:absolute; inset:-11px -8px }  /* 44px-tall touch target */
+    .hero-wrap .wk-tag[role="button"]:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+  }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#mainContent">Skip to forecast details</a>
 <div id="srLive" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 <div id="alertsLive" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
@@ -1240,36 +1437,78 @@
       </h1>
     </div>
     <div class="hdr-loc" id="hdrLoc"></div>
-    <form class="search" id="searchForm" role="search" x-data="locSearch" @submit="close()">
-      <div class="field">
-        <label for="locInput">Location</label>
-        <div class="input-wrap">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
-          <button type="button" id="clearLocBtn" class="clear-loc-btn" aria-label="Clear location" hidden :hidden="query.length === 0" @click="clear()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-          <input id="locInput" type="text" placeholder="U.S. city, ZIP, or place — e.g. Corpus Christi, TX" autocomplete="off" value="Longmont, CO"
-            role="combobox" aria-expanded="false" aria-controls="locSuggestions" aria-autocomplete="list"
-            x-ref="input" x-model="query" @input="onInput($event)" @keydown="onKey($event)" @blur="onBlur()" @focus="onFocus()"
-            :aria-expanded="open" :aria-activedescendant="active >= 0 ? 'locSuggestion-' + active : null">
-          <ul id="locSuggestions" class="loc-suggestions" role="listbox" aria-label="Location suggestions" hidden :hidden="!open">
-            <template x-for="(item, i) in items" :key="i">
-              <li class="loc-suggestion" role="option" :id="'locSuggestion-' + i" :class="{active: i === active}" :aria-selected="i === active"
-                  x-text="item.display" @mousedown.prevent="select(i)"></li>
-            </template>
-          </ul>
+    <div class="m-loc-row">
+      <span class="m-loc-name" id="mLocName"></span>
+      <span class="m-actions">
+        <button type="button" class="m-search-btn anim-toggle m-pause" id="mPause" aria-label="Pause animations"></button>
+        <button type="button" class="m-search-btn" id="mSearchBtn" aria-haspopup="dialog" aria-expanded="false" aria-label="Search for a location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></button>
+      </span>
+    </div>
+    <div class="search-drawer" id="searchDrawer">
+      <div class="sd-backdrop" id="sdBackdrop"></div>
+      <div class="sd-sheet" id="sdSheet">
+        <div class="sd-head">
+          <h2 id="sdTitle">Search</h2>
+          <button type="button" class="sd-close" id="sdClose" aria-label="Close search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div class="sd-body">
+          <form class="search" id="searchForm" role="search" x-data="locSearch" @submit="close()">
+            <div class="field">
+              <label for="locInput">Location</label>
+              <div class="input-wrap">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+                <button type="button" id="clearLocBtn" class="clear-loc-btn" aria-label="Clear location" hidden :hidden="query.length === 0" @click="clear()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <input id="locInput" type="text" placeholder="U.S. city, ZIP, or place — e.g. Corpus Christi, TX" autocomplete="off" value="Longmont, CO"
+                  role="combobox" aria-expanded="false" aria-controls="locSuggestions" aria-autocomplete="list"
+                  x-ref="input" x-model="query" @input="onInput($event)" @keydown="onKey($event)" @blur="onBlur()" @focus="onFocus()"
+                  :aria-expanded="open" :aria-activedescendant="active >= 0 ? 'locSuggestion-' + active : null">
+                <ul id="locSuggestions" class="loc-suggestions" role="listbox" aria-label="Location suggestions" hidden :hidden="!open">
+                  <template x-for="(item, i) in items" :key="i">
+                    <li class="loc-suggestion" role="option" :id="'locSuggestion-' + i" :class="{active: i === active}" :aria-selected="i === active"
+                        x-text="item.display" @mousedown.prevent="select(i)"></li>
+                  </template>
+                </ul>
+              </div>
+            </div>
+            <div class="actions">
+            <button type="submit">Search</button>
+            <button type="button" id="geoBtn" class="geo-btn" aria-label="Use my location" title="Use my location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z"/>
+                <circle cx="12" cy="9.5" r="2.5"/>
+              </svg>
+            </button>
+            </div>
+          </form>
+          <section class="sd-card" id="sdCurrent" hidden aria-labelledby="sdCurTitle">
+            <div class="card-head"><h3 id="sdCurTitle">Current</h3></div>
+            <div class="card-body sd-current-body">
+              <span class="sd-current-name" id="sdCurrentName"></span>
+              <button type="button" class="sd-save" id="sdSave" aria-pressed="false"></button>
+            </div>
+          </section>
+          <section class="sd-card" aria-labelledby="sdFavTitle">
+            <div class="card-head"><h3 id="sdFavTitle">Favorites</h3></div>
+            <div class="card-body">
+              <ul class="sd-list" id="sdFavList"></ul>
+              <p class="sd-empty" id="sdFavEmpty">No favorites yet. Tap the star on your current location or a recent search to save it here.</p>
+            </div>
+          </section>
+          <section class="sd-card" aria-labelledby="sdRecTitle">
+            <div class="card-head">
+              <h3 id="sdRecTitle">Recents</h3>
+              <button type="button" class="sd-clear" id="sdClearRecents" hidden>Clear</button>
+            </div>
+            <div class="card-body">
+              <ul class="sd-list" id="sdRecList"></ul>
+              <p class="sd-empty" id="sdRecEmpty">No recent searches yet.</p>
+            </div>
+          </section>
         </div>
       </div>
-      <div class="actions">
-      <button type="submit">Search</button>
-      <button type="button" id="geoBtn" class="geo-btn" aria-label="Use my location" title="Use my location">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z"/>
-          <circle cx="12" cy="9.5" r="2.5"/>
-        </svg>
-      </button>
-      </div>
-    </form>
+    </div>
     <div class="status" id="status"></div>
     <div class="wind-legend in-header">
       <div class="wind-legend-title">Wind Key</div>
@@ -1300,7 +1539,7 @@
   </header>
 
 <div class="hero-wrap">
-  <section id="heroSection">
+  <section id="heroSection" aria-label="Current conditions">
     <div class="section-head">
       <h2>Current Conditions</h2>
       <div class="locbar" id="locBar" hidden>As of <span id="locTime"></span></div>
@@ -1384,26 +1623,36 @@
 </div>
 
 <div class="wrap">
-<main>
+<main id="mainContent" tabindex="-1">
+
+  <div class="main-head" id="mainHead" hidden>
+    <h2>Weather Details for <span id="mainHeadLoc"></span></h2>
+    <div class="main-head-tools">
+      <span class="main-clock" id="mainClock"></span>
+      <button type="button" class="main-refresh" id="mainRefresh" aria-label="Refresh forecast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20.5V16h-4.5"/></svg>
+      </button>
+      <button type="button" class="main-refresh main-pause anim-toggle" id="mainPause" aria-label="Pause animations"></button>
+    </div>
+  </div>
 
   <div class="alerts" id="alertsBanner" role="region" aria-label="Active weather alerts" hidden></div>
 
   <section id="bestSection" hidden x-data :hidden="$store.best.state === 'idle'" :aria-hidden="$store.best.state === 'loading' ? 'true' : null">
-    <div class="section-head">
-      <h2>Best Times to Be Outside
+    <div class="bw-card">
+    <div class="card-head"><h2>Best Times to Be Outside
         <button type="button" class="info-btn" data-info="best" aria-haspopup="dialog">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8"/><circle cx="12" cy="16.8" r="1.4" fill="currentColor" stroke="none"/></svg>
           <span class="sr-only">How Best Times are ranked</span>
         </button>
-      </h2>
-    </div>
+      </h2></div>
     <div class="bw-table" role="table" aria-label="Best times to be outside, ranked">
       <div class="bw-list" id="bestList" role="rowgroup">
         <div class="bw-head" id="bestHead" role="row" :hidden="$store.best.state === 'empty'">
           <div role="columnheader">Rank</div>
           <div role="columnheader">Window</div>
           <div role="columnheader">Temp</div>
-          <div role="columnheader">Max wind</div>
+          <div role="columnheader">Wind</div>
           <div role="columnheader">Precip</div>
           <div role="columnheader">Humidity</div>
           <div role="columnheader">Ground</div>
@@ -1424,18 +1673,18 @@
           </div>
         </template>
         <template x-for="(w, idx) in $store.best.windows" :key="w.key">
-          <div class="bw-row" role="row" x-data="{open:false}" :class="[idx === 0 ? 'bw-row--top' : '', open ? 'is-open' : '']" :data-when="w.when">
+          <div class="bw-row" role="row" x-data="{open:false}" @click="if(window.matchMedia('(max-width:77.9375em)').matches) open = !open" :class="[idx === 0 ? 'bw-row--top' : '', open ? 'is-open' : '']" :data-when="w.when">
             <div class="bw-cell bw-medal" role="cell" x-html="w.medal"></div>
             <div class="bw-cell bw-window" role="cell"><span class="bw-day" x-text="w.day"></span><span class="bw-time" x-text="w.time"></span></div>
             <div class="bw-cell bw-toggle-cell" role="cell">
-              <button type="button" class="bw-toggle" :aria-expanded="open" :aria-controls="'bwStats' + idx" :aria-label="(open ? 'Hide' : 'Show') + ' details for ' + w.day + ' ' + w.time" @click="open = !open">
+              <button type="button" class="bw-toggle" :aria-expanded="open" :aria-controls="'bwStats' + idx" :aria-label="(open ? 'Hide' : 'Show') + ' details for ' + w.day + ' ' + w.time">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <span class="bw-toggle-lab" x-text="open ? 'Less' : 'More'"></span>
               </button>
             </div>
             <div class="bw-stats" :id="'bwStats' + idx">
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Temp</span><span class="bw-val" x-text="w.temp"></span></div>
-              <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Max wind</span><span class="bw-val" x-text="w.wind"></span></div>
+              <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Wind</span><span class="bw-val" x-text="w.wind"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Precip</span><span class="bw-val" x-text="w.precip"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Humidity</span><span class="bw-val" x-text="w.humidity"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Ground</span><span class="bw-val" x-text="w.ground"></span></div>
@@ -1450,6 +1699,7 @@
           </div>
         </template>
       </div>
+    </div>
     </div>
   </section>
 
@@ -1471,12 +1721,12 @@
   </div>
 
   <section id="weekSection" hidden x-data :hidden="$store.week.state === 'idle'" :aria-hidden="$store.week.state === 'loading' ? 'true' : null">
-    <div class="section-head">
-      <h2>7-Day Wind Outlook</h2>
-    </div>
+    <div class="week-card">
+    <div class="card-head"><h2>7-Day Wind Outlook</h2></div>
+    <div class="card-body week-body">
     <div class="daylist" id="dayList" role="list">
       <div class="dayrow-head" aria-hidden="true">
-        <div class="dnames">Day/Date</div>
+        <div class="dnames">Day</div>
         <div class="drest">
           <div class="dwind">Wind Forecast</div>
           <div class="dshort">Weather Forecast</div>
@@ -1485,7 +1735,7 @@
       </div>
       <template x-for="n in ($store.week.state === 'loading' ? 7 : 0)" :key="n">
         <div class="dayrow skel-dayrow" :style="'animation-delay:' + ((n - 1) * 0.05) + 's'">
-          <div class="dnames"><span class="dlabel">Day/Date</span><div class="dval"><span class="dname skel"></span> <span class="ddate skel"></span></div></div>
+          <div class="dnames"><span class="dlabel">Day</span><div class="dval"><span class="dname skel"></span></div></div>
           <div class="drest">
             <div class="dwind"><span class="dlabel">Wind Forecast</span><div class="dval"><b class="skel"></b></div></div>
             <div class="dshort"><span class="dlabel">Weather Forecast</span><div class="dval"><span class="dicon"><span class="skel"></span></span><span class="skel"></span></div></div>
@@ -1496,8 +1746,8 @@
       <template x-for="d in $store.week.days" :key="d.key">
         <div class="dayrow" role="listitem" :style="'--card-band:' + d.bandPill">
           <div class="dnames">
-            <span class="dlabel">Day/Date</span>
-            <div class="dval"><div class="dname" x-text="d.label"></div><div class="ddate" x-text="d.date"></div></div>
+            <span class="dlabel">Day</span>
+            <div class="dval"><div class="dname" x-text="d.label"></div></div>
             <span class="hero-band-pill date-row-pill" :style="'background:' + d.bandPill + '; color:' + d.bandPillInk" x-text="d.bandLabel"></span>
           </div>
           <div class="drest">
@@ -1514,6 +1764,8 @@
           </div>
         </div>
       </template>
+    </div>
+    </div>
     </div>
   </section>
 
@@ -1658,7 +1910,7 @@
 
   function moonMarkup(cx, cy, r, th){
     // Crescent: the big circle (cx,cy,r) minus an offset circle, drawn as two arcs between their intersection points.
-    th = th == null ? -0.7 : th;
+    th = th == null ? 0 : th;  // 0 = crescent facing right (bulge on the left, tips pointing right)
     var d = r * 0.62, r1 = r * 0.86;
     var ux = Math.cos(th), uy = Math.sin(th);
     var a = (r * r - r1 * r1 + d * d) / (2 * d), h = Math.sqrt(r * r - a * a);
@@ -1696,10 +1948,10 @@
     var body = '';
     switch(kind){
       case 'clear':
-        body = isDaytime ? sunMarkup(24,24,9) : moonMarkup(22,22,8);
+        body = isDaytime ? sunMarkup(24,24,9) : moonMarkup(22,22,10);
         break;
       case 'partly':
-        body = (isDaytime ? sunMarkup(30,16,6) : moonMarkup(30,15,8, Math.PI - 0.7)) + cloudMarkup(20);
+        body = (isDaytime ? sunMarkup(30,16,6) : moonMarkup(37,10.5,8.125)) + cloudMarkup(20);
         break;
       case 'rain':
         body = cloudMarkup(24) +
@@ -1913,6 +2165,24 @@
   var statusEl = document.getElementById('status');
   var locBar = document.getElementById('locBar');
   var hdrLoc = document.getElementById('hdrLoc');
+  // Desktop "Weather Details for <city>" header mirrors the short location name shown in the (mobile) header
+  var mainHead = document.getElementById('mainHead'), mainHeadLoc = document.getElementById('mainHeadLoc');
+  function syncMainHead(){
+    var place = (hdrLoc.textContent || '').trim();
+    mainHeadLoc.textContent = place;
+    mainHead.hidden = !place;
+  }
+  new MutationObserver(syncMainHead).observe(hdrLoc, {childList:true, characterData:true, subtree:true});
+  // Current time at the searched location, kept fresh every 15 seconds
+  var mainClock = document.getElementById('mainClock');
+  function tickClock(){
+    var o = {hour:'numeric', minute:'2-digit', timeZoneName:'short'};
+    if(locationTZ) o.timeZone = locationTZ;
+    mainClock.textContent = new Date().toLocaleTimeString([], o);
+  }
+  setInterval(tickClock, 15000);
+  new MutationObserver(tickClock).observe(hdrLoc, {childList:true, characterData:true, subtree:true});
+  tickClock();
   var locTime = document.getElementById('locTime');
   var dataAsOf = document.getElementById('dataAsOf');
   var heroEl = document.getElementById('hero');
@@ -1945,7 +2215,7 @@
   }
 
   function hideSvgs(){
-    document.querySelectorAll('svg:not([aria-hidden])').forEach(function(sv){
+    document.querySelectorAll('svg:not([aria-hidden]):not([role="img"])').forEach(function(sv){
       sv.setAttribute('aria-hidden', 'true'); sv.setAttribute('focusable', 'false');
     });
   }
@@ -2110,7 +2380,7 @@
     var ctx = canvas.getContext('2d');
     var wide = window.matchMedia('(min-width:0px)');
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    var W = 0, H = 0, dpr = 1, margin = 180;
+    var W = 0, H = 0, dpr = 1, margin = 180, paused = false;
     var streaks = [], raf = 0, lastT = 0, frame = 0, color = '#5A78A5';
     var target = {mph: 0, ux: 1, uy: 0};
     var cur = {mph: 0, ux: 1, uy: 0, ready: false};
@@ -2152,10 +2422,11 @@
       ctx.clearRect(0, 0, W, H);
       var mph = cur.mph;
       var len = Math.max(20, Math.min(170, 16 + mph * 3.4));
-      var alpha = (0.18 + Math.min(mph, 40) / 40 * 0.18) * 0.8;
       ctx.strokeStyle = color;
       ctx.lineWidth = 1.6;
       ctx.lineCap = 'butt';
+      // Tail-to-head fade (4 segments, 25% -> 100% of the peak), with the same 20% peak at every wind speed
+      var alpha = 0.2;
       for(var k = 0; k < 4; k++){
         ctx.globalAlpha = alpha * (k + 1) / 4;
         ctx.beginPath();
@@ -2201,7 +2472,7 @@
     }
 
     function sync(){
-      var run = wide.matches && !reduce.matches && !document.hidden;
+      var run = wide.matches && !reduce.matches && !document.hidden && !paused;
       if(run && !raf){ lastT = performance.now(); raf = requestAnimationFrame(tick); }
       else if(!run && raf){ cancelAnimationFrame(raf); raf = 0; }
       if(!run && wide.matches && W) draw();
@@ -2213,6 +2484,7 @@
     document.addEventListener('visibilitychange', sync);
 
     return {
+      setPaused: function(p){ paused = !!p; sync(); },
       set: function(mph, deg){
         // Compass degrees are where the wind comes FROM; streaks travel toward the opposite side.
         var to = ((deg + 180) % 360) * Math.PI / 180;
@@ -2257,7 +2529,7 @@
               '<span class="unit-top">' +
                 '<span class="unit">mph</span>' +
                 '<span class="hero-pill-row">' +
-                  '<span class="hero-band-pill" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span>' +
+                  '<span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span>' +
                   '<button type="button" class="info-btn wk-btn" data-info="wind" aria-haspopup="dialog">' +
                     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8"/><circle cx="12" cy="16.8" r="1.4" fill="currentColor" stroke="none"/></svg>' +
                     '<span class="sr-only">Wind key: what the wind colors mean</span>' +
@@ -2285,6 +2557,7 @@
           '</button>' +
         '</div>' +
       '</div>';
+    syncWindTag();
   }
 
   function stopRadarLoop(){
@@ -2363,7 +2636,7 @@
     function destroy(){ pause(); map.remove(); }
 
     showFrame(0);
-    play();
+    if(!animEffectivePaused()) play();
 
     return {
       map: map, play: play, pause: pause,
@@ -2649,10 +2922,12 @@
 
   var todayMobileMQ = window.matchMedia('(max-width:31.1875em)');
   function updateTodayA11y(){
+    hourlyStrip.setAttribute('aria-label', 'Hourly wind for the next 10 hours');
     if(todayMobileMQ.matches){
+      // the strip itself is the list on phones; a list role on this wrapper would wrap it in another list
       todayInner.removeAttribute('tabindex');
-      todayInner.setAttribute('role', 'list');
-      todayInner.setAttribute('aria-label', 'Hourly wind for the next 10 hours');
+      todayInner.removeAttribute('role');
+      todayInner.removeAttribute('aria-label');
     } else {
       todayInner.setAttribute('tabindex', '0');
       todayInner.setAttribute('role', 'region');
@@ -2959,15 +3234,30 @@
 
   // Numeric + descriptor, matching the "46 · Good" formatting used by the
   // Air Quality Index column in the Best Times to Be Outside table.
+  // Same stops as the --air-gradient on .air-card, so the descriptor word can take the colour of the bar at the value.
+  var AIR_STOPS = [[0,[47,155,216]],[20,[243,213,107]],[40,[242,163,58]],[62,[228,87,46]],[82,[179,32,63]],[100,[94,27,79]]];
+  function airColorAt(pct){
+    pct = Math.max(0, Math.min(100, pct));
+    for(var i = 1; i < AIR_STOPS.length; i++){
+      if(pct <= AIR_STOPS[i][0]){
+        var a = AIR_STOPS[i - 1], b = AIR_STOPS[i];
+        var t = (pct - a[0]) / (b[0] - a[0]);
+        return 'rgb(' + [0, 1, 2].map(function(k){ return Math.round(a[1][k] + (b[1][k] - a[1][k]) * t); }).join(',') + ')';
+      }
+    }
+    return 'rgb(94,27,79)';
+  }
   function gaugeRowHtml(iconSvg, label, lv, fillPct, num, max){
-    var valText = (typeof num === 'number' && !isNaN(num)) ? ('<span class="pollen-num">' + Math.round(num) + ' / ' + max + ' ·</span> ' + lv.label) : lv.label;
+    // pulled 60% toward the text colour so the pale end of the gradient stays readable as text
+    var descHtml = '<span class="pollen-desc" style="color:color-mix(in srgb, ' + airColorAt(fillPct) + ' 40%, var(--text))">' + lv.label + '</span>';
+    var valText = (typeof num === 'number' && !isNaN(num)) ? ('<span class="pollen-num">' + Math.round(num) + ' / ' + max + ' ·</span> ' + descHtml) : descHtml;
     return '<div class="pollen-row">' +
       '<div class="pollen-row-top">' +
         '<span class="pollen-row-icon">' + iconSvg + '</span>' +
         '<span class="pollen-row-label">' + label + '</span>' +
-        '<span class="pollen-row-val" style="color:' + (lv.ink || lv.css) + '">' + valText + '</span>' +
+        '<span class="pollen-row-val">' + valText + '</span>' +
       '</div>' +
-      '<div class="pollen-bar-track"><div class="pollen-bar-fill" style="width:' + fillPct + '%; background:' + lv.css + '"></div></div>' +
+      '<div class="pollen-bar-track"><div class="pollen-bar-fill" style="width:' + fillPct + '%; background-size:' + (10000 / Math.max(1, fillPct)).toFixed(1) + '% 100%"></div></div>' +
     '</div>';
   }
 
@@ -2975,6 +3265,9 @@
     var pollen = pollenEstimate(lat, dateStr);
     var overallLv = categorySeverity(airNow && airNow.overall);
     var pm25Lv = categorySeverity(airNow && airNow.pm25);
+    // Pollutants (PM2.5) use their own wording, starting at Low, instead of the EPA category names
+    var PM25_WORDS = {'Good':'Low', 'Moderate':'Moderate', 'Unhealthy for Sensitive Groups':'High', 'Unhealthy':'Very High', 'Very Unhealthy':'Severe', 'Hazardous':'Extreme'};
+    if(PM25_WORDS[pm25Lv.label]) pm25Lv.label = PM25_WORDS[pm25Lv.label];
     var treeLv = pollenLevel(pollen.tree);
     var grassLv = pollenLevel(pollen.grass);
     var weedLv = pollenLevel(pollen.weed);
@@ -3640,6 +3933,7 @@
 
     var rl = props.relativeLocation && props.relativeLocation.properties;
     hdrLoc.textContent = rl ? rl.city + ', ' + rl.state : place;
+    if(!(opts && opts.quiet)) addRecent(lat, lon, place, hdrLoc.textContent);
     locTime.textContent = new Date().toLocaleTimeString([], locTimeOpts());
     dataAsOf.textContent = new Date().toLocaleTimeString([], dataAsOfOpts());
     locBar.hidden = false;
@@ -3749,7 +4043,235 @@
     }
   });
 
+  /* ---------- Mobile search drawer: Search, Favorites, Recents ---------- */
+  var sdMQ = window.matchMedia('(max-width:31.1875em)');
+  var sdDrawer = document.getElementById('searchDrawer');
+  var sdSheet = document.getElementById('sdSheet');
+  var sdSearchBtn = document.getElementById('mSearchBtn');
+  var mLocName = document.getElementById('mLocName');
+  var FAV_KEY = 'checkTheWind.favorites', REC_KEY = 'checkTheWind.recents', REC_MAX = 8;
+  var STAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polygon points="12,3 14.7,9 21,9.6 16.2,13.9 17.7,20.2 12,16.9 6.3,20.2 7.8,13.9 3,9.6 9.3,9"/></svg>';
+
+  function readList(key){
+    try{ var v = JSON.parse(localStorage.getItem(key)); return Array.isArray(v) ? v : []; }catch(e){ return []; }
+  }
+  function writeList(key, list){
+    try{ localStorage.setItem(key, JSON.stringify(list)); }catch(e){}
+  }
+  function samePlace(a, b){ return Math.abs(a.lat - b.lat) < 0.01 && Math.abs(a.lon - b.lon) < 0.01; }
+  function addRecent(lat, lon, label, name){
+    if(typeof lat !== 'number' || typeof lon !== 'number' || !label) return;
+    var item = {lat: lat, lon: lon, label: label, name: name || label};
+    var list = readList(REC_KEY).filter(function(r){ return !samePlace(r, item); });
+    list.unshift(item);
+    writeList(REC_KEY, list.slice(0, REC_MAX));
+  }
+  function isFavorite(item){ return readList(FAV_KEY).some(function(f){ return samePlace(f, item); }); }
+  function toggleFavorite(item){
+    var list = readList(FAV_KEY);
+    var has = list.some(function(f){ return samePlace(f, item); });
+    list = has ? list.filter(function(f){ return !samePlace(f, item); }) : [item].concat(list);
+    writeList(FAV_KEY, list);
+    return !has;
+  }
+  function currentPlace(){
+    return lastLoad ? {lat: lastLoad.lat, lon: lastLoad.lon, label: lastLoad.label, name: (hdrLoc.textContent || '').trim() || lastLoad.label} : null;
+  }
+
+  function sdRow(item, starred, kind){
+    var li = document.createElement('li');
+    li.className = 'sd-row';
+    var pick = document.createElement('button');
+    pick.type = 'button';
+    pick.className = 'sd-item';
+    pick.textContent = item.name;
+    pick.dataset.kind = kind;
+    pick.dataset.lat = item.lat;
+    pick.dataset.lon = item.lon;
+    pick.dataset.label = item.label;
+    pick.dataset.name = item.name;
+    var star = document.createElement('button');
+    star.type = 'button';
+    star.className = 'sd-star';
+    star.setAttribute('aria-pressed', starred ? 'true' : 'false');
+    star.setAttribute('aria-label', (starred ? 'Remove ' : 'Add ') + item.name + (starred ? ' from Favorites' : ' to Favorites'));
+    star.innerHTML = STAR_SVG;
+    star.dataset.lat = item.lat;
+    star.dataset.lon = item.lon;
+    star.dataset.label = item.label;
+    star.dataset.name = item.name;
+    li.appendChild(pick);
+    li.appendChild(star);
+    return li;
+  }
+  function renderSearchLists(){
+    var favs = readList(FAV_KEY), recs = readList(REC_KEY);
+    var favList = document.getElementById('sdFavList'), recList = document.getElementById('sdRecList');
+    favList.textContent = ''; recList.textContent = '';
+    favs.forEach(function(f){ favList.appendChild(sdRow(f, true, 'fav')); });
+    recs.forEach(function(r){ recList.appendChild(sdRow(r, isFavorite(r), 'rec')); });
+    document.getElementById('sdFavEmpty').hidden = favs.length > 0;
+    document.getElementById('sdRecEmpty').hidden = recs.length > 0;
+    document.getElementById('sdClearRecents').hidden = recs.length === 0;
+    var cur = currentPlace(), box = document.getElementById('sdCurrent'), save = document.getElementById('sdSave');
+    box.hidden = !cur;
+    if(cur){
+      var fav = isFavorite(cur);
+      document.getElementById('sdCurrentName').textContent = cur.name;
+      save.setAttribute('aria-pressed', fav ? 'true' : 'false');
+      save.innerHTML = STAR_SVG;
+      save.setAttribute('aria-label', (fav ? 'Remove ' : 'Save ') + cur.name + (fav ? ' from Favorites' : ' to Favorites'));
+    }
+  }
+
+  var sdInerted = [];
+  function sdSetInert(on){
+    if(on){
+      var targets = [].slice.call(document.querySelectorAll('.wind-field, .hero-wrap, .db-content, .hdr-in > *:not(.search-drawer)'))
+        .concat([].filter.call(document.body.children, function(el){ return !el.classList.contains('db-layout') && el.tagName !== 'SCRIPT'; }));
+      targets.forEach(function(el){ if(!el.inert){ el.inert = true; sdInerted.push(el); } });
+    }else{
+      sdInerted.forEach(function(el){ el.inert = false; });
+      sdInerted = [];
+    }
+  }
+  function openSearchDrawer(){
+    if(!sdMQ.matches || sdDrawer.classList.contains('open')) return;
+    renderSearchLists();
+    sdDrawer.classList.add('open');
+    sdSearchBtn.setAttribute('aria-expanded', 'true');
+    sdSetInert(true);
+    document.body.style.overflow = 'hidden';
+    // focus the sheet itself (not the search field) so the search bar isn't activated and no keyboard pops up on open
+    setTimeout(function(){ sdSheet.focus({preventScroll:true}); }, 60);
+  }
+  function closeSearchDrawer(returnFocus){
+    if(!sdDrawer.classList.contains('open')) return;
+    sdDrawer.classList.remove('open');
+    sdSearchBtn.setAttribute('aria-expanded', 'false');
+    sdSetInert(false);
+    document.body.style.overflow = '';
+    var active = document.activeElement; if(active && sdSheet.contains(active) && active.blur) active.blur();
+    if(returnFocus !== false) sdSearchBtn.focus();
+  }
+  function sdApplyA11y(){
+    if(sdMQ.matches){
+      sdSheet.setAttribute('role', 'dialog');
+      sdSheet.setAttribute('aria-modal', 'true');
+      sdSheet.setAttribute('aria-labelledby', 'sdTitle');
+      sdSheet.setAttribute('tabindex', '-1');
+    }else{
+      closeSearchDrawer(false);
+      sdSheet.removeAttribute('role'); sdSheet.removeAttribute('aria-modal'); sdSheet.removeAttribute('aria-labelledby'); sdSheet.removeAttribute('tabindex');
+    }
+  }
+  sdApplyA11y();
+  sdMQ.addEventListener('change', sdApplyA11y);
+  sdSearchBtn.addEventListener('click', openSearchDrawer);
+  document.getElementById('sdClose').addEventListener('click', function(){ closeSearchDrawer(); });
+  document.getElementById('sdBackdrop').addEventListener('click', function(){ closeSearchDrawer(); });
+  document.addEventListener('keydown', function(e){
+    if(!sdDrawer.classList.contains('open')) return;
+    if(e.key === 'Escape'){ closeSearchDrawer(); return; }
+    if(e.key !== 'Tab') return;
+    var f = [].slice.call(sdSheet.querySelectorAll('a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])')).filter(function(el){ return el.offsetParent !== null && !el.hidden; });
+    if(!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if(!sdSheet.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+    else if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
+  /* Phones: the wind tag itself opens the wind key (the separate ? button is hidden there) */
+  function syncWindTag(){
+    var tag = document.querySelector('.hero-reading .wk-tag');
+    if(!tag) return;
+    if(sdMQ.matches){
+      tag.setAttribute('role', 'button');
+      tag.setAttribute('tabindex', '0');
+      tag.setAttribute('data-info', 'wind');
+      tag.setAttribute('aria-haspopup', 'dialog');
+      tag.setAttribute('aria-label', tag.textContent.trim() + ' wind. Open the wind key');
+    }else{
+      ['role', 'tabindex', 'data-info', 'aria-haspopup', 'aria-label'].forEach(function(a){ tag.removeAttribute(a); });
+    }
+  }
+  sdMQ.addEventListener('change', syncWindTag);
+  document.addEventListener('keydown', function(e){
+    var t = e.target;
+    if((e.key === 'Enter' || e.key === ' ') && t && t.classList && t.classList.contains('wk-tag') && t.getAttribute('role') === 'button'){
+      e.preventDefault();
+      openInfoModal('wind', t);
+    }
+  });
+  /* the location shown beside the search button mirrors the short place name */
+  function syncMobileLoc(){ mLocName.textContent = (hdrLoc.textContent || '').trim(); }
+  new MutationObserver(syncMobileLoc).observe(hdrLoc, {childList:true, characterData:true, subtree:true});
+  /* Favorites / Recents interactions */
+  sdSheet.addEventListener('click', function(e){
+    var star = e.target.closest('.sd-star'), pick = e.target.closest('.sd-item'), save = e.target.closest('#sdSave'), clr = e.target.closest('#sdClearRecents');
+    if(star){
+      toggleFavorite({lat: +star.dataset.lat, lon: +star.dataset.lon, label: star.dataset.label, name: star.dataset.name});
+      renderSearchLists();
+      var again = sdSheet.querySelector('.sd-star[data-lat="' + star.dataset.lat + '"]'); if(again) again.focus();
+    }else if(save){
+      var cur = currentPlace(); if(cur){ toggleFavorite(cur); renderSearchLists(); document.getElementById('sdSave').focus(); }
+    }else if(clr){
+      writeList(REC_KEY, []); renderSearchLists(); document.getElementById('locInput').focus();
+    }else if(pick){
+      var lat = +pick.dataset.lat, lon = +pick.dataset.lon, label = pick.dataset.label;
+      try{ var data = window.Alpine && Alpine.$data(document.getElementById('searchForm')); if(data) data.query = pick.dataset.name; }catch(err){}
+      loadForLocation(lat, lon, label);
+    }
+  });
+
+  /* ---------- Pause / play all animation (desktop header button) ---------- */
+  var PAUSE_KEY = 'checkTheWind.animPaused';
+  var animDesktopMQ = window.matchMedia('(min-width:64em), (max-width:31.1875em)');  // where a pause button exists: desktop and phone
+  var animPaused = false;
+  try{ animPaused = localStorage.getItem(PAUSE_KEY) === '1'; }catch(e){}
+  function animEffectivePaused(){ return animPaused && animDesktopMQ.matches; }
+  var PAUSE_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  var PLAY_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10-6.5a1 1 0 0 0 0-1.8l-10-6.5A1 1 0 0 0 8 5.5z"/></svg>';
+  var animBtns = [].slice.call(document.querySelectorAll('.anim-toggle'));
+  function applyAnimPause(){
+    var p = animEffectivePaused();
+    document.documentElement.classList.toggle('anim-paused', p);
+    windField.setPaused(p);
+    if(radarLoop){ if(p) radarLoop.pause(); else radarLoop.play(); }
+    animBtns.forEach(function(b){ b.innerHTML = p ? PLAY_SVG : PAUSE_SVG; b.setAttribute('aria-label', p ? 'Play animations' : 'Pause animations'); });
+  }
+  animBtns.forEach(function(b){ b.addEventListener('click', function(){
+    animPaused = !animEffectivePaused();
+    try{ localStorage.setItem(PAUSE_KEY, animPaused ? '1' : '0'); }catch(e){}
+    applyAnimPause();
+    announce(animPaused ? 'Animations paused' : 'Animations playing');
+    b.focus();
+  }); });
+  animDesktopMQ.addEventListener('change', applyAnimPause);
+  applyAnimPause();
+
+  /* Refresh button in the desktop header: reloads the current location in place and spins while it works. */
+  var mainRefreshBtn = document.getElementById('mainRefresh');
+  mainRefreshBtn.addEventListener('click', async function(){
+    if(mainRefreshBtn.disabled || !lastLoad) return;
+    mainRefreshBtn.disabled = true;
+    mainRefreshBtn.classList.add('busy');
+    mainRefreshBtn.setAttribute('aria-busy', 'true');
+    announce('Refreshing data');
+    var t0 = Date.now();
+    try{
+      await loadForLocation(lastLoad.lat, lastLoad.lon, lastLoad.label, {quiet:true});
+    }catch(err){
+      reportError(err, COPY.refresh);
+    }
+    await new Promise(function(r){ setTimeout(r, Math.max(0, 700 - (Date.now() - t0))); });
+    mainRefreshBtn.disabled = false;
+    mainRefreshBtn.classList.remove('busy');
+    mainRefreshBtn.setAttribute('aria-busy', 'false');
+  });
+
   async function loadForLocation(lat, lon, label, opts){
+    if(!(opts && opts.quiet)) closeSearchDrawer();
     try{
       return await loadForLocationCore(lat, lon, label, opts);
     }catch(err){

@@ -292,7 +292,7 @@
     .alert-side{flex-direction:column; align-items:flex-end; gap:6px}
   }
   .section-head{position:relative; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:.25rem 1rem; margin-bottom:12px}
-  .section-head h2{font-size:1.25rem; margin:0; color:var(--text); display:inline-flex; align-items:center; gap:6px}
+  .section-head h2{font-size:1.25rem; font-weight:500; margin:0; color:var(--text-muted); display:inline-flex; align-items:center; gap:6px}
 
   .info-btn{
     display:flex; align-items:center; justify-content:center; flex-shrink:0;
@@ -731,7 +731,7 @@
     display:flex; align-items:center; justify-content:space-between;
     padding:20px 24px; border-bottom:1px solid var(--table-border); flex:0 0 auto;
   }
-  .disclaimers-modal-head h2{font-size:1.125rem; margin:0; color:var(--text)}
+  .disclaimers-modal-head h2{font-size:1.125rem; font-weight:500; margin:0; color:var(--text-muted)}
   .disclaimers-modal-close{
     background:none; border:none; cursor:pointer; color:var(--text-muted);
     padding:6px; display:flex; border-radius:6px;
@@ -889,6 +889,8 @@
   @media (max-width:23.9em){
     .wind-legend-segs{grid-template-columns:repeat(3,1fr)}
   }
+  /* Every button is a rounded square (no circles) */
+  .info-btn, .main-refresh, .sd-close, .sd-star, .bw-toggle{ border-radius:8px }
 </style>
 </head>
 <body>
@@ -1065,7 +1067,7 @@
           <div role="columnheader">Rank</div>
           <div role="columnheader">Window</div>
           <div role="columnheader">Temp</div>
-          <div role="columnheader">Max wind</div>
+          <div role="columnheader">Wind</div>
           <div role="columnheader">Precip</div>
           <div role="columnheader">Humidity</div>
           <div role="columnheader">Ground</div>
@@ -1091,7 +1093,7 @@
             <div class="bw-cell bw-window" role="cell"><span class="bw-day" x-text="w.day"></span><span class="bw-time" x-text="w.time"></span></div>
             <div class="bw-stats">
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Temp</span><span class="bw-val" x-text="w.temp"></span></div>
-              <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Max wind</span><span class="bw-val" x-text="w.wind"></span></div>
+              <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Wind</span><span class="bw-val" x-text="w.wind"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Precip</span><span class="bw-val" x-text="w.precip"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Humidity</span><span class="bw-val" x-text="w.humidity"></span></div>
               <div class="bw-cell bw-stat" role="cell"><span class="bw-lab">Ground</span><span class="bw-val" x-text="w.ground"></span></div>
@@ -1136,7 +1138,7 @@
     </div>
     <div class="daylist" id="dayList" role="list">
       <div class="dayrow-head" aria-hidden="true">
-        <div class="dnames">Day/Date</div>
+        <div class="dnames">Day</div>
         <div class="drest">
           <div class="dwind">Wind Forecast</div>
           <div class="dshort">Weather Forecast</div>
@@ -1145,7 +1147,7 @@
       </div>
       <template x-for="n in ($store.week.state === 'loading' ? 7 : 0)" :key="n">
         <div class="dayrow skel-dayrow" :style="'animation-delay:' + ((n - 1) * 0.05) + 's'">
-          <div class="dnames"><span class="dlabel">Day/Date</span><div class="dval"><span class="dname skel"></span> <span class="ddate skel"></span></div></div>
+          <div class="dnames"><span class="dlabel">Day</span><div class="dval"><span class="dname skel"></span></div></div>
           <div class="drest">
             <div class="dwind"><span class="dlabel">Wind Forecast</span><div class="dval"><b class="skel"></b></div></div>
             <div class="dshort"><span class="dlabel">Weather Forecast</span><div class="dval"><span class="dicon"><span class="skel"></span></span><span class="skel"></span></div></div>
@@ -1156,8 +1158,8 @@
       <template x-for="d in $store.week.days" :key="d.key">
         <div class="dayrow" role="listitem">
           <div class="dnames">
-            <span class="dlabel">Day/Date</span>
-            <div class="dval"><div class="dname" x-text="d.label"></div><div class="ddate" x-text="d.date"></div></div>
+            <span class="dlabel">Day</span>
+            <div class="dval"><div class="dname" x-text="d.label"></div></div>
             <span class="hero-band-pill date-row-pill" :style="'background:' + d.bandPill + '; color:' + d.bandPillInk" x-text="d.bandLabel"></span>
           </div>
           <div class="drest">
@@ -1316,7 +1318,7 @@
 
   function moonMarkup(cx, cy, r, th){
     // Crescent: the big circle (cx,cy,r) minus an offset circle, drawn as two arcs between their intersection points.
-    th = th == null ? -0.7 : th;
+    th = th == null ? 0 : th;  // 0 = crescent facing right (bulge on the left, tips pointing right)
     var d = r * 0.62, r1 = r * 0.86;
     var ux = Math.cos(th), uy = Math.sin(th);
     var a = (r * r - r1 * r1 + d * d) / (2 * d), h = Math.sqrt(r * r - a * a);
@@ -1336,10 +1338,10 @@
     var body = '';
     switch(kind){
       case 'clear':
-        body = isDaytime ? sunMarkup(24,24,9) : moonMarkup(22,22,8);
+        body = isDaytime ? sunMarkup(24,24,9) : moonMarkup(22,22,10);
         break;
       case 'partly':
-        body = (isDaytime ? sunMarkup(30,16,6) : moonMarkup(30,15,8, Math.PI - 0.7)) + cloudMarkup(20);
+        body = (isDaytime ? sunMarkup(30,16,6) : moonMarkup(37,10.5,8.125)) + cloudMarkup(20);
         break;
       case 'rain':
         body = cloudMarkup(24) +
