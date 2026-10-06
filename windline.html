@@ -27,19 +27,19 @@
     --band-calm:#557E7C;
     --band-breezy:#5A78A5;
     --band-windy:#7F7751;
-    --band-verywindy:#9B6B5F;
-    --band-gale:#856D9A;
+    --band-gale:#9B6B5F;
+    --band-verywindy:#856D9A;
     --pill-calm:#ABCBC9;
     --pill-breezy:#B4C6E0;
     --pill-windy:#D0C9A5;
-    --pill-blustery:#D1B3AC;
-    --pill-howling:#C9B5DA;
+    --pill-howling:#D1B3AC;
+    --pill-blustery:#C9B5DA;
     --pill-ink:#333333;
     --seg-ink-calm:#3B5756;
     --seg-ink-breezy:#3E5372;
     --seg-ink-windy:#5A553A;
-    --seg-ink-blustery:#62433C;
-    --seg-ink-howling:#564665;
+    --seg-ink-howling:#62433C;
+    --seg-ink-blustery:#564665;
     --cloud:#B9C9D4;
     --cloud-2:#A2B6C4;
     --trend-line:#333333;
@@ -90,8 +90,8 @@
       --band-calm:#2FE0B0;
       --band-breezy:#5CB4FF;
       --band-windy:#FFD23F;
-      --band-verywindy:#FF9B47;
-      --band-gale:#C084FC;
+      --band-gale:#FF9B47;
+      --band-verywindy:#C084FC;
       --pill-ink:#0E1620;
       --tint-key:70%;
       --tint-row:8%;
@@ -172,7 +172,7 @@
   form.search input{
     background:var(--surface); color:var(--text);
     border:1px solid var(--border); border-radius:10px;
-    padding:11px 13px; min-height:44px; font-size:1rem; font-family:inherit;
+    padding:11px 13px; height:46px; min-height:0; font-size:1rem; font-family:inherit;
   }
   .input-wrap{position:relative; display:flex}
   form.search .input-wrap input{width:100%; padding-left:2.5rem; padding-right:2.75rem}
@@ -211,7 +211,7 @@
   form.search button[type="submit"]{display:none}
   form.search .geo-btn{
     display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
-    width:44px; height:44px; border-radius:10px;
+    width:44px; height:46px; border-radius:10px;
     background:var(--surface-2); color:var(--text); border:1px solid var(--border);
     cursor:pointer; padding:0;
   }
@@ -237,10 +237,10 @@
   .alerts{display:flex; flex-direction:column; gap:12px; margin-top:64px}
   .alerts[hidden]{display:none}
   .alerts:not([hidden]) + #heroSection, .alerts:not([hidden]) + #bestSection{margin-top:32px}
-  .alert{--alert-bg:#2F6DB5; --alert-ink:#fff; border:1px solid var(--alert-bg); border-radius:14px; overflow:hidden; background:var(--surface)}
-  .alert--warning{--alert-bg:#C62828; --alert-ink:#fff}
-  .alert--watch{--alert-bg:#F2C230; --alert-ink:#2B2300}
-  .alert--advisory{--alert-bg:#2F6DB5; --alert-ink:#fff}
+  .alert{--alert-bg:#4A6A98; --alert-ink:#fff; border:1px solid var(--alert-bg); border-radius:14px; overflow:hidden; background:var(--surface)}
+  .alert--warning{--alert-bg:#A8433D; --alert-ink:#fff}
+  .alert--watch{--alert-bg:#CBAA45; --alert-ink:#2B2300}
+  .alert--advisory{--alert-bg:#4A6A98; --alert-ink:#fff}
   .alert-head{
     display:flex; align-items:center; gap:12px; width:100%; padding:9px 16px; border:0; cursor:pointer;
     background:var(--alert-bg); color:var(--alert-ink); font:inherit; text-align:left;
@@ -251,10 +251,13 @@
   .alert-titles{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:0}
   .alert-title{font-size:1.125rem; font-weight:700; line-height:1.25}
   .alert-sub{font-size:1rem; font-weight:400; line-height:1.3; opacity:.92}
-  .alert-toggle{flex:0 0 auto; display:flex}
+  .alert-toggle{flex:0 0 auto; display:flex; align-items:center; gap:6px}
+  .alert-toggle-lab{font-size:1rem; font-weight:400; line-height:1}
+  .alert-toggle-lab::before{content:"More"}
+  [aria-expanded="true"] > .alert-toggle .alert-toggle-lab::before{content:"Less"}
   .alert-toggle svg{width:18px; height:18px}
-  .alert-toggle .v{transition:opacity .15s}
-  .alert-head[aria-expanded="true"] .alert-toggle .v{opacity:0}
+  .alert-toggle svg{transition:transform .15s}
+  [aria-expanded="true"] > .alert-toggle svg{transform:rotate(180deg)}
   .alert-body{padding:16px 20px 20px; color:var(--text); font-size:1rem; line-height:1.5}
   .alert-body[hidden]{display:none}
   .alert-count{text-align:right; font-size:1rem; color:var(--text-muted)}
@@ -262,6 +265,7 @@
   .alert-body dt{font-weight:700; margin-top:14px}
   .alert-body dt:first-child{margin-top:0}
   .alert-body dd{margin:2px 0 0; white-space:pre-wrap; overflow-wrap:anywhere}
+  .alert-side{flex:0 0 auto; display:flex; align-items:center; gap:12px}
   .alert-more{flex:0 0 auto; display:inline-flex; align-items:center; padding:2px 10px; border-radius:99px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:0.875rem; font-weight:700; white-space:nowrap}
   .alert-body--list{padding:0}
   .alert-item{border-top:1px solid var(--table-border)}
@@ -276,7 +280,6 @@
   .alert-item-head .alert-sub{color:var(--text-muted); opacity:1}
   .alert-dot{flex:0 0 auto; width:10px; height:10px; border-radius:50%; background:var(--alert-bg)}
   .alert-item-head .alert-toggle{color:var(--text-muted)}
-  .alert-item-head[aria-expanded="true"] .alert-toggle .v{opacity:0}
   .alert-item-body{padding:2px 20px 18px 42px; color:var(--text); font-size:1rem; line-height:1.5}
   .alert-item-body[hidden]{display:none}
   @media (max-width:31.1875em){
@@ -286,11 +289,11 @@
     .alert-body{padding:14px 16px 18px}
     .alert-item-head{padding:8px 14px}
     .alert-item-body{padding:2px 16px 16px 38px}
+    .alert-side{flex-direction:column; align-items:flex-end; gap:6px}
   }
   .section-head{position:relative; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:.25rem 1rem; margin-bottom:12px}
   .section-head h2{font-size:1.25rem; margin:0; color:var(--text); display:inline-flex; align-items:center; gap:6px}
 
-  .info-wrap{display:inline-flex}
   .info-btn{
     display:flex; align-items:center; justify-content:center; flex-shrink:0;
     width:44px; height:44px; margin:-10px; padding:0; border:0; border-radius:50%;
@@ -300,20 +303,6 @@
   .info-btn svg{width:18px; height:18px}
   .info-btn:hover, .info-btn:focus-visible{color:var(--text)}
   .info-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
-  .info-tip{
-    position:absolute; z-index:20; top:calc(100% + 10px); left:0;
-    width:min(280px, calc(100vw - 48px));
-    padding:12px 14px; border-radius:10px;
-    background:var(--surface); border:1px solid var(--table-border); box-shadow:var(--shadow);
-    font-size:1rem; font-weight:300; line-height:1.6; color:var(--text-faint);
-    opacity:0; visibility:hidden; transform:translateY(-4px);
-    transition:opacity .15s, transform .15s, visibility .15s;
-    pointer-events:none;
-  }
-  .info-wrap:hover .info-tip, .info-btn:focus-visible ~ .info-tip, .info-tip.open{
-    opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto;
-  }
-  @media (prefers-reduced-motion: reduce){ .info-tip{transition:opacity .01s} }
   .section-head .sub{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace}
 
   .hero{
@@ -510,11 +499,11 @@
   .pollen-bar-fill{height:100%; border-radius:99px}
 
   .bw-head, .bw-row{
-    display:grid; grid-template-columns:2.25rem minmax(6.5rem,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,1.4fr);
+    display:grid; grid-template-columns:calc(2.25rem + 2.4px) minmax(6.5rem,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,1.4fr);
     gap:12px; align-items:center;
   }
   .bw-list{background:var(--surface); border-radius:14px; overflow:hidden; border:1px solid var(--table-border)}
-  .bw-head{padding:16px 24px 12px; border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
+  .bw-head{padding:9px 24px 6.5px; background:color-mix(in srgb, var(--text) 9%, var(--surface)); border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
   .bw-row{padding:16px 24px; border-bottom:.5px solid var(--table-border); font-size:1rem}
   .bw-row.bw-row--top{padding:24px}
   .bw-row:last-of-type{border-bottom:none}
@@ -524,6 +513,8 @@
   .bw-medal svg{display:block}
   .bw-stats{display:contents}
   .bw-window{display:flex; flex-direction:column; gap:2px}
+  /* Rank -> Window spacing +20% (12px column gap -> 14.4px) */
+  .bw-window, .bw-head > :nth-child(2){margin-left:2.4px}
   .bw-time{font-size:1rem; font-weight:500; line-height:1.3; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
   .bw-row--top .bw-time{font-size:1rem; font-weight:700; color:var(--text)}
   .bw-day{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace}
@@ -531,6 +522,10 @@
   .bw-val{font-size:1rem; font-weight:500; color:var(--text-muted)}
   .bw-row--top .bw-val{font-weight:600; color:var(--text)}
   .bw-head[hidden]{display:none}
+  /* Table view: every stat column (Temp through AQI) is right-aligned; Rank & Window stay left */
+  @media (min-width:31.25em){
+    .bw-head > :nth-child(n+3), .bw-row .bw-stat{text-align:right}
+  }
   .bw-empty{display:flex; align-items:flex-start; justify-content:space-between; gap:32px; padding:16px 24px; color:var(--text)}
   .bw-empty-title{display:block; font-size:1.125rem; font-weight:700; line-height:1.3; color:var(--text)}
   .bw-empty-sub{display:block; margin-top:4px; font-size:1rem; color:var(--text-muted)}
@@ -568,6 +563,7 @@
   @media (max-width:31.1875em){
     .bw-head{display:none}
     .bw-row{grid-template-columns:auto 1fr; gap:10px; padding-inline:16px}
+    .bw-window{margin-left:2px}
     .bw-stats{grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,auto); justify-content:space-between; gap:8px}
     .bw-stat .bw-lab{
       position:static; width:auto; height:auto; margin:0; overflow:visible; clip:auto; clip-path:none;
@@ -1057,13 +1053,10 @@
   <section id="bestSection" hidden x-data :hidden="$store.best.state === 'idle'" :aria-hidden="$store.best.state === 'loading' ? 'true' : null">
     <div class="section-head">
       <h2>Best Times to Be Outside
-        <span class="info-wrap" x-data="{open:false}" @keydown.escape="open=false" @click.outside="open=false">
-          <button type="button" class="info-btn" aria-describedby="bestInfoTip" :aria-expanded="open" @click="open=!open">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.8" r=".25" fill="currentColor" stroke="none"/></svg>
-            <span class="sr-only">More about how these are ranked</span>
-          </button>
-          <div class="info-tip" id="bestInfoTip" role="tooltip" :class="{open: open}" x-text="$store.best.note"></div>
-        </span>
+        <button type="button" class="info-btn" data-info="best" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8"/><circle cx="12" cy="16.8" r="1.4" fill="currentColor" stroke="none"/></svg>
+          <span class="sr-only">How Best Times are ranked</span>
+        </button>
       </h2>
     </div>
     <div class="bw-table" role="table" aria-label="Best times to be outside, ranked">
@@ -1194,6 +1187,19 @@
   </footer>
 </div>
 
+<div class="radar-modal" id="infoModal" hidden>
+  <div class="radar-modal-backdrop" id="infoModalBackdrop"></div>
+  <div class="radar-modal-panel disclaimers-modal-panel" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+    <div class="disclaimers-modal-head">
+      <h2 id="infoModalTitle"></h2>
+      <button type="button" class="disclaimers-modal-close" id="infoModalClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="disclaimers-modal-body" id="infoModalBody"></div>
+  </div>
+</div>
+
 <div class="radar-modal" id="radarModal" hidden x-data :hidden="!$store.radar.open" @keydown.escape.window="$store.radar.close()">
   <div class="radar-modal-backdrop" id="radarModalBackdrop" @click="$store.radar.close()"></div>
   <div class="radar-modal-panel" role="dialog" aria-modal="true" aria-label="Weather radar">
@@ -1223,7 +1229,7 @@
         contributors). Radar imagery from NOAA NEXRAD via Iowa State University's Iowa Environmental Mesonet; forecast radar frames from NOAA's HRRR model. Air Quality
         Index &amp; Pollutants (PM2.5) are sourced live from AirNow (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>),
         EPA — coverage depends on the nearest reporting monitor. Pollen isn't available from any free public U.S. source,
-        so tree/grass/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement. Forecasts
+        so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement. Forecasts
         update hourly at the source; reload to refresh.
       </p>
     </div>
@@ -1308,8 +1314,17 @@
       '<circle class="wx-sun-disc" style="transform-origin:'+cx+'px '+cy+'px" cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="var(--accent)"/>';
   }
 
-  function moonMarkup(cx, cy, r){
-    return '<path d="M'+(cx+r*0.55)+' '+(cy-r)+'a'+r+' '+r+' 0 1 0 '+(r*0.75)+' '+(r*1.9)+'A'+(r*0.82)+' '+(r*0.82)+' 0 0 1 '+(cx+r*0.55)+' '+(cy-r)+'Z" fill="var(--cloud-2)"/>';
+  function moonMarkup(cx, cy, r, th){
+    // Crescent: the big circle (cx,cy,r) minus an offset circle, drawn as two arcs between their intersection points.
+    th = th == null ? -0.7 : th;
+    var d = r * 0.62, r1 = r * 0.86;
+    var ux = Math.cos(th), uy = Math.sin(th);
+    var a = (r * r - r1 * r1 + d * d) / (2 * d), h = Math.sqrt(r * r - a * a);
+    var px = cx + a * ux, py = cy + a * uy;
+    var x1 = (px - h * uy).toFixed(2), y1 = (py + h * ux).toFixed(2);
+    var x2 = (px + h * uy).toFixed(2), y2 = (py - h * ux).toFixed(2);
+    return '<path d="M' + x1 + ' ' + y1 + 'A' + r + ' ' + r + ' 0 1 1 ' + x2 + ' ' + y2 +
+      'A' + r1.toFixed(2) + ' ' + r1.toFixed(2) + ' 0 0 0 ' + x1 + ' ' + y1 + 'Z" fill="var(--aqi-moderate)"/>';
   }
 
   // Display "and" as "&" in weather descriptions that come from the NWS forecast (e.g. "Showers And Thunderstorms").
@@ -1324,7 +1339,7 @@
         body = isDaytime ? sunMarkup(24,24,9) : moonMarkup(22,22,8);
         break;
       case 'partly':
-        body = (isDaytime ? sunMarkup(30,16,6) : moonMarkup(28,15,5)) + cloudMarkup(20);
+        body = (isDaytime ? sunMarkup(30,16,6) : moonMarkup(30,15,8, Math.PI - 0.7)) + cloudMarkup(20);
         break;
       case 'rain':
         body = cloudMarkup(24) +
@@ -1980,6 +1995,78 @@
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   });
 
+  // Info (?) buttons open this shared modal (same look as Disclaimers & Data Sources) — no hover tooltips.
+  var infoModal = document.getElementById('infoModal');
+  var infoModalLastFocus = null;
+  var WIND_KEY_ROWS = [
+    ['Calm','calm','0–7 mph','var(--band-calm)'],
+    ['Breezy','breezy','8–15 mph','var(--band-breezy)'],
+    ['Windy','windy','16–24 mph','var(--band-windy)'],
+    ['Blustery','blustery','25–33 mph','var(--band-verywindy)'],
+    ['Howling','howling','34+ mph','var(--band-gale)']
+  ];
+  function fillInfoModal(kind){
+    var title = document.getElementById('infoModalTitle');
+    var body = document.getElementById('infoModalBody');
+    body.textContent = '';
+    if(kind === 'wind'){
+      title.textContent = 'Wind Key';
+      WIND_KEY_ROWS.forEach(function(r){
+        var row = document.createElement('div');
+        row.className = 'wk-row';
+        var pill = document.createElement('span');
+        pill.className = 'hero-band-pill';
+        pill.style.background = 'var(--pill-' + r[1] + ')';
+        pill.style.color = 'var(--seg-ink-' + r[1] + ')';
+        pill.textContent = r[0];
+        var range = document.createElement('span');
+        range.className = 'wk-range';
+        range.style.color = r[3];
+        range.textContent = r[2];
+        row.appendChild(pill);
+        row.appendChild(range);
+        body.appendChild(row);
+      });
+    }else{
+      title.textContent = 'How Best Times Work';
+      var p = document.createElement('p');
+      p.textContent = store('best').note || '';
+      body.appendChild(p);
+    }
+  }
+  function openInfoModal(kind, trigger){
+    infoModalLastFocus = trigger || document.activeElement;
+    fillInfoModal(kind);
+    infoModal.hidden = false;
+    setBackgroundInert(true, infoModal);
+    document.body.style.overflow = 'hidden';
+    document.getElementById('infoModalClose').focus();
+  }
+  function closeInfoModal(){
+    if(infoModal.hidden) return;
+    infoModal.hidden = true;
+    setBackgroundInert(false);
+    document.body.style.overflow = '';
+    if(infoModalLastFocus && typeof infoModalLastFocus.focus === 'function') infoModalLastFocus.focus();
+  }
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('[data-info]');
+    if(btn) openInfoModal(btn.getAttribute('data-info'), btn);
+  });
+  document.getElementById('infoModalClose').addEventListener('click', closeInfoModal);
+  document.getElementById('infoModalBackdrop').addEventListener('click', closeInfoModal);
+  document.addEventListener('keydown', function(e){
+    if(infoModal.hidden) return;
+    if(e.key === 'Escape'){ closeInfoModal(); return; }
+    if(e.key !== 'Tab') return;
+    var f = [].slice.call(infoModal.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+    if(!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if(!infoModal.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+    else if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
+
   function renderHourly(periods){
     var next10 = periods.slice(0, 10);
     if(!next10.length){ todaySection.hidden = true; return; }
@@ -2426,8 +2513,8 @@
       '<div class="pollen-list">' +
         gaugeRowHtml(aqiIcon(), 'Air Quality Index', overallLv, overallLv.fillPct, airNow && airNow.overall ? airNow.overall.aqi : null, 500) +
         gaugeRowHtml(pollutantIcon(), 'Pollutants (PM2.5)', pm25Lv, pm25Lv.fillPct, airNow && airNow.pm25 ? airNow.pm25.aqi : null, 500) +
-        gaugeRowHtml(pollenIcon('tree'), 'Tree', treeLv, Math.max(2, pollen.tree), pollen.tree, 100) +
-        gaugeRowHtml(pollenIcon('grass'), 'Grass', grassLv, Math.max(2, pollen.grass), pollen.grass, 100) +
+        gaugeRowHtml(pollenIcon('tree'), 'Trees', treeLv, Math.max(2, pollen.tree), pollen.tree, 100) +
+        gaugeRowHtml(pollenIcon('grass'), 'Grasses', grassLv, Math.max(2, pollen.grass), pollen.grass, 100) +
         gaugeRowHtml(pollenIcon('weed'), 'Weeds', weedLv, Math.max(2, pollen.weed), pollen.weed, 100) +
       '</div>';
     airSection.hidden = false;
@@ -2875,7 +2962,10 @@
   function alertToggle(){
     var tog = document.createElement('span');
     tog.className = 'alert-toggle';
-    tog.appendChild(svgEl('<g stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><line class="v" x1="12" y1="4" x2="12" y2="20"/></g>'));
+    tog.appendChild(svgEl('<polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'));
+    var lab = document.createElement('span');
+    lab.className = 'alert-toggle-lab';
+    tog.appendChild(lab);
     return tog;
   }
 
@@ -2946,10 +3036,16 @@
     if(multi){
       var more = document.createElement('span');
       more.className = 'alert-more';
-      more.textContent = (list.length - 1) + ' more';
-      head.appendChild(more);
+      var extra = list.length - 1;
+      more.textContent = '+ ' + extra + (extra === 1 ? ' Alert' : ' Alerts');
+      var side = document.createElement('span');
+      side.className = 'alert-side';
+      side.appendChild(more);
+      side.appendChild(alertToggle());
+      head.appendChild(side);
+    }else{
+      head.appendChild(alertToggle());
     }
-    head.appendChild(alertToggle());
 
     var body = document.createElement('div');
     body.className = 'alert-body';

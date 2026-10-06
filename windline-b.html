@@ -27,19 +27,19 @@
     --band-calm:#557E7C;
     --band-breezy:#5A78A5;
     --band-windy:#7F7751;
-    --band-verywindy:#9B6B5F;
-    --band-gale:#856D9A;
+    --band-gale:#9B6B5F;
+    --band-verywindy:#856D9A;
     --pill-calm:#ABCBC9;
     --pill-breezy:#B4C6E0;
     --pill-windy:#D0C9A5;
-    --pill-blustery:#D1B3AC;
-    --pill-howling:#C9B5DA;
+    --pill-howling:#D1B3AC;
+    --pill-blustery:#C9B5DA;
     --pill-ink:#333333;
     --seg-ink-calm:#3B5756;
     --seg-ink-breezy:#3E5372;
     --seg-ink-windy:#5A553A;
-    --seg-ink-blustery:#62433C;
-    --seg-ink-howling:#564665;
+    --seg-ink-howling:#62433C;
+    --seg-ink-blustery:#564665;
     --cloud:#B9C9D4;
     --cloud-2:#A2B6C4;
     --trend-line:#333333;
@@ -90,8 +90,8 @@
       --band-calm:#2FE0B0;
       --band-breezy:#5CB4FF;
       --band-windy:#FFD23F;
-      --band-verywindy:#FF9B47;
-      --band-gale:#C084FC;
+      --band-gale:#FF9B47;
+      --band-verywindy:#C084FC;
       --pill-ink:#0E1620;
       --tint-key:70%;
       --tint-row:8%;
@@ -172,7 +172,7 @@
   form.search input{
     background:var(--surface); color:var(--text);
     border:1px solid var(--border); border-radius:4px;
-    padding:11px 13px; min-height:44px; font-size:1rem; font-family:inherit;
+    padding:11px 13px; height:46px; min-height:0; font-size:1rem; font-family:inherit;
   }
   .input-wrap{position:relative; display:flex}
   form.search .input-wrap input{width:100%; padding-left:2.5rem; padding-right:2.75rem}
@@ -211,7 +211,7 @@
   form.search button[type="submit"]{display:none}
   form.search .geo-btn{
     display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
-    width:44px; height:44px; border-radius:4px;
+    width:44px; height:46px; border-radius:4px;
     background:var(--surface-2); color:var(--text); border:1px solid var(--border);
     cursor:pointer; padding:0;
   }
@@ -238,10 +238,10 @@
   .alerts[hidden]{display:none}
   .alerts:not([hidden]) + #heroSection, .alerts:not([hidden]) + #bestSection{margin-top:32px}
   .alerts:not([hidden]) + #bestSection{margin-top:40px}
-  .alert{--alert-bg:#2F6DB5; --alert-ink:#fff; border:1px solid var(--alert-bg); border-radius:4px; overflow:hidden; background:var(--surface)}
-  .alert--warning{--alert-bg:#C62828; --alert-ink:#fff}
-  .alert--watch{--alert-bg:#F2C230; --alert-ink:#2B2300}
-  .alert--advisory{--alert-bg:#2F6DB5; --alert-ink:#fff}
+  .alert{--alert-bg:#4A6A98; --alert-ink:#fff; border:1px solid var(--alert-bg); border-radius:4px; overflow:hidden; background:var(--surface)}
+  .alert--warning{--alert-bg:#A8433D; --alert-ink:#fff}
+  .alert--watch{--alert-bg:#CBAA45; --alert-ink:#2B2300}
+  .alert--advisory{--alert-bg:#4A6A98; --alert-ink:#fff}
   .alert-head{
     display:flex; align-items:center; gap:12px; width:100%; padding:9px 16px; border:0; cursor:pointer;
     background:var(--alert-bg); color:var(--alert-ink); font:inherit; text-align:left;
@@ -252,10 +252,13 @@
   .alert-titles{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:0}
   .alert-title{font-size:1.125rem; font-weight:700; line-height:1.25}
   .alert-sub{font-size:1rem; font-weight:400; line-height:1.3; opacity:.92}
-  .alert-toggle{flex:0 0 auto; display:flex}
+  .alert-toggle{flex:0 0 auto; display:flex; align-items:center; gap:6px}
+  .alert-toggle-lab{font-size:1rem; font-weight:400; line-height:1}
+  .alert-toggle-lab::before{content:"More"}
+  [aria-expanded="true"] > .alert-toggle .alert-toggle-lab::before{content:"Less"}
   .alert-toggle svg{width:18px; height:18px}
-  .alert-toggle .v{transition:opacity .15s}
-  .alert-head[aria-expanded="true"] .alert-toggle .v{opacity:0}
+  .alert-toggle svg{transition:transform .15s}
+  [aria-expanded="true"] > .alert-toggle svg{transform:rotate(180deg)}
   .alert-body{padding:16px 20px 20px; color:var(--text); font-size:1rem; line-height:1.5}
   .alert-body[hidden]{display:none}
   .alert-count{text-align:right; font-size:1rem; color:var(--text-muted)}
@@ -263,6 +266,7 @@
   .alert-body dt{font-weight:700; margin-top:14px}
   .alert-body dt:first-child{margin-top:0}
   .alert-body dd{margin:2px 0 0; white-space:pre-wrap; overflow-wrap:anywhere}
+  .alert-side{flex:0 0 auto; display:flex; align-items:center; gap:12px}
   .alert-more{flex:0 0 auto; display:inline-flex; align-items:center; padding:2px 10px; border-radius:4px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:0.875rem; font-weight:700; white-space:nowrap}
   .alert-body--list{padding:0}
   .alert-item{border-top:1px solid var(--table-border)}
@@ -277,7 +281,6 @@
   .alert-item-head .alert-sub{color:var(--text-muted); opacity:1}
   .alert-dot{flex:0 0 auto; width:10px; height:10px; border-radius:50%; background:var(--alert-bg)}
   .alert-item-head .alert-toggle{color:var(--text-muted)}
-  .alert-item-head[aria-expanded="true"] .alert-toggle .v{opacity:0}
   .alert-item-body{padding:2px 20px 18px 42px; color:var(--text); font-size:1rem; line-height:1.5}
   .alert-item-body[hidden]{display:none}
   @media (max-width:31.1875em){
@@ -289,11 +292,11 @@
     .alert-body--list{padding:0}
     .alert-item-head{padding:4px 14px}
     .alert-item-body{padding:0 16px 10px 38px}
+    .alert-side{flex-direction:column; align-items:flex-end; gap:6px}
   }
   .section-head{position:relative; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:.25rem 1rem; margin-bottom:12px}
   .section-head h2{font-size:1.25rem; margin:0; color:var(--text); display:inline-flex; align-items:center; gap:6px}
 
-  .info-wrap{display:inline-flex}
   .info-btn{
     display:flex; align-items:center; justify-content:center; flex-shrink:0;
     width:44px; height:44px; margin:-10px; padding:0; border:0; border-radius:50%;
@@ -303,20 +306,16 @@
   .info-btn svg{width:18px; height:18px}
   .info-btn:hover, .info-btn:focus-visible{color:var(--text)}
   .info-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
-  .info-tip{
-    position:absolute; z-index:20; top:calc(100% + 10px); left:0;
-    width:min(280px, calc(100vw - 48px));
-    padding:12px 14px; border-radius:4px;
-    background:var(--surface); border:1px solid var(--table-border); box-shadow:var(--shadow);
-    font-size:1rem; font-weight:300; line-height:1.6; color:var(--text-faint);
-    opacity:0; visibility:hidden; transform:translateY(-4px);
-    transition:opacity .15s, transform .15s, visibility .15s;
-    pointer-events:none;
-  }
-  .info-wrap:hover .info-tip, .info-btn:focus-visible ~ .info-tip, .info-tip.open{
-    opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto;
-  }
-  @media (prefers-reduced-motion: reduce){ .info-tip{transition:opacity .01s} }
+  /* Wind Key (opens in the shared info modal from the ? beside the hero wind label) */
+  .hero-pill-row{display:inline-flex; align-items:center; gap:4px}
+  .disclaimers-modal-body .wk-intro{margin-bottom:12px}
+  .wk-table{width:100%; border-collapse:separate; border-spacing:0 8px; table-layout:fixed}
+  .wk-table th{text-align:left; font-size:1rem; font-weight:600; color:var(--text-muted); padding:0 0 2px}
+  .wk-table th:first-child, .wk-table td:first-child{padding-right:12px}
+  .wk-table th:last-child, .wk-table td:last-child{width:9rem}
+  .wk-table th:last-child, .wk-table td:last-child{text-align:right}
+  .wk-table .hero-band-pill{display:block; width:100%; text-align:center}
+  .wk-range{font-weight:600}
   .section-head .sub{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace}
 
   .wind-field{display:none}
@@ -422,23 +421,13 @@
     background:var(--surface); border-radius:4px; border:1px solid var(--table-border);
     padding:16px;
   }
-  .today-inner{position:relative; overflow-x:auto; overflow-y:hidden; scrollbar-width:thin}
+  /* scrollbar thumb at half its default opacity (default ~50% black -> 25%), theme-aware */
+  .today-inner{position:relative; overflow-x:auto; overflow-y:hidden; scrollbar-width:thin; scrollbar-color:color-mix(in srgb, var(--text) 25%, transparent) transparent}
+  /* Wind Today: the card's padding (24px, 16px on phones — same as Air Quality) is the whole margin; tiles add no vertical padding of their own */
+  #todaySection .htile{ padding-block:0 }
+  /* 8px between the chart and its horizontal scrollbar (the chart only scrolls sideways when the strip is wider than the card) */
+  @media (min-width:31.25em){ #todaySection .hscroll{ padding-bottom:8px } }
   .today-inner:focus-visible{outline-offset:4px; border-radius:4px}
-  .sunset-spacer{height:0}
-  .today-card{--sun-h:2.5rem}
-  .sunset-spacer.has-sunset{height:var(--sun-h)}
-  .sun-marker{position:absolute; top:0; bottom:0; pointer-events:none}
-  .sun-marker .line{
-    position:absolute; top:var(--sun-h); bottom:0; left:0; width:0;
-    border-left:2px dashed #F0C419;
-  }
-  .sun-marker .label{
-    position:absolute; top:0; left:0; transform:translateX(-50%);
-    display:flex; flex-direction:column; align-items:center; gap:1px; white-space:nowrap;
-  }
-  .sun-marker .label .stext{
-    font-size:1rem; font-weight:700; color:var(--sun-text); letter-spacing:.02em;
-  }
   .hscroll{
     position:relative; display:flex; gap:2px; width:max-content; min-width:100%;
   }
@@ -448,31 +437,47 @@
     padding:10px 2px; display:flex; flex-direction:column; align-items:center; gap:6px;
   }
   .htile .hr{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace; white-space:nowrap}
-  .htile .barwrap{height:74px; display:flex; align-items:flex-end}
+  .htile .hwx{flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:28px; height:28px}
+  .htile .hwx svg{width:28px; height:28px; display:block}
+  .htile .barwrap{height:56px; display:flex; align-items:flex-end}
   .htile .bar{width:14px; height:var(--h); border-radius:4px 4px 3px 3px; min-height:6px}
   .htile .spwrap{display:flex; align-items:baseline; gap:2px; white-space:nowrap}
   .htile .sp{font-size:1rem; font-weight:600; font-family:'Nunito',monospace}
   .htile .spunit{font-size:1rem; font-weight:600; color:var(--text-muted); font-family:'Nunito',monospace}
-  .htile .hdir{display:flex; margin-top:-2px}
-  @media (min-width:31.25em){ .htile .spwrap{flex-direction:column; align-items:center; gap:0; line-height:1.25} }
+  .htile .sp-row{display:flex; align-items:center; gap:3px}
+  /* The "mph" label is visually dropped (kept for screen readers); the direction arrow sits under the speed */
+  #todaySection .htile .spunit{position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap}
+  .htile .hdir{display:flex}
+  @media (min-width:31.25em){
+    .htile .spwrap{flex-direction:column; align-items:center; gap:0; line-height:1.25}
+    .htile .sp-row{flex-direction:column; align-items:center; gap:2px}
+    .htile .hdir svg{width:20px; height:20px}
+    .skel-htile .hdir{display:none}
+  }
 
   /* Air Quality & Pollen: five gauges (Air Quality Index + Pollutants/PM2.5,
      both real via AirNow/EPA; Tree/Grass/Weed pollen estimated — see
      pollenEstimate(), since there's no free, CORS-enabled, keyless pollen
      API with real US coverage). */
-  .air-card{padding:24px}
-  .pollen-list{display:flex; flex-direction:column; gap:16px; min-width:0}
+  /* Air Quality & Pollen and Wind Today: the title lives inside the card, above a divider line */
+  .air-card, #todaySection .today-card{padding:0}
+  #airCard.air-card, #todaySection .today-card{border-radius:8px}
+  .card-head{padding:12px 24px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
+  .card-head h2{font-size:1.125rem; margin:0; color:var(--text)}
+  .card-body{padding:24px}
+  .pollen-list{display:flex; flex-direction:column; gap:8px; min-width:0}
   .pollen-row-top{display:flex; align-items:center}
   .pollen-row-icon{flex:0 0 auto; display:flex; margin-right:4px}
   .pollen-row-label{flex:1 1 auto; margin-right:10px; font-size:1rem; font-weight:600; color:var(--text)}
   .pollen-row-val{font-size:1rem; font-weight:600; text-align:right}
+  .pollen-row-val .pollen-num{font-weight:300}
   .pollen-bar-track{height:7.2px; border-radius:4px; background:var(--surface-2); overflow:hidden; margin-top:6px}
   .pollen-bar-fill{height:100%; border-radius:4px}
   /* Desktop only: pairs #todaySection with #airSection as an equal-width
      row, to the right of Wind Today — mirrors the old Wind-Today/Gusts
      row this file used before that module was removed. */
   @media (min-width:64em){
-    .wind-row{ display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:stretch; margin-top:60px }
+    .wind-row{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:stretch; margin-top:60px }
     .db-content .wind-row > section{ margin-top:0; min-width:0 }
     /* Only Wind Today's card stretches to match Air Quality's (naturally
        taller, five-gauge) height — giving #airCard the same treatment
@@ -483,9 +488,10 @@
        and overflowing past it by the header's own height. */
     #todaySection{ display:flex; flex-direction:column }
     #todaySection .today-card{
-      flex:1 1 auto; min-height:0; box-sizing:border-box; padding:24px;
+      flex:1 1 auto; min-height:0; box-sizing:border-box; padding:0;
       display:flex; flex-direction:column;
     }
+    #todaySection .card-body{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column }
     /* Let the hourly strip itself (not just the outer card) stretch to
        fill the available height, and size each bar as a percentage of
        its own now-variable barwrap height (--pct, already computed in JS
@@ -499,43 +505,47 @@
     /* A right-edge fade hints that the hourly strip scrolls horizontally. */
     .today-card--scrollable{ position:relative; overflow:hidden }
     .today-card--scrollable::after, .today-card--scrollable::before{
-      content:""; position:absolute; top:1px; bottom:1px; width:80px;
+      content:""; position:absolute; top:0; bottom:0; width:80px;
       pointer-events:none; opacity:0; transition:opacity .15s;
     }
     .today-card--scrollable::after{
-      right:1px; background:linear-gradient(to right, transparent, var(--surface));
-      border-radius:0 4px 4px 0;
+      right:0; background:linear-gradient(to right, transparent, var(--surface));
     }
     .today-card--scrollable::before{
-      left:1px; background:linear-gradient(to left, transparent, var(--surface));
-      border-radius:4px 0 0 4px;
+      left:0; background:linear-gradient(to left, transparent, var(--surface));
     }
     .today-card--scrollable.can-scroll-right::after{ opacity:1 }
     .today-card--scrollable.can-scroll-left::before{ opacity:1 }
   }
 
   .bw-head, .bw-row{
-    display:grid; grid-template-columns:2.25rem minmax(6.5rem,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,1.4fr);
+    display:grid; grid-template-columns:calc(2.25rem + 2.4px) minmax(6.5rem,1.9fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.9fr) minmax(0,1.4fr);
     gap:12px; align-items:center;
   }
   .bw-list{background:var(--surface); border-radius:4px; overflow:hidden; border:1px solid var(--table-border)}
-  .bw-head{padding:16px 24px 12px; border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
-  .bw-row{padding:16px 24px; border-bottom:.5px solid var(--table-border); font-size:1rem}
-  .bw-row.bw-row--top{padding:16px 24px}
+  .bw-head{padding:9px 24px 6.5px; background:color-mix(in srgb, var(--text) 9%, var(--surface)); border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
+  .bw-row{padding:12px 24px; border-bottom:.5px solid var(--table-border); font-size:1rem}
+  .bw-row.bw-row--top{padding:12px 24px}
   .bw-row:last-of-type{border-bottom:none}
   .bw-cell{min-width:0}
   .bw-lab{position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap}
   .bw-medal{display:flex}
   .bw-medal svg{display:block}
   .bw-stats{display:contents}
-  .bw-window{display:flex; flex-direction:column; gap:2px}
-  .bw-time{font-size:1rem; font-weight:500; line-height:1.3; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
-  .bw-row--top .bw-time{font-size:1rem; font-weight:700; color:var(--text)}
+  .bw-window{display:flex; flex-direction:row; flex-wrap:wrap; align-items:baseline; gap:2px 8px}
+  /* Rank -> Window spacing +20% (12px column gap -> 14.4px) */
+  .bw-window, .bw-head > :nth-child(2){margin-left:2.4px}
+  .bw-time{font-size:1rem; font-weight:400; line-height:1.3; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .bw-row--top .bw-time{font-size:1rem; font-weight:400; color:var(--text)}
   .bw-day{font-size:1rem; color:var(--text-muted); font-family:'Nunito',monospace}
   .bw-row--top .bw-day{color:var(--text)}
-  .bw-val{font-size:1rem; font-weight:500; color:var(--text-muted)}
-  .bw-row--top .bw-val{font-weight:600; color:var(--text)}
+  .bw-val{font-size:1rem; font-weight:400; color:var(--text-muted)}
+  .bw-row--top .bw-val{font-weight:400; color:var(--text)}
   .bw-head[hidden]{display:none}
+  /* Table view: every stat column (Temp through AQI) is right-aligned; Rank & Window stay left */
+  @media (min-width:78em){
+    .bw-head > :nth-child(n+3), .bw-row .bw-stat{text-align:right}
+  }
   .bw-empty{display:flex; align-items:flex-start; justify-content:space-between; gap:32px; padding:16px 24px; color:var(--text)}
   .bw-empty-title{display:block; font-size:1.125rem; font-weight:700; line-height:1.3; color:var(--text)}
   .bw-empty-sub{display:block; margin-top:4px; font-size:1rem; color:var(--text-muted)}
@@ -571,7 +581,7 @@
   .skel-bwrow .bw-cell .skel{display:block; height:.875rem; width:70%}
   .skel-bwrow .bw-medal .skel{width:2.25rem; height:2.25rem; border-radius:50%}
   .skel-bwrow .bw-window .skel:first-child{width:6rem}
-  @media (max-width:31.1875em){
+  @media (max-width:77.9375em){
     .bw-head{display:none}
     .bw-row{grid-template-columns:auto 1fr; gap:10px; padding-inline:16px}
     .bw-stats{grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,auto); justify-content:space-between; gap:8px}
@@ -765,8 +775,11 @@
     html, body{overflow-anchor:none}
     body{margin:0; padding-top:9px}
     .wrap, .hdr-in{padding-inline:16px}
-    .brand h1.logo svg{width:1.4em; height:1.4em; margin-block:-3px}
+    .brand h1.logo svg{width:1.4em; height:1.4em; margin-block:0}
     .hero, .today-card{padding:16px}
+    .air-card{padding:0}
+    .card-body{padding:16px}
+    .card-head{padding:12px 16px}
     header.top{--p:0; padding-block:calc(7px - var(--p) * 4px)}
     #heroSection{margin-top:3.6px}
     .brand{margin-bottom:calc(12px - var(--p) * 10px); align-items:center}
@@ -827,7 +840,6 @@
     #heroSection .section-head{flex-direction:column; align-items:flex-start; gap:4px}
     #heroSection .locbar{text-align:left; white-space:normal}
     .today-inner{overflow:visible}
-    .sunset-spacer{height:0!important}
     .trend-line{display:none}
     .hscroll{flex-direction:column; width:auto; min-width:0; gap:14px}
     .htile{
@@ -835,20 +847,14 @@
       width:100%; padding:0; gap:10px;
     }
     .htile .hr{flex:0 0 2.6rem; text-align:left}
+    .htile .hwx, .htile .hwx svg{width:24px; height:24px}
     .htile .barwrap{flex:1 1 auto; min-width:0; height:auto; align-items:center}
     .htile .bar{width:var(--pct); height:10px; min-width:6px; min-height:0; border-radius:3px 4px 4px 3px}
     .htile .spwrap{flex:0 0 auto}
-    .htile .hdir{margin-top:0}
-    .sun-marker{left:0; right:0; top:0; bottom:auto}
-    .sun-marker .line{
-      top:0; bottom:auto; left:0; right:0; width:auto; height:0;
-      border-left:0; border-top:2px dashed #F0C419;
-    }
-    .sun-marker .label{
-      top:auto; bottom:2px; left:var(--icon-x); right:auto; transform:translateX(-100%);
-      flex-direction:row;
-    }
-    .sun-marker .label .stext{display:none}
+    .htile .sp-row{display:contents}
+    .htile .spunit{order:2}
+    .htile .hdir{order:3; align-self:center; margin-left:8px}
+    .htile .hdir svg{width:22px; height:22px}
   }
   @media (max-width:26.25em){
     .hero-reading .val{font-size:5.25rem}
@@ -926,9 +932,9 @@
   /* 7-Day Wind Outlook as a card grid — desktop only, confined to the
      right column (it lives inside .db-content, so it never spans under
      the sidebar). Tablet and mobile keep the existing full-width rows. */
-  @media (min-width:64em){
+  @media (min-width:31.25em){
     #weekSection .daylist{
-      display:grid; grid-template-columns:repeat(7, 1fr); gap:10px;
+      display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:10px;
       background:transparent; border:0; border-radius:0; overflow:visible;
     }
     #weekSection .dayrow-head{ display:none }
@@ -945,7 +951,7 @@
     #weekSection .dayrow .temps{
       width:auto; flex-shrink:0; margin-left:0; text-align:left;
     }
-    #weekSection .dayrow .dnames .dval{ flex-direction:row; align-items:baseline; gap:6px }
+    #weekSection .dayrow .dnames .dval{ flex-direction:row; flex-wrap:wrap; align-items:baseline; gap:0 6px }
     #weekSection .dayrow .dname{ font-size:1rem }
     #weekSection .dayrow .date-row-pill{ display:none }
     #weekSection .dayrow .dwind{ font-size:1rem }
@@ -1016,6 +1022,9 @@
     .hero-wrap .weather-now .wicon, .hero-wrap .ground-now .gicon{ flex-basis:3.75rem; width:3.75rem }
     .hero-wrap .weather-now .wicon svg{ width:57px; height:57px }
     .hero-wrap .ground-now .gicon svg{ width:54px; height:54px }
+    /* Spacing between the wind reading, weather and ground rows: 33% tighter (18px -> 12px, 14px -> 9px) */
+    .hero-wrap .weather-now{ margin-top:12px }
+    .hero-wrap .ground-now{ margin-top:9px }
     .hero-wrap .hero-reading .unit-wrap > svg{ width:63px; height:63px }
     .hero-wrap .hero-reading{ align-items:center }
     .hero-wrap .hero-reading .unit-wrap{ padding-bottom:0 }
@@ -1027,6 +1036,7 @@
     .db-content .alerts{ margin-top:0 }
     /* Modules sit on the page background without outlines (inner row dividers stay); a soft shadow lifts them instead. */
     .db-content .bw-list, .db-content .today-card{ border:0 }
+    #weekSection .daylist{ gap:16px }
     #weekSection .dayrow{ border:0; border-top:8px solid var(--card-band, var(--table-border)) }
     .db-content .bw-list, .db-content .today-card, #weekSection .dayrow, .db-content .alert{ box-shadow:var(--shadow) }
     .db-content .alerts:not([hidden]) + #bestSection{ margin-top:40px }
@@ -1088,13 +1098,68 @@
     .hero-wrap .hero-reading .unit-wrap > svg{ width:63px; height:63px }
     .hero-wrap .hero-reading{ align-items:center }
     .hero-wrap .hero-reading .unit-wrap{ padding-bottom:0 }
+    /* tighter data rows (half the spacing), pull-to-refresh slot in the hero, color block ends 16px under the radar */
+    .hero-wrap .weather-now{ margin-top:9px }
+    .hero-wrap .ground-now{ margin-top:7px }
+    .hero-wrap > .ptr{ flex:0 0 auto }
+    .db-layout > .hero-wrap{ padding-bottom:16px }
+    .hero-wrap .hero{ padding-bottom:0 }
   }
   @media (min-width:31.25em) and (max-width:63.99em){
     .db-layout > header.top{ padding:32px 32px 0 }
-    .db-layout > .hero-wrap{ padding:16px 32px 32px }
+    .db-layout > .hero-wrap{ padding:16px 32px 16px }
+    /* Tablet page chrome: side margins match the hero (32px), modules have no outline, desktop's soft shadow,
+       and half the old vertical spacing between modules (64px -> 32px) */
+    .db-content .wrap{ max-width:none; padding-inline:32px }
+    .db-content section{ margin-top:32px }
+    .db-content .bw-list, .db-content .today-card{ border:0; box-shadow:var(--shadow) }
+    #weekSection .dayrow{ border:0; border-top:8px solid var(--card-band, var(--table-border)); box-shadow:var(--shadow) }
+  }
+  @media (min-width:31.25em) and (max-width:40.99em){
     .hero-wrap .radar{ aspect-ratio:16 / 9 }
+    .hero-wrap .hero-reading .val{ font-size:5.4rem }
+    header.top .brand h1{ font-size:1.00625rem }
+    header.top .brand h1.logo svg{ width:1.25em; height:1.25em }
+  }
+  /* Tablet: radar sits to the right of the current conditions, a square matched to their height (like Design A) */
+  @media (min-width:41em) and (max-width:63.99em){
+    .hero-wrap .hero-top{ flex-direction:row; align-items:flex-start; justify-content:space-between; gap:24px }
+    .hero-wrap .hero-reading .val{ font-size:5.4rem }
+    .hero-wrap .radar{ flex:0 0 auto; width:auto; aspect-ratio:auto }
   }
   @media (max-width:31.1875em){
+    /* Phone hero: 40% smaller wind number */
+    header.top .brand h1{ font-size:1.00625rem }
+    .hero-wrap .hero-reading .val{ font-size:4.8rem }
+    /* --- mobile module chrome: 16px between modules, no outlines, desktop's soft shadow --- */
+    .db-content section{ margin-top:32px }
+    .db-content .bw-list, .db-content .today-card{ border:0; box-shadow:var(--shadow); border-radius:4px }
+    #weekSection .dayrow, .db-content .alert, header.top .alert{ border-radius:4px }
+  }
+
+  /* Best Times (expand/collapse rows) and the 7-Day Outlook (one-line cards) use the phone design at phone and narrow-desktop widths (Best Times also at tablet) (~1247px or less)
+     (below that width the eight table columns start to stack). Spacing steps from 48px down to 24px there too. */
+  @media (max-width:77.9375em){
+    /* --- Best Times rows expand/collapse: rank + day/time stay put, caret + More/Less sits at the far right --- */
+    .bw-row{ grid-template-columns:auto 1fr auto }
+    .bw-window{ margin-left:2px }
+    .bw-toggle-cell{ display:flex; align-items:center; justify-content:flex-end }
+    .bw-toggle{
+      display:flex; align-items:center; justify-content:center; gap:6px; min-width:44px; height:44px; padding:0 12px; margin:-8px -12px -8px 0;
+      border:0; border-radius:22px; background:transparent; color:var(--text-muted); cursor:pointer;
+    }
+    .bw-toggle-lab{ font-size:1rem; font-weight:400; line-height:1 }
+    .bw-toggle:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:0 }
+    .bw-toggle svg{ width:20px; height:20px }
+    .bw-toggle svg{ transition:transform .15s }
+    .bw-row.is-open .bw-toggle svg{ transform:rotate(180deg) }
+    .bw-stats{ display:none }
+    .bw-row.is-open .bw-stats{ display:grid }
+    .bw-row.bw-row--top{ padding:12px 16px }
+    .db-content .bw-list{ border:0; box-shadow:var(--shadow) }
+  }
+  /* 7-Day Outlook phone design: phone and narrow desktop only — tablet uses the 7-card desktop grid */
+  @media (max-width:31.1875em), (min-width:64em) and (max-width:77.9375em){
     #weekSection .daylist{
       display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px;
       background:transparent; border:0; border-radius:0; overflow:visible;
@@ -1130,32 +1195,34 @@
     #weekSection .dayrow .temps .temp-icon{ display:inline-flex }
     #weekSection .dayrow .temps .temp-icon svg{ width:1.35em; height:1.35em }
 
-    /* --- mobile module chrome: 16px between modules, no outlines, desktop's soft shadow --- */
-    .db-content section{ margin-top:32px }
-    .db-content .bw-list, .db-content .today-card{ border:0; box-shadow:var(--shadow); border-radius:4px }
-    #weekSection .dayrow, .db-content .alert, header.top .alert{ border-radius:4px }
-
-    /* --- Best Times rows expand/collapse: rank + day/time stay put, +/- sits at the far right --- */
-    .bw-row{ grid-template-columns:auto 1fr auto }
-    .bw-toggle-cell{ display:flex; align-items:center; justify-content:flex-end }
-    .bw-toggle{
-      display:flex; align-items:center; justify-content:center; width:44px; height:44px; margin:-8px -12px -8px 0;
-      border:0; border-radius:50%; background:transparent; color:var(--text-muted); cursor:pointer;
-    }
-    .bw-toggle:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:0 }
-    .bw-toggle svg{ width:20px; height:20px }
-    .bw-toggle .v{ transition:opacity .15s }
-    .bw-row.is-open .bw-toggle .v{ opacity:0 }
-    .bw-stats{ display:none }
-    .bw-row.is-open .bw-stats{ display:grid }
-    .bw-row.bw-row--top{ padding:16px }
-
     /* --- 7-Day Outlook: one full-width card per day, all data on a single line --- */
     #weekSection .daylist{ grid-template-columns:minmax(0,1fr) }
     #weekSection .dayrow:nth-child(even):last-child{ grid-column:auto }
     #weekSection .dayrow{ flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:12px }
     #weekSection .dayrow .dnames, #weekSection .dayrow .dwind, #weekSection .dayrow .temps{ flex:0 0 auto }
   }
+  /* Phone 7-Day Outlook: the day cards are joined into one "super card" — no gaps, shadow on the group,
+     only the top of the first card and the bottom of the last card are rounded. */
+  @media (max-width:31.1875em){
+    #weekSection .daylist{ gap:0; border-radius:4px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow) }
+    #weekSection .dayrow{ border-radius:0; box-shadow:none }
+  }
+  @media (min-width:64em) and (max-width:77.9375em){
+    .db-layout > header.top{ padding:40px 24px 0 }
+    .db-layout > .hero-wrap{ padding:20px 24px 28px }
+    .db-layout > .db-content{ padding:40px 24px 48px }
+    .wind-row{ gap:24px }
+    .db-layout{ grid-template-columns:400px minmax(0,1fr) }
+    header.top form.search{ flex-wrap:nowrap }
+    header.top form.search .field{ flex:1 1 0 }
+    .hero-wrap .hero-reading .val{ font-size:5rem }
+    .hero-wrap .hero-reading .unit-wrap > svg{ width:48px; height:48px }
+  }
+  /* Light-weight (300) muted-label text: Best Times headers & stat labels, Wind Today hours, 7-Day day names, Air Quality titles */
+  .bw-head, .bw-head > *, .bw-stat .bw-lab{ font-weight:300; color:var(--text-muted) }
+  #todaySection .htile .hr, #todaySection .htile .spunit{ font-weight:300; color:var(--text-muted) }
+  #weekSection .dayrow .dnames .dname{ font-weight:300; color:var(--text-muted) }
+  #airCard .pollen-row-label{ font-weight:300; color:var(--text-muted) }
 </style>
 </head>
 <body>
@@ -1324,13 +1391,10 @@
   <section id="bestSection" hidden x-data :hidden="$store.best.state === 'idle'" :aria-hidden="$store.best.state === 'loading' ? 'true' : null">
     <div class="section-head">
       <h2>Best Times to Be Outside
-        <span class="info-wrap" x-data="{open:false}" @keydown.escape="open=false" @click.outside="open=false">
-          <button type="button" class="info-btn" aria-describedby="bestInfoTip" :aria-expanded="open" @click="open=!open">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.8" r=".25" fill="currentColor" stroke="none"/></svg>
-            <span class="sr-only">More about how these are ranked</span>
-          </button>
-          <div class="info-tip" id="bestInfoTip" role="tooltip" :class="{open: open}" x-text="$store.best.note"></div>
-        </span>
+        <button type="button" class="info-btn" data-info="best" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8"/><circle cx="12" cy="16.8" r="1.4" fill="currentColor" stroke="none"/></svg>
+          <span class="sr-only">How Best Times are ranked</span>
+        </button>
       </h2>
     </div>
     <div class="bw-table" role="table" aria-label="Best times to be outside, ranked">
@@ -1365,7 +1429,8 @@
             <div class="bw-cell bw-window" role="cell"><span class="bw-day" x-text="w.day"></span><span class="bw-time" x-text="w.time"></span></div>
             <div class="bw-cell bw-toggle-cell" role="cell">
               <button type="button" class="bw-toggle" :aria-expanded="open" :aria-controls="'bwStats' + idx" :aria-label="(open ? 'Hide' : 'Show') + ' details for ' + w.day + ' ' + w.time" @click="open = !open">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><g stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><line class="v" x1="12" y1="4" x2="12" y2="20"/></g></svg>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="bw-toggle-lab" x-text="open ? 'Less' : 'More'"></span>
               </button>
             </div>
             <div class="bw-stats" :id="'bwStats' + idx">
@@ -1390,21 +1455,17 @@
 
   <div class="wind-row">
   <section id="todaySection" hidden>
-    <div class="section-head">
-      <h2>Wind Today</h2>
-    </div>
-    <div class="today-card today-card--scrollable">
+    <div class="today-card">
+      <div class="card-head"><h2>Wind Today</h2></div>
+      <div class="card-body today-card--scrollable">
       <div class="today-inner" id="todayInner" tabindex="0" role="region" aria-label="Hourly wind for the next 10 hours, scrollable">
-        <div class="sunset-spacer" id="sunsetSpacer"></div>
         <div class="hscroll" id="hourlyStrip" role="list"></div>
+      </div>
       </div>
     </div>
   </section>
 
   <section id="airSection" hidden>
-    <div class="section-head">
-      <h2>Air Quality &amp; Pollen</h2>
-    </div>
     <div class="today-card air-card" id="airCard"></div>
   </section>
   </div>
@@ -1485,10 +1546,23 @@
         contributors). Radar imagery from NOAA NEXRAD via Iowa State University's Iowa Environmental Mesonet; forecast radar frames from NOAA's HRRR model. Air Quality
         Index &amp; Pollutants (PM2.5) are sourced live from AirNow (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>),
         EPA — coverage depends on the nearest reporting monitor. Pollen isn't available from any free public U.S. source,
-        so tree/grass/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement. Forecasts
+        so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement. Forecasts
         update hourly at the source; reload to refresh.
       </p>
     </div>
+  </div>
+</div>
+
+<div class="radar-modal" id="infoModal" hidden>
+  <div class="radar-modal-backdrop" id="infoModalBackdrop"></div>
+  <div class="radar-modal-panel disclaimers-modal-panel" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+    <div class="disclaimers-modal-head">
+      <h2 id="infoModalTitle"></h2>
+      <button type="button" class="disclaimers-modal-close" id="infoModalClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="disclaimers-modal-body" id="infoModalBody"></div>
   </div>
 </div>
 
@@ -1582,8 +1656,35 @@
       '<circle class="wx-sun-disc" style="transform-origin:'+cx+'px '+cy+'px" cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="var(--accent)"/>';
   }
 
-  function moonMarkup(cx, cy, r){
-    return '<path d="M'+(cx+r*0.55)+' '+(cy-r)+'a'+r+' '+r+' 0 1 0 '+(r*0.75)+' '+(r*1.9)+'A'+(r*0.82)+' '+(r*0.82)+' 0 0 1 '+(cx+r*0.55)+' '+(cy-r)+'Z" fill="var(--cloud-2)"/>';
+  function moonMarkup(cx, cy, r, th){
+    // Crescent: the big circle (cx,cy,r) minus an offset circle, drawn as two arcs between their intersection points.
+    th = th == null ? -0.7 : th;
+    var d = r * 0.62, r1 = r * 0.86;
+    var ux = Math.cos(th), uy = Math.sin(th);
+    var a = (r * r - r1 * r1 + d * d) / (2 * d), h = Math.sqrt(r * r - a * a);
+    var px = cx + a * ux, py = cy + a * uy;
+    var x1 = (px - h * uy).toFixed(2), y1 = (py + h * ux).toFixed(2);
+    var x2 = (px + h * uy).toFixed(2), y2 = (py - h * ux).toFixed(2);
+    return '<path d="M' + x1 + ' ' + y1 + 'A' + r + ' ' + r + ' 0 1 1 ' + x2 + ' ' + y2 +
+      'A' + r1.toFixed(2) + ' ' + r1.toFixed(2) + ' 0 0 0 ' + x1 + ' ' + y1 + 'Z" fill="var(--aqi-moderate)"/>';
+  }
+
+  // Sunrise / sunset icon for the Wind Today strip: the animated orange sun, about 75% above a horizon line.
+  function sunHorizonIcon(size, kind){
+    // Arrow above the sun in the same style as the wind compass needle (round-capped shaft + filled head):
+    // down for sunset, up for sunrise.
+    var up = kind === 'sunrise';
+    var tail = up ? 12.25 : 3.5, tip = up ? 3.5 : 12.25, base = up ? 7.2 : 8.55;
+    var arrow = '<g stroke="var(--text-muted)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">' +
+      '<path d="M24 ' + tail + 'V' + tip + '"/>' +
+      '<path d="M21.1 ' + base + ' L24 ' + tip + ' L26.9 ' + base + ' Z" fill="var(--text-muted)"/>' +
+    '</g>';
+    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
+      '<clipPath id="sunHalfClip"><rect x="0" y="0" width="48" height="34.5"/></clipPath>' +
+      '<g clip-path="url(#sunHalfClip)">' + sunMarkup(24,30,9) + '</g>' +
+      '<line x1="4" y1="34.5" x2="44" y2="34.5" stroke="var(--text-muted)" stroke-width="3.4" stroke-linecap="round" opacity="0.85"/>' +
+      arrow +
+    '</svg>';
   }
 
   // Display "and" as "&" in weather descriptions that come from the NWS forecast (e.g. "Showers And Thunderstorms").
@@ -1598,7 +1699,7 @@
         body = isDaytime ? sunMarkup(24,24,9) : moonMarkup(22,22,8);
         break;
       case 'partly':
-        body = (isDaytime ? sunMarkup(30,16,6) : moonMarkup(28,15,5)) + cloudMarkup(20);
+        body = (isDaytime ? sunMarkup(30,16,6) : moonMarkup(30,15,8, Math.PI - 0.7)) + cloudMarkup(20);
         break;
       case 'rain':
         body = cloudMarkup(24) +
@@ -1777,11 +1878,10 @@
   }
 
   function fmtHour(iso){
-    var d = new Date(iso);
-    var h = d.getHours();
-    var ap = h >= 12 ? 'PM' : 'AM';
-    var h12 = h % 12; if(h12===0) h12=12;
-    return h12 + ap;
+    // Hour of day in the searched location's time zone (not the viewer's), e.g. "6PM".
+    var o = {hour:'numeric'};
+    if(locationTZ) o.timeZone = locationTZ;
+    return new Date(iso).toLocaleTimeString('en-US', o).replace(/\s/g, '');
   }
 
   function fmtDow(iso){
@@ -1818,7 +1918,6 @@
   var heroEl = document.getElementById('hero');
   var todaySection = document.getElementById('todaySection');
   var todayInner = document.getElementById('todayInner');
-  var sunsetSpacer = document.getElementById('sunsetSpacer');
   var hourlyStrip = document.getElementById('hourlyStrip');
   var airSection = document.getElementById('airSection');
   var airCard = document.getElementById('airCard');
@@ -1940,13 +2039,12 @@
   function renderHourlySkeleton(){
     todaySection.hidden = false;
     todaySection.setAttribute('aria-hidden', 'true');
-    sunsetSpacer.classList.remove('has-sunset');
-    todayInner.querySelectorAll('.sun-marker').forEach(function(el){ el.remove(); });
     lastHourly = null;
     var heights = [30,42,50,38,46,56,44,34,48,40];
     hourlyStrip.innerHTML = heights.map(function(h, i){
       return '<div class="htile skel-htile" style="animation-delay:' + (i * 0.04) + 's">' +
         '<div class="hr"><span class="skel"></span></div>' +
+        '<div class="hwx"></div>' +
         '<div class="barwrap"><span class="skel" style="width:14px; height:' + h + 'px"></span></div>' +
         '<div class="spwrap"><span class="skel"></span></div>' +
         '<div class="hdir"><span class="skel"></span></div>' +
@@ -2158,7 +2256,13 @@
             '<span class="unit-wrap">' +
               '<span class="unit-top">' +
                 '<span class="unit">mph</span>' +
-                '<span class="hero-band-pill" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span>' +
+                '<span class="hero-pill-row">' +
+                  '<span class="hero-band-pill" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span>' +
+                  '<button type="button" class="info-btn wk-btn" data-info="wind" aria-haspopup="dialog">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8"/><circle cx="12" cy="16.8" r="1.4" fill="currentColor" stroke="none"/></svg>' +
+                    '<span class="sr-only">Wind key: what the wind colors mean</span>' +
+                  '</button>' +
+                '</span>' +
               '</span>' +
               (current.windDirection ? windArrowSvg(current.windDirection, band.css, 42, 0, true) + srDir(current.windDirection) : '') +
             '</span>' +
@@ -2196,10 +2300,9 @@
     var box = document.getElementById('radarBox');
     if(!box) return;
     var leftCol = box.previousElementSibling;
-    /* Design B: the hero panel also stacks text-above-radar (instead of
-       side-by-side with a square radar matched to sibling height) once the
-       sidebar layout kicks in at desktop, not just on mobile. */
-    var stacked = window.matchMedia('(max-width:63.99em), (min-width:64em)').matches;
+    /* Design B: the hero stacks text-above-radar on phones and in the desktop sidebar; at tablet widths the
+       radar sits beside the conditions as a square matched to their height, same as Design A. */
+    var stacked = window.matchMedia('(max-width:40.99em), (min-width:64em)').matches;
     if(leftCol && !stacked){
       box.style.width = '0px';
       box.style.height = '0px';
@@ -2387,32 +2490,149 @@
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   });
 
+  // Info (?) buttons open this shared modal (same look as Disclaimers & Data Sources) — no hover tooltips.
+  var infoModal = document.getElementById('infoModal');
+  var infoModalLastFocus = null;
+  var WIND_KEY_ROWS = [
+    ['Calm','calm','0–7 mph','var(--band-calm)'],
+    ['Breezy','breezy','8–15 mph','var(--band-breezy)'],
+    ['Windy','windy','16–24 mph','var(--band-windy)'],
+    ['Blustery','blustery','25–33 mph','var(--band-verywindy)'],
+    ['Howling','howling','34+ mph','var(--band-gale)']
+  ];
+  function fillInfoModal(kind){
+    var title = document.getElementById('infoModalTitle');
+    var body = document.getElementById('infoModalBody');
+    body.textContent = '';
+    if(kind === 'wind'){
+      title.textContent = 'Wind Key';
+      var intro = document.createElement('p');
+      intro.className = 'wk-intro';
+      intro.textContent = 'Color-coded wind ranges exist across Check The Wind, see the key below for wind speed ranges and categories.';
+      body.appendChild(intro);
+      var table = document.createElement('table');
+      table.className = 'wk-table';
+      var head = document.createElement('thead');
+      var hr = document.createElement('tr');
+      ['Category','Wind Range'].forEach(function(t){
+        var th = document.createElement('th');
+        th.scope = 'col';
+        th.textContent = t;
+        hr.appendChild(th);
+      });
+      head.appendChild(hr);
+      table.appendChild(head);
+      var tb = document.createElement('tbody');
+      WIND_KEY_ROWS.forEach(function(r){
+        var tr = document.createElement('tr');
+        var c1 = document.createElement('td');
+        var pill = document.createElement('span');
+        pill.className = 'hero-band-pill';
+        pill.style.background = 'var(--pill-' + r[1] + ')';
+        pill.style.color = 'var(--seg-ink-' + r[1] + ')';
+        pill.textContent = r[0];
+        c1.appendChild(pill);
+        var c2 = document.createElement('td');
+        c2.className = 'wk-range';
+        c2.style.color = r[3];
+        c2.textContent = r[2];
+        tr.appendChild(c1);
+        tr.appendChild(c2);
+        tb.appendChild(tr);
+      });
+      table.appendChild(tb);
+      body.appendChild(table);
+    }else{
+      title.textContent = 'How Best Times Work';
+      var p = document.createElement('p');
+      p.textContent = store('best').note || '';
+      body.appendChild(p);
+    }
+  }
+  function openInfoModal(kind, trigger){
+    infoModalLastFocus = trigger || document.activeElement;
+    fillInfoModal(kind);
+    infoModal.hidden = false;
+    setBackgroundInert(true, infoModal);
+    document.body.style.overflow = 'hidden';
+    document.getElementById('infoModalClose').focus();
+  }
+  function closeInfoModal(){
+    if(infoModal.hidden) return;
+    infoModal.hidden = true;
+    setBackgroundInert(false);
+    document.body.style.overflow = '';
+    if(infoModalLastFocus && typeof infoModalLastFocus.focus === 'function') infoModalLastFocus.focus();
+  }
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('[data-info]');
+    if(btn) openInfoModal(btn.getAttribute('data-info'), btn);
+  });
+  document.getElementById('infoModalClose').addEventListener('click', closeInfoModal);
+  document.getElementById('infoModalBackdrop').addEventListener('click', closeInfoModal);
+  document.addEventListener('keydown', function(e){
+    if(infoModal.hidden) return;
+    if(e.key === 'Escape'){ closeInfoModal(); return; }
+    if(e.key !== 'Tab') return;
+    var f = [].slice.call(infoModal.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+    if(!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if(!infoModal.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+    else if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
+
   function renderHourly(periods){
     var next10 = periods.slice(0, 10);
     if(!next10.length){ todaySection.hidden = true; return; }
     todaySection.hidden = false;
 
     var maxV = Math.max.apply(null, next10.map(function(p){ return parseWind(p.windSpeed).high; }).concat([10]));
-    hourlyStrip.innerHTML = next10.map(function(p){
+
+    // Sunrise / sunset become their own tile between the two hours they fall in. It reuses the wind of the hour that
+    // contains it, so the bar, speed and direction are treated exactly like any other tile.
+    var HOUR_MS = 3600000;
+    function sunTimeLabel(evt){
+      var o = {hour:'numeric', minute:'2-digit'};
+      if(locationTZ) o.timeZone = locationTZ;
+      return evt.time.toLocaleTimeString('en-US', o);
+    }
+    function tileHtml(p, labelText, iconHtml, ariaLabel){
       var w = parseWind(p.windSpeed);
       var band = bandFor(w.high);
-      var h = Math.max(8, Math.round((w.high / maxV) * 64));
+      var h = Math.max(8, Math.round((w.high / maxV) * 46));
       var pct = Math.max(4, Math.round((w.high / maxV) * 100));
       return '<div class="htile" role="listitem">' +
-        '<div class="hr">' + fmtHour(p.startTime) + '</div>' +
+        '<div class="hr">' + labelText + '</div>' +
+        '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
         '<div class="barwrap"><div class="bar" style="--h:' + h + 'px; --pct:' + pct + '%; background:' + band.pill + '"></div></div>' +
         '<div class="spwrap">' +
-          '<span class="sp" style="color:' + band.css + '">' + w.high + '</span>' +
+          '<span class="sp-row">' +
+            '<span class="sp" style="color:' + band.css + '">' + w.high + '</span>' +
+            '<span class="hdir">' + windArrowSvg(p.windDirection, band.css, 22) + '</span>' +
+          '</span>' +
           '<span class="spunit">mph</span>' +
           srDir(p.windDirection) +
         '</div>' +
-        '<div class="hdir">' + windArrowSvg(p.windDirection, band.css, 22) + '</div>' +
       '</div>';
-    }).join('');
+    }
+
+    var tiles = [];
+    next10.forEach(function(p){
+      tiles.push(tileHtml(p, fmtHour(p.startTime), weatherIcon(p.shortForecast, p.isDaytime, 28), p.shortForecast || 'Forecast unavailable'));
+      var start = new Date(p.startTime).getTime();
+      sunEvents.forEach(function(evt){
+        var t = evt.time.getTime();
+        if(t < start || t >= start + HOUR_MS) return;
+        var label = sunTimeLabel(evt);
+        var name = evt.type === 'sunrise' ? 'Sunrise' : 'Sunset';
+        tiles.push(tileHtml(p, label.replace(/\s?[AP]M$/i, ''), sunHorizonIcon(28, evt.type), name + ' ' + label));
+      });
+    });
+    hourlyStrip.innerHTML = tiles.join('');
 
     lastHourly = next10;
     drawTrendLine();
-    drawSunMarkers(next10);
     updateScrollFade();
   }
 
@@ -2448,82 +2668,12 @@
     cancelAnimationFrame(relayoutFrame);
     relayoutFrame = requestAnimationFrame(function(){
       drawTrendLine();
-      drawSunMarkers(lastHourly);
       updateScrollFade();
     });
   }
   window.addEventListener('resize', relayoutHourly);
   if(window.ResizeObserver) new ResizeObserver(relayoutHourly).observe(hourlyStrip);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(relayoutHourly);
-
-  function sunIconSvg(){
-    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-      '<g stroke="#F0C419" stroke-width="2" stroke-linecap="round">' +
-        '<path d="M6 17a6 6 0 0 1 12 0" fill="none"/>' +
-        '<line x1="2" y1="17" x2="22" y2="17"/>' +
-        '<line x1="12" y1="3" x2="12" y2="6"/>' +
-        '<line x1="4.5" y1="8.5" x2="6.5" y2="10.5"/>' +
-        '<line x1="19.5" y1="8.5" x2="17.5" y2="10.5"/>' +
-      '</g>' +
-    '</svg>';
-  }
-
-  function drawSunMarkers(periods){
-    todayInner.querySelectorAll('.sun-marker').forEach(function(el){ el.remove(); });
-    sunsetSpacer.classList.remove('has-sunset');
-
-    if(!sunEvents.length || periods.length < 2) return;
-
-    var windowStart = new Date(periods[0].startTime).getTime();
-    var windowEnd = new Date(periods[periods.length - 1].startTime).getTime();
-    var htiles = hourlyStrip.querySelectorAll('.htile');
-    var innerRect = todayInner.getBoundingClientRect();
-    var shown = false;
-
-    sunEvents.forEach(function(evt, evtIdx){
-      var t = evt.time.getTime();
-      if(t < windowStart || t > windowEnd) return;
-
-      var idx = -1;
-      for(var i = 0; i < periods.length - 1; i++){
-        var a = new Date(periods[i].startTime).getTime();
-        var b = new Date(periods[i + 1].startTime).getTime();
-        if(t >= a && t <= b){ idx = i; break; }
-      }
-      if(idx === -1) return;
-
-      shown = true;
-      var timeOpts = {hour:'numeric', minute:'2-digit', timeZoneName:'short'};
-      if(locationTZ) timeOpts.timeZone = locationTZ;
-      var timeLabel = evt.time.toLocaleTimeString([], timeOpts);
-      var name = evt.type === 'sunrise' ? 'Sunrise' : 'Sunset';
-
-      var marker = document.createElement('div');
-      marker.className = 'sun-marker';
-      if(todayMobileMQ.matches){
-        var topEdge = htiles[idx].getBoundingClientRect().bottom;
-        var bottomEdge = htiles[idx + 1].getBoundingClientRect().top;
-        var y = (topEdge + bottomEdge) / 2 - innerRect.top;
-        marker.style.top = y.toFixed(1) + 'px';
-        var sp1 = htiles[idx].querySelector('.spwrap');
-        var sp2 = htiles[idx + 1].querySelector('.spwrap');
-        var spLeft = ((sp1 ? sp1.getBoundingClientRect().left : 0) + (sp2 ? sp2.getBoundingClientRect().left : 0)) / (sp1 && sp2 ? 2 : 1);
-        var iconX = spLeft - innerRect.left - 16;
-        marker.style.setProperty('--icon-x', iconX.toFixed(1) + 'px');
-      } else {
-        var leftEdge = htiles[idx + 1].getBoundingClientRect().left;
-        var rightEdge = htiles[idx].getBoundingClientRect().right;
-        var x = (leftEdge + rightEdge) / 2 - innerRect.left + todayInner.scrollLeft;
-        marker.style.left = x.toFixed(1) + 'px';
-      }
-      marker.innerHTML =
-        '<div class="line"></div>' +
-        '<div class="label">' + sunIconSvg() + '<span class="stext">' + name + ' ' + timeLabel + '</span></div>';
-      todayInner.appendChild(marker);
-    });
-
-    if(shown) sunsetSpacer.classList.add('has-sunset');
-  }
 
   function drawTrendLine(){
     hourlyStrip.querySelectorAll('.trend-line').forEach(function(el){ el.remove(); });
@@ -2810,7 +2960,7 @@
   // Numeric + descriptor, matching the "46 · Good" formatting used by the
   // Air Quality Index column in the Best Times to Be Outside table.
   function gaugeRowHtml(iconSvg, label, lv, fillPct, num, max){
-    var valText = (typeof num === 'number' && !isNaN(num)) ? (Math.round(num) + ' / ' + max + ' · ' + lv.label) : lv.label;
+    var valText = (typeof num === 'number' && !isNaN(num)) ? ('<span class="pollen-num">' + Math.round(num) + ' / ' + max + ' ·</span> ' + lv.label) : lv.label;
     return '<div class="pollen-row">' +
       '<div class="pollen-row-top">' +
         '<span class="pollen-row-icon">' + iconSvg + '</span>' +
@@ -2830,13 +2980,14 @@
     var weedLv = pollenLevel(pollen.weed);
 
     airCard.innerHTML =
-      '<div class="pollen-list">' +
+      '<div class="card-head"><h2>Air Quality &amp; Pollen</h2></div>' +
+      '<div class="card-body"><div class="pollen-list">' +
         gaugeRowHtml(aqiIcon(), 'Air Quality Index', overallLv, overallLv.fillPct, airNow && airNow.overall ? airNow.overall.aqi : null, 500) +
         gaugeRowHtml(pollutantIcon(), 'Pollutants (PM2.5)', pm25Lv, pm25Lv.fillPct, airNow && airNow.pm25 ? airNow.pm25.aqi : null, 500) +
-        gaugeRowHtml(pollenIcon('tree'), 'Tree', treeLv, Math.max(2, pollen.tree), pollen.tree, 100) +
-        gaugeRowHtml(pollenIcon('grass'), 'Grass', grassLv, Math.max(2, pollen.grass), pollen.grass, 100) +
+        gaugeRowHtml(pollenIcon('tree'), 'Trees', treeLv, Math.max(2, pollen.tree), pollen.tree, 100) +
+        gaugeRowHtml(pollenIcon('grass'), 'Grasses', grassLv, Math.max(2, pollen.grass), pollen.grass, 100) +
         gaugeRowHtml(pollenIcon('weed'), 'Weeds', weedLv, Math.max(2, pollen.weed), pollen.weed, 100) +
-      '</div>';
+      '</div></div>';
     airSection.hidden = false;
   }
 
@@ -3227,6 +3378,23 @@
   }
   placeAlerts();
   alertsMobileMq.addEventListener('change', placeAlerts);
+
+  // Below desktop the pull-to-refresh indicator sits in the hero, between the search bar/alert and the wind speed,
+  // so the pull animation pushes the wind reading down. Elsewhere it stays at the top of the right column.
+  var ptrMobileMq = window.matchMedia('(max-width:63.99em)');
+  function placePtr(){
+    var ptrEl = document.getElementById('ptr');
+    var heroWrap = document.querySelector('.hero-wrap');
+    var content = document.querySelector('.db-content');
+    if(!ptrEl || !heroWrap || !content) return;
+    if(ptrMobileMq.matches){
+      if(ptrEl.parentElement !== heroWrap) heroWrap.prepend(ptrEl);
+    }else if(ptrEl.parentElement !== content){
+      content.prepend(ptrEl);
+    }
+  }
+  placePtr();
+  ptrMobileMq.addEventListener('change', placePtr);
   var lastAlertSig = '';
 
   function alertKind(ev){
@@ -3296,7 +3464,10 @@
   function alertToggle(){
     var tog = document.createElement('span');
     tog.className = 'alert-toggle';
-    tog.appendChild(svgEl('<g stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><line class="v" x1="12" y1="4" x2="12" y2="20"/></g>'));
+    tog.appendChild(svgEl('<polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'));
+    var lab = document.createElement('span');
+    lab.className = 'alert-toggle-lab';
+    tog.appendChild(lab);
     return tog;
   }
 
@@ -3367,10 +3538,16 @@
     if(multi){
       var more = document.createElement('span');
       more.className = 'alert-more';
-      more.textContent = (list.length - 1) + ' more';
-      head.appendChild(more);
+      var extra = list.length - 1;
+      more.textContent = '+ ' + extra + (extra === 1 ? ' Alert' : ' Alerts');
+      var side = document.createElement('span');
+      side.className = 'alert-side';
+      side.appendChild(more);
+      side.appendChild(alertToggle());
+      head.appendChild(side);
+    }else{
+      head.appendChild(alertToggle());
     }
-    head.appendChild(alertToggle());
 
     var body = document.createElement('div');
     body.className = 'alert-body';
