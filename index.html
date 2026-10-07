@@ -172,6 +172,8 @@
     .sd-body{display:block; flex:1 1 auto; min-height:0; overflow-y:auto; padding:16px}
     .sd-body form.search{margin:0 0 16px; overflow:visible; max-height:none; opacity:1}
     /* Current, Favorites and Recents are cards in the same title-in-card style as the main modules */
+    .sd-error{margin:-6px 0 16px; padding:10px 12px; border-radius:4px; border-left:4px solid #A8433D; background:color-mix(in srgb, #A8433D 12%, var(--surface)); color:var(--text); font-size:1rem; line-height:1.4}
+    .sd-error[hidden]{display:none}
     .sd-card{display:block; margin:0 0 16px; background:var(--surface); border-radius:4px; overflow:hidden}
     .sd-card[hidden]{display:none}
     .sd-card .card-head{display:flex; align-items:center; justify-content:space-between; min-height:44px; padding-block:0}
@@ -1366,7 +1368,7 @@
       display:flex; align-items:center; justify-content:center; gap:6px; min-width:44px; height:44px; padding:0 12px; margin:-8px -12px -8px 0;
       border:0; border-radius:22px; background:transparent; color:var(--text-muted); cursor:pointer;
     }
-    .bw-toggle-lab{ font-size:1rem; font-weight:400; line-height:1 }
+    .bw-toggle-lab{ display:none }  /* caret only: the "More"/"Less" word is gone (the button keeps its "Show/Hide details" name) */
     .bw-toggle:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:0 }
     .bw-toggle svg{ width:20px; height:20px }
     .bw-toggle svg{ transition:transform .15s }
@@ -1609,6 +1611,17 @@
     .db-content{ overflow-anchor:none }
     .main-head h2{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
   }
+  /* Phone: the top bar (logo, pause, search) is sticky with the page rolling underneath it; its top margin is half what it was */
+  @media (max-width:31.1875em){
+    .db-layout > header.top{
+      position:sticky; top:0; z-index:20; padding:7px 16px 4px;
+      background:color-mix(in srgb, var(--hero-band, var(--band-calm)) var(--tint-hero), var(--surface));
+      transition:background-color .6s ease, box-shadow .2s;
+    }
+    .db-layout > header.top.is-stuck{ box-shadow:0 1px 0 color-mix(in srgb, var(--text) 14%, transparent) }
+    .hero-wrap > .m-loc-name, .db-layout > .hero-wrap .m-loc-name{ display:block; text-align:center; margin:0 0 4px }
+    .hero-wrap > .alerts{ margin:4px 0 8px }
+  }
 </style>
 </head>
 <body>
@@ -1673,6 +1686,7 @@
             </button>
             </div>
           </form>
+          <p class="sd-error" id="sdError" role="alert" hidden></p>
           <section class="sd-card" id="sdCurrent" hidden aria-labelledby="sdCurTitle">
             <div class="card-head"><h3 id="sdCurTitle">Current</h3></div>
             <div class="card-body sd-current-body">
@@ -1730,8 +1744,8 @@
   </div>
   </header>
 
-<div class="hero-wrap">
-  <section id="heroSection" aria-label="Current conditions">
+<div class="hero-wrap" role="region" aria-label="Current conditions">
+  <section id="heroSection">
     <div class="section-head">
       <h2>Current Conditions</h2>
       <div class="locbar" id="locBar" hidden>As of <span id="locTime"></span></div>
@@ -4106,11 +4120,22 @@
   var expandedAlerts = {};
   var alertsLiveEl = document.getElementById('alertsLive');
   // Below desktop the banner sits inside the hero, right under the search bar; at desktop it stays above Best Times.
+  // On phones the header is a sticky top bar (logo + buttons only): the alert banner and the place name move down into
+  // the current-conditions area, in that order, ahead of the wind reading.
   var alertsMobileMq = window.matchMedia('(max-width:63.99em)');
+  var phoneBarMq = window.matchMedia('(max-width:31.1875em)');
   function placeAlerts(){
     var statusBox = document.getElementById('status');
     var best = document.getElementById('bestSection');
+    var heroSec = document.getElementById('heroSection');
+    var nameEl = document.getElementById('mLocName');
+    var nameRow = document.querySelector('.m-loc-row');
     if(!statusBox || !best) return;
+    if(phoneBarMq.matches && heroSec && nameEl){
+      if(heroSec.previousElementSibling !== nameEl){ heroSec.before(alertsEl); heroSec.before(nameEl); }
+      return;
+    }
+    if(nameEl && nameRow && nameEl.parentElement !== nameRow) nameRow.prepend(nameEl);
     if(alertsMobileMq.matches){
       if(statusBox.nextElementSibling !== alertsEl) statusBox.after(alertsEl);
     }else if(best.previousElementSibling !== alertsEl){
@@ -4119,6 +4144,13 @@
   }
   placeAlerts();
   alertsMobileMq.addEventListener('change', placeAlerts);
+  phoneBarMq.addEventListener('change', placeAlerts);
+  // a hairline under the sticky phone bar once the page has scrolled beneath it
+  (function(){
+    var bar = document.querySelector('header.top');
+    function sync(){ bar.classList.toggle('is-stuck', window.scrollY > 2); }
+    window.addEventListener('scroll', sync, {passive:true}); sync();
+  })();
 
   // Below desktop the pull-to-refresh indicator sits in the hero, between the search bar/alert and the wind speed,
   // so the pull animation pushes the wind reading down. Elsewhere it stays at the top of the right column.
@@ -4640,6 +4672,7 @@
   function openSearchDrawer(){
     if(!sdMQ.matches || sdDrawer.classList.contains('open')) return;
     renderSearchLists();
+    clearDrawerError();
     sdDrawer.classList.add('open');
     sdSearchBtn.setAttribute('aria-expanded', 'true');
     sdSetInert(true);
@@ -4647,6 +4680,15 @@
     // focus the sheet itself (not the search field) so the search bar isn't activated and no keyboard pops up on open
     setTimeout(function(){ sdSheet.focus({preventScroll:true}); }, 60);
   }
+  /* Search problems on phones are shown inside the drawer, under the search bar — not on the page behind it */
+  var sdError = document.getElementById('sdError');
+  function drawerIsOpen(){ return sdMQ.matches && sdDrawer.classList.contains('open'); }
+  function showDrawerError(msg){ sdError.textContent = msg; sdError.hidden = false; }
+  function clearDrawerError(){ sdError.hidden = true; sdError.textContent = ''; }
+  // Check that the weather service covers a spot BEFORE the page behind the drawer is touched, so a failed search leaves it as it was
+  async function drawerPreflight(lat, lon){ await fetchJson('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4)); }
+  document.getElementById('locInput').addEventListener('input', clearDrawerError);
+
   function closeSearchDrawer(returnFocus){
     if(!sdDrawer.classList.contains('open')) return;
     sdDrawer.classList.remove('open');
@@ -4722,7 +4764,10 @@
     }else if(pick){
       var lat = +pick.dataset.lat, lon = +pick.dataset.lon, label = pick.dataset.label;
       try{ var data = window.Alpine && Alpine.$data(document.getElementById('searchForm')); if(data) data.query = pick.dataset.name; }catch(err){}
-      loadForLocation(lat, lon, label);
+      clearDrawerError();
+      drawerPreflight(lat, lon).then(function(){ return loadForLocation(lat, lon, label); }).catch(function(err){
+        if(drawerIsOpen()) showDrawerError(errText(err));
+      });
     }
   });
 
@@ -5049,12 +5094,16 @@
   }
 
   async function handleSearch(query){
+    var inDrawer = drawerIsOpen();
+    if(inDrawer) clearDrawerError();
     try{
-      setStatus('Finding "' + query + '"…');
+      if(!inDrawer) setStatus('Finding "' + query + '"…');
       var loc = await geocode(query);
+      if(inDrawer) await drawerPreflight(loc.lat, loc.lon);
       await loadForLocation(loc.lat, loc.lon, loc.display);
     }catch(err){
-      reportError(err);
+      if(inDrawer && drawerIsOpen()){ setStatus(''); showDrawerError(errText(err)); }
+      else reportError(err);
     }
   }
 
