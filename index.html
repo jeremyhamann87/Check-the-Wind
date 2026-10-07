@@ -3503,21 +3503,16 @@
     return { aqi: toMap(r[0], 'us_aqi'), past: toMap(r[1], 'precipitation') };
   }
 
-  /* AirNow (EPA) powers the real-time "Air Quality Index" and "Pollutants
-     (PM2.5)" gauges — official government monitoring data, CORS-enabled,
-     free. Key requested at https://docs.airnowapi.org/account/request — if
-     it's ever revoked/rotated, swap it below; an empty string just makes
-     those two gauges read "Unavailable" (everything else keeps working). */
-  var AIRNOW_API_KEY = '54B35C41-0764-412E-B6B2-0E407036AA0D';
+  /* AirNow (EPA) powers the real-time "Air Quality Index" and "Pollutants (PM2.5)" gauges — official government
+     monitoring data. The AirNow API key is kept out of this page: requests go to a small Cloudflare Worker
+     (workers/airnow-proxy.js) that holds the key as a secret, rounds the location to ~1 km and caches answers for
+     15 minutes. If the proxy is ever unreachable, those two gauges read "Unavailable" and everything else keeps working. */
+  var AIRNOW_PROXY_URL = 'https://airnow-proxy.jeremyhamann87.workers.dev/';
 
   async function fetchAirNowCurrent(lat, lon){
-    if(!AIRNOW_API_KEY) return null;
-    // AirNow retired the old /aq/observation/latLong/current/ endpoint on
-    // 2026-10-01; this is its 2026 replacement (same base API, new path +
-    // response field names — no more Category.Number, just a category
-    // name string, and the "distance" param is gone/ignored).
-    var url = 'https://www.airnowapi.org/aq/observation/current/ziplatlong?format=application/json' +
-      '&latitude=' + lat.toFixed(4) + '&longitude=' + lon.toFixed(4) + '&API_KEY=' + AIRNOW_API_KEY;
+    // AirNow retired the old /aq/observation/latLong/current/ endpoint on 2026-10-01; the proxy calls its replacement
+    // (ziplatlong: same base API, category name string instead of Category.Number, no "distance" param).
+    var url = AIRNOW_PROXY_URL + '?lat=' + lat.toFixed(4) + '&lon=' + lon.toFixed(4);
     var data = await fetchOptionalJson(url);
     if(!data || !Array.isArray(data) || !data.length) return null;
     function aqiOf(o){ return typeof o.nowcastAQI === 'number' ? o.nowcastAQI : o.aqi; }

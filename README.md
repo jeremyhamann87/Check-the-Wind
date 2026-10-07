@@ -13,6 +13,7 @@ Live at **https://www.checkthewind.com**
 | `futurecast/index.html` | The expanded radar page, embedded by the site in a modal. |
 | `pipeline/` | Python pipeline that renders the radar frames. See `pipeline/README.md`. |
 | `windline.html`, `compare-ab.html` | Design A and the A/B compare page. Kept for reference; **not published**. |
+| `workers/airnow-proxy.js` | Cloudflare Worker that holds the AirNow API key as a secret and answers air-quality requests for the site. Deployed separately in Cloudflare (not by the workflow). |
 | `404.html`, `robots.txt`, `sitemap.xml`, `CNAME` | Published alongside the site. |
 | `.github/workflows/deploy.yml` | Builds the radar frames and publishes the site to GitHub Pages. |
 
