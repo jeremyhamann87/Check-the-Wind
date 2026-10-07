@@ -101,9 +101,9 @@
   }
   .map-attribution a{color:var(--text-muted)}
 
-  /* Phones: a compact key (about 60% smaller: no title, short gradient, smaller labels) and no credits strip —
+  /* All screen sizes: a compact key (about 60% smaller: no title, short gradient, smaller labels) and no credits strip —
      data sources & credits live in the main page's "Disclaimers & Data Sources" panel */
-  @media (max-width:31.1875em){
+  @media all{
     .map-attribution{display:none}
     .precip-legend{top:8px; right:8px; padding:6px 8px}
     .precip-legend h2{position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
@@ -232,11 +232,11 @@
   .info-banner-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
   .info-banner-btn svg{width:16px; height:16px}
   .info-banner-btn[hidden]{display:none}
-  /* Phones: the progress-bar time labels and the Observed / Forecast label are 12px (below the usual 16px minimum, by request) */
-  @media (max-width:31.1875em){ .timeline-tick, .controls-title-main{font-size:.75rem} }
-  /* Phones: the control panel is about half as tall (130px -> ~65px, before the 16px padding): smaller buttons, 12px time text, a slimmer bar.
+  /* All screen sizes: the progress-bar time labels and the Observed / Forecast label are 12px (below the usual 16px minimum, by request) */
+  @media all{ .timeline-tick, .controls-title-main{font-size:.75rem} }
+  /* All screen sizes: the control panel is about half as tall (130px -> ~65px, before the 16px padding): smaller buttons, 12px time text, a slimmer bar.
      The range's border (1.5px) and handle width (16px) are unchanged — the timeline position maths depends on them. */
-  @media (max-width:31.1875em){
+  @media all{
     /* full-width docked panel: touches the left, right and bottom edges of the screen (no gaps); 16px of padding inside */
     .controls{left:0; right:0; bottom:0}
     .controls-card{padding:16px 16px max(16px, env(safe-area-inset-bottom, 0px)); border-width:1px 0 0 0; border-radius:0}
