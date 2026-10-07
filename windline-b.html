@@ -161,7 +161,7 @@
     .sd-body{display:block; flex:1 1 auto; min-height:0; overflow-y:auto; padding:16px}
     .sd-body form.search{margin:0 0 16px; overflow:visible; max-height:none; opacity:1}
     /* Current, Favorites and Recents are cards in the same title-in-card style as the main modules */
-    .sd-card{display:block; margin:0 0 16px; background:var(--surface); border-radius:8px; overflow:hidden}
+    .sd-card{display:block; margin:0 0 16px; background:var(--surface); border-radius:4px; overflow:hidden}
     .sd-card[hidden]{display:none}
     .sd-card .card-head{display:flex; align-items:center; justify-content:space-between; min-height:44px; padding-block:0}
     .sd-card .card-body{padding:4px 16px}
@@ -277,6 +277,122 @@
     display:flex; align-items:center; min-height:44px;
   }
   .loc-suggestion:hover, .loc-suggestion.active{background:var(--hover-bg)}
+  /* Tablet & desktop: Current / Favorites / Recents panel under the location field */
+  .loc-places{display:none}
+  @media (min-width:31.25em){
+    .loc-places{
+      display:block; position:absolute; top:calc(100% + 6px); left:0; width:max(100%, 340px); z-index:40;
+      background:color-mix(in srgb, var(--text) 5%, var(--surface)); border:1px solid var(--border); border-radius:4px;
+      box-shadow:var(--shadow); padding:8px; max-height:min(70vh, 540px); overflow-y:auto; overscroll-behavior:contain;
+    }
+    .loc-places[hidden]{display:none}
+    form.search .loc-places button{font-family:inherit; font-weight:400; box-shadow:none}
+    .lp-card{background:var(--surface); border-radius:4px; overflow:hidden; margin:0 0 8px}
+    .lp-card:last-child{margin-bottom:0}
+    .lp-card .card-head{display:flex; align-items:center; justify-content:space-between; min-height:44px; padding:0 12px 0 16px}
+    .lp-card .card-body{padding:4px 8px 4px 16px}
+    .lp-row{display:flex; align-items:center; gap:4px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
+    .lp-row:first-child{border-top:0}
+    .lp-list{list-style:none; margin:0; padding:0}
+    form.search .loc-places .lp-item{flex:1 1 auto; min-width:0; min-height:44px; padding:0 4px; border:0; border-radius:4px; background:transparent; color:var(--text); font:inherit; font-size:1rem; text-align:left; cursor:pointer}
+    form.search .loc-places .lp-item:hover, form.search .loc-places .lp-star:hover, form.search .loc-places .lp-clear:hover{background:var(--hover-bg)}
+    form.search .loc-places .lp-star{flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:0; border-radius:4px; background:transparent; color:var(--text-muted); cursor:pointer}
+    form.search .loc-places .lp-star svg{width:22px; height:22px}
+    form.search .loc-places .lp-star[aria-pressed="true"] svg{fill:var(--accent); stroke:var(--accent)}
+    .lp-current{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .lp-current .lp-name{min-width:0; overflow-wrap:anywhere; color:var(--text); font-size:1rem}
+    form.search .loc-places .lp-clear{min-height:32px; padding:0 8px; border:0; border-radius:4px; background:transparent; color:var(--text-muted); font:inherit; font-size:1rem; text-decoration:underline; cursor:pointer}
+    .lp-empty{margin:4px 0 8px; font-size:1rem; color:var(--text-muted); line-height:1.5}
+    form.search .loc-places button:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
+  }
+  /* Desktop: hover / keyboard-focus preview of a saved place's current conditions and alerts */
+  .lp-peek{display:none}
+  @media (min-width:64em){
+    .lp-peek{
+      display:block; position:fixed; z-index:60; width:300px; max-width:calc(100vw - 16px); padding:12px 16px 14px;
+      background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:4px; box-shadow:var(--shadow);
+      font-size:1rem; line-height:1.4;
+    }
+    .lp-peek[hidden]{display:none}
+    .pk-name{margin:0 0 8px; font-size:1.125rem; font-weight:500; color:var(--text-muted)}
+    .pk-reading{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+    .pk-val{font-size:2.5rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums}
+    .pk-unit{color:var(--text-muted)}
+    .pk-pill{padding:2px 8px; border-radius:4px; font-size:1rem; line-height:1.3}
+    .pk-dir{display:inline-flex; align-items:center; gap:4px; color:var(--text-muted)}
+    .pk-dir svg{width:28px; height:28px}
+    .pk-sky{display:flex; align-items:center; gap:8px; margin-top:8px}
+    .pk-sky svg{width:24px; height:24px; flex:0 0 auto}
+    .pk-alerts{display:grid; gap:6px; margin-top:10px}
+    .pk-alert{padding:6px 10px; border-left:4px solid var(--alert-bg); border-radius:0 4px 4px 0; background:color-mix(in srgb, var(--alert-bg) 12%, var(--surface))}
+    .pk-alert b{display:block; font-weight:700}
+    .pk-alert span{color:var(--text-muted)}
+    .pk-note{margin:10px 0 0; color:var(--text-muted)}
+  }
+  /* Best Times: Customize button in the card header + the settings modal */
+  .bw-card .card-head{display:flex; align-items:center; justify-content:space-between; gap:4px 12px; flex-wrap:wrap}
+  .bw-card .card-head h2{min-width:0}
+  .bw-custom-btn{
+    position:relative; display:inline-flex; align-items:center; gap:8px; min-height:44px; margin-block:-8px; padding:0 14px;
+    border:0; border-radius:4px; background:transparent; color:var(--text-muted);
+    font:inherit; font-size:1rem; font-weight:500; cursor:pointer;
+  }
+  .bw-custom-btn:hover{background:var(--hover-bg); color:var(--text)}
+  .bw-custom-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
+  .bw-custom-btn svg{width:20px; height:20px}
+  /* The Customize button is icon-only at every width (its accessible name is still "Customize") */
+  .bw-card .card-head{flex-wrap:nowrap}
+  .bw-custom-btn{padding:0; width:44px; justify-content:center; flex:0 0 auto; margin-right:-12px}  /* the 20px icon sits flush with the header's right margin */
+  .bw-custom-lab{position:absolute!important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
+  @media (max-width:31.1875em){
+    /* Customize modal on phones: each row keeps its slider and the standard value; the one-line rule stays for screen readers only */
+    .bp-help{justify-content:flex-end}
+    .bp-help > span:first-child{position:absolute!important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
+  }
+  .disclaimers-modal-panel.bp-panel{width:min(40rem, 100%); max-height:94vh}
+  .bp-panel .disclaimers-modal-head{padding:14px 24px}
+  .bp-body{color:var(--text); padding:12px 16px 12px!important}
+  .bp-intro{color:var(--text-muted)!important; margin:0 0 8px 4px!important; line-height:1.45!important; font-weight:300!important}
+  /* each setting is its own card on a tinted body */
+  .disclaimers-modal-panel.bp-panel .bp-body{background:color-mix(in srgb, var(--text) 5%, var(--surface))}
+  #bpFields{display:grid; gap:12px}
+  .bp-row{padding:8px 16px; background:var(--surface); border:1px solid var(--table-border); border-radius:4px}
+  .bp-top{display:flex; align-items:baseline; justify-content:space-between; gap:12px}
+  .bp-label{font-size:1rem; font-weight:500; color:var(--text)}
+  .bp-val{font-size:1rem; font-weight:700; color:var(--icon-blue); font-variant-numeric:tabular-nums; white-space:nowrap}
+  /* Sliders: no outline box around the control. Keyboard focus is shown on the thumb itself (a soft ring), so it is never invisible. */
+  .bp-range{
+    --pct:0%; -webkit-appearance:none; appearance:none; display:block; width:100%; height:28px; margin:0; padding:0;
+    background:transparent; cursor:pointer; outline:none;
+  }
+  .bp-range:focus, .bp-range:focus-visible{outline:none}
+  .bp-range::-webkit-slider-runnable-track{height:4px; border-radius:2px; background:linear-gradient(to right, var(--icon-blue) var(--pct), var(--border) var(--pct))}
+  .bp-range::-moz-range-track{height:4px; border-radius:2px; background:var(--border)}
+  .bp-range::-moz-range-progress{height:4px; border-radius:2px; background:var(--icon-blue)}
+  .bp-range::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:20px; height:20px; margin-top:-8px; border-radius:50%;
+    background:var(--icon-blue); border:2px solid var(--surface); box-shadow:0 0 0 1px var(--icon-blue);
+  }
+  .bp-range::-moz-range-thumb{width:16px; height:16px; border-radius:50%; background:var(--icon-blue); border:2px solid var(--surface); box-shadow:0 0 0 1px var(--icon-blue)}
+  .bp-range:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 1px var(--icon-blue), 0 0 0 6px color-mix(in srgb, var(--icon-blue) 30%, transparent)}
+  .bp-range:focus-visible::-moz-range-thumb{box-shadow:0 0 0 1px var(--icon-blue), 0 0 0 6px color-mix(in srgb, var(--icon-blue) 30%, transparent)}
+  .bp-help{margin:0; display:flex; justify-content:space-between; flex-wrap:wrap; gap:0 12px; font-size:1rem; font-weight:300; line-height:1.35; color:var(--text-muted)}
+  .bp-std{white-space:nowrap}
+  .bp-foot{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0 16px; flex:0 0 auto;
+    padding:12px 24px; border-top:1px solid var(--table-border); background:var(--surface);
+  }
+  .bp-status{margin:0; font-size:1rem; font-weight:300; color:var(--text-muted); flex:1 1 12rem}
+  .bp-status:not(:empty){margin-bottom:8px}
+  .bp-actions{display:flex; gap:12px; flex-wrap:wrap; margin-left:auto}
+  .bp-btn{
+    min-height:44px; padding:0 18px; border:1px solid var(--border); border-radius:4px; background:var(--surface-2); color:var(--text);
+    font:inherit; font-size:1rem; font-weight:600; cursor:pointer;
+  }
+  .bp-btn:hover{background:var(--hover-bg)}
+  .bp-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
+  .bp-primary{background:var(--text); color:var(--surface); border-color:var(--text)}
+  .bp-primary:hover{background:color-mix(in srgb, var(--text) 85%, var(--surface))}
   form.search button:focus{outline:4px solid var(--focus-ring); outline-offset:-4px; box-shadow:none}
   form.search input:focus{outline:2px solid var(--focus-ring); outline-offset:-2px; box-shadow:none}
   form.search button{
@@ -331,6 +447,7 @@
   .alert-title{font-size:1.125rem; font-weight:700; line-height:1.25}
   .alert-sub{font-size:1rem; font-weight:400; line-height:1.3; opacity:.92}
   .alert-toggle{flex:0 0 auto; display:flex; align-items:center; gap:6px}
+  .alert-sub-more{display:none}
   .alert-toggle-lab{font-size:1rem; font-weight:400; line-height:1}
   .alert-toggle-lab::before{content:"More"}
   [aria-expanded="true"] > .alert-toggle .alert-toggle-lab::before{content:"Less"}
@@ -539,12 +656,12 @@
      API with real US coverage). */
   /* Air Quality & Pollen and Wind Today: the title lives inside the card, above a divider line */
   .air-card, #todaySection .today-card{padding:0}
-  #airCard.air-card, #todaySection .today-card{border-radius:8px}
+  #airCard.air-card, #todaySection .today-card{border-radius:4px}
   .card-head{padding:12px 24px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
   .card-head h2, .card-head h3{font-size:1.125rem; font-weight:500; margin:0; color:var(--text-muted); display:inline-flex; align-items:center; gap:6px}
   .card-body{padding:24px}
   /* Best Times and 7-Day Outlook use the same title-in-card style: the card owns the surface, radius and shadow */
-  .bw-card, .week-card{background:var(--surface); border-radius:8px; box-shadow:var(--shadow); overflow:hidden}
+  .bw-card, .week-card{background:var(--surface); border-radius:4px; box-shadow:var(--shadow); overflow:hidden}
   .db-content .bw-card .bw-list{background:transparent; border:0; border-radius:0; box-shadow:none}
   .pollen-list{display:flex; flex-direction:column; gap:8px; min-width:0}
   .pollen-row-top{display:flex; align-items:center}
@@ -1375,9 +1492,9 @@
   /* Tablet & wide desktop: the seven day cards touch (no gaps) with shared borders, and only the outer corners are rounded */
   @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
     #weekSection .daylist{ gap:0 }
-    #weekSection .dayrow{ border-radius:8px 0 0 8px }
+    #weekSection .dayrow{ border-radius:4px 0 0 4px }
     #weekSection .dayrow ~ .dayrow{ border-radius:0; margin-left:-1px }
-    #weekSection .dayrow:last-of-type{ border-radius:0 8px 8px 0 }
+    #weekSection .dayrow:last-of-type{ border-radius:0 4px 4px 0 }
   }
   /* 7-Day cards: the 2px wind-range stroke is drawn as inset lines so that, where it runs up through the pastel header, it turns white (a white divider between the headers) */
   @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
@@ -1419,6 +1536,48 @@
     .hero-wrap .wk-tag[role="button"]{ position:relative; cursor:pointer }
     .hero-wrap .wk-tag[role="button"]::after{ content:""; position:absolute; inset:-11px -8px }  /* 44px-tall touch target */
     .hero-wrap .wk-tag[role="button"]:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+  }
+  /* Tablet & wide desktop 7-Day Wind Outlook: the day cards run full width (edge to edge, flush with the divider and the module's bottom).
+     Inside, the first and last cards' content is inset 24px so it lines up with the module header's left and right margins; those two
+     cards are 12px wider so their content area is at least as wide as the middle cards' (24px outer + 14px inner vs. 14px + 14px). */
+  @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
+    .week-card .card-body{ padding:0 }
+    #weekSection .daylist{ grid-template-columns:calc((100% - 24px) / 7 + 12px) repeat(5, calc((100% - 24px) / 7)) calc((100% - 24px) / 7 + 12px) }
+    #weekSection .dayrow, #weekSection .dayrow ~ .dayrow{ border-radius:0 }
+    #weekSection .daylist > .dayrow:nth-of-type(2){ border-radius:0 0 0 4px; padding-left:24px }
+    #weekSection .daylist > .dayrow:last-of-type{ border-radius:0 0 4px 0; padding-right:24px }
+    #weekSection .daylist > .dayrow:nth-of-type(2) .dnames{ margin-left:-24px; padding-left:24px }
+    #weekSection .daylist > .dayrow:last-of-type .dnames{ margin-right:-24px; padding-right:24px }
+  }
+  /* Small desktop keeps the phone-style stacked rows, flush to the module edges */
+  @media (min-width:64em) and (max-width:77.9375em){
+    .week-card .card-body{ padding:0 }
+  }
+  /* Narrow desktop 7-Day Wind Outlook: the same joined "super card" layout as phone (rows touch, 8px wind-range bar on top of each row, no stroke or shadow) */
+  @media (min-width:64em) and (max-width:77.9375em){
+    .week-card .card-body{ padding:0 }
+    #weekSection .daylist{ gap:0; border-radius:0; overflow:hidden; background:transparent; box-shadow:none }
+    #weekSection .dayrow, #weekSection .dayrow:first-of-type, #weekSection .dayrow:last-of-type{
+      border-radius:0; box-shadow:none; border:0; border-top:8px solid var(--card-band, var(--table-border));
+    }
+  }
+  /* Phone: the alert banner sits above the place name in the current-conditions header (the name moves down a row when it shows) */
+  @media (max-width:31.1875em){
+    header.top .alerts{ grid-column:1 / -1; grid-row:2; margin:12px 0 4px }
+    header.top .m-loc-name{ grid-row:3 }
+  }
+  /* Phone alert banner: the "+N more" count moves into the subtitle line; the tag and the More/Less word are hidden, leaving just the caret */
+  @media (max-width:31.1875em){
+    .alert-head .alert-sub-more{ display:inline }
+    .alert-head .alert-more, .alert-head .alert-toggle-lab{ display:none }
+    .alert-side{ gap:0 }
+  }
+  /* Tablet main header: logo on the left; time, refresh and pause/play on the right */
+  @media (min-width:31.25em) and (max-width:63.99em){
+    header.top .hdr-in{ display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:12px; align-items:center }
+    header.top .hdr-in > *, header.top .hdr-in form.search{ grid-column:1 / -1 }
+    header.top .brand{ grid-column:1; grid-row:1 }
+    header.top .main-head-tools{ grid-column:2; grid-row:1; align-self:center; margin-bottom:12px }
   }
 </style>
 </head>
@@ -1471,6 +1630,7 @@
                         x-text="item.display" @mousedown.prevent="select(i)"></li>
                   </template>
                 </ul>
+                <div class="loc-places" id="locPlaces" role="group" aria-label="Current location, favorites and recents" hidden></div>
               </div>
             </div>
             <div class="actions">
@@ -1507,6 +1667,7 @@
               <p class="sd-empty" id="sdRecEmpty">No recent searches yet.</p>
             </div>
           </section>
+          <p class="sd-empty" id="sdStorageNote" role="note" hidden></p>
         </div>
       </div>
     </div>
@@ -1646,7 +1807,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8"/><circle cx="12" cy="16.8" r="1.4" fill="currentColor" stroke="none"/></svg>
           <span class="sr-only">How Best Times are ranked</span>
         </button>
-      </h2></div>
+      </h2>
+      <button type="button" class="bw-custom-btn" id="bestCustomBtn" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2" fill="var(--surface)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2" fill="var(--surface)"/></svg>
+        <span class="bw-custom-lab">Customize</span>
+      </button></div>
     <div class="bw-table" role="table" aria-label="Best times to be outside, ranked">
       <div class="bw-list" id="bestList" role="rowgroup">
         <div class="bw-head" id="bestHead" role="row" :hidden="$store.best.state === 'empty'">
@@ -1817,6 +1982,29 @@
       </button>
     </div>
     <div class="disclaimers-modal-body" id="infoModalBody"></div>
+  </div>
+</div>
+
+<div class="radar-modal" id="bestPrefsModal" hidden>
+  <div class="radar-modal-backdrop" id="bestPrefsBackdrop"></div>
+  <div class="radar-modal-panel disclaimers-modal-panel bp-panel" role="dialog" aria-modal="true" aria-labelledby="bestPrefsTitle">
+    <div class="disclaimers-modal-head">
+      <h2 id="bestPrefsTitle">Customize Best Times</h2>
+      <button type="button" class="disclaimers-modal-close" id="bestPrefsClose" aria-label="Close without saving">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="disclaimers-modal-body bp-body">
+      <p class="bp-intro">Windows outside these limits are skipped. Saved in this browser.</p>
+      <div id="bpFields"></div>
+    </div>
+    <div class="bp-foot">
+      <p class="bp-status" id="bpStatus" role="status" aria-live="polite"></p>
+      <div class="bp-actions">
+        <button type="button" class="bp-btn" id="bpReset">Reset to Default</button>
+        <button type="button" class="bp-btn bp-primary" id="bpSave">Save</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2173,7 +2361,23 @@
     var place = (hdrLoc.textContent || '').trim();
     mainHeadLoc.textContent = place;
     mainHead.hidden = !place;
+    mainTools.hidden = !place;
   }
+  /* Tablet: the time / refresh / pause controls live in the main page header (beside the logo); elsewhere they stay in the "Weather Details" row */
+  var mainTools = document.querySelector('.main-head-tools');
+  mainTools.hidden = mainHead.hidden;
+  var toolsTabletMq = window.matchMedia('(min-width:31.25em) and (max-width:63.99em)');
+  function placeMainTools(){
+    var hdrIn = document.querySelector('header.top .hdr-in'), brand = hdrIn && hdrIn.querySelector('.brand');
+    if(!hdrIn || !brand) return;
+    if(toolsTabletMq.matches){
+      if(mainTools.parentElement !== hdrIn) brand.after(mainTools);
+    }else if(mainTools.parentElement !== mainHead){
+      mainHead.appendChild(mainTools);
+    }
+  }
+  placeMainTools();
+  toolsTabletMq.addEventListener('change', placeMainTools);
   new MutationObserver(syncMainHead).observe(hdrLoc, {childList:true, characterData:true, subtree:true});
   // Current time at the searched location, kept fresh every 15 seconds
   var mainClock = document.getElementById('mainClock');
@@ -2332,14 +2536,14 @@
     w.state = 'loading';
   }
 
-  function hazardType(p, strict){
+  function hazardType(p, strict, skipWind){
     var s = (p.shortForecast || '').toLowerCase();
     if(strict && /chance/.test(s)) return null;
     if(/thunder/.test(s)) return 'Thunderstorms';
     if(/snow|flurr|sleet|blizzard|freezing/.test(s)) return 'Snow';
     if(/shower/.test(s)) return 'Showers';
     if(/rain|drizzle/.test(s)) return 'Rain';
-    if(parseWind(p.windSpeed).high >= 25) return 'High winds';
+    if(!skipWind && parseWind(p.windSpeed).high >= 25) return 'High winds';
     return null;
   }
 
@@ -2857,6 +3061,123 @@
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   });
 
+  /* ---------- Best Times customization ----------
+     The website's standards, plus the user's own limits (saved in this browser). A window is skipped when any limit is
+     broken; everything that passes is still ranked by the same temperature / wind / dryness / air-quality score. */
+  var BP_KEY = 'checkTheWind.bestPrefs';
+  var BP_STD = {tmin:25, tmax:100, wind:25, pop:40, hum:100, ground:2, aqi:150};
+  var BP_FIELDS = [
+    {k:'tmin',   label:'Lowest temperature',        min:0,  max:70,  step:1, fmt:function(v){ return v + '°F'; },
+      help:'Colder windows are skipped.'},
+    {k:'tmax',   label:'Highest temperature',       min:70, max:120, step:1, fmt:function(v){ return v + '°F'; },
+      help:'Hotter windows are skipped.'},
+    {k:'wind',   label:'Wind stays under',          min:5,  max:40,  step:1, fmt:function(v){ return v + ' mph'; },
+      help:'Wind at or above this is skipped.'},
+    {k:'pop',    label:'Chance of precipitation',   min:10, max:100, step:5, fmt:function(v){ return v >= 100 ? 'Any' : 'Under ' + v + '%'; },
+      help:'Higher-chance windows are skipped.'},
+    {k:'hum',    label:'Humidity',                  min:30, max:100, step:5, fmt:function(v){ return v >= 100 ? 'Any' : 'Up to ' + v + '%'; },
+      help:'More humid windows are skipped.'},
+    {k:'ground', label:'Ground wetness',            min:0,  max:2,   step:1, fmt:function(v){ return ['Dry only', 'Damp or drier', 'Any'][v]; },
+      help:'Snow and ice are always skipped.'},
+    {k:'aqi',    label:'Air quality index (AQI)',   min:25, max:200, step:5, fmt:function(v){ return 'Up to ' + v; },
+      help:'Worse air is skipped. 50 Good, 100 Moderate.'}
+  ];
+  function bpClean(raw){
+    var out = {};
+    BP_FIELDS.forEach(function(f){
+      var rv = raw && typeof raw === 'object' ? raw[f.k] : null;
+      var v = (rv === null || rv === undefined || rv === '') ? NaN : +rv;
+      if(!isFinite(v)) v = BP_STD[f.k];
+      v = Math.min(f.max, Math.max(f.min, Math.round(v / f.step) * f.step));
+      out[f.k] = v;
+    });
+    return out;
+  }
+  function bpLoad(){
+    try{ return bpClean(JSON.parse(localStorage.getItem(BP_KEY))); }catch(e){ return bpClean(null); }
+  }
+  function bpIsCustom(p){ return BP_FIELDS.some(function(f){ return p[f.k] !== BP_STD[f.k]; }); }
+  var bestPrefs = bpLoad();
+
+  /* ---------- Best Times: Customize modal ---------- */
+  var bpModal = document.getElementById('bestPrefsModal'), bpFieldsEl = document.getElementById('bpFields');
+  var bpStatus = document.getElementById('bpStatus'), bpLastFocus = null, bpInputs = {};
+  function bpBuild(){
+    if(bpFieldsEl.firstChild) return;
+    BP_FIELDS.forEach(function(f){
+      var row = document.createElement('div'); row.className = 'bp-row';
+      var top = document.createElement('div'); top.className = 'bp-top';
+      var lab = document.createElement('label'); lab.className = 'bp-label'; lab.htmlFor = 'bp-' + f.k; lab.textContent = f.label;
+      var out = document.createElement('output'); out.className = 'bp-val'; out.htmlFor = 'bp-' + f.k; out.id = 'bpOut-' + f.k;
+      top.appendChild(lab); top.appendChild(out);
+      var inp = document.createElement('input'); inp.type = 'range'; inp.className = 'bp-range'; inp.id = 'bp-' + f.k;
+      inp.min = f.min; inp.max = f.max; inp.step = f.step;
+      inp.setAttribute('aria-describedby', 'bpHelp-' + f.k);
+      var help = document.createElement('p'); help.className = 'bp-help'; help.id = 'bpHelp-' + f.k;
+      var hTxt = document.createElement('span'); hTxt.textContent = f.help;
+      var hStd = document.createElement('span'); hStd.className = 'bp-std'; hStd.textContent = 'Default: ' + f.fmt(BP_STD[f.k]);
+      help.appendChild(hTxt); help.appendChild(hStd);
+      inp.addEventListener('input', function(){ bpShowVal(f); bpStatus.textContent = ''; });
+      row.appendChild(top); row.appendChild(inp); row.appendChild(help);
+      bpFieldsEl.appendChild(row);
+      bpInputs[f.k] = {inp: inp, out: out};
+    });
+  }
+  function bpShowVal(f){
+    var o = bpInputs[f.k], v = +o.inp.value;
+    o.out.textContent = f.fmt(v);
+    o.inp.setAttribute('aria-valuetext', f.fmt(v));
+    o.inp.style.setProperty('--pct', ((v - f.min) / (f.max - f.min) * 100) + '%');
+  }
+  function bpFill(vals){
+    BP_FIELDS.forEach(function(f){ bpInputs[f.k].inp.value = vals[f.k]; bpShowVal(f); });
+  }
+  function openBp(trigger){
+    bpLastFocus = trigger || document.activeElement;
+    bpBuild(); bpFill(bestPrefs); bpStatus.textContent = '';
+    bpModal.hidden = false;
+    setBackgroundInert(true, bpModal);
+    document.body.style.overflow = 'hidden';
+    bpInputs[BP_FIELDS[0].k].inp.focus();
+  }
+  function closeBp(){
+    if(bpModal.hidden) return;
+    bpModal.hidden = true;
+    setBackgroundInert(false);
+    document.body.style.overflow = '';
+    if(bpLastFocus && typeof bpLastFocus.focus === 'function') bpLastFocus.focus();
+  }
+  function saveBp(){
+    var vals = {};
+    BP_FIELDS.forEach(function(f){ vals[f.k] = +bpInputs[f.k].inp.value; });
+    bestPrefs = bpClean(vals);
+    try{ if(bpIsCustom(bestPrefs)) localStorage.setItem(BP_KEY, JSON.stringify(bestPrefs)); else localStorage.removeItem(BP_KEY); }catch(e){}
+    var when = null;
+    if(lastBest){ when = renderBest(lastBest.hourly, lastBest.inputs); }
+    closeBp();
+    announce('Best Times updated' + (bpIsCustom(bestPrefs) ? ' with your settings' : ' to the defaults') + '. ' +
+      (lastBest ? (when ? 'Best window outside: ' + when + '.' : 'No good window outside in the next 48 hours.') : ''));
+  }
+  document.getElementById('bestCustomBtn').addEventListener('click', function(e){ openBp(e.currentTarget); });
+  document.getElementById('bestPrefsClose').addEventListener('click', closeBp);
+  document.getElementById('bestPrefsBackdrop').addEventListener('click', closeBp);
+  document.getElementById('bpSave').addEventListener('click', saveBp);
+  document.getElementById('bpReset').addEventListener('click', function(){
+    bpFill(BP_STD);
+    bpStatus.textContent = 'Sliders are back at the defaults. Select Save to apply them.';
+  });
+  document.addEventListener('keydown', function(e){
+    if(bpModal.hidden) return;
+    if(e.key === 'Escape'){ e.preventDefault(); closeBp(); return; }
+    if(e.key !== 'Tab') return;
+    var f = [].slice.call(bpModal.querySelectorAll('button:not([disabled]), input:not([disabled])'));
+    if(!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if(!bpModal.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+    else if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
+
   function renderHourly(periods){
     var next10 = periods.slice(0, 10);
     if(!next10.length){ todaySection.hidden = true; return; }
@@ -3322,8 +3643,10 @@
 
       var groundNow = wet;
       var icyOrSnowy = frozen >= 0.15 || frozenText;
-      var ok = daylight && !hazardType(p, true) && pop < 40 && !icyOrSnowy &&
-        temp >= 25 && temp <= 100 && (aqi === null || aqi <= 150);
+      var P = bestPrefs;
+      var groundOk = P.ground >= 2 || groundNow < (P.ground === 0 ? 0.15 : 0.45);
+      var ok = daylight && !hazardType(p, true, true) && mph < P.wind && (P.pop >= 100 || pop < P.pop) && !icyOrSnowy &&
+        temp >= P.tmin && temp <= P.tmax && (aqi === null || aqi <= P.aqi) && (hum === null || hum <= P.hum) && groundOk;
 
       var dry = 1 - Math.min(1, groundNow + pop / 100 * 0.5);
       var tempScore = temp <= 85 ? clamp01((temp - 25) / 50) : clamp01(1 - (temp - 85) / 20);
@@ -3597,7 +3920,9 @@
     '</svg>';
   }
 
+  var lastBest = null;
   function renderBest(hourly, inputs){
+    lastBest = {hourly: hourly, inputs: inputs};
     var hrs = scoreBestHours(hourly, inputs);
     var wins = findBestWindows(hrs);
     var todayStr = localDate(hourly[0].startTime);
@@ -3637,13 +3962,19 @@
     if(!inputs.aqi) notes.push('We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.');
     if(!inputs.past) notes.push('We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.');
 
+    var custom = bpIsCustom(bestPrefs);
+    if(custom){
+      notes.unshift('You are using custom Best Times settings: ' + BP_FIELDS.filter(function(f){ return bestPrefs[f.k] !== BP_STD[f.k]; }).map(function(f){
+        return f.label.toLowerCase() + ' ' + f.fmt(bestPrefs[f.k]);
+      }).join(', ') + '. Use Customize to change them or reset to the defaults.');
+    }
     var b = store('best');
     b.windows = windows;
     b.note = notes.join(' ');
     if(!windows.length){
       var empty = buildEmptyBestNote(hourly);
       b.emptyTitle = empty.title;
-      b.emptySub = empty.sub;
+      b.emptySub = empty.sub + (custom ? ' Your custom Best Times settings may be ruling windows out; use Customize to loosen them or reset to the defaults.' : '');
       b.fireplace = fireplaceSvg(empty.kind);
     }
     b.state = windows.length ? 'ready' : 'empty';
@@ -3766,7 +4097,7 @@
     return tog;
   }
 
-  function alertTitles(p){
+  function alertTitles(p, extra){
     var titles = document.createElement('span');
     titles.className = 'alert-titles';
     var title = document.createElement('span');
@@ -3775,6 +4106,17 @@
     var sub = document.createElement('span');
     sub.className = 'alert-sub';
     sub.textContent = alertSubtitle(p);
+    if(extra){
+      // phones: the "+N more" count rides in the subtitle line (the separate tag is hidden there)
+      var more = document.createElement('span');
+      more.className = 'alert-sub-more';
+      more.appendChild(document.createTextNode(' \u00b7 +' + extra + ' more'));
+      var sr = document.createElement('span');
+      sr.className = 'sr-only';
+      sr.textContent = extra === 1 ? ' alert' : ' alerts';
+      more.appendChild(sr);
+      sub.appendChild(more);
+    }
     titles.appendChild(title);
     titles.appendChild(sub);
     return titles;
@@ -3828,7 +4170,7 @@
     head.setAttribute('aria-expanded', open ? 'true' : 'false');
     head.setAttribute('aria-controls', 'alertBody0');
     head.appendChild(alertIcon());
-    head.appendChild(alertTitles(top));
+    head.appendChild(alertTitles(top, multi ? list.length - 1 : 0));
 
     if(multi){
       var more = document.createElement('span');
@@ -4054,12 +4396,51 @@
   var FAV_KEY = 'checkTheWind.favorites', REC_KEY = 'checkTheWind.recents', REC_MAX = 8;
   var STAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polygon points="12,3 14.7,9 21,9.6 16.2,13.9 17.7,20.2 12,16.9 6.3,20.2 7.8,13.9 3,9.6 9.3,9"/></svg>';
 
+  /* Favorites and Recents are kept in the browser (localStorage) so they are still there when the user comes back.
+     Every read is validated, and if the browser blocks storage (private window, blocked site data) the lists still work
+     for this visit from memory and a short note tells the user they won't be remembered. */
+  var FAV_MAX = 50;
+  var memStore = {};
+  var storageOK = (function(){
+    try{ var k = 'checkTheWind.__probe'; localStorage.setItem(k, '1'); localStorage.removeItem(k); return true; }catch(e){ return false; }
+  })();
+  function cleanPlace(x){
+    if(!x || typeof x !== 'object') return null;
+    var lat = +x.lat, lon = +x.lon;
+    if(!isFinite(lat) || !isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
+    var label = typeof x.label === 'string' ? x.label.trim().slice(0, 200) : '';
+    if(!label) return null;
+    var name = typeof x.name === 'string' && x.name.trim() ? x.name.trim().slice(0, 120) : label;
+    return {lat: lat, lon: lon, label: label, name: name};
+  }
   function readList(key){
-    try{ var v = JSON.parse(localStorage.getItem(key)); return Array.isArray(v) ? v : []; }catch(e){ return []; }
+    var raw = null;
+    try{ raw = storageOK ? localStorage.getItem(key) : null; }catch(e){ raw = null; }
+    if(raw == null) raw = memStore[key] || null;
+    var v = null;
+    try{ v = JSON.parse(raw); }catch(e){ v = null; }
+    if(!Array.isArray(v)) return [];
+    var out = [];
+    v.forEach(function(x){
+      var c = cleanPlace(x);
+      if(c && !out.some(function(o){ return samePlace(o, c); })) out.push(c);
+    });
+    return out.slice(0, key === FAV_KEY ? FAV_MAX : REC_MAX);
   }
   function writeList(key, list){
-    try{ localStorage.setItem(key, JSON.stringify(list)); }catch(e){}
+    var str = JSON.stringify(list);
+    memStore[key] = str;
+    try{ localStorage.setItem(key, str); storageOK = true; }catch(e){ storageOK = false; }
   }
+  var STORAGE_NOTE = 'Your browser is blocking storage, so favorites and recents will be forgotten when you close this tab.';
+  // keep two open tabs in step: re-draw an open Favorites / Recents view when the other tab changes the lists
+  window.addEventListener('storage', function(e){
+    if(e.key !== FAV_KEY && e.key !== REC_KEY && e.key !== null) return;
+    try{
+      if(sdDrawer.classList.contains('open')) renderSearchLists();
+      if(!document.getElementById('locPlaces').hidden) renderPlacesPanel();
+    }catch(err){}
+  });
   function samePlace(a, b){ return Math.abs(a.lat - b.lat) < 0.01 && Math.abs(a.lon - b.lon) < 0.01; }
   function addRecent(lat, lon, label, name){
     if(typeof lat !== 'number' || typeof lon !== 'number' || !label) return;
@@ -4072,7 +4453,7 @@
   function toggleFavorite(item){
     var list = readList(FAV_KEY);
     var has = list.some(function(f){ return samePlace(f, item); });
-    list = has ? list.filter(function(f){ return !samePlace(f, item); }) : [item].concat(list);
+    list = has ? list.filter(function(f){ return !samePlace(f, item); }) : [item].concat(list).slice(0, FAV_MAX);
     writeList(FAV_KEY, list);
     return !has;
   }
@@ -4115,6 +4496,7 @@
     document.getElementById('sdFavEmpty').hidden = favs.length > 0;
     document.getElementById('sdRecEmpty').hidden = recs.length > 0;
     document.getElementById('sdClearRecents').hidden = recs.length === 0;
+    var sdNote = document.getElementById('sdStorageNote'); sdNote.textContent = storageOK ? '' : STORAGE_NOTE; sdNote.hidden = storageOK;
     var cur = currentPlace(), box = document.getElementById('sdCurrent'), save = document.getElementById('sdSave');
     box.hidden = !cur;
     if(cur){
@@ -4226,9 +4608,261 @@
     }
   });
 
+  /* ---------- Tablet & desktop: Current / Favorites / Recents panel under the location field ---------- */
+  window.placesDesktopMQ = window.matchMedia('(min-width:31.25em)');
+  var lpPanel = document.getElementById('locPlaces');
+  var lpInput = document.getElementById('locInput');
+  var lpField = lpInput.closest('.field');
+  function lpRow(item, starred){
+    var li = document.createElement('li');
+    li.className = 'lp-row';
+    var pick = document.createElement('button');
+    pick.type = 'button'; pick.className = 'lp-item'; pick.textContent = item.name;
+    pick.dataset.lat = item.lat; pick.dataset.lon = item.lon; pick.dataset.label = item.label; pick.dataset.name = item.name;
+    var star = document.createElement('button');
+    star.type = 'button'; star.className = 'lp-star';
+    star.setAttribute('aria-pressed', starred ? 'true' : 'false');
+    star.setAttribute('aria-label', (starred ? 'Remove ' : 'Add ') + item.name + (starred ? ' from Favorites' : ' to Favorites'));
+    star.innerHTML = STAR_SVG;
+    star.dataset.lat = item.lat; star.dataset.lon = item.lon; star.dataset.label = item.label; star.dataset.name = item.name;
+    li.appendChild(pick); li.appendChild(star);
+    return li;
+  }
+  function lpCard(id, title, extra){
+    var sec = document.createElement('section');
+    sec.className = 'lp-card'; sec.setAttribute('aria-labelledby', id);
+    var head = document.createElement('div'); head.className = 'card-head';
+    var h = document.createElement('h2'); h.id = id; h.textContent = title;
+    head.appendChild(h); if(extra) head.appendChild(extra);
+    var body = document.createElement('div'); body.className = 'card-body';
+    sec.appendChild(head); sec.appendChild(body);
+    return {sec: sec, body: body};
+  }
+  function lpEmpty(text){ var p = document.createElement('p'); p.className = 'lp-empty'; p.textContent = text; return p; }
+  function renderPlacesPanel(){
+    var favs = readList(FAV_KEY), recs = readList(REC_KEY), cur = currentPlace();
+    lpPanel.textContent = '';
+    if(cur){
+      var c = lpCard('lpCurTitle', 'Current');
+      var row = document.createElement('div'); row.className = 'lp-current';
+      var nm = document.createElement('span'); nm.className = 'lp-name'; nm.textContent = cur.name;
+      var fav = isFavorite(cur);
+      var sv = document.createElement('button'); sv.type = 'button'; sv.className = 'lp-star'; sv.id = 'lpSave';
+      sv.setAttribute('aria-pressed', fav ? 'true' : 'false'); sv.innerHTML = STAR_SVG;
+      sv.setAttribute('aria-label', (fav ? 'Remove ' : 'Save ') + cur.name + (fav ? ' from Favorites' : ' to Favorites'));
+      row.appendChild(nm); row.appendChild(sv); c.body.appendChild(row);
+      lpPanel.appendChild(c.sec);
+    }
+    var f = lpCard('lpFavTitle', 'Favorites');
+    if(favs.length){
+      var fl = document.createElement('ul'); fl.className = 'lp-list';
+      favs.forEach(function(x){ fl.appendChild(lpRow(x, true)); }); f.body.appendChild(fl);
+    }else f.body.appendChild(lpEmpty('No favorites yet. Select the star on your current location or a recent search to save it here.'));
+    lpPanel.appendChild(f.sec);
+    var clr = null;
+    if(recs.length){ clr = document.createElement('button'); clr.type = 'button'; clr.className = 'lp-clear'; clr.id = 'lpClear'; clr.textContent = 'Clear'; clr.setAttribute('aria-label', 'Clear recent searches'); }
+    var r = lpCard('lpRecTitle', 'Recents', clr);
+    if(recs.length){
+      var rl = document.createElement('ul'); rl.className = 'lp-list';
+      recs.forEach(function(x){ rl.appendChild(lpRow(x, isFavorite(x))); }); r.body.appendChild(rl);
+    }else r.body.appendChild(lpEmpty('No recent searches yet.'));
+    lpPanel.appendChild(r.sec);
+    if(!storageOK){ var n = lpEmpty(STORAGE_NOTE); n.setAttribute('role', 'note'); n.style.padding = '8px 8px 0'; lpPanel.appendChild(n); }
+  }
+  function placesOpen(){ return !lpPanel.hidden; }
+  function openPlaces(){
+    if(!window.placesDesktopMQ.matches) return;
+    var q = lpInput.value.trim();
+    if(q.length >= 3 && document.activeElement === lpInput && lpInput.dataset.edited === '1') return;
+    renderPlacesPanel();
+    lpPanel.hidden = false;
+    lpInput.setAttribute('aria-controls', 'locPlaces');
+    lpInput.setAttribute('aria-expanded', 'true');
+  }
+  function closePlaces(){
+    if(lpPanel.hidden) return;
+    if(typeof hidePeek === 'function') hidePeek();
+    lpPanel.hidden = true;
+    lpInput.setAttribute('aria-controls', 'locSuggestions');
+    lpInput.setAttribute('aria-expanded', document.getElementById('locSuggestions').hidden ? 'false' : 'true');
+  }
+  function lpButtons(){ return [].slice.call(lpPanel.querySelectorAll('button')); }
+  var lpSkipOpen = false;
+  lpInput.addEventListener('focus', function(){ if(lpSkipOpen){ lpSkipOpen = false; return; } lpInput.dataset.edited = ''; openPlaces(); });
+  lpInput.addEventListener('click', function(){ if(!placesOpen()) openPlaces(); });
+  lpInput.addEventListener('input', function(){
+    lpInput.dataset.edited = '1';
+    if(lpInput.value.trim().length < 3){ lpInput.dataset.edited = ''; openPlaces(); } else closePlaces();
+  });
+  lpInput.addEventListener('keydown', function(e){
+    if(!window.placesDesktopMQ.matches) return;
+    var sugg = document.getElementById('locSuggestions');
+    if(e.key === 'ArrowDown' && sugg.hidden){
+      e.preventDefault();
+      if(!placesOpen()){ lpInput.dataset.edited = ''; openPlaces(); }
+      var b = lpButtons(); if(b.length) b[0].focus();
+    }else if(e.key === 'Escape' && placesOpen()){ closePlaces(); }
+  });
+  lpPanel.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !peekEl.hidden){ e.preventDefault(); hidePeek(); return; }
+    if(e.key === 'Escape'){ e.preventDefault(); closePlaces(); lpSkipOpen = true; lpInput.focus(); lpSkipOpen = false; return; }
+    if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+      var b = lpButtons(), i = b.indexOf(document.activeElement);
+      if(i < 0) return;
+      e.preventDefault();
+      if(e.key === 'ArrowUp' && i === 0){ lpInput.focus(); return; }
+      var n = e.key === 'ArrowDown' ? Math.min(i + 1, b.length - 1) : i - 1;
+      b[n].focus();
+    }
+  });
+  lpPanel.addEventListener('mousedown', function(e){ if(!e.target.closest('button')) e.preventDefault(); });
+  lpPanel.addEventListener('click', function(e){
+    var star = e.target.closest('.lp-star'), pick = e.target.closest('.lp-item'), clr = e.target.closest('.lp-clear');
+    hidePeek();
+    if(star){
+      var cur = currentPlace(), isCur = star.id === 'lpSave';
+      var item = isCur ? cur : {lat: +star.dataset.lat, lon: +star.dataset.lon, label: star.dataset.label, name: star.dataset.name};
+      if(!item) return;
+      var nowFav = toggleFavorite(item);
+      announce((nowFav ? 'Saved ' : 'Removed ') + item.name + (nowFav ? ' to Favorites.' : ' from Favorites.'));
+      renderPlacesPanel();
+      var again = isCur ? document.getElementById('lpSave') : lpPanel.querySelector('.lp-star[data-lat="' + star.dataset.lat + '"][data-name="' + star.dataset.name.replace(/"/g, '\\"') + '"]');
+      if(again) again.focus();
+    }else if(clr){
+      writeList(REC_KEY, []); announce('Recent searches cleared.'); renderPlacesPanel(); lpInput.focus();
+    }else if(pick){
+      setLocationText(pick.dataset.name);
+      closePlaces();
+      loadForLocation(+pick.dataset.lat, +pick.dataset.lon, pick.dataset.label).catch(function(err){ reportError(err); });
+    }
+  });
+  /* ---------- Desktop: hover / focus preview (current conditions + alerts) for saved places ---------- */
+  var peekMQ = window.matchMedia('(min-width:64em)');
+  var peekEl = document.createElement('div');
+  peekEl.id = 'lpPeek'; peekEl.className = 'lp-peek'; peekEl.setAttribute('role', 'tooltip'); peekEl.hidden = true;
+  lpField.appendChild(peekEl);  // inside the search landmark; position:fixed lets it sit beside the panel
+  var peekCache = {}, peekShowTimer = null, peekHideTimer = null, peekFor = null, PEEK_TTL = 5 * 60 * 1000;
+  function peekTimeText(iso, tz){
+    var o = {weekday:'short', hour:'numeric', minute:'2-digit', timeZoneName:'short'};
+    if(tz) o.timeZone = tz;
+    return new Date(iso).toLocaleString('en-US', o).replace(',', '').replace(/\s?(AM|PM)/, function(m, ap){ return ' ' + ap.toLowerCase(); });
+  }
+  function peekFetch(lat, lon){
+    var key = lat.toFixed(2) + ',' + lon.toFixed(2), hit = peekCache[key];
+    if(hit && Date.now() - hit.t < PEEK_TTL) return hit.p;
+    var alertsP = fetchAlerts(lat, lon);
+    var p = (async function(){
+      var points = await fetchJson('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4));
+      var hourly = await fetchJson(points.properties.forecastHourly);
+      var cur = hourly.properties.periods[0];
+      if(!cur) throw new Error('no data');
+      return {tz: points.properties.timeZone || null, cur: cur, alerts: await alertsP};
+    })();
+    peekCache[key] = {t: Date.now(), p: p};
+    p.catch(function(){ delete peekCache[key]; });
+    return p;
+  }
+  function peekPlace(){
+    var pr = lpPanel.getBoundingClientRect(), br = peekFor ? peekFor.getBoundingClientRect() : pr;
+    var w = peekEl.offsetWidth, h = peekEl.offsetHeight;
+    var left = pr.right + 10;
+    if(left + w > window.innerWidth - 8) left = Math.max(8, pr.left - w - 10);
+    var top = Math.min(Math.max(8, br.top - 12), Math.max(8, window.innerHeight - h - 8));
+    peekEl.style.left = left + 'px'; peekEl.style.top = top + 'px';
+  }
+  function peekRender(name, data, state){
+    peekEl.textContent = '';
+    var h = document.createElement('p'); h.className = 'pk-name'; h.textContent = name; peekEl.appendChild(h);
+    if(state === 'loading' || state === 'error'){
+      var n = document.createElement('p'); n.className = 'pk-note'; n.style.margin = '0';
+      n.textContent = state === 'loading' ? 'Loading current conditions…' : 'Current conditions are unavailable right now.';
+      peekEl.appendChild(n); return;
+    }
+    var cur = data.cur, w = parseWind(cur.windSpeed), band = bandFor(w.high);
+    var row = document.createElement('div'); row.className = 'pk-reading';
+    var val = document.createElement('span'); val.className = 'pk-val'; val.style.color = band.css; val.textContent = w.high;
+    var unit = document.createElement('span'); unit.className = 'pk-unit'; unit.textContent = 'mph';
+    var pill = document.createElement('span'); pill.className = 'pk-pill'; pill.style.background = band.pill; pill.style.color = band.pillInk; pill.textContent = band.label;
+    row.appendChild(val); row.appendChild(unit); row.appendChild(pill);
+    if(cur.windDirection){
+      var dir = document.createElement('span'); dir.className = 'pk-dir';
+      dir.innerHTML = windArrowSvg(cur.windDirection, band.css, 28, 0, true) + srDir(cur.windDirection);
+      var dt = document.createElement('span'); dt.setAttribute('aria-hidden', 'true'); dt.textContent = cur.windDirection;
+      dir.appendChild(dt); row.appendChild(dir);
+    }
+    peekEl.appendChild(row);
+    var sky = document.createElement('div'); sky.className = 'pk-sky';
+    var ic = document.createElement('span'); ic.setAttribute('aria-hidden', 'true'); ic.innerHTML = weatherIcon(cur.shortForecast, cur.isDaytime, 24); ic.style.display = 'inline-flex';
+    var tx = document.createElement('span'); tx.textContent = cur.temperature + '\u00b0' + (cur.temperatureUnit || 'F') + ' \u00b7 ' + cur.shortForecast;
+    sky.appendChild(ic); sky.appendChild(tx); peekEl.appendChild(sky);
+    var list = data.alerts || [];
+    if(list.length){
+      var box = document.createElement('div'); box.className = 'pk-alerts';
+      list.slice(0, 2).forEach(function(a){
+        var d = document.createElement('div'); d.className = 'pk-alert alert--' + alertKind(a.event);
+        var b = document.createElement('b'); b.textContent = a.event;
+        var u = document.createElement('span'); var end = a.ends || a.expires;
+        u.textContent = end ? 'Until ' + peekTimeText(end, data.tz) : 'In effect';
+        d.appendChild(b); d.appendChild(u); box.appendChild(d);
+      });
+      peekEl.appendChild(box);
+      if(list.length > 2){ var more = document.createElement('p'); more.className = 'pk-note'; more.style.marginTop = '6px'; more.textContent = '+' + (list.length - 2) + ' more alert' + (list.length - 2 === 1 ? '' : 's'); peekEl.appendChild(more); }
+    }
+  }
+  function hidePeek(){
+    clearTimeout(peekShowTimer); clearTimeout(peekHideTimer);
+    if(peekFor) peekFor.removeAttribute('aria-describedby');
+    peekFor = null; peekEl.hidden = true;
+  }
+  function showPeek(btn, delay){
+    if(!peekMQ.matches || lpPanel.hidden) return;
+    clearTimeout(peekHideTimer); clearTimeout(peekShowTimer);
+    if(peekFor === btn && !peekEl.hidden) return;
+    if(peekFor && peekFor !== btn) peekFor.removeAttribute('aria-describedby');
+    peekFor = btn;
+    peekShowTimer = setTimeout(function(){
+      if(peekFor !== btn) return;
+      var lat = +btn.dataset.lat, lon = +btn.dataset.lon, name = btn.dataset.name;
+      peekRender(name, null, 'loading'); peekEl.hidden = false; btn.setAttribute('aria-describedby', 'lpPeek'); peekPlace();
+      peekFetch(lat, lon).then(function(d){
+        if(peekFor !== btn) return;
+        peekRender(name, d, 'ok'); peekPlace();
+      }).catch(function(){
+        if(peekFor !== btn) return;
+        peekRender(name, null, 'error'); peekPlace();
+      });
+    }, delay);
+  }
+  function schedulePeekHide(){ clearTimeout(peekHideTimer); peekHideTimer = setTimeout(hidePeek, 150); }
+  lpPanel.addEventListener('mouseover', function(e){
+    var b = e.target.closest('.lp-item');
+    if(b){ showPeek(b, 300); } else if(!e.target.closest('.lp-row')){ schedulePeekHide(); }
+  });
+  lpPanel.addEventListener('mouseout', function(e){
+    var from = e.target.closest('.lp-item'); if(!from) return;
+    var to = e.relatedTarget;
+    if(to && (to === peekEl || peekEl.contains(to) || (to.closest && to.closest('.lp-item') === from))) return;
+    schedulePeekHide();
+  });
+  peekEl.addEventListener('mouseenter', function(){ clearTimeout(peekHideTimer); });
+  peekEl.addEventListener('mouseleave', schedulePeekHide);
+  lpPanel.addEventListener('focusin', function(e){
+    var b = e.target.closest('.lp-item');
+    if(b && b.matches(':focus-visible')) showPeek(b, 0); else hidePeek();
+  });
+  lpPanel.addEventListener('scroll', hidePeek);
+  window.addEventListener('resize', hidePeek);
+  peekMQ.addEventListener('change', hidePeek);
+  lpField.addEventListener('focusout', function(e){
+    var to = e.relatedTarget;
+    if(to && (lpField.contains(to))) return;
+    setTimeout(function(){ if(!lpField.contains(document.activeElement)) closePlaces(); }, 0);
+  });
+  window.placesDesktopMQ.addEventListener('change', function(){ if(!window.placesDesktopMQ.matches) closePlaces(); });
+
   /* ---------- Pause / play all animation (desktop header button) ---------- */
   var PAUSE_KEY = 'checkTheWind.animPaused';
-  var animDesktopMQ = window.matchMedia('(min-width:64em), (max-width:31.1875em)');  // where a pause button exists: desktop and phone
+  var animDesktopMQ = window.matchMedia('(min-width:0px)');  // a pause button exists at every width now (phone, tablet, desktop)
   var animPaused = false;
   try{ animPaused = localStorage.getItem(PAUSE_KEY) === '1'; }catch(e){}
   function animEffectivePaused(){ return animPaused && animDesktopMQ.matches; }
@@ -4402,6 +5036,7 @@
       },
       onFocus: function(){
         var q = this.$refs.input.value.trim();
+        if(window.placesDesktopMQ && window.placesDesktopMQ.matches) return;
         if(q.length < 3) return;
         if(q === this.lastQuery && this.lastResults.length) this.show(this.lastResults);
         else this.fetchSuggestions(q);
