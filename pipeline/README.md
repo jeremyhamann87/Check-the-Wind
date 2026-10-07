@@ -20,7 +20,7 @@ Running `python3 fetch_mrms.py` does the whole pipeline in one go:
 
 Coverage is CONUS-wide on purpose, not cropped to one city — the map page
 pans to wherever the visitor last searched on the main site (same
-`localStorage` key `checkTheWind.lastLocation` that `windline.html` uses),
+`localStorage` key `checkTheWind.lastLocation` that `index.html` uses),
 so one shared set of frames works for every visitor everywhere in the
 country.
 
@@ -111,3 +111,12 @@ See `requirements.txt`.
 Herbie caches downloaded GRIB files under `~/data/hrrr/` by default (its
 own cache directory, separate from this project) — that'll grow over time
 and isn't cleaned up automatically yet.
+
+## How it runs in production
+
+`.github/workflows/deploy.yml` runs this pipeline every 15 minutes (and on every
+push to `main`), then publishes the finished site — including the freshly rendered
+`futurecast/frames/` and `futurecast/manifest.json` — straight to GitHub Pages.
+Those generated files are **not committed to git** (they're in `.gitignore`); a
+GitHub Actions cache carries them from one run to the next so each run only renders
+what's new. If the data sources are down, the site still deploys with the last good frames.

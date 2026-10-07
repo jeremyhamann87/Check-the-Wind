@@ -6,7 +6,18 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%221.05%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10.10%209.8L6.71%2022.6M11.90%209.8L15.29%2022.6M8.83%2014.6H13.17M7.77%2018.6H14.23%22/%3E%3Cpath%20d%3D%22M11%206.6H19%22/%3E%3Crect%20x%3D%2217.6%22%20y%3D%225.3%22%20width%3D%223%22%20height%3D%222.6%22%20rx%3D%22.3%22/%3E%3Cg%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%226.6%22%20r%3D%225.3%22/%3E%3Cpath%20d%3D%22M11%206.6L16.10%206.60M11%206.6L15.42%209.15M11%206.6L13.55%2011.02M11%206.6L11.00%2011.70M11%206.6L8.45%2011.02M11%206.6L6.58%209.15M11%206.6L5.90%206.60M11%206.6L6.58%204.05M11%206.6L8.45%202.18M11%206.6L11.00%201.50M11%206.6L13.55%202.18M11%206.6L15.42%204.05%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%226.6%22%20r%3D%221.1%22%20fill%3D%22%23000%22/%3E%3C/svg%3E">
-<title>Check the Wind</title>
+<title>Check the Wind — wind, weather and the best times to be outside</title>
+<meta name="description" content="Check the Wind shows live wind speed and direction, the hourly and 7-day wind outlook, weather alerts, air quality, and the best times to be outside for any U.S. location.">
+<link rel="canonical" href="https://www.checkthewind.com/">
+<meta name="theme-color" content="#E7EEF2">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Check the Wind">
+<meta property="og:title" content="Check the Wind — wind, weather and the best times to be outside">
+<meta property="og:description" content="Live wind speed and direction, the 7-day wind outlook, alerts, air quality and the best times to be outside, for any U.S. location.">
+<meta property="og:url" content="https://www.checkthewind.com/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Check the Wind">
+<meta name="twitter:description" content="Live wind speed and direction, the 7-day wind outlook, alerts, air quality and the best times to be outside.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -968,6 +979,8 @@
     color:var(--text-faint); line-height:1.6;
   }
   .disclaimers-modal-body p{margin:0}
+  .disclaimers-modal-body p + p{margin-top:14px}
+  .disclaimers-modal-body strong{font-weight:600; color:var(--text-muted)}
   .disclaimers-modal-body a{color:var(--text-faint)}
 
   .skel-htile, .skel-dayrow{animation:skelRowFade 1.4s ease-in-out infinite}
@@ -1579,6 +1592,23 @@
     header.top .brand{ grid-column:1; grid-row:1 }
     header.top .main-head-tools{ grid-column:2; grid-row:1; align-self:center; margin-bottom:12px }
   }
+  /* Desktop hero: "mph" + the wind tag and the compass are centered on the ink of the big wind-speed digits
+     (the line box centre sits ~4-6px below the digits' visual centre, so they read as too low) */
+  @media (min-width:64em){
+    .hero-wrap .hero-reading .unit-top{ position:relative; top:-6px }
+    .hero-wrap .hero-reading .unit-wrap > svg{ position:relative; top:-3px }
+  }
+  @media (min-width:64em) and (max-width:77.9375em){
+    .hero-wrap .hero-reading .unit-top{ top:-3.75px }
+    .hero-wrap .hero-reading .unit-wrap > svg{ top:-1.9px }
+  }
+  /* Desktop right column: the "Weather Details" row always starts level with the "Check the Wind" header.
+     A weather alert appearing above the modules must not nudge the column (scroll anchoring would scroll it up), and the
+     title stays on one line (ellipsis) so the row keeps the same height as the logo row. */
+  @media (min-width:64em){
+    .db-content{ overflow-anchor:none }
+    .main-head h2{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+  }
 </style>
 </head>
 <body>
@@ -1959,14 +1989,46 @@
     </div>
     <div class="disclaimers-modal-body">
       <p>
-        Wind speed, gusts, &amp; direction are sourced live from the National Weather Service
-        (<a href="https://api.weather.gov" target="_blank" rel="noopener">api.weather.gov</a>), NOAA — coverage is limited to
-        U.S. locations &amp; territories. Place lookup &amp; basemap tiles via OpenStreetMap / Nominatim (© OpenStreetMap
-        contributors). Radar imagery from NOAA NEXRAD via Iowa State University's Iowa Environmental Mesonet; forecast radar frames from NOAA's HRRR model. Air Quality
-        Index &amp; Pollutants (PM2.5) are sourced live from AirNow (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>),
-        EPA — coverage depends on the nearest reporting monitor. Pollen isn't available from any free public U.S. source,
-        so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement. Forecasts
-        update hourly at the source; reload to refresh.
+        <strong>Weather.</strong> Wind speed, gusts, direction, temperature, forecasts &amp; weather alerts come live from the
+        National Weather Service (<a href="https://api.weather.gov" target="_blank" rel="noopener">api.weather.gov</a>), NOAA.
+        Coverage is limited to U.S. locations &amp; territories. Forecasts update hourly at the source; reload to refresh.
+      </p>
+      <p>
+        <strong>Radar.</strong> Current radar is NOAA NEXRAD imagery served by Iowa State University's
+        <a href="https://mesonet.agron.iastate.edu" target="_blank" rel="noopener">Iowa Environmental Mesonet</a>. The expanded radar
+        uses NOAA MRMS observations &amp; NOAA HRRR model forecasts, which Check the Wind processes and extends a short way ahead
+        using the recent motion of the storms. The forecast part is an estimate and storms can change quickly.
+      </p>
+      <p>
+        <strong>Air quality &amp; pollen.</strong> The Air Quality Index &amp; Pollutants (PM2.5) are sourced live from AirNow
+        (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>), EPA — coverage depends on the nearest
+        reporting monitor. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
+        <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Pollen isn't available from any free public
+        U.S. source, so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement.
+      </p>
+      <p>
+        <strong>Places, maps &amp; sun times.</strong> Place search uses Open-Meteo's geocoding service (GeoNames data,
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>); place names for
+        &ldquo;Use my location&rdquo; come from the National Weather Service. Map tiles are &copy;
+        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.
+        Sunrise &amp; sunset times by <a href="https://sunrise-sunset.org" target="_blank" rel="noopener">SUNRISE-SUNSET.ORG</a>.
+      </p>
+      <p>
+        <strong>Best Times.</strong> Best Times are a ranking calculated by Check the Wind from the forecast, air-quality and
+        rainfall data above, using default limits that you can change with Customize. They are a guide, not a guarantee.
+      </p>
+      <p>
+        <strong>Your information.</strong> Check the Wind has no accounts and no analytics or advertising trackers. Your
+        favorites, recent places, Best Times settings, animation preference &amp; last location are stored only in this browser, on your
+        device; clearing your browser's site data removes them. To show you weather, the places you search for &mdash; and your
+        approximate coordinates if you tap &ldquo;Use my location&rdquo; &amp; allow it &mdash; are sent to the services listed above.
+        This page loads its code library &amp; map software from cdnjs and its font from Google Fonts, which can see your IP address
+        as any website you visit can.
+      </p>
+      <p>
+        <strong>Please note.</strong> Forecasts, alerts &amp; Best Times are provided for general information, as-is &amp; without
+        warranty, and can be wrong or delayed. They are not a substitute for official warnings. In severe weather follow
+        <a href="https://www.weather.gov" target="_blank" rel="noopener">weather.gov</a> &amp; your local officials, and call 911 in an emergency.
       </p>
     </div>
   </div>
@@ -2464,28 +2526,83 @@
     else showLoadFailure(err, fallback);
   }
 
-  async function geocode(query){
-    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=' + encodeURIComponent(query);
-    var res = await fetch(url, {headers:{'Accept':'application/json'}});
+  /* Place lookup: Open-Meteo's geocoding API (GeoNames data, CC BY 4.0; free, no key, built for search-as-you-type).
+     It matches on the place name, so "Dayton, OH" / "Dayton Ohio" are split into a name plus a state hint, and results are
+     narrowed to that state. ZIP codes work as-is. */
+  var US_STATES = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',DC:'District of Columbia',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',PR:'Puerto Rico',GU:'Guam',VI:'U.S. Virgin Islands'};
+  function stateFromText(t){
+    t = String(t || '').trim().replace(/\.$/, '');
+    if(!t) return '';
+    if(US_STATES[t.toUpperCase()]) return US_STATES[t.toUpperCase()];
+    var low = t.toLowerCase();
+    var k = Object.keys(US_STATES).find(function(c){ return US_STATES[c].toLowerCase() === low; });
+    return k ? US_STATES[k] : '';
+  }
+  function splitPlaceQuery(q){
+    var parts = String(q).split(',').map(function(x){ return x.trim(); }).filter(Boolean);
+    var name = parts[0] || '', state = '';
+    for(var i = 1; i < parts.length && !state; i++) state = stateFromText(parts[i]);
+    if(!state){                       // "Dayton Ohio" / "Dayton OH" with no comma
+      var words = name.split(/\s+/);
+      for(var n = Math.min(2, words.length - 1); n >= 1 && !state; n--){
+        var h = stateFromText(words.slice(-n).join(' '));
+        if(h){ state = h; name = words.slice(0, -n).join(' '); }
+      }
+    }
+    return {name: name, state: state};
+  }
+  function countyWord(admin2, state){
+    if(!admin2) return '';
+    if(/(county|parish|borough|census area|municipality|city)$/i.test(admin2)) return admin2;
+    return admin2 + (state === 'Louisiana' ? ' Parish' : state === 'Alaska' ? ' Borough' : ' County');
+  }
+  var geoCache = {};
+  async function geocodeSearch(query, limit, signal){
+    var sp = splitPlaceQuery(query);
+    if(sp.name.length < 2) return [];
+    var key = (sp.name + '|' + sp.state + '|' + limit).toLowerCase();
+    if(geoCache[key]) return geoCache[key];
+    var url = 'https://geocoding-api.open-meteo.com/v1/search?count=' + (sp.state ? 30 : 12) +
+      '&language=en&format=json&countryCode=US&name=' + encodeURIComponent(sp.name);
+    var res = await fetch(url, {headers:{'Accept':'application/json'}, signal: signal});
     if(!res.ok) throw appError(COPY.lookup);
     var data = await res.json();
-    if(!data || !data.length) throw appError('We couldn’t find “' + query + '” in the U.S. Try a city & state, like “Denver, CO”, or a ZIP code.', true);
-    return {
-      lat: parseFloat(data[0].lat),
-      lon: parseFloat(data[0].lon),
-      display: data[0].display_name.split(',').slice(0,3).join(',')
-    };
+    var list = (data && data.results) || [];
+    if(sp.state) list = list.filter(function(r){ return r.admin1 === sp.state; });
+    // towns and ZIP matches first, then everything else (parks, airports, ...), each group in the service's own order
+    list = list.filter(function(r){ return /^(PPL|ADM)/.test(r.feature_code || ''); })
+      .concat(list.filter(function(r){ return !/^(PPL|ADM)/.test(r.feature_code || ''); }));
+    var seen = {}, out = [];
+    list.forEach(function(r){
+      if(typeof r.latitude !== 'number' || typeof r.longitude !== 'number') return;
+      var base = r.name + (r.admin1 ? ', ' + r.admin1 : '');
+      var label = seen[base] ? r.name + ', ' + countyWord(r.admin2, r.admin1) + (r.admin1 ? ', ' + r.admin1 : '') : base;
+      if(seen[base] && seen[label]) return;
+      if(seen[base]){
+        // second place with the same name+state: relabel the first one with its county too, so the two can be told apart
+        var first = out.find(function(o){ return o.base === base && !o.disambiguated; });
+        if(first){ first.display = first.name + ', ' + countyWord(first.admin2, first.admin1) + (first.admin1 ? ', ' + first.admin1 : ''); first.disambiguated = true; seen[first.display] = 1; }
+      }
+      seen[base] = 1; seen[label] = 1;
+      out.push({lat: r.latitude, lon: r.longitude, display: label, base: base, name: r.name, admin2: r.admin2, admin1: r.admin1});
+    });
+    out = out.slice(0, limit).map(function(o){ return {lat: o.lat, lon: o.lon, display: o.display}; });
+    geoCache[key] = out;
+    return out;
   }
 
+  async function geocode(query){
+    var found = await geocodeSearch(query, 1);
+    if(!found.length) throw appError('We couldn’t find “' + query + '” in the U.S. Try a city & state, like “Denver, CO”, or a ZIP code.', true);
+    return found[0];
+  }
+
+  // "City, ST" for a spot, from the National Weather Service's own point lookup (no extra service involved)
   async function reverseGeocode(lat, lon){
-    var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&zoom=10';
-    var res = await fetch(url, {headers:{'Accept':'application/json'}});
-    if(!res.ok) throw new Error('Reverse lookup failed');
-    var data = await res.json();
-    var a = data.address || {};
-    var city = a.city || a.town || a.village || a.hamlet || a.county || '';
-    var state = a.state || '';
-    return [city, state].filter(Boolean).join(', ');
+    var points = await fetchJson('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4));
+    var rl = points && points.properties && points.properties.relativeLocation && points.properties.relativeLocation.properties;
+    if(!rl) throw new Error('Reverse lookup failed');
+    return [rl.city, rl.state].filter(Boolean).join(', ');
   }
 
   async function fetchJson(url){
@@ -2770,6 +2887,9 @@
     if(radarLoop){ radarLoop.destroy(); radarLoop = null; }
   }
 
+  // Basemap tiles (OpenStreetMap). To move to a keyed provider such as MapTiler, change this one URL (and the credit in the
+  // Disclaimers text + the radar page's footer strip).
+  var BASEMAP_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
   function radarFrameUrl(minutesAgo){
     var suffix = minutesAgo === 0 ? '' : ('-m' + (minutesAgo < 10 ? '0' : '') + minutesAgo + 'm');
     return 'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913' + suffix + '/{z}/{x}/{y}.png';
@@ -2805,7 +2925,7 @@
       keyboard:interactive, touchZoom:interactive, tap:interactive, fadeAnimation:false
     }).setView([lat, lon], interactive ? 9 : 8);
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer(BASEMAP_TILE_URL, {
       maxZoom:12, minZoom:3, referrerPolicy:'strict-origin-when-cross-origin'
     }).addTo(map);
 
@@ -4247,6 +4367,8 @@
     card.appendChild(body);
     alertsEl.appendChild(card);
     alertsEl.hidden = false;
+    var dcAl = document.querySelector('.db-content');
+    if(dcAl && dcAl.scrollTop < 40) dcAl.scrollTop = 0;
   }
 
   async function loadForLocationCore(lat, lon, label, opts){
@@ -4254,6 +4376,7 @@
     lastLoad = {lat: lat, lon: lon, label: label};
     if(!quiet){
       renderAlerts([]);
+      var dcTop = document.querySelector('.db-content'); if(dcTop) dcTop.scrollTop = 0;
       clearLoadFailure();
       renderHeroSkeleton();
       renderHourlySkeleton();
@@ -4596,7 +4719,7 @@
     if(star){
       toggleFavorite({lat: +star.dataset.lat, lon: +star.dataset.lon, label: star.dataset.label, name: star.dataset.name});
       renderSearchLists();
-      var again = sdSheet.querySelector('.sd-star[data-lat="' + star.dataset.lat + '"]'); if(again) again.focus();
+      var again = sdSheet.querySelector('.sd-star[data-lat="' + star.dataset.lat + '"]'); (again || sdSheet).focus({preventScroll:true});
     }else if(save){
       var cur = currentPlace(); if(cur){ toggleFavorite(cur); renderSearchLists(); document.getElementById('sdSave').focus(); }
     }else if(clr){
@@ -4715,7 +4838,9 @@
       b[n].focus();
     }
   });
-  lpPanel.addEventListener('mousedown', function(e){ if(!e.target.closest('button')) e.preventDefault(); });
+  // keep focus where it is on any press inside the panel (buttons included), so Safari/Firefox never blur the field and close the menu
+  lpPanel.addEventListener('mousedown', function(e){ e.preventDefault(); });
+  var lpBusy = false;
   lpPanel.addEventListener('click', function(e){
     var star = e.target.closest('.lp-star'), pick = e.target.closest('.lp-item'), clr = e.target.closest('.lp-clear');
     hidePeek();
@@ -4723,13 +4848,24 @@
       var cur = currentPlace(), isCur = star.id === 'lpSave';
       var item = isCur ? cur : {lat: +star.dataset.lat, lon: +star.dataset.lon, label: star.dataset.label, name: star.dataset.name};
       if(!item) return;
+      // remember where the star was so focus can stay put after the lists are redrawn
+      var sec = star.closest('section'), secId = sec ? sec.getAttribute('aria-labelledby') : null;
+      var secStars = sec ? [].slice.call(sec.querySelectorAll('.lp-star')) : [], idx = Math.max(0, secStars.indexOf(star));
+      lpBusy = true;
       var nowFav = toggleFavorite(item);
       announce((nowFav ? 'Saved ' : 'Removed ') + item.name + (nowFav ? ' to Favorites.' : ' from Favorites.'));
       renderPlacesPanel();
       var again = isCur ? document.getElementById('lpSave') : lpPanel.querySelector('.lp-star[data-lat="' + star.dataset.lat + '"][data-name="' + star.dataset.name.replace(/"/g, '\\"') + '"]');
-      if(again) again.focus();
+      if(!again){
+        // the row moved or disappeared (e.g. a favorite that isn't in Recents): land on the nearest star in the same card, else any control
+        var sec2 = secId ? document.getElementById(secId) : null; sec2 = sec2 ? sec2.closest('section') : null;
+        var near = sec2 ? sec2.querySelectorAll('.lp-star') : [];
+        again = near.length ? near[Math.min(idx, near.length - 1)] : (lpPanel.querySelector('.lp-item, .lp-star, .lp-clear') || lpInput);
+      }
+      again.focus();
+      setTimeout(function(){ lpBusy = false; }, 0);
     }else if(clr){
-      writeList(REC_KEY, []); announce('Recent searches cleared.'); renderPlacesPanel(); lpInput.focus();
+      lpBusy = true; writeList(REC_KEY, []); announce('Recent searches cleared.'); renderPlacesPanel(); lpSkipOpen = true; lpInput.focus(); lpSkipOpen = false; setTimeout(function(){ lpBusy = false; }, 0);
     }else if(pick){
       setLocationText(pick.dataset.name);
       closePlaces();
@@ -4856,7 +4992,8 @@
   lpField.addEventListener('focusout', function(e){
     var to = e.relatedTarget;
     if(to && (lpField.contains(to))) return;
-    setTimeout(function(){ if(!lpField.contains(document.activeElement)) closePlaces(); }, 0);
+    if(lpBusy) return;
+    setTimeout(function(){ if(!lpBusy && !lpField.contains(document.activeElement)) closePlaces(); }, 0);
   });
   window.placesDesktopMQ.addEventListener('change', function(){ if(!window.placesDesktopMQ.matches) closePlaces(); });
 
@@ -4987,17 +5124,11 @@
       fetchSuggestions: async function(q){
         if(this.ctrl) this.ctrl.abort();
         this.ctrl = new AbortController();
-        var url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=0&limit=6&countrycodes=us&q=' + encodeURIComponent(q);
         try{
-          var res = await fetch(url, {headers:{'Accept':'application/json'}, signal: this.ctrl.signal});
-          if(!res.ok) return;
-          var data = await res.json();
+          var results = await geocodeSearch(q, 6, this.ctrl.signal);
           var input = this.$refs.input;
           if(input.value.trim() !== q) return;
           if(document.activeElement !== input) return;
-          var results = (data || []).map(function(d){
-            return { lat: parseFloat(d.lat), lon: parseFloat(d.lon), display: d.display_name.split(',').slice(0,3).join(',') };
-          });
           this.lastQuery = q;
           this.lastResults = results;
           this.show(results);

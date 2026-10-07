@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /futurecast/
+
+Sitemap: https://www.checkthewind.com/sitemap.xml

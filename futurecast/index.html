@@ -293,7 +293,7 @@
 </div>
 
 <div class="map-attribution">
-  Radar: NOAA NEXRAD via <a href="https://mesonet.agron.iastate.edu">Iowa Environmental Mesonet</a>; forecast: NOAA HRRR |
+  Radar: NOAA NEXRAD via <a href="https://mesonet.agron.iastate.edu">Iowa Environmental Mesonet</a> &amp; NOAA MRMS; forecast: NOAA HRRR + short-term motion projection |
   <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> |
   &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors
 </div>
@@ -321,7 +321,7 @@
   infoBannerClose.addEventListener('click', hideStatus);
 
   document.getElementById('closeBtn').addEventListener('click', function(){
-    // Embedded in windline.html's radar modal (the common case): its
+    // Embedded in the main page's radar modal (the common case): its
     // Alpine store can't be reached directly across the iframe boundary,
     // so ask it to close via postMessage instead.
     if(window.self !== window.top){
@@ -332,7 +332,7 @@
     // normal close: go back if there's somewhere to go back to, otherwise
     // land on the main site rather than a dead end.
     if(window.history.length > 1){ window.history.back(); }
-    else{ window.location.href = '../windline.html'; }
+    else{ window.location.href = '../'; }
   });
 
   // Center on the same "last used location" windline.html saves, so this
@@ -361,27 +361,30 @@
     saved ? 9 : DEFAULT_ZOOM
   );
 
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  // Basemap tiles. To move to a keyed provider (e.g. MapTiler), change TILE_URL here and in index.html and update the
+  // credit in the footer strip below — nothing else depends on it.
+  var TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  L.tileLayer(TILE_URL, {
     maxZoom: 19, referrerPolicy: 'strict-origin-when-cross-origin'
   }).addTo(map);
 
   // windline.html's own read of this key requires a truthy `label` or it
   // treats the saved location as invalid — so this always writes one too
-  // (via the same free Nominatim reverse-geocode windline.html uses),
+  // (via the same National Weather Service place lookup the main page uses),
   // rather than risk breaking that page's "last used location" on return.
   function saveLocation(lat, lon, label){
     try{ localStorage.setItem(LOCATION_KEY, JSON.stringify({lat: lat, lon: lon, label: label})); }catch(err){}
   }
 
+  // "City, ST" from the National Weather Service's point lookup (the same source the main page uses for place names)
   function reverseGeocode(lat, lon){
-    var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&zoom=10';
-    return fetch(url, {headers: {'Accept': 'application/json'}})
+    var url = 'https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4);
+    return fetch(url, {headers: {'Accept': 'application/geo+json'}})
       .then(function(res){ if(!res.ok) throw new Error('reverse lookup failed'); return res.json(); })
       .then(function(data){
-        var a = data.address || {};
-        var city = a.city || a.town || a.village || a.hamlet || a.county || '';
-        var state = a.state || '';
-        return [city, state].filter(Boolean).join(', ');
+        var rl = data && data.properties && data.properties.relativeLocation && data.properties.relativeLocation.properties;
+        if(!rl) throw new Error('no place name');
+        return [rl.city, rl.state].filter(Boolean).join(', ');
       });
   }
 

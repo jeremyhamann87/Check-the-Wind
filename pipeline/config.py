@@ -2,7 +2,7 @@
 Futurecast pipeline configuration.
 
 Coverage is CONUS-wide (not cropped to one place) because the site's map
-pans to wherever the visitor searched — see windline.html's saved-location
+pans to wherever the visitor searched — see index.html's saved-location
 logic. Keeping one shared set of frames for the whole country means the
 pipeline never has to know or care where anyone is looking.
 """
@@ -29,7 +29,7 @@ OBSERVED_WINDOW_MINUTES = 60
 
 # --- Update cadence --------------------------------------------------
 # How often the scheduled job runs — matches the cron schedule in
-# .github/workflows/futurecast.yml. 15 min rather than something more
+# .github/workflows/deploy.yml. 15 min rather than something more
 # aggressive because GitHub Actions can delay very frequent cron triggers
 # under load, and MRMS/HRRR data doesn't change fast enough to need less.
 UPDATE_INTERVAL_MINUTES = 15

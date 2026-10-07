@@ -1,0 +1,102 @@
+name: Build and deploy the site
+
+# One workflow builds and publishes everything at www.checkthewind.com:
+#   * the site itself (index.html, 404.html, robots.txt, sitemap.xml, CNAME)
+#   * the radar page (futurecast/index.html)
+#   * the radar frames + manifest, freshly produced by pipeline/fetch_mrms.py
+#
+# The radar frames are NOT committed to git. A frame cache carries them from one
+# run to the next (so each run only renders what's new), and the finished site is
+# published straight to GitHub Pages as a build artifact. That keeps the repository
+# small: the old setup committed ~60 MB of new images to `main` every 15 minutes,
+# and git kept every one of them forever.
+#
+# Requires: repo Settings > Pages > Build and deployment > Source = "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 min, UTC. GitHub may delay this a few minutes under load.
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false   # let an in-flight deploy finish
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Install pipeline dependencies
+        run: pip install -r pipeline/requirements.txt
+
+      # Bring back the frames + manifest from the previous run.
+      - name: Restore radar frame cache
+        id: frames
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            futurecast/frames
+            futurecast/manifest.json
+          key: futurecast-${{ github.run_id }}
+          restore-keys: |
+            futurecast-
+
+      # If the radar data sources are down, the site should still deploy (with the
+      # last good frames, or without radar on the very first run), so this step may fail.
+      - name: Run the radar pipeline
+        continue-on-error: true
+        run: python3 pipeline/fetch_mrms.py
+
+      - name: Save radar frame cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            futurecast/frames
+            futurecast/manifest.json
+          key: futurecast-${{ github.run_id }}
+
+      - name: Assemble the site
+        run: |
+          set -e
+          mkdir -p _site/futurecast
+          cp index.html 404.html robots.txt sitemap.xml CNAME _site/
+          cp futurecast/index.html _site/futurecast/
+          if [ -f futurecast/manifest.json ]; then cp futurecast/manifest.json _site/futurecast/; else echo "No radar manifest yet"; fi
+          if [ -d futurecast/frames ]; then cp -R futurecast/frames _site/futurecast/frames; else echo "No radar frames yet"; fi
+          touch _site/.nojekyll
+          du -sh _site
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
