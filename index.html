@@ -1622,6 +1622,18 @@
     .hero-wrap > .m-loc-name, .db-layout > .hero-wrap .m-loc-name{ display:block; text-align:center; margin:0 0 4px }
     .hero-wrap > .alerts{ margin:4px 0 8px }
   }
+  /* Phone: the bar's title swaps to the place name (windmill stays) once the place name has scrolled away */
+  .logo-swap{display:inline-grid; min-width:0}
+  .logo-swap > span{grid-area:1 / 1; transition:opacity .2s}
+  .logo-loc{display:none}
+  @media (max-width:31.1875em){
+    .logo-loc{display:block; opacity:0; pointer-events:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+    header.top.show-loc .logo-loc{ opacity:1 }
+    header.top.show-loc .logo-text{ opacity:0 }
+    header.top .brand h1.logo{ min-width:0 }
+    header.top .brand h1.logo svg{ width:1.5625em; height:1.5625em }  /* windmill 25% larger (1.25em -> 1.5625em) */
+    header.top .brand{ min-width:0 }
+  }
 </style>
 </head>
 <body>
@@ -1636,7 +1648,7 @@
     <div class="brand">
       <h1 class="logo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.84" stroke-linecap="round" stroke-linejoin="round" width="1em" height="1em" aria-hidden="true"><g class="wm-wind"><path d="M0.5 2.4H9.5" pathLength="10" style="animation-duration:2.8s;animation-delay:0s"/><path d="M0.5 10.2H8" pathLength="10" style="animation-duration:3.2s;animation-delay:1.1s"/><path d="M13 13.8H23.5" pathLength="10" style="animation-duration:2.6s;animation-delay:0.6s"/><path d="M0.5 17.2H9" pathLength="10" style="animation-duration:3.4s;animation-delay:1.7s"/><path d="M13 20.6H23" pathLength="10" style="animation-duration:3.0s;animation-delay:0.3s"/></g><path d="M10.10 9.8L6.71 22.6M11.90 9.8L15.29 22.6M8.83 14.6H13.17M7.77 18.6H14.23"/><path d="M11 6.6H19"/><rect x="17.6" y="5.3" width="3" height="2.6" rx=".3"/><g class="wm-wheel"><circle cx="11" cy="6.6" r="5.3"/><path d="M11 6.6L16.10 6.60M11 6.6L15.42 9.15M11 6.6L13.55 11.02M11 6.6L11.00 11.70M11 6.6L8.45 11.02M11 6.6L6.58 9.15M11 6.6L5.90 6.60M11 6.6L6.58 4.05M11 6.6L8.45 2.18M11 6.6L11.00 1.50M11 6.6L13.55 2.18M11 6.6L15.42 4.05"/></g><circle cx="11" cy="6.6" r="1.1" fill="currentColor"/></svg>
-        Check the Wind
+        <span class="logo-swap"><span class="logo-text">Check the Wind</span><span class="logo-loc" id="logoLoc" aria-hidden="true"></span></span>
       </h1>
     </div>
     <div class="hdr-loc" id="hdrLoc"></div>
@@ -4151,6 +4163,20 @@
     function sync(){ bar.classList.toggle('is-stuck', window.scrollY > 2); }
     window.addEventListener('scroll', sync, {passive:true}); sync();
   })();
+  // Phones: once the place name has scrolled up under the sticky bar, the bar shows the place name in place of "Check the Wind"
+  // (the windmill stays). The original title text remains in the page for screen readers.
+  function syncBarTitle(){
+    var bar = document.querySelector('header.top'), nm = document.getElementById('mLocName');
+    if(!bar || !nm) return;
+    var show = false;
+    if(phoneBarMq.matches && (nm.textContent || '').trim()){
+      show = nm.getBoundingClientRect().bottom <= bar.getBoundingClientRect().bottom;
+    }
+    bar.classList.toggle('show-loc', show);
+  }
+  window.addEventListener('scroll', syncBarTitle, {passive:true});
+  window.addEventListener('resize', syncBarTitle);
+  phoneBarMq.addEventListener('change', syncBarTitle);
 
   // Below desktop the pull-to-refresh indicator sits in the hero, between the search bar/alert and the wind speed,
   // so the pull animation pushes the wind reading down. Elsewhere it stays at the top of the right column.
@@ -4748,7 +4774,7 @@
     }
   });
   /* the location shown beside the search button mirrors the short place name */
-  function syncMobileLoc(){ mLocName.textContent = (hdrLoc.textContent || '').trim(); }
+  function syncMobileLoc(){ mLocName.textContent = (hdrLoc.textContent || '').trim(); var ll = document.getElementById('logoLoc'); if(ll) ll.textContent = mLocName.textContent; if(typeof syncBarTitle === 'function') syncBarTitle(); }
   new MutationObserver(syncMobileLoc).observe(hdrLoc, {childList:true, characterData:true, subtree:true});
   /* Favorites / Recents interactions */
   sdSheet.addEventListener('click', function(e){
