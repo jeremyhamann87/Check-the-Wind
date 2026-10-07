@@ -1634,6 +1634,21 @@
     header.top .brand h1.logo svg{ width:1.5625em; height:1.5625em }  /* windmill 25% larger (1.25em -> 1.5625em) */
     header.top .brand{ min-width:0 }
   }
+  /* Phone 7-Day Wind Outlook: a small wind-category tag beside each speed; no colored top bars; rows stay ~47px tall (25% shorter than before) and are separated by the same line as the card header's border */
+  @media (max-width:31.1875em){
+    #weekSection .dayrow, #weekSection .dayrow ~ .dayrow{ padding-block:11.5px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }  /* same line as the card header's border */
+    #weekSection .dayrow-head + template + .dayrow, #weekSection .daylist > .dayrow:nth-of-type(2){ border-top-color:transparent }
+    /* small wind-category tag to the right of the wind speed */
+    #weekSection .dayrow .dwind .dval-group{ flex-wrap:nowrap; align-items:center; gap:6px }
+    #weekSection .dayrow .dwind .wind-forecast-pill{ display:inline-flex; align-items:center; margin:0; padding:1px 7px; font-size:.75rem; line-height:1.35; white-space:nowrap }
+    /* speeds and tags line up in columns from row to row */
+    /* day on the left, temperature on the right, and the speed + tag block centred in the row; the block is as wide as a speed plus the longest tag (Blustery / Howling) so it never shifts between rows */
+    #weekSection .dayrow{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; column-gap:8px }
+    #weekSection .dayrow .dwind{ width:calc(5.1rem + 6px + 3.8rem); min-width:0; justify-self:center }
+    #weekSection .dayrow .temps{ justify-self:end }
+    #weekSection .dayrow .dwind .dval-group{ justify-content:flex-start }
+    #weekSection .dayrow .dwind .dval{ min-width:5.1rem; justify-content:flex-start }  /* speed-to-tag gap halved (25.5px -> ~13px for 1-digit speeds) */
+  }
 </style>
 </head>
 <body>
