@@ -18,7 +18,8 @@
     --accent:#E06A2C; --accent-ink:#FFFFFF;
     --border:#7E8F98; --hover-bg:#BFCED8; --focus-ring:#5E7280;
     --shadow: 0 1px 2px rgba(16,28,38,.06), 0 8px 24px -12px rgba(16,28,38,.18);
-    --observed:#2060BE; --forecast:#E06A2C;
+    /* progress bar: neutral slate tones (the site's blue and orange are used elsewhere) — observed is the darker tone, forecast the lighter */
+    --observed:var(--text); --forecast:var(--border);
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -26,7 +27,6 @@
       --text:#E8EFF3; --text-muted:#A9BCCB;
       --accent:#FF9A5A; --accent-ink:#1A1006;
       --border:#5A7284; --hover-bg:#324759; --focus-ring:#8FA3B3;
-      --observed:#5CB4FF; --forecast:#FF9A5A;
     }
   }
   *{box-sizing:border-box}
@@ -45,7 +45,7 @@
      is meant to stand in for that modal, so its own close control should
      look like the one it's replacing. */
   .close-btn{
-    width:44px; height:44px; flex-shrink:0; padding:0; border-radius:9px;
+    width:44px; height:44px; flex-shrink:0; padding:0; border-radius:4px;
     border:1px solid var(--border); background:var(--surface-2); color:var(--text);
     display:flex; align-items:center; justify-content:center; cursor:pointer;
   }
@@ -77,7 +77,7 @@
     background:color-mix(in srgb, var(--surface) 82%, transparent);
     backdrop-filter:blur(20px) saturate(140%);
     -webkit-backdrop-filter:blur(20px) saturate(140%);
-    border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow);
+    border:1px solid var(--border); border-radius:4px; box-shadow:var(--shadow);
     padding:14px 16px 16px;
   }
   .precip-legend h2{
@@ -86,7 +86,7 @@
   }
   .precip-legend-body{display:flex; gap:12px; height:9.5rem}
   .precip-gradient{
-    flex:0 0 auto; width:10px; border-radius:5px; border:1px solid var(--border);
+    flex:0 0 auto; width:10px; border-radius:4px; border:1px solid var(--border);
     background:linear-gradient(to bottom,
       #FFFFFF, #C000C0, #FF00FF, #A00000, #D00000, #FF0000, #FF9000, #E8C000,
       #FFFF00, #009000, #00C800, #00FF00, #0050E0, #0090F0, #63C8FF);
@@ -101,6 +101,20 @@
   }
   .map-attribution a{color:var(--text-muted)}
 
+  /* Phones: a compact key (about 60% smaller: no title, short gradient, smaller labels) and no credits strip —
+     data sources & credits live in the main page's "Disclaimers & Data Sources" panel */
+  @media (max-width:31.1875em){
+    .map-attribution{display:none}
+    .precip-legend{top:8px; right:8px; padding:6px 8px}
+    .precip-legend h2{position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
+    .precip-legend-body{gap:6px; height:5.25rem}
+    .precip-gradient{width:6px; border-radius:3px}
+    /* labels in normal flow, evenly spaced (same centres as the 12.5 / 37.5 / 62.5 / 87.5% positions), so the card hugs the widest word */
+    .precip-labels{font-size:.75rem; display:flex; flex-direction:column; justify-content:space-around}
+    .precip-labels span{position:static; transform:none; line-height:1.2}
+    .info-banner{max-width:min(21rem, calc(100% - 76px - 5.5rem))}
+  }
+
   /* ---------- Floating controls card ---------- */
   /* Structured like Apple Weather's forecast bar (floating card, play
      button, centered title, timeline with hour ticks) but built from Check
@@ -114,12 +128,12 @@
     background:color-mix(in srgb, var(--surface) 82%, transparent);
     backdrop-filter:blur(20px) saturate(140%);
     -webkit-backdrop-filter:blur(20px) saturate(140%);
-    border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow);
+    border:1px solid var(--border); border-radius:4px; box-shadow:var(--shadow);
     padding:12px 14px 14px;
   }
   .controls-header{display:flex; align-items:center; gap:12px}
   .play-btn{
-    flex:0 0 auto; width:44px; height:44px; border-radius:10px; border:1px solid var(--border);
+    flex:0 0 auto; width:44px; height:44px; border-radius:4px; border:1px solid var(--border);
     background:var(--surface-2); color:var(--text); cursor:pointer;
     display:flex; align-items:center; justify-content:center; padding:0;
   }
@@ -132,8 +146,8 @@
   .play-btn svg[hidden]{display:none}
   .controls-title{flex:0 1 auto; min-width:0; text-align:left}
   .controls-title-main{font-size:1rem; font-weight:700; letter-spacing:.01em}
-  .controls-title-main.observed{color:var(--observed)}
-  .controls-title-main.forecast{color:var(--forecast)}
+  .controls-title-main.observed{color:var(--text)}
+  .controls-title-main.forecast{color:var(--text-muted)}
   .controls-title-sub{
     margin-top:1px; font-size:1rem; color:var(--text-muted);
     font-family:'Nunito',monospace; font-variant-numeric:tabular-nums;
@@ -152,8 +166,8 @@
   .timeline-track{position:relative; display:flex; align-items:center; height:28px}
   .timeline input[type="range"]{
     -webkit-appearance:none; appearance:none;
-    width:100%; margin:0; height:16px; border-radius:8px; cursor:pointer;
-    box-sizing:border-box; border:1.5px solid var(--border); background:transparent;
+    width:100%; margin:0; height:16px; border-radius:4px; cursor:pointer;
+    box-sizing:border-box; border:1.5px solid var(--text-muted); background:transparent;  /* outline differs from both the observed and forecast fills */
     /* filled portion (0 to current position) painted inline per-frame, see
        setFillInstant/animateFillTo — empty track shows just this outline */
   }
@@ -163,12 +177,12 @@
      transparent, sized to match the track so it doesn't shrink the grab
      target. */
   .timeline input[type="range"]::-webkit-slider-thumb{
-    -webkit-appearance:none; width:16px; height:16px; border-radius:8px;
-    background:transparent; border:0; cursor:pointer;
+    -webkit-appearance:none; width:16px; height:16px; border-radius:4px;
+    background:transparent; border:0; cursor:pointer; opacity:0; box-shadow:none;
   }
   .timeline input[type="range"]::-moz-range-thumb{
-    width:16px; height:16px; border-radius:8px;
-    background:transparent; border:0; cursor:pointer;
+    width:16px; height:16px; border-radius:4px;
+    background:transparent; border:0; cursor:pointer; opacity:0; box-shadow:none;
   }
   .timeline-boundary{
     position:absolute; top:0; bottom:0; width:2px; background:var(--text);
@@ -199,7 +213,7 @@
     background:color-mix(in srgb, var(--surface) 82%, transparent);
     backdrop-filter:blur(20px) saturate(140%);
     -webkit-backdrop-filter:blur(20px) saturate(140%);
-    border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow);
+    border:1px solid var(--border); border-radius:4px; box-shadow:var(--shadow);
     padding:10px 10px 10px 14px;
   }
   .info-banner[hidden]{display:none}
@@ -210,7 +224,7 @@
   .info-banner.err .info-banner-text{font-weight:600}
   .info-banner-actions{flex:0 0 auto; display:flex; gap:6px}
   .info-banner-btn{
-    width:32px; height:32px; padding:0; border-radius:8px; border:1px solid var(--border);
+    width:32px; height:32px; padding:0; border-radius:4px; border:1px solid var(--border);
     background:var(--surface-2); color:var(--text); cursor:pointer;
     display:flex; align-items:center; justify-content:center;
   }
@@ -218,6 +232,28 @@
   .info-banner-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
   .info-banner-btn svg{width:16px; height:16px}
   .info-banner-btn[hidden]{display:none}
+  /* Phones: the progress-bar time labels and the Observed / Forecast label are 12px (below the usual 16px minimum, by request) */
+  @media (max-width:31.1875em){ .timeline-tick, .controls-title-main{font-size:.75rem} }
+  /* Phones: the control panel is about half as tall (130px -> ~65px, before the 16px padding): smaller buttons, 12px time text, a slimmer bar.
+     The range's border (1.5px) and handle width (16px) are unchanged — the timeline position maths depends on them. */
+  @media (max-width:31.1875em){
+    /* full-width docked panel: touches the left, right and bottom edges of the screen (no gaps); 16px of padding inside */
+    .controls{left:0; right:0; bottom:0}
+    .controls-card{padding:16px 16px max(16px, env(safe-area-inset-bottom, 0px)); border-width:1px 0 0 0; border-radius:0}
+    .controls-header{gap:6px}
+    .play-btn{width:26px; height:26px}
+    .play-btn svg{width:13px; height:13px}
+    .controls-title-main, #frameTime{line-height:1.2}
+    #frameTime{font-size:.75rem}
+    .controls-title-sub{margin-top:0}
+    .timeline{margin-top:8px}  /* 8px between the buttons row and the bar */
+    .timeline-track{height:12px}
+    .timeline input[type="range"]{height:12px}
+    .timeline-ticks{height:12px; margin-top:1px}
+    .timeline-tick{line-height:1.2}
+    .timeline-tick::before{top:-3px; height:2px}
+    .timeline-tick.now::before{top:-4px; height:4px}
+  }
 </style>
 </head>
 <body>
@@ -244,7 +280,7 @@
     </div>
   </div>
 
-  <div class="precip-legend">
+  <div class="precip-legend" role="group" aria-label="Precipitation key">
     <h2>Precipitation</h2>
     <div class="precip-legend-body">
       <div class="precip-gradient" aria-hidden="true"></div>
@@ -424,6 +460,8 @@
   });
 
   /* ---------- Animation loop ---------- */
+  var END_PAUSE_MS = 1000; // after the bar has filled, hold the last frame this long before the loop restarts
+  var lastStepFillMs = 0;  // how long the last step's fill takes to finish easing, so the hold starts once the bar is full
   var FRAME_MS = 450; // per-frame dwell during observed playback (frames are 5 min apart, like the main page's loop)
 
   // Forecast frames are spaced 15-60+ min apart, vs. ~2 min for observed —
@@ -517,13 +555,25 @@
   // it never gets overwritten — and a separate orange segment grows from
   // "Now" onward only once the given position actually passes it into
   // forecast territory. Anything beyond stays empty (just the outline).
+  // One position mapping for everything on the timeline. The range input's handle travels from half a handle width in
+  // to half a handle width short of the other end (inside the 1.5px border), so the fill, the "Now" line and the tick
+  // labels are placed with that same inset instead of a plain percentage — otherwise they drift against the handle
+  // (and against a finger/pointer) by up to ~9px at the ends and move out of step with each other while playing.
+  var HANDLE_PX = 16, TRACK_BORDER_PX = 1.5;
+  function trackPos(pct){      // for children of the track (its border box): "Now" line, tick labels
+    return 'calc(' + (TRACK_BORDER_PX + HANDLE_PX / 2) + 'px + (100% - ' + (2 * TRACK_BORDER_PX + HANDLE_PX) + 'px) * ' + (pct / 100) + ')';
+  }
+  function fillPos(pct){       // for the range's own background (measured from inside its border)
+    return 'calc(' + (HANDLE_PX / 2) + 'px + (100% - ' + HANDLE_PX + 'px) * ' + (pct / 100) + ')';
+  }
   function computeFillBackground(currentPct, boundaryPct){
     var bluePct = Math.min(currentPct, boundaryPct);
     var orangePct = currentPct > boundaryPct ? currentPct : bluePct;
+    var blue = fillPos(bluePct), orange = fillPos(orangePct);
     return 'linear-gradient(to right,' +
-      ' var(--observed) 0%, var(--observed) ' + bluePct + '%,' +
-      ' var(--forecast) ' + bluePct + '%, var(--forecast) ' + orangePct + '%,' +
-      ' transparent ' + orangePct + '%, transparent 100%)';
+      ' var(--observed) 0%, var(--observed) ' + blue + ',' +
+      ' var(--forecast) ' + blue + ', var(--forecast) ' + orange + ',' +
+      ' transparent ' + orange + ', transparent 100%)';
   }
 
   var lastFillPct = 0;
@@ -650,6 +700,7 @@
   // fill bar eases toward the new position over that same `durationMs`
   // instead of jumping there.
   function playAdvanceTo(i, durationMs){
+    lastStepFillMs = durationMs > 0 ? durationMs : 0;
     index = Math.max(0, Math.min(frames.length - 1, i));
     var frame = frames[index];
     updateChrome(frame);
@@ -679,7 +730,7 @@
     var totalMinutes = minutesSince(frames[frames.length - 1].time) || 1;
     var pct = boundaryIndex < 0 ? 100 : (minutesSince(frames[boundaryIndex].time) / totalMinutes) * 100;
     if(boundaryIndex >= 0 && boundaryIndex < frames.length - 1){
-      boundaryEl.style.left = 'calc(' + pct + '% - 1px)';
+      boundaryEl.style.left = 'calc(' + trackPos(pct) + ' - 1px)';
       boundaryEl.style.display = 'block';
     }else{
       boundaryEl.style.display = 'none'; // no forecast frames to mark a boundary against
@@ -758,7 +809,7 @@
     kept.forEach(function(t){
       var el = document.createElement('span');
       el.className = 'timeline-tick' + (t.isNow ? ' now' : '');
-      el.style.left = t.pct + '%';
+      el.style.left = trackPos(t.pct);
       // Anchor edge labels inward instead of centering them, so they can't
       // spill past the track and get clipped by the card's own edge.
       if(t.pct < 6){ el.style.transform = 'translateX(0)'; }
@@ -774,7 +825,8 @@
   function scheduleNextStep(){
     var next = index + 1 >= frames.length ? 0 : index + 1;
     var isWrap = next === 0;
-    var delay = isWrap ? FRAME_MS : stepDelayFor(index, next);
+    // at the end of the loop: let the bar finish filling, then hold it full for a second before restarting
+    var delay = isWrap ? lastStepFillMs + END_PAUSE_MS : stepDelayFor(index, next);
     playTimer = setTimeout(function(){
       // Looping back to the start has no meaningful "gap" to ease across —
       // animating it would just sweep the fill backwards from full to
