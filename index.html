@@ -1857,6 +1857,23 @@
     .ag-grid{ padding-bottom:0; scrollbar-width:none }
     .ag-grid::-webkit-scrollbar{ display:none }
   }
+
+  /* Mobile design D: the place name sits left with a go / stay tag at the far right, and the summary is left-aligned */
+  .hero-head{display:none}
+  .vd-tag{display:none}
+  @media (max-width:31.1875em){
+    .hero-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 16px; margin:4px 0 8px }
+    .db-layout > .hero-wrap .hero-head .m-loc-name{ display:block; flex:1 1 auto; min-width:0; margin:0; text-align:left }
+    .hero-head .vd-tag:not([hidden]){
+      display:inline-flex; align-items:center; flex:0 0 auto; padding:3px 10px; border-radius:4px; font-size:.8125rem; font-weight:700; line-height:1.3; white-space:nowrap;
+      color:var(--tg); background:color-mix(in srgb, var(--tg) 15%, var(--surface));
+    }
+    .vd-tag--green{ --tg:var(--aqi-good-ink) }
+    .vd-tag--yellow{ --tg:var(--aqi-moderate-ink) }
+    .vd-tag--orange{ --tg:var(--aqi-usg-ink) }
+    .vd-tag--red{ --tg:var(--aqi-unhealthy-ink) }
+    .hero-wrap .vd-prose{ text-align:left }
+  }
 </style>
 </head>
 <body>
@@ -1980,6 +1997,7 @@
   </header>
 
 <div class="hero-wrap" role="region" aria-label="Current conditions">
+  <div class="hero-head" id="heroHead"><span class="vd-tag" id="vdTag" hidden></span></div>
   <section id="heroSection">
     <div class="section-head">
       <h2>Current Conditions</h2>
@@ -4671,7 +4689,9 @@
 
   function renderVerdict(){
     if(!vdEl || !vdBody) return;
+    var tagEl = document.getElementById('vdTag');
     if(!vdCtx){
+      if(tagEl) tagEl.hidden = true;
       vdEl.hidden = false;
       vdBody.setAttribute('aria-hidden', 'true');
       vdBody.className = 'vd-body';
@@ -4724,6 +4744,18 @@
     vdBody.className = 'vd-body vd-' + r.state + (vdOpen ? ' is-open' : '');
     vdBody.innerHTML = html;
     vdEl.hidden = false;
+    if(tagEl){
+      var tg = vdTagFor(r);
+      tagEl.textContent = tg.t; tagEl.className = 'vd-tag vd-tag--' + tg.k; tagEl.hidden = false;
+    }
+  }
+
+  // The short go / stay tag beside the place name on phones
+  function vdTagFor(r){
+    if(r.alert && r.state !== 'no') return {t:'Use Caution', k:'orange'};
+    if(r.state === 'yes') return {t:'Go Outside!', k:'green'};
+    if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for Now', k:'yellow'} : {t:'Wait a Bit', k:'yellow'};
+    return r.nextHs ? {t:'Not Today', k:'orange'} : {t:'Stay In', k:'red'};
   }
 
   if(vdBody) vdBody.addEventListener('click', function(e){
@@ -4774,8 +4806,10 @@
     var nameRow = document.querySelector('.m-loc-row');
     if(!statusBox || !best) return;
     if(phoneBarMq.matches && heroSec && nameEl){
-      var anchor = vdEl && vdEl.nextElementSibling === heroSec ? vdEl : heroSec;
-      if(anchor.previousElementSibling !== nameEl){ anchor.before(alertsEl); anchor.before(nameEl); }
+      // phone: alert banner, then one row with the place name (left) and the go/stay tag (right), then the hero
+      var hh = document.getElementById('heroHead');
+      if(nameEl.parentElement !== hh) hh.prepend(nameEl);
+      if(heroSec.previousElementSibling !== hh || hh.previousElementSibling !== alertsEl){ heroSec.before(alertsEl); heroSec.before(hh); }
       return;
     }
     if(nameEl && nameRow && nameEl.parentElement !== nameRow) nameRow.prepend(nameEl);
