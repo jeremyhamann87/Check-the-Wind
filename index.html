@@ -4411,9 +4411,7 @@
     var nextRun = goodRuns.filter(function(r){ return r[0].i > 0; })[0] || null;
     var laterToday = nextRun && localDate(nextRun[0].iso) === c.todayStr ? nextRun : null;
 
-    if(severe){
-      res.state = 'no'; res.why = [('an active ' + severe.event).toLowerCase()];
-    }else if(good(now)){
+    if(good(now)){
       var run = goodRuns.filter(function(r){ return r[0].i === 0; })[0];
       res.state = 'yes'; res.hs = run;
       var ag = vdAgg(run);
@@ -4429,7 +4427,7 @@
       res.why = now.why.slice();
     }
 
-    if(!severe && laterToday){
+    if(laterToday){
       res.state = 'maybe'; res.hs = laterToday;
       var al = vdAgg(laterToday);
       res.sentence = 'Not right now' + (res.why.length ? ' — ' + vdList(res.why.slice(0, 2)) : '') + '. Later: ' + (function(t){ return t.charAt(0).toLowerCase() + t.slice(1); })(vdGoodSentence(al));
@@ -4437,13 +4435,20 @@
     }
 
     res.state = 'no';
+    if(severe) res.why.unshift(('an active ' + severe.event).toLowerCase());
     res.hs = hrs.slice(0, 3);
     res.sentence = 'Better to skip it for now' + (res.why.length ? ': ' + vdList(res.why.slice(0, 2)) : '') + '.';
     if(nextRun) res.next = 'Next good window: ' + vdRange(nextRun, c) + '.';
     else res.next = 'No good window in the next 48 hours.';
     return finish(res, vdAgg(res.hs));
 
-    function finish(r, agg){ r.agg = agg; return r; }
+    // A Severe/Extreme NWS alert never makes the weather itself look better or worse: the forecast verdict stands, but a
+    // Yes becomes a Maybe and the text says to be careful because of the warning.
+    function finish(r, agg){
+      r.agg = agg;
+      if(severe){ r.alert = severe.event.toLowerCase(); if(r.state === 'yes') r.state = 'maybe'; }
+      return r;
+    }
   }
 
   function vdEsc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -4468,7 +4473,9 @@
       ['Air quality', a.aqi !== null ? a.aqi + ' · ' + aqiWord(a.aqi) : '—']
     ];
     var actList = r.state === 'no' ? [] : VD_ACTIVITIES.filter(function(x){ return x.ok(a); });
-    var actsLine = r.state === 'no' ? 'Better saved for indoor plans.'
+    if(r.alert && r.state !== 'no') r.sentence = 'Conditions look fine, but there\u2019s an active ' + r.alert + '. Be careful.';
+    var actsLine = r.alert && r.state !== 'no' ? 'Check the alert above before heading out.'
+      : r.state === 'no' ? 'Better saved for indoor plans.'
       : actList.length ? 'Good for ' + vdList(actList.slice(0, 3).map(function(x){ return x.short; })) + '.'
       : 'Fine for a short outing.';
     var details = '<dl class="vd-stats">' + stats.map(function(s){
