@@ -169,7 +169,7 @@
     @media (min-width:31.25em){ .sd-close:hover{background:var(--hover-bg)} }
     .sd-close:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0}
     .sd-close svg{width:22px; height:22px}
-    .sd-body{display:block; flex:1 1 auto; min-height:0; overflow-y:auto; padding:16px}
+    .sd-body{display:block; flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:16px}
     .sd-body form.search{margin:0 0 16px; overflow:visible; max-height:none; opacity:1}
     /* Current, Favorites and Recents are cards in the same title-in-card style as the main modules */
     .sd-error{margin:-6px 0 16px; padding:10px 12px; border-radius:4px; border-left:4px solid #A8433D; background:color-mix(in srgb, #A8433D 12%, var(--surface)); color:var(--text); font-size:1rem; line-height:1.4}
@@ -185,6 +185,8 @@
     .sd-save svg, .sd-star svg{width:22px; height:22px}
     .sd-save[aria-pressed="true"] svg, .sd-star[aria-pressed="true"] svg{fill:var(--accent); stroke:var(--accent)}
     .sd-sheet:focus{outline:none}
+    .sd-sheet{overscroll-behavior:contain}
+    html.sd-locked{overflow:hidden}
     .sd-clear{min-height:32px; padding:0 4px; border:0; background:transparent; color:var(--text-muted); font:inherit; font-size:1rem; text-decoration:underline; cursor:pointer}
     .sd-clear[hidden]{display:none}
     .sd-list{list-style:none; margin:0; padding:0}
@@ -1641,15 +1643,16 @@
     #weekSection .dayrow, #weekSection .dayrow ~ .dayrow{ padding-block:11.5px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }  /* same line as the card header's border */
     #weekSection .dayrow-head + template + .dayrow, #weekSection .daylist > .dayrow:nth-of-type(2){ border-top-color:transparent }
     /* small wind-category tag to the right of the wind speed */
-    #weekSection .dayrow .dwind .dval-group{ flex-wrap:nowrap; align-items:center; gap:6px }
-    #weekSection .dayrow .dwind .wind-forecast-pill{ display:inline-flex; align-items:center; margin:0; padding:1px 7px; font-size:.75rem; line-height:1.35; white-space:nowrap }
+    #weekSection .dayrow .dwind .dval-group{ display:grid; grid-template-columns:5.4rem 3.8rem; align-items:center; column-gap:14px }  /* speed and tag are separate columns */
+    #weekSection .dayrow .dwind .wind-forecast-pill{ display:inline-flex; align-items:center; justify-self:start; margin:0; padding:1px 7px; font-size:.75rem; line-height:1.35; white-space:nowrap }  /* each tag is only as wide as its word */
     /* speeds and tags line up in columns from row to row */
     /* day on the left, temperature on the right, and the speed + tag block centred in the row; the block is as wide as a speed plus the longest tag (Blustery / Howling) so it never shifts between rows */
     #weekSection .dayrow{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; column-gap:8px }
-    #weekSection .dayrow .dwind{ width:calc(5.1rem + 6px + 3.8rem); min-width:0; justify-self:center }
+    #weekSection .dayrow .dwind{ width:calc(5.4rem + 14px + 3.8rem); min-width:0; justify-self:center }
     #weekSection .dayrow .temps{ justify-self:end }
     #weekSection .dayrow .dwind .dval-group{ justify-content:flex-start }
-    #weekSection .dayrow .dwind .dval{ min-width:5.1rem; justify-content:flex-start }  /* speed-to-tag gap halved (25.5px -> ~13px for 1-digit speeds) */
+    #weekSection .dayrow .dwind .dval{ min-width:0; flex-wrap:nowrap; justify-content:flex-start }
+    #weekSection .dayrow .dwind .dval b{ white-space:nowrap }  /* a big speed never breaks "38" over "mph" */  /* speed-to-tag gap halved (25.5px -> ~13px for 1-digit speeds) */
   }
 
   /* ============== "Is it a Good Time to Go Outside?" verdict card ============== */
@@ -1801,10 +1804,7 @@
 
   /* Phone "current conditions" wind line: its own wind icon on the left (in the wind category color); the compass moves to the right of the speed */
   @media (max-width:31.1875em){
-    .hero-wrap .hero-now .hero-reading::before{
-      content:""; order:-2; flex:0 0 24px; width:24px; height:24px; background:var(--wc, currentColor);
-      -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2'/%3E%3C/svg%3E") center / contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2'/%3E%3C/svg%3E") center / contain no-repeat;
-    }
+    .hero-wrap .hero-now .hero-reading .wind-ico{ display:block; order:-2; flex:0 0 24px; width:24px; height:24px }
     .hero-wrap .hero-now .hero-reading .unit-wrap > svg{ order:3; margin-left:-4px }
   }
 
@@ -1818,6 +1818,23 @@
   @media (max-width:31.1875em){
     .hero-wrap .hero-now .upcoming-now{ display:flex }
     .hero-wrap .hero-now .weather-now .hazard-eta{ display:none }
+  }
+
+  .wind-ico{display:none}
+
+  /* Tablet and desktop: the "Is it a Good Time to Go Outside?" module is the written summary (same sentences as on phones), above Best Times */
+  @media (min-width:31.25em){
+    .vd-top, .vd-sentence, .vd-acts-line, .vd-details, .vd-next{ display:none !important }
+    .vd-prose{ display:block; margin:0; font-size:1.0625rem; line-height:1.55; color:var(--text); text-wrap:pretty }
+    .vd-body{ padding:16px 24px 20px }
+  }
+  /* Tablet: no card, just the written summary as plain text above the current conditions (like on phones) */
+  @media (min-width:31.25em) and (max-width:63.99em){
+    .hero-wrap #verdictSection{ margin:0 0 16px }
+    .hero-wrap .vd-card{ background:transparent; box-shadow:none; border-radius:0; overflow:visible }
+    .hero-wrap .vd-card .card-head{ display:none !important }
+    .hero-wrap .vd-body{ padding:0 }
+    .hero-wrap .vd-prose{ text-align:left }
   }
 </style>
 </head>
@@ -3070,7 +3087,8 @@
       '<div class="hero-top">' +
         '<div class="hero-now">' +
           '<div class="card-head hn-head"><h2 id="hnTitle">Current Conditions</h2></div>' +
-          '<div class="hero-reading" style="--wc:' + band.css + '">' +
+          '<div class="hero-reading">' +
+            '<svg class="wind-ico" width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><g transform="scale(2)" stroke="' + band.css + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></g></svg>' +
             '<span class="val num" style="color:' + band.css + '">' + w.high + '</span>' +
             '<span class="unit-wrap">' +
               '<span class="unit-top">' +
@@ -3091,7 +3109,7 @@
             '<div class="wtext"><b>' + Math.round(current.temperature) + '°'+ (current.temperatureUnit||'F') + '</b> · ' + ampText(current.shortForecast) +
               (outlook ? ' <span class="hazard-eta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' + outlook + '</span>' : '') + '</div>' +
           '</div>' +
-          (outlook ? '<div class="ground-now upcoming-now"><div class="gicon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--icon-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>' +
+          (outlook ? '<div class="ground-now upcoming-now"><div class="gicon"><svg width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="16" fill="var(--cloud)"/><circle cx="24" cy="24" r="16" stroke="var(--cloud-2)" stroke-width="2.4"/><path d="M24 14v10.5l6.5 4" stroke="var(--icon-blue)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
             '<div class="gtext">' + outlook.replace(/^(\S+)/, '<b>$1</b>') + '</div></div>' : '') +
           '<div class="ground-now">' +
             '<div class="gicon">' + groundIcon(ground.key, 36) + '</div>' +
@@ -3673,7 +3691,7 @@
         key: dateStr,
         label: i === 0 ? 'Today' : fmtDow(dateStr),
         date: fmtMD(dateStr),
-        windHtml: '<b style="color:' + band.css + '">' + Math.round(wd.avg) + ' mph</b>' +
+        windHtml: '<b style="color:' + band.css + '">' + wd.high + ' mph</b>' +
           windArrowSvg(p.windDirection, band.css, 22) + srDir(p.windDirection),
         bandLabel: band.label,
         bandPill: band.pill,
@@ -3935,12 +3953,10 @@
   var heroAir = null;
   function aqiCatName(v){ return v <= 50 ? 'Good' : v <= 100 ? 'Moderate' : v <= 150 ? 'Unhealthy for Sensitive Groups' : v <= 200 ? 'Unhealthy' : v <= 300 ? 'Very Unhealthy' : 'Hazardous'; }
   var AQI_ROW_WORDS = {'Good':'Good air', 'Moderate':'Moderate air', 'Unhealthy for Sensitive Groups':'Unhealthy for sensitive groups', 'Unhealthy':'Unhealthy air', 'Very Unhealthy':'Very unhealthy air', 'Hazardous':'Hazardous air'};
-  // green Good, yellow Moderate, orange Unhealthy for Sensitive Groups, red for everything worse
+  // a plain circle: green Good, yellow Moderate, orange Unhealthy for Sensitive Groups, red for everything worse
   var AQI_CLOUD = {'Good':'var(--aqi-good)', 'Moderate':'var(--aqi-moderate)', 'Unhealthy for Sensitive Groups':'var(--aqi-usg)', 'Unhealthy':'var(--aqi-unhealthy)', 'Very Unhealthy':'var(--aqi-unhealthy)', 'Hazardous':'var(--aqi-unhealthy)'};
   function airNowIcon(color){
-    return '<svg class="aq-ico" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
-      '<path class="aq-cloud" d="M7.2 19a4.7 4.7 0 0 1-.5-9.37A6 6 0 0 1 18.2 10.4 4.3 4.3 0 0 1 17.4 19z" fill="' + color + '" stroke="' + color + '" stroke-width="1.6" stroke-linejoin="round"/>' +
-    '</svg>';
+    return '<svg class="aq-ico" width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="13" fill="' + color + '"/></svg>';
   }
   function setHeroAir(airNow, inputs, hourly){
     var aqi = null, cat = null;
@@ -4044,7 +4060,7 @@
       wet = Math.min(1, wet * wetDecay(temp) + intensity * 0.6);
       frozen = Math.min(1, frozen * wetDecay(temp) + (frozenText ? intensity * 0.6 : 0));
 
-      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, pop: pop, hum: hum, wet: groundNow, aqi: aqi, ok: ok, score: score, why: why};
+      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, pop: pop, hum: hum, wet: groundNow, aqi: aqi, ok: ok, score: score, why: why, fc: p.shortForecast || ''};
     });
   }
 
@@ -4531,6 +4547,19 @@
       else if(/humidity/.test(w)) phrases.push('it gets humid');
       else if(/wet ground/.test(w)) phrases.push('the ground gets wet');
     });
+    // When darkness is the only thing changing, say what the night looks like instead of just "it gets dark"
+    if(phrases.length === 1 && phrases[0] === 'it gets dark'){
+      var kind = classifySky(next.fc), fcl = (next.fc || '').toLowerCase();
+      var windAdj = next.mph < 8 ? 'calm' : next.mph < 16 ? 'breezy' : 'windy';
+      if(kind === 'clear' || kind === 'partly'){
+        var sky = kind === 'clear' ? 'clear' : /mostly (clear|sunny)/.test(fcl) ? 'mostly clear' : 'partly cloudy';
+        phrases[0] = 'it gets dark but stays ' + sky + ' and ' + windAdj;
+      }else if(kind === 'cloudy'){
+        phrases[0] = 'it gets dark, with ' + (/mostly cloudy/.test(fcl) ? 'mostly cloudy' : 'cloudy') + ' skies and ' + windAdj + ' conditions';
+      }else{
+        phrases[0] = 'it gets dark, with ' + {rain:'rain possible', thunder:'thunderstorms possible', snow:'snow possible', fog:'fog'}[kind];
+      }
+    }
     if(!phrases.length) phrases.push('conditions turn less ideal');
     return 'After ' + clock + ', ' + vdList(phrases.slice(0, 2)) + '.';
   }
@@ -4668,8 +4697,8 @@
       if(now){ if(now.previousElementSibling !== v) now.before(v); }
       else if(heroSec.nextElementSibling !== v) heroSec.after(v);
     }
-    else if(verdictHeroMq.matches){ if(v.nextElementSibling !== heroSec) heroSec.before(v); }
-    else if(v.nextElementSibling !== best){ best.before(v); }
+    else if(verdictHeroMq.matches){ if(v.nextElementSibling !== heroSec) heroSec.before(v); }  // tablet: plain text above the current conditions
+    else if(v.nextElementSibling !== best){ best.before(v); }  // desktop: a module above Best Times
   }
   function placeAlerts(){
     placeVerdict();
@@ -5043,6 +5072,12 @@
     var bestInputs = await bestInputsPromise;
     var bestWhen = renderBest(hourly, bestInputs);
     var airNowRes = await airNowPromise;
+    // If AirNow is unreachable, the Air Quality Index gauge falls back to the same Open-Meteo reading the page already uses
+    // (so it never says "Unavailable" while the Current Conditions show an AQI). PM2.5 stays Unavailable: there is no AQI for it.
+    if(!(airNowRes && airNowRes.overall) && bestInputs && bestInputs.aqi && typeof bestInputs.aqi[hourly[0].startTime.slice(0, 13)] === 'number'){
+      var omAqi = bestInputs.aqi[hourly[0].startTime.slice(0, 13)];
+      airNowRes = {overall: {aqi: Math.round(omAqi), catName: aqiCatName(omAqi)}, pm25: airNowRes && airNowRes.pm25 || null};
+    }
     renderAirPollen(lat, todayStr, airNowRes);
     setHeroAir(airNowRes, bestInputs, hourly);
 
@@ -5228,6 +5263,21 @@
     }
   }
 
+  /* While the drawer is open the page behind it must not scroll. `overflow:hidden` alone does not stop the page on iOS, so the
+     body is pinned in place (and the scroll position restored on close). */
+  var sdScrollY = 0;
+  function sdLockPage(on){
+    var b = document.body, h = document.documentElement;
+    if(on){
+      sdScrollY = window.pageYOffset || h.scrollTop || 0;
+      h.classList.add('sd-locked');
+      b.style.position = 'fixed'; b.style.top = (-sdScrollY) + 'px'; b.style.left = '0'; b.style.right = '0'; b.style.width = '100%';
+    }else{
+      h.classList.remove('sd-locked');
+      b.style.position = ''; b.style.top = ''; b.style.left = ''; b.style.right = ''; b.style.width = '';
+      window.scrollTo(0, sdScrollY);
+    }
+  }
   var sdInerted = [];
   function sdSetInert(on){
     if(on){
@@ -5246,7 +5296,7 @@
     sdDrawer.classList.add('open');
     sdSearchBtn.setAttribute('aria-expanded', 'true');
     sdSetInert(true);
-    document.body.style.overflow = 'hidden';
+    sdLockPage(true);
     // focus the sheet itself (not the search field) so the search bar isn't activated and no keyboard pops up on open
     setTimeout(function(){ sdSheet.focus({preventScroll:true}); }, 60);
   }
@@ -5264,7 +5314,7 @@
     sdDrawer.classList.remove('open');
     sdSearchBtn.setAttribute('aria-expanded', 'false');
     sdSetInert(false);
-    document.body.style.overflow = '';
+    sdLockPage(false);
     var active = document.activeElement; if(active && sdSheet.contains(active) && active.blur) active.blur();
     if(returnFocus !== false) sdSearchBtn.focus();
   }
