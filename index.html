@@ -1707,18 +1707,10 @@
   .vd-details[hidden]{display:none}
   @media (prefers-reduced-motion:reduce){ .vd-toggle svg{transition:none} }
 
-  /* Phone hero, organised as one story: place -> the answer (verdict + why) -> "Right now" conditions as the evidence -> radar.
-     The conditions become a left-aligned card matching the verdict card, so the hero reads as a stack of three equal blocks. */
+  /* Mobile design A: place -> the original current conditions (big wind number) -> the "Is it a Good Time to Go Outside?" card -> radar */
   @media (max-width:31.1875em){
     .hero-wrap .hero-top{ gap:16px; margin-top:6px }
     .vd-card{ box-shadow:none }  /* like the other phone module cards */
-    .hero-wrap .hero-now{ background:var(--surface); border-radius:4px; padding:12px 16px 16px; text-align:left }
-    .hero-wrap .hero-now::before{ content:"Right now"; display:block; margin-bottom:4px; font-size:.8125rem; font-weight:500; color:var(--text-muted) }
-    .hero-wrap .hero-now .hero-reading{ justify-content:flex-start }
-    .hero-wrap .hero-now .weather-now, .hero-wrap .hero-now .ground-now{ justify-content:flex-start; text-align:left; margin-top:0 }
-    .hero-wrap .hero-now .weather-now, .hero-wrap .hero-now .ground-now{ margin-top:8px }
-    .hero-wrap .hero-now .weather-now .wtext, .hero-wrap .hero-now .ground-now .gtext{ flex:1 1 auto }
-    .hero-wrap .hero-now.skel-card, .skel-hero .hero-now{ background:var(--surface) }
   }
 
   /* Lighter verdict card on phones: the title is a small label inside the body (no header bar or divider), the answer is a
@@ -1743,43 +1735,18 @@
   .vd-verdict{display:inline-flex; align-items:center; gap:.3em}
   .vd-verdict svg{width:1.05em; height:1.05em; flex:0 0 auto}
 
-  /* Phone "Right now" card: the wind speed is a line like the weather and ground lines (compass icon, "5 mph", tag) */
-  @media (max-width:31.1875em){
-    .hero-wrap .hero-now .hero-reading{ display:flex; align-items:center; gap:12px; margin-top:8px }
-    .hero-wrap .hero-now .hero-reading .unit-wrap{ display:contents }
-    .hero-wrap .hero-now .hero-reading .unit-wrap > svg{ order:-1; flex:0 0 24px; width:24px; height:24px; position:static }
-    .hero-wrap .hero-now .hero-reading .val{ order:1; font-size:1rem; line-height:1.4; font-weight:700 }
-    .hero-wrap .hero-now .hero-reading .unit-top{ order:2; display:inline-flex; flex-direction:row; align-items:center; gap:8px; position:static; top:auto }
-    .hero-wrap .hero-now .hero-reading .unit{ font-size:1rem; color:var(--text-muted) }
-    .hero-wrap .hero-now .hero-reading .hero-band-pill{ font-size:.75rem; padding:1px 7px }
-    .hero-wrap .hero-now .hero-reading .val{ margin-right:-8px }
-  }
-
   /* "Right now" air-quality row (phone only) and its animated icon */
   .air-now{display:none}
-  @media (max-width:31.1875em){
-    .hero-wrap .hero-now .air-now:not([hidden]){ display:flex }
-  }
   .aq-cloud{animation:aqdrift 4s ease-in-out infinite}
   @keyframes aqdrift{0%,100%{transform:translate(-1px,.6px)}50%{transform:translate(1.4px,-.8px)}}
   @media (prefers-reduced-motion:reduce){ .aq-cloud{animation:none} }
 
-  /* Phone: the verdict and the "Right now" conditions are ONE card; the verdict's expandable details are gone */
+  /* Phone: the verdict card stands alone under the current conditions; its expandable details are gone */
   @media (max-width:31.1875em){
-    .hero-wrap .hero-now::before{ content:none }
-    .hero-wrap .hero-now{ padding:0 16px 16px }
-    .hero-wrap .hero-now #verdictSection{ margin:0 }
-    .hero-wrap .hero-now .vd-card{ background:transparent; border-radius:0; overflow:visible }
-    /* a header band like the other cards' (full width, hairline underneath), keeping the small label type */
-    .hero-wrap .hero-now .vd-card .card-head{ margin:0 -16px; padding:6px 16px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }
-    .hero-wrap .hero-now .vd-body{ padding:12px 0 0 }
-    .hero-wrap .hero-now .vd-toggle, .hero-wrap .hero-now .vd-details{ display:none !important }
-    .hero-wrap .hero-now .vd-top{ cursor:default }
-    .hero-wrap .hero-now #verdictSection::after{
-      content:""; display:block; margin-top:12px; height:0;
-      border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface));
-    }
-    .hero-wrap .hero-now .hero-reading{ margin-top:12px }
+    .hero-wrap #verdictSection{ margin:0 }
+    .hero-wrap .vd-body{ padding:12px 16px 14px }
+    .hero-wrap .vd-toggle, .hero-wrap .vd-details{ display:none !important }
+    .hero-wrap .vd-top{ cursor:default }
   }
 
   /* Phone: 16px above and below the radar (same as between the other modules) */
@@ -1790,19 +1757,19 @@
   /* Phone: every module header (the combined top card, Best Times, Wind Today, 7-Day, Air Quality) shares one treatment:
      small muted title, 6px / 16px padding and the same 40px minimum height */
   @media (max-width:31.1875em){
-    .db-content .card-head, .hero-wrap .hero-now .vd-card .card-head{ display:flex; align-items:center; min-height:40px; padding:6px 16px }
-    .db-content .card-head h2, .db-content .card-head h3, .hero-wrap .hero-now .vd-card .card-head h2{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
+    .db-content .card-head, .hero-wrap .vd-card .card-head{ display:flex; align-items:center; min-height:40px; padding:6px 16px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }
+    .db-content .card-head h2, .db-content .card-head h3, .hero-wrap .vd-card .card-head h2{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
   }
 
   /* Phone: each module header leads with an icon for what the card shows (person walking: good time outside, clock: best times,
      wind: wind today, leaf: air & pollen, calendar: 7-day outlook) */
   @media (max-width:31.1875em){
-    .db-content .card-head h2::before, .hero-wrap .hero-now .vd-card .card-head h2::before{
+    .db-content .card-head h2::before, .hero-wrap .vd-card .card-head h2::before{
       content:""; flex:0 0 18px; width:18px; height:18px;
       background:currentColor;  /* same color as the header text */
       -webkit-mask:var(--hd-icon) center / contain no-repeat; mask:var(--hd-icon) center / contain no-repeat;
     }
-    .db-content .card-head h2, .hero-wrap .hero-now .vd-card .card-head h2{ gap:8px }
+    .db-content .card-head h2, .hero-wrap .vd-card .card-head h2{ gap:8px }
     #vdTitle{ --hd-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='13.5' cy='4.2' r='1.9'/%3E%3Cpath d='M12.6 7.8L11 13.2M12.6 8.8l3.4 2.6M12.2 9l-3 2.2M11 13.2l3 3.6-.6 4.2M11 13.2l-2.6 3.6L6.6 20.2'/%3E%3C/svg%3E") }
     .bw-card .card-head h2{ --hd-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E") }
     #todaySection .card-head h2{ --hd-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2'/%3E%3C/svg%3E") }
@@ -1813,17 +1780,9 @@
   /* Phone top card: a second sentence names the activities the conditions suit (tablet/desktop list them as chips instead) */
   .vd-acts-line{display:none}
   @media (max-width:31.1875em){
-    .hero-wrap .hero-now .vd-acts-line{ display:block; margin:2px 0 0; font-size:1rem; line-height:1.45; color:var(--text) }
+    .hero-wrap .vd-acts-line{ display:block; margin:2px 0 0; font-size:1rem; line-height:1.45; color:var(--text) }
   }
 
-  /* Phone "current conditions" wind line: its own wind icon on the left (in the wind category color); the compass moves to the right of the speed */
-  @media (max-width:31.1875em){
-    .hero-wrap .hero-now .hero-reading::before{
-      content:""; order:-2; flex:0 0 24px; width:24px; height:24px; background:var(--wc, currentColor);
-      -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2'/%3E%3C/svg%3E") center / contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2'/%3E%3C/svg%3E") center / contain no-repeat;
-    }
-    .hero-wrap .hero-now .hero-reading .unit-wrap > svg{ order:3; margin-left:-4px }
-  }
 </style>
 </head>
 <body>
@@ -4578,15 +4537,15 @@
   var alertsMobileMq = window.matchMedia('(max-width:63.99em)');
   var phoneBarMq = window.matchMedia('(max-width:31.1875em)');
   var verdictHeroMq = window.matchMedia('(max-width:63.99em)');
-  // Phones: the verdict is the top of one combined card with the "Right now" conditions, ahead of the radar. Tablets (<64em): it leads the page, inside the hero block.
+  // Phones: the verdict card sits under the current conditions, above the radar. Tablets (<64em): it leads the page, inside the hero block.
   // Two-column layout: it heads the right column, above Best Times.
   function placeVerdict(){
     var v = vdEl, heroSec = document.getElementById('heroSection'), best = document.getElementById('bestSection');
     if(!v || !heroSec || !best) return;
     if(phoneBarMq.matches){
-      // top of the conditions card (the hero markup is rebuilt on each load, so this re-runs after it)
-      var now = heroSec.querySelector('.hero-now');
-      if(now){ if(now.firstElementChild !== v) now.prepend(v); }
+      // between the current conditions and the radar (the hero markup is rebuilt on each load, so this re-runs after it)
+      var radar = heroSec.querySelector('.radar');
+      if(radar){ if(radar.previousElementSibling !== v) radar.before(v); }
       else if(heroSec.nextElementSibling !== v) heroSec.after(v);
     }
     else if(verdictHeroMq.matches){ if(v.nextElementSibling !== heroSec) heroSec.before(v); }
