@@ -1817,6 +1817,11 @@
   @media (max-width:31.1875em){
     .hero-wrap .alerts{ margin-bottom:16px }
   }
+
+  /* Phone: no pause button in the header (animations simply play) */
+  @media (max-width:31.1875em){
+    #mPause{ display:none }
+  }
 </style>
 </head>
 <body>
@@ -5545,7 +5550,7 @@
 
   /* ---------- Pause / play all animation (desktop header button) ---------- */
   var PAUSE_KEY = 'checkTheWind.animPaused';
-  var animDesktopMQ = window.matchMedia('(min-width:0px)');  // a pause button exists at every width now (phone, tablet, desktop)
+  var animDesktopMQ = window.matchMedia('(min-width:31.25em)');  // phones have no pause button, so a saved pause never applies there
   var animPaused = false;
   try{ animPaused = localStorage.getItem(PAUSE_KEY) === '1'; }catch(e){}
   function animEffectivePaused(){ return animPaused && animDesktopMQ.matches; }
