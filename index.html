@@ -1913,6 +1913,12 @@
     .hero-wrap .hero-top > .radar{ width:100%; height:auto; min-height:0; aspect-ratio:auto; align-self:stretch }  /* as tall as the Current Conditions card, which hugs its content */
     .hero-wrap .hero-top > .hero-now{ align-self:start }
   }
+
+  /* Tablet: Wind Today and Air Quality & Pollen sit side by side (each card hugs its own content) */
+  @media (min-width:31.25em) and (max-width:63.99em){
+    .wind-row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:start; margin-top:16px }
+    .db-content .wind-row > section{ margin-top:0; min-width:0 }
+  }
 </style>
 </head>
 <body>
