@@ -1061,6 +1061,9 @@
     .skel-hero .radar{width:100%; height:auto}
     #heroSection .section-head{flex-direction:column; align-items:flex-start; gap:4px}
     #heroSection .locbar{text-align:left; white-space:normal}
+  }
+  /* Phone only: Wind Today is a vertical list (tablet keeps the desktop hourly chart) */
+  @media (max-width:31.1875em){
     .today-inner{overflow:visible}
     .trend-line{display:none}
     .hscroll{flex-direction:column; width:auto; min-width:0; gap:14px}
@@ -1078,6 +1081,7 @@
     .htile .hdir{order:3; align-self:center; margin-left:8px}
     .htile .hdir svg{width:22px; height:22px}
   }
+
   @media (max-width:26.25em){
     .hero-reading .val{font-size:5.25rem}
   }
@@ -1914,18 +1918,28 @@
     .hero-wrap .hero-top > .hero-now{ align-self:start }
   }
 
-  /* Tablet: Wind Today and Air Quality & Pollen sit side by side; the gauges stack in a column so the Air Quality card is as tall as Wind Today */
+  /* Tablet: Wind Today keeps the desktop hourly chart (under the phone header style) beside the phone's scrolling Air Quality gauge row; the two cards are the same height */
   @media (min-width:31.25em) and (max-width:63.99em){
     .wind-row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:stretch; margin-top:16px }
     .db-content .wind-row > section{ margin-top:0; min-width:0; display:flex; flex-direction:column }
-    .wind-row > section > .today-card{ flex:1 1 auto }
-    #airCard{ display:flex; flex-direction:column }
-    #airCard .card-body{ flex:1 1 auto; display:flex; flex-direction:column }
-    #airCard .ag-wrap{ flex:1 1 auto; margin:0; overflow:visible; display:flex; flex-direction:column }
-    #airCard .ag-wrap::before, #airCard .ag-wrap::after{ display:none }
-    #airCard .ag-grid{ flex:1 1 auto; flex-direction:column; justify-content:space-between; gap:8px; overflow:visible; padding:0; scroll-snap-type:none }
-    #airCard .ag{ flex:0 0 auto }
-    #airCard .ag-dial{ width:112px }
+    #todaySection .today-card{ flex:1 1 auto; min-height:0; box-sizing:border-box; padding:0; display:flex; flex-direction:column }
+    #todaySection .card-body{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column }
+    #todaySection .today-inner{ display:flex; flex-direction:column; flex:1 1 auto; min-height:0 }
+    #todaySection .hscroll{ flex:1 1 auto; min-height:0; padding-bottom:8px }
+    #todaySection .htile .barwrap{ flex:1 1 auto; min-height:0; height:auto }
+    #todaySection .htile .bar{ height:var(--pct); min-height:6px }
+    .htile .spwrap{ flex-direction:column; align-items:center; gap:0; line-height:1.25 }
+    .htile .sp-row{ flex-direction:column; align-items:center; gap:2px }
+    .htile .hdir svg{ width:20px; height:20px }
+    .skel-htile .hdir{ display:none }
+    .today-card--scrollable{ position:relative; overflow:hidden }
+    .today-card--scrollable::after, .today-card--scrollable::before{ content:""; position:absolute; top:0; bottom:0; width:56px; pointer-events:none; opacity:0; transition:opacity .15s }
+    .today-card--scrollable::after{ right:0; background:linear-gradient(to right, transparent, var(--surface)) }
+    .today-card--scrollable::before{ left:0; background:linear-gradient(to left, transparent, var(--surface)) }
+    .today-card--scrollable.can-scroll-right::after{ opacity:1 }
+    .today-card--scrollable.can-scroll-left::before{ opacity:1 }
+    #airCard{ flex:1 1 auto; display:flex; flex-direction:column }
+    #airCard .card-body{ flex:1 1 auto; display:flex; flex-direction:column; justify-content:center }
   }
 </style>
 </head>
@@ -3703,7 +3717,7 @@
   }
   todayInner.addEventListener('scroll', updateScrollFade, {passive: true});
 
-  var todayMobileMQ = window.matchMedia('(max-width:63.99em)');
+  var todayMobileMQ = window.matchMedia('(max-width:31.1875em)');
   function updateTodayA11y(){
     hourlyStrip.setAttribute('aria-label', 'Hourly wind for the next 10 hours');
     if(todayMobileMQ.matches){
