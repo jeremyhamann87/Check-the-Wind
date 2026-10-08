@@ -1914,10 +1914,18 @@
     .hero-wrap .hero-top > .hero-now{ align-self:start }
   }
 
-  /* Tablet: Wind Today and Air Quality & Pollen sit side by side (each card hugs its own content) */
+  /* Tablet: Wind Today and Air Quality & Pollen sit side by side; the gauges stack in a column so the Air Quality card is as tall as Wind Today */
   @media (min-width:31.25em) and (max-width:63.99em){
-    .wind-row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:start; margin-top:16px }
-    .db-content .wind-row > section{ margin-top:0; min-width:0 }
+    .wind-row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:stretch; margin-top:16px }
+    .db-content .wind-row > section{ margin-top:0; min-width:0; display:flex; flex-direction:column }
+    .wind-row > section > .today-card{ flex:1 1 auto }
+    #airCard{ display:flex; flex-direction:column }
+    #airCard .card-body{ flex:1 1 auto; display:flex; flex-direction:column }
+    #airCard .ag-wrap{ flex:1 1 auto; margin:0; overflow:visible; display:flex; flex-direction:column }
+    #airCard .ag-wrap::before, #airCard .ag-wrap::after{ display:none }
+    #airCard .ag-grid{ flex:1 1 auto; flex-direction:column; justify-content:space-between; gap:8px; overflow:visible; padding:0; scroll-snap-type:none }
+    #airCard .ag{ flex:0 0 auto }
+    #airCard .ag-dial{ width:112px }
   }
 </style>
 </head>
