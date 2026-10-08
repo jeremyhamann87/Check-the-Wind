@@ -1812,6 +1812,13 @@
   @media (max-width:31.1875em){
     .hero-wrap .alerts{ margin-bottom:16px }
   }
+
+  /* Phone (design C): upcoming weather is its own row with a clock icon, shown only when there is some; the inline pill is hidden */
+  .upcoming-now{display:none}
+  @media (max-width:31.1875em){
+    .hero-wrap .hero-now .upcoming-now{ display:flex }
+    .hero-wrap .hero-now .weather-now .hazard-eta{ display:none }
+  }
 </style>
 </head>
 <body>
@@ -3084,6 +3091,8 @@
             '<div class="wtext"><b>' + Math.round(current.temperature) + '°'+ (current.temperatureUnit||'F') + '</b> · ' + ampText(current.shortForecast) +
               (outlook ? ' <span class="hazard-eta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' + outlook + '</span>' : '') + '</div>' +
           '</div>' +
+          (outlook ? '<div class="ground-now upcoming-now"><div class="gicon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--icon-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>' +
+            '<div class="gtext">' + outlook.replace(/^(\S+)/, '<b>$1</b>') + '</div></div>' : '') +
           '<div class="ground-now">' +
             '<div class="gicon">' + groundIcon(ground.key, 36) + '</div>' +
             '<div class="gtext"><b>' + ground.label + ' ground</b> · ' + ground.hint + '</div>' +
