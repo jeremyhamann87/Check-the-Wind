@@ -1912,7 +1912,7 @@
 
   /* Tablet uses the phone layout, but the radar sits to the right of the Current Conditions card (the summary spans both) */
   @media (min-width:31.25em) and (max-width:63.99em){
-    .hero-wrap .hero-top{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:stretch }
+    .hero-wrap .hero-top{ display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:16px; align-items:stretch }  /* Current Conditions 2/3, radar 1/3 */
     .hero-wrap .hero-top > #verdictSection{ grid-column:1 / -1 }
     .hero-wrap .hero-top > .radar{ width:100%; height:auto; min-height:0; aspect-ratio:auto; align-self:stretch }  /* as tall as the Current Conditions card, which hugs its content */
     .hero-wrap .hero-top > .hero-now{ align-self:start }
