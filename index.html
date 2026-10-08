@@ -1836,6 +1836,27 @@
     .hero-wrap .vd-body{ padding:0 }
     .hero-wrap .vd-prose{ text-align:left }
   }
+
+  /* Air Quality & Pollen: half-circle gauges (the Air Quality Index large across the top, the other four in a grid under it) */
+  .ag-wrap{position:relative; margin:0 -16px; overflow:hidden}
+  .ag-wrap::before, .ag-wrap::after{content:""; position:absolute; top:0; bottom:0; width:56px; pointer-events:none; opacity:0; transition:opacity .15s}
+  .ag-wrap::after{right:0; background:linear-gradient(to right, transparent, var(--surface))}
+  .ag-wrap::before{left:0; background:linear-gradient(to left, transparent, var(--surface))}
+  .ag-wrap.can-scroll-right::after, .ag-wrap.can-scroll-left::before{opacity:1}
+  .ag-grid{display:flex; gap:12px; overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x proximity; padding:2px 16px 14px; scroll-padding-inline:16px; scrollbar-width:thin; -webkit-overflow-scrolling:touch}
+  .ag-grid:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
+  .ag{flex:0 0 150px; scroll-snap-align:start; display:flex; flex-direction:column; align-items:center; min-width:0}
+  .ag-title{font-size:.8125rem; font-weight:600; color:var(--text); text-align:center; margin-bottom:4px}
+  .ag-dial{position:relative; width:100%}
+  .ag-dial svg{display:block; width:100%; height:auto; overflow:visible}
+  .ag-center{position:absolute; left:50%; bottom:2%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; line-height:1.1; width:60%}
+  .ag-word{font-size:.6875rem; font-weight:500; text-align:center}
+  .ag-num{font-size:1.125rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums}
+  /* Phone: the gauge card hugs its content (16px under the dials); touch scrolling needs no visible scrollbar */
+  @media (max-width:31.1875em){
+    .ag-grid{ padding-bottom:0; scrollbar-width:none }
+    .ag-grid::-webkit-scrollbar{ display:none }
+  }
 </style>
 </head>
 <body>
@@ -3974,6 +3995,47 @@
     row.hidden = false;
   }
 
+  /* Air Quality & Pollen readouts: half-circle gauges. The track shows every level as a muted band; the bands up to the reading are
+     solid, and a dark tick marks the reading. The level name sits above the number in the middle. */
+  var AG_AQI_BANDS = [[0,50,'var(--aqi-good)'],[50,100,'var(--aqi-moderate)'],[100,150,'var(--aqi-usg)'],[150,200,'var(--aqi-unhealthy)'],[200,300,'var(--aqi-veryunhealthy)']];
+  var AG_POLLEN_BANDS = [[0,20,'var(--aqi-good)'],[20,45,'var(--aqi-moderate)'],[45,70,'var(--aqi-usg)'],[70,100,'var(--aqi-unhealthy)']];
+  var agUid = 0;
+  function agPt(r, phi){ return (100 - r * Math.cos(phi)).toFixed(2) + ',' + (100 - r * Math.sin(phi)).toFixed(2); }
+  function arcGauge(title, value, max, bands, word, ink, cls){
+    var Ro = 92, Ri = 66, has = typeof value === 'number' && !isNaN(value);
+    function band(a, b, color, op){
+      var p1 = a / max * Math.PI, p2 = Math.min(b / max, 0.9995) * Math.PI;
+      return '<path d="M' + agPt(Ro, p1) + ' A' + Ro + ' ' + Ro + ' 0 0 1 ' + agPt(Ro, p2) + ' L' + agPt(Ri, p2) + ' A' + Ri + ' ' + Ri + ' 0 0 0 ' + agPt(Ri, p1) +
+        'Z" fill="' + color + '" opacity="' + op + '" stroke="var(--surface)" stroke-width="1.2" stroke-linejoin="round"/>';
+    }
+    var svg = bands.map(function(b){ return band(b[0], b[1], b[2], 0.28); }).join('');
+    if(has && value > 0){
+      var id = 'agc' + (++agUid), phi = Math.min(Math.max(value, 0) / max, 0.9995) * Math.PI;
+      svg += '<clipPath id="' + id + '"><path d="M100,100 L8,100 A92 92 0 0 1 ' + agPt(Ro + 6, phi) + ' Z"/></clipPath>' +
+        '<g clip-path="url(#' + id + ')">' + bands.map(function(b){ return band(b[0], b[1], b[2], 1); }).join('') + '</g>' +
+        '<line x1="' + agPt(Ri - 4, phi).split(',')[0] + '" y1="' + agPt(Ri - 4, phi).split(',')[1] + '" x2="' + agPt(Ro + 5, phi).split(',')[0] + '" y2="' + agPt(Ro + 5, phi).split(',')[1] +
+        '" stroke="var(--text)" stroke-width="3.4" stroke-linecap="round"/>';
+    }
+    return '<div class="ag ' + (cls || '') + '"><div class="ag-title">' + title + '</div>' +
+      '<div class="ag-dial"><svg viewBox="0 0 200 100" aria-hidden="true" focusable="false">' + svg + '</svg>' +
+      '<div class="ag-center"><span class="ag-word" style="color:' + (ink || 'var(--text-muted)') + '">' + word + '</span>' +
+      (has ? '<span class="ag-num">' + Math.round(value) + '</span>' : '') + '</div></div></div>';
+  }
+
+  // Edge fades on the gauge row, like the Wind Today strip: only on the side that has more to scroll to
+  function agWireFade(){
+    var row = airCard.querySelector('.ag-grid'), wrap = airCard.querySelector('.ag-wrap');
+    if(!row || !wrap) return;
+    function upd(){
+      var max = row.scrollWidth - row.clientWidth;
+      wrap.classList.toggle('can-scroll-left', row.scrollLeft > 1);
+      wrap.classList.toggle('can-scroll-right', row.scrollLeft < max - 1);
+    }
+    row.addEventListener('scroll', upd, {passive: true});
+    window.addEventListener('resize', upd);
+    upd();
+  }
+
   function renderAirPollen(lat, dateStr, airNow){
     var pollen = pollenEstimate(lat, dateStr);
     var overallLv = categorySeverity(airNow && airNow.overall);
@@ -3985,15 +4047,18 @@
     var grassLv = pollenLevel(pollen.grass);
     var weedLv = pollenLevel(pollen.weed);
 
+    var aqiG = airNow && airNow.overall ? {v: airNow.overall.aqi, lv: overallLv} : null;
+    var pmG = airNow && airNow.pm25 ? {v: airNow.pm25.aqi, lv: pm25Lv} : null;
     airCard.innerHTML =
       '<div class="card-head"><h2>Air Quality &amp; Pollen</h2></div>' +
-      '<div class="card-body"><div class="pollen-list">' +
-        gaugeRowHtml(aqiIcon(), 'Air Quality Index', overallLv, overallLv.fillPct, airNow && airNow.overall ? airNow.overall.aqi : null, 500) +
-        gaugeRowHtml(pollutantIcon(), 'Pollutants (PM2.5)', pm25Lv, pm25Lv.fillPct, airNow && airNow.pm25 ? airNow.pm25.aqi : null, 500) +
-        gaugeRowHtml(pollenIcon('tree'), 'Trees', treeLv, Math.max(2, pollen.tree), pollen.tree, 100) +
-        gaugeRowHtml(pollenIcon('grass'), 'Grasses', grassLv, Math.max(2, pollen.grass), pollen.grass, 100) +
-        gaugeRowHtml(pollenIcon('weed'), 'Weeds', weedLv, Math.max(2, pollen.weed), pollen.weed, 100) +
-      '</div></div>';
+      '<div class="card-body"><div class="ag-wrap"><div class="ag-grid" tabindex="0" role="group" aria-label="Air quality and pollen gauges, scrolls sideways">' +
+        arcGauge('Air Quality Index', aqiG && aqiG.v, 300, AG_AQI_BANDS, aqiG ? aqiG.lv.label : 'Unavailable', aqiG ? aqiG.lv.ink : null, 'ag-main') +
+        arcGauge('Pollutants (PM2.5)', pmG && pmG.v, 300, AG_AQI_BANDS, pmG ? pmG.lv.label : 'Unavailable', pmG ? pmG.lv.ink : null) +
+        arcGauge('Trees', pollen.tree, 100, AG_POLLEN_BANDS, treeLv.label, treeLv.ink) +
+        arcGauge('Grasses', pollen.grass, 100, AG_POLLEN_BANDS, grassLv.label, grassLv.ink) +
+        arcGauge('Weeds', pollen.weed, 100, AG_POLLEN_BANDS, weedLv.label, weedLv.ink) +
+      '</div></div></div>';
+    agWireFade();
     airSection.hidden = false;
   }
 
