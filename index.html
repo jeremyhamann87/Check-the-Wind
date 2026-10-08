@@ -1918,8 +1918,8 @@
     .hero-wrap .hero-top > .hero-now{ align-self:start }
   }
 
-  /* Tablet: Wind Today keeps the desktop hourly chart (under the phone header style), stacked above the phone's scrolling Air Quality gauge row */
-  @media (min-width:31.25em) and (max-width:63.99em){
+  /* Tablet and desktop: Wind Today (the hourly chart) is stacked above the Air Quality gauge row */
+  @media (min-width:31.25em){
     .wind-row{ display:grid; grid-template-columns:minmax(0,1fr); gap:16px; align-items:start; margin-top:16px }  /* stacked: Wind Today, then Air Quality & Pollen */
     .db-content .wind-row > section{ margin-top:0; min-width:0; display:flex; flex-direction:column }
     #todaySection .today-card{ flex:1 1 auto; min-height:294px; box-sizing:border-box; padding:0; display:flex; flex-direction:column }  /* 50% taller than its natural 196px, so the bars have room */
@@ -1952,6 +1952,10 @@
     .db-content .card-head{ display:flex; align-items:center; min-height:40px; padding:6px 24px }
     .db-content .card-head h2, .db-content .card-head h3{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
     .bw-card, .week-card, .vd-card, .db-content .today-card, .db-content .bw-list, #airCard.air-card, #todaySection .today-card, #weekSection .dayrow{ box-shadow:none }
+  }
+
+  @media (min-width:64em){
+    .wind-row{ gap:32px; margin-top:32px }
   }
 </style>
 </head>
