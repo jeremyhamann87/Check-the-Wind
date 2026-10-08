@@ -1764,21 +1764,18 @@
   @keyframes aqdrift{0%,100%{transform:translate(-1px,.6px)}50%{transform:translate(1.4px,-.8px)}}
   @media (prefers-reduced-motion:reduce){ .aq-cloud{animation:none} }
 
-  /* Phone: the verdict and the "Right now" conditions are ONE card; the verdict's expandable details are gone */
+  /* Mobile design C: the verdict is plain text under the place name (no card); the conditions card below has its own "Current Conditions" header */
+  .vd-prose{display:none}
+  .hn-head{display:none}
   @media (max-width:31.1875em){
+    .hero-wrap #verdictSection{ margin:0 }
+    .hero-wrap .vd-card{ background:transparent; box-shadow:none; border-radius:0; overflow:visible }
+    .hero-wrap .vd-card .card-head, .hero-wrap .vd-top, .hero-wrap .vd-sentence, .hero-wrap .vd-acts-line, .hero-wrap .vd-details, .hero-wrap .vd-next{ display:none !important }
+    .hero-wrap .vd-body{ padding:0 }
+    .hero-wrap .vd-prose{ display:block; margin:0; padding:0 16px; text-align:center; font-size:1.125rem; line-height:1.5; color:var(--text); text-wrap:pretty }
     .hero-wrap .hero-now::before{ content:none }
     .hero-wrap .hero-now{ padding:0 16px 16px }
-    .hero-wrap .hero-now #verdictSection{ margin:0 }
-    .hero-wrap .hero-now .vd-card{ background:transparent; border-radius:0; overflow:visible }
-    /* a header band like the other cards' (full width, hairline underneath), keeping the small label type */
-    .hero-wrap .hero-now .vd-card .card-head{ margin:0 -16px; padding:6px 16px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }
-    .hero-wrap .hero-now .vd-body{ padding:12px 0 0 }
-    .hero-wrap .hero-now .vd-toggle, .hero-wrap .hero-now .vd-details{ display:none !important }
-    .hero-wrap .hero-now .vd-top{ cursor:default }
-    .hero-wrap .hero-now #verdictSection::after{
-      content:""; display:block; margin-top:12px; height:0;
-      border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface));
-    }
+    .hero-wrap .hero-now .hn-head{ display:flex }
     .hero-wrap .hero-now .hero-reading{ margin-top:12px }
   }
 
@@ -1790,20 +1787,21 @@
   /* Phone: every module header (the combined top card, Best Times, Wind Today, 7-Day, Air Quality) shares one treatment:
      small muted title, 6px / 16px padding and the same 40px minimum height */
   @media (max-width:31.1875em){
-    .db-content .card-head, .hero-wrap .hero-now .vd-card .card-head{ display:flex; align-items:center; min-height:40px; padding:6px 16px }
-    .db-content .card-head h2, .db-content .card-head h3, .hero-wrap .hero-now .vd-card .card-head h2{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
+    .db-content .card-head, .hero-wrap .hn-head{ display:flex; align-items:center; min-height:40px; padding:6px 16px }
+    .hero-wrap .hn-head{ margin:0 -16px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }
+    .db-content .card-head h2, .db-content .card-head h3, .hero-wrap .hn-head h2{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
   }
 
   /* Phone: each module header leads with an icon for what the card shows (person walking: good time outside, clock: best times,
      wind: wind today, leaf: air & pollen, calendar: 7-day outlook) */
   @media (max-width:31.1875em){
-    .db-content .card-head h2::before, .hero-wrap .hero-now .vd-card .card-head h2::before{
+    .db-content .card-head h2::before, .hero-wrap .hn-head h2::before{
       content:""; flex:0 0 18px; width:18px; height:18px;
       background:currentColor;  /* same color as the header text */
       -webkit-mask:var(--hd-icon) center / contain no-repeat; mask:var(--hd-icon) center / contain no-repeat;
     }
-    .db-content .card-head h2, .hero-wrap .hero-now .vd-card .card-head h2{ gap:8px }
-    #vdTitle{ --hd-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='13.5' cy='4.2' r='1.9'/%3E%3Cpath d='M12.6 7.8L11 13.2M12.6 8.8l3.4 2.6M12.2 9l-3 2.2M11 13.2l3 3.6-.6 4.2M11 13.2l-2.6 3.6L6.6 20.2'/%3E%3C/svg%3E") }
+    .db-content .card-head h2, .hero-wrap .hn-head h2{ gap:8px }
+    #hnTitle{ --hd-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z'/%3E%3C/svg%3E") }
     .bw-card .card-head h2{ --hd-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E") }
     #todaySection .card-head h2{ --hd-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2'/%3E%3C/svg%3E") }
     #airCard .card-head h2{ --hd-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 19c0-8.5 5-14 14-14 0 9-5.5 14-14 14z'/%3E%3Cpath d='M5 19l8-8'/%3E%3C/svg%3E") }
@@ -2847,6 +2845,7 @@
     heroEl.innerHTML =
       '<div class="hero-top">' +
         '<div class="hero-now">' +
+          '<div class="card-head hn-head"><h2 id="hnTitle">Current Conditions</h2></div>' +
           '<div class="hero-reading"><span class="skel"></span></div>' +
           '<div class="weather-now"><div class="wicon"><span class="skel"></span></div><div class="wtext"><span class="skel"></span></div></div>' +
           '<div class="ground-now"><div class="gicon"><span class="skel"></span></div><div class="gtext"><span class="skel"></span></div></div>' +
@@ -3073,6 +3072,7 @@
     heroEl.innerHTML =
       '<div class="hero-top">' +
         '<div class="hero-now">' +
+          '<div class="card-head hn-head"><h2 id="hnTitle">Current Conditions</h2></div>' +
           '<div class="hero-reading" style="--wc:' + band.css + '">' +
             '<span class="val num" style="color:' + band.css + '">' + w.high + '</span>' +
             '<span class="unit-wrap">' +
@@ -4378,14 +4378,14 @@
   var vdBody = document.getElementById('vdBody');
 
   var VD_ACTIVITIES = [
-    {name:'Walking & dog walks', short:'walking', ok:function(a){ return a.tMin >= 32 && a.tMax <= 92 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
-    {name:'Running', short:'running',             ok:function(a){ return a.tMin >= 28 && a.tMax <= 78 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
-    {name:'Cycling', short:'cycling',             ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 15 && a.pop < 20 && a.wet < 0.15 && a.aqi <= 100; }},
-    {name:'Hiking', short:'hiking',              ok:function(a){ return a.tMin >= 35 && a.tMax <= 88 && a.wMax < 22 && a.pop < 30 && a.wet < 0.45 && a.aqi <= 100; }},
-    {name:'Picnics & patio time', short:'picnics',ok:function(a){ return a.tMin >= 62 && a.tMax <= 88 && a.wMax < 12 && a.pop < 20 && a.wet < 0.45 && a.aqi <= 100; }},
-    {name:'Gardening & yard work', short:'yard work',ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
-    {name:'Kite flying', short:'kite flying',         ok:function(a){ return a.wMin >= 8 && a.wMax <= 24 && a.pop < 30 && a.tMin >= 32; }},
-    {name:'Drone flying', short:'drone flying',        ok:function(a){ return a.wMax < 14 && a.pop < 20 && a.tMin >= 32 && a.tMax <= 95; }}
+    {name:'Walking & dog walks', verb:'go for a walk', short:'walking', ok:function(a){ return a.tMin >= 32 && a.tMax <= 92 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
+    {name:'Running', verb:'run', short:'running',             ok:function(a){ return a.tMin >= 28 && a.tMax <= 78 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
+    {name:'Cycling', verb:'bike', short:'cycling',             ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 15 && a.pop < 20 && a.wet < 0.15 && a.aqi <= 100; }},
+    {name:'Hiking', verb:'hike', short:'hiking',              ok:function(a){ return a.tMin >= 35 && a.tMax <= 88 && a.wMax < 22 && a.pop < 30 && a.wet < 0.45 && a.aqi <= 100; }},
+    {name:'Picnics & patio time', verb:'have a picnic', short:'picnics',ok:function(a){ return a.tMin >= 62 && a.tMax <= 88 && a.wMax < 12 && a.pop < 20 && a.wet < 0.45 && a.aqi <= 100; }},
+    {name:'Gardening & yard work', verb:'garden', short:'yard work',ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
+    {name:'Kite flying', verb:'fly a kite', short:'kite flying',         ok:function(a){ return a.wMin >= 8 && a.wMax <= 24 && a.pop < 30 && a.tMin >= 32; }},
+    {name:'Drone flying', verb:'fly a drone', short:'drone flying',        ok:function(a){ return a.wMax < 14 && a.pop < 20 && a.tMin >= 32 && a.tMax <= 95; }}
   ];
 
   function vdAgg(hs){
@@ -4490,11 +4490,48 @@
     res.state = 'no';
     res.hs = hrs.slice(0, 3);
     res.sentence = 'Better to skip it for now' + (res.why.length ? ': ' + vdList(res.why.slice(0, 2)) : '') + '.';
-    if(nextRun) res.next = 'Next good window: ' + vdRange(nextRun, c) + '.';
+    if(nextRun){ res.next = 'Next good window: ' + vdRange(nextRun, c) + '.'; res.nextHs = nextRun; }
     else res.next = 'No good window in the next 48 hours.';
     return finish(res, vdAgg(res.hs));
 
     function finish(r, agg){ r.agg = agg; return r; }
+  }
+
+  /* Mobile design C: the hero's plain-language summary ("Today from now until 7 PM is a great time to get outside. ...") */
+  function vdSpan(hs, c){
+    var f = hs[0], l = hs[hs.length - 1], a = fmtH12(f.hour), b = fmtH12(l.hour + 1);
+    var to = b.n + ' ' + b.ap;
+    var from = f.i === 0 ? 'now' : (a.ap === b.ap ? String(a.n) : a.n + ' ' + a.ap);
+    var d = localDate(f.iso);
+    var day = d === c.todayStr ? 'today' : d === c.tomorrowStr ? 'tomorrow' : fmtDow(d);
+    return {day: day, phrase: f.i === 0 ? 'from now until ' + to : 'from ' + from + (f.i === 0 ? '' : ' to ') + to};
+  }
+  function vdLc(t){ return t.charAt(0).toLowerCase() + t.slice(1); }
+  function vdProse(r, c, actList){
+    var out = [];
+    var acts = actList.slice(0, 3).map(function(x){ return x.verb; });
+    var actsSentence = acts.length ? 'This is great weather to ' + vdList(acts) + '.' : 'A short outing should be fine.';
+    if(r.state === 'yes'){
+      var sp = vdSpan(r.hs, c);
+      out.push(vdCap(sp.day) + ' ' + sp.phrase + ' is a great time to get outside.');
+      out.push('It will be ' + vdLc(vdGoodSentence(r.agg)));
+      out.push(actsSentence);
+    }else if(r.state === 'maybe' && r.hs[0].i === 0){
+      out.push('It’s okay to be outside right now, but not ideal.');
+      var weak = vdWeakPoints(vdAgg([c.hrs[0]]));
+      if(weak.length) out.push('Watch for ' + vdList(weak.slice(0, 2)) + '.');
+      out.push(actsSentence);
+    }else if(r.state === 'maybe'){
+      var sp2 = vdSpan(r.hs, c);
+      out.push('Not right now, but ' + sp2.day + ' ' + sp2.phrase + ' looks like a good time to get outside.');
+      out.push('Then it will be ' + vdLc(vdGoodSentence(r.agg)));
+      out.push(actsSentence);
+    }else{
+      out.push('It’s not a good time to be outside right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
+      if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next good window is ' + sp3.day + ' ' + sp3.phrase + '.'); }
+      else out.push('There’s no good window in the next 48 hours.');
+    }
+    return out.join(' ');
   }
 
   function vdEsc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -4544,6 +4581,7 @@
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>' +
       '<p class="vd-sentence">' + vdEsc(r.sentence) + '</p>' +
       '<p class="vd-acts-line">' + vdEsc(actsLine) + '</p>' +
+      '<p class="vd-prose">' + vdEsc(vdProse(r, vdCtx, actList)) + '</p>' +
       (r.state === 'no' && r.next ? '<p class="vd-next">' + vdEsc(r.next) + '</p>' : '') +
       '<div class="vd-details" id="vdDetails"' + (vdOpen ? '' : ' hidden') + '>' + details + '</div>';
     var minor = lastAlerts.filter(function(x){ return !(x.severity === 'Severe' || x.severity === 'Extreme'); })[0];
@@ -4578,15 +4616,15 @@
   var alertsMobileMq = window.matchMedia('(max-width:63.99em)');
   var phoneBarMq = window.matchMedia('(max-width:31.1875em)');
   var verdictHeroMq = window.matchMedia('(max-width:63.99em)');
-  // Phones: the verdict is the top of one combined card with the "Right now" conditions, ahead of the radar. Tablets (<64em): it leads the page, inside the hero block.
+  // Phones (design C): the plain-language summary leads the hero, ahead of the Current Conditions card and the radar. Tablets (<64em): it leads the page, inside the hero block.
   // Two-column layout: it heads the right column, above Best Times.
   function placeVerdict(){
     var v = vdEl, heroSec = document.getElementById('heroSection'), best = document.getElementById('bestSection');
     if(!v || !heroSec || !best) return;
     if(phoneBarMq.matches){
-      // top of the conditions card (the hero markup is rebuilt on each load, so this re-runs after it)
+      // ahead of the conditions card (the hero markup is rebuilt on each load, so this re-runs after it)
       var now = heroSec.querySelector('.hero-now');
-      if(now){ if(now.firstElementChild !== v) now.prepend(v); }
+      if(now){ if(now.previousElementSibling !== v) now.before(v); }
       else if(heroSec.nextElementSibling !== v) heroSec.after(v);
     }
     else if(verdictHeroMq.matches){ if(v.nextElementSibling !== heroSec) heroSec.before(v); }
