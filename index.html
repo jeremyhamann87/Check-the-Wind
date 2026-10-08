@@ -4502,6 +4502,29 @@
     return {day: day, phrase: f.i === 0 ? 'from now until ' + to : 'from ' + from + (f.i === 0 ? '' : ' to ') + to};
   }
   function vdLc(t){ return t.charAt(0).toLowerCase() + t.slice(1); }
+  // What the weather turns into once the good window ends: the first hour after it, described by whatever rules that hour out
+  function vdAfter(r, c){
+    if(!r.hs || !r.hs.length) return '';
+    var last = r.hs[r.hs.length - 1], next = c.hrs[last.i + 1];
+    if(!next) return '';
+    var t = fmtH12(last.hour + 1), clock = t.n + ' ' + t.ap;
+    var phrases = [];
+    next.why.forEach(function(w){
+      var m;
+      if(/dark out/.test(w)) phrases.push('it gets dark');
+      else if(/^(thunderstorms|rain|showers|snow)$/.test(w)) phrases.push('expect ' + w);
+      else if((m = /^wind up to (\d+) mph/.exec(w))) phrases.push('winds pick up to ' + m[1] + ' mph');
+      else if((m = /^(\d+)% chance of precipitation/.exec(w))) phrases.push('the chance of precipitation rises to ' + m[1] + '%');
+      else if((m = /^cold at (\S+)/.exec(w))) phrases.push('it drops to ' + m[1]);
+      else if((m = /^hot at (\S+)/.exec(w))) phrases.push('it heats up to ' + m[1]);
+      else if(/snowy or icy/.test(w)) phrases.push('the ground turns snowy or icy');
+      else if((m = /AQI (\d+)/.exec(w))) phrases.push('air quality worsens (AQI ' + m[1] + ')');
+      else if(/humidity/.test(w)) phrases.push('it gets humid');
+      else if(/wet ground/.test(w)) phrases.push('the ground gets wet');
+    });
+    if(!phrases.length) phrases.push('conditions turn less ideal');
+    return 'After ' + clock + ', ' + vdList(phrases.slice(0, 2)) + '.';
+  }
   function vdProse(r, c, actList){
     var out = [];
     var acts = actList.slice(0, 3).map(function(x){ return x.verb; });
@@ -4511,6 +4534,7 @@
       var lead = r.hs[0].i === 0 ? (r.fair ? 'Conditions are okay ' : 'Conditions look good ') + spa.phrase
         : 'Conditions should be good ' + spa.day + ' ' + spa.phrase;
       out.push(lead + ', but there\u2019s an active ' + r.alert + ' for your area.');
+      var aft4 = vdAfter(r, c); if(aft4) out.push(aft4);
       out.push('Be careful, and check the alert above before heading outside.');
       return out.join(' ');
     }
@@ -4518,16 +4542,19 @@
       var sp = vdSpan(r.hs, c);
       out.push(vdCap(sp.day) + ' ' + sp.phrase + ' is a great time to get outside.');
       out.push('It will be ' + vdLc(vdGoodSentence(r.agg)));
+      var aft = vdAfter(r, c); if(aft) out.push(aft);
       out.push(actsSentence);
     }else if(r.state === 'maybe' && r.hs[0].i === 0){
       out.push('It’s okay to be outside right now, but not ideal.');
       var weak = vdWeakPoints(vdAgg([c.hrs[0]]));
       if(weak.length) out.push('Watch for ' + vdList(weak.slice(0, 2)) + '.');
+      var aft2 = vdAfter(r, c); if(aft2) out.push(aft2);
       out.push(actsSentence);
     }else if(r.state === 'maybe'){
       var sp2 = vdSpan(r.hs, c);
       out.push('Not right now, but ' + sp2.day + ' ' + sp2.phrase + ' looks like a good time to get outside.');
       out.push('Then it will be ' + vdLc(vdGoodSentence(r.agg)));
+      var aft3 = vdAfter(r, c); if(aft3) out.push(aft3);
       out.push(actsSentence);
     }else{
       out.push('It’s not a good time to be outside right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
