@@ -1957,6 +1957,21 @@
   @media (min-width:64em){
     .wind-row{ gap:32px; margin-top:32px }
   }
+
+  /* Desktop: the five gauges share the module's width (so they grow with it and never scroll) and the module hugs them vertically */
+  @media (min-width:64em){
+    #airCard .ag-wrap{ margin:0; overflow:visible }
+    #airCard .ag-wrap::before, #airCard .ag-wrap::after{ display:none }
+    #airCard .ag-grid{ overflow:visible; padding:0; gap:12px; scroll-snap-type:none }
+    #airCard .ag{ flex:1 1 0; min-width:0 }
+    #airCard .ag-dial{ width:100%; max-width:240px }
+    #airCard .card-body{ flex:0 0 auto; padding:16px 24px }
+  }
+
+  /* Desktop: the go / stay tag in the card header has no drop shadow */
+  @media (min-width:64em){
+    .vd-card .vd-tag:not([hidden]){ box-shadow:none }
+  }
 </style>
 </head>
 <body>
