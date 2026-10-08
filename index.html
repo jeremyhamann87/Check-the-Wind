@@ -4542,20 +4542,20 @@
       var sp = vdSpan(r.hs, c);
       out.push(vdCap(sp.day) + ' ' + sp.phrase + ' is a great time to get outside.');
       out.push('It will be ' + vdLc(vdGoodSentence(r.agg)));
-      var aft = vdAfter(r, c); if(aft) out.push(aft);
       out.push(actsSentence);
+      var aft = vdAfter(r, c); if(aft) out.push(aft);
     }else if(r.state === 'maybe' && r.hs[0].i === 0){
       out.push('It’s okay to be outside right now, but not ideal.');
       var weak = vdWeakPoints(vdAgg([c.hrs[0]]));
       if(weak.length) out.push('Watch for ' + vdList(weak.slice(0, 2)) + '.');
-      var aft2 = vdAfter(r, c); if(aft2) out.push(aft2);
       out.push(actsSentence);
+      var aft2 = vdAfter(r, c); if(aft2) out.push(aft2);
     }else if(r.state === 'maybe'){
       var sp2 = vdSpan(r.hs, c);
       out.push('Not right now, but ' + sp2.day + ' ' + sp2.phrase + ' looks like a good time to get outside.');
       out.push('Then it will be ' + vdLc(vdGoodSentence(r.agg)));
-      var aft3 = vdAfter(r, c); if(aft3) out.push(aft3);
       out.push(actsSentence);
+      var aft3 = vdAfter(r, c); if(aft3) out.push(aft3);
     }else{
       out.push('It’s not a good time to be outside right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
       if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next good window is ' + sp3.day + ' ' + sp3.phrase + '.'); }
