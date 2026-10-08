@@ -4452,9 +4452,7 @@
     var nextRun = goodRuns.filter(function(r){ return r[0].i > 0; })[0] || null;
     var laterToday = nextRun && localDate(nextRun[0].iso) === c.todayStr ? nextRun : null;
 
-    if(severe){
-      res.state = 'no'; res.why = [('an active ' + severe.event).toLowerCase()];
-    }else if(good(now)){
+    if(good(now)){
       var run = goodRuns.filter(function(r){ return r[0].i === 0; })[0];
       res.state = 'yes'; res.hs = run;
       var ag = vdAgg(run);
@@ -4462,7 +4460,7 @@
       return finish(res, ag);
     }else if(now.ok){
       var okRun = vdRuns(hrs, function(h){ return h.ok; })[0];
-      res.state = 'maybe'; res.hs = okRun;
+      res.state = 'maybe'; res.hs = okRun; res.fair = true;
       var ao = vdAgg(okRun), weak = vdWeakPoints(vdAgg([now]));
       res.sentence = 'Okay for now, but not ideal' + (weak.length ? ': ' + vdList(weak.slice(0, 2)) : '') + '.';
       return finish(res, ao);
@@ -4470,7 +4468,7 @@
       res.why = now.why.slice();
     }
 
-    if(!severe && laterToday){
+    if(laterToday){
       res.state = 'maybe'; res.hs = laterToday;
       var al = vdAgg(laterToday);
       res.sentence = 'Not right now' + (res.why.length ? ' — ' + vdList(res.why.slice(0, 2)) : '') + '. Later: ' + (function(t){ return t.charAt(0).toLowerCase() + t.slice(1); })(vdGoodSentence(al));
@@ -4478,13 +4476,20 @@
     }
 
     res.state = 'no';
+    if(severe) res.why.unshift(('an active ' + severe.event).toLowerCase());
     res.hs = hrs.slice(0, 3);
     res.sentence = 'Better to skip it for now' + (res.why.length ? ': ' + vdList(res.why.slice(0, 2)) : '') + '.';
     if(nextRun){ res.next = 'Next good window: ' + vdRange(nextRun, c) + '.'; res.nextHs = nextRun; }
     else res.next = 'No good window in the next 48 hours.';
     return finish(res, vdAgg(res.hs));
 
-    function finish(r, agg){ r.agg = agg; return r; }
+    // A Severe/Extreme NWS alert never makes the weather itself look better or worse: the forecast verdict stands, but a
+    // Yes becomes a Maybe and the text says to be careful because of the warning.
+    function finish(r, agg){
+      r.agg = agg;
+      if(severe){ r.alert = severe.event.toLowerCase(); if(r.state === 'yes') r.state = 'maybe'; }
+      return r;
+    }
   }
 
   /* Mobile design C: the hero's plain-language summary ("Today from now until 7 PM is a great time to get outside. ...") */
@@ -4501,6 +4506,14 @@
     var out = [];
     var acts = actList.slice(0, 3).map(function(x){ return x.verb; });
     var actsSentence = acts.length ? 'This is great weather to ' + vdList(acts) + '.' : 'A short outing should be fine.';
+    if(r.alert && r.state !== 'no'){
+      var spa = vdSpan(r.hs, c);
+      var lead = r.hs[0].i === 0 ? (r.fair ? 'Conditions are okay ' : 'Conditions look good ') + spa.phrase
+        : 'Conditions should be good ' + spa.day + ' ' + spa.phrase;
+      out.push(lead + ', but there\u2019s an active ' + r.alert + ' for your area.');
+      out.push('Be careful, and check the alert above before heading outside.');
+      return out.join(' ');
+    }
     if(r.state === 'yes'){
       var sp = vdSpan(r.hs, c);
       out.push(vdCap(sp.day) + ' ' + sp.phrase + ' is a great time to get outside.');
@@ -4546,7 +4559,9 @@
       ['Air quality', a.aqi !== null ? a.aqi + ' · ' + aqiWord(a.aqi) : '—']
     ];
     var actList = r.state === 'no' ? [] : VD_ACTIVITIES.filter(function(x){ return x.ok(a); });
-    var actsLine = r.state === 'no' ? 'Better saved for indoor plans.'
+    if(r.alert && r.state !== 'no') r.sentence = 'Conditions look fine, but there\u2019s an active ' + r.alert + '. Be careful.';
+    var actsLine = r.alert && r.state !== 'no' ? 'Check the alert above before heading out.'
+      : r.state === 'no' ? 'Better saved for indoor plans.'
       : actList.length ? 'Good for ' + vdList(actList.slice(0, 3).map(function(x){ return x.short; })) + '.'
       : 'Fine for a short outing.';
     var details = '<dl class="vd-stats">' + stats.map(function(s){
