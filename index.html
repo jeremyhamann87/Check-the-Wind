@@ -1832,7 +1832,8 @@
   @media (min-width:31.25em) and (max-width:63.99em){
     .hero-wrap #verdictSection{ margin:0 0 16px }
     .hero-wrap .vd-card{ background:transparent; box-shadow:none; border-radius:0; overflow:visible }
-    .hero-wrap .vd-card .card-head{ display:none !important }
+    .hero-wrap .vd-card .card-head{ display:flex !important; align-items:center; justify-content:space-between; gap:12px; padding:0 0 8px; border-bottom:0 }
+    .hero-wrap .vd-card .card-head h2{ font-size:.9375rem; font-weight:500; color:var(--text-muted) }
     .hero-wrap .vd-body{ padding:0 }
     .hero-wrap .vd-prose{ text-align:left }
   }
@@ -1888,6 +1889,21 @@
   /* Phone: no pause button in the header (animations simply play) */
   @media (max-width:31.1875em){
     #mPause{ display:none }
+  }
+
+  /* Tablet and desktop: the go / stay tag sits at the right end of the "Is it a Good Time to Go Outside?" header */
+  .vd-tag--green{ --tg:var(--aqi-good-ink) }
+  .vd-tag--yellow{ --tg:var(--aqi-moderate-ink) }
+  .vd-tag--orange{ --tg:var(--aqi-usg-ink) }
+  .vd-tag--red{ --tg:var(--aqi-unhealthy-ink) }
+  @media (min-width:31.25em){
+    .vd-card .card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px }
+    .vd-card .vd-tag:not([hidden]){
+      display:inline-flex; align-items:center; flex:0 0 auto; margin-left:auto; padding:3px 10px; border-radius:4px; font-size:.8125rem; font-weight:700; line-height:1.3; white-space:nowrap;
+      color:var(--tg); background:color-mix(in srgb, var(--tg) 15%, var(--surface));
+      box-shadow:0 1px 2px rgba(16,28,38,.14), 0 3px 8px -2px rgba(16,28,38,.22);
+    }
+    .vd-card .vd-tag::before{ content:""; flex:0 0 auto; width:9px; height:9px; margin-right:6px; border-radius:50%; background:var(--tg) }
   }
 </style>
 </head>
@@ -2115,7 +2131,7 @@
 
   <section id="verdictSection" class="vd-section" hidden aria-labelledby="vdTitle">
     <div class="vd-card">
-      <div class="card-head"><h2 id="vdTitle">Is it a Good Time to Go Outside?</h2></div>
+      <div class="card-head"><h2 id="vdTitle">Is it a Good Time to Go Outside?</h2><span class="vd-tag" id="vdTagCard" hidden></span></div>
       <div class="vd-body" id="vdBody"></div>
     </div>
   </section>
@@ -4706,7 +4722,7 @@
 
   function renderVerdict(){
     if(!vdEl || !vdBody) return;
-    var tagEls = [document.getElementById('vdTag'), document.getElementById('vdTagBar')];
+    var tagEls = [document.getElementById('vdTag'), document.getElementById('vdTagBar'), document.getElementById('vdTagCard')];
     if(!vdCtx){
       tagEls.forEach(function(t){ if(t) t.hidden = true; });
       vdEl.hidden = false;
