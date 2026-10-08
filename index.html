@@ -4008,10 +4008,11 @@
   var heroAir = null;
   function aqiCatName(v){ return v <= 50 ? 'Good' : v <= 100 ? 'Moderate' : v <= 150 ? 'Unhealthy for Sensitive Groups' : v <= 200 ? 'Unhealthy' : v <= 300 ? 'Very Unhealthy' : 'Hazardous'; }
   var AQI_ROW_WORDS = {'Good':'Good air', 'Moderate':'Moderate air', 'Unhealthy for Sensitive Groups':'Unhealthy for sensitive groups', 'Unhealthy':'Unhealthy air', 'Very Unhealthy':'Very unhealthy air', 'Hazardous':'Hazardous air'};
-  // a plain circle: green Good, yellow Moderate, orange Unhealthy for Sensitive Groups, red for everything worse
+  // the half-ring icon: green Good, yellow Moderate, orange Unhealthy for Sensitive Groups, red for everything worse
   var AQI_CLOUD = {'Good':'var(--aqi-good)', 'Moderate':'var(--aqi-moderate)', 'Unhealthy for Sensitive Groups':'var(--aqi-usg)', 'Unhealthy':'var(--aqi-unhealthy)', 'Very Unhealthy':'var(--aqi-unhealthy)', 'Hazardous':'var(--aqi-unhealthy)'};
   function airNowIcon(color){
-    return '<svg class="aq-ico" width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="13" fill="' + color + '"/></svg>';
+    // a solid half-ring, like the gauges in the Air Quality & Pollen card but in the single AQI-level color
+    return '<svg class="aq-ico" width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><path d="M4 34A20 20 0 0 1 44 34L33 34A9 9 0 0 0 15 34Z" fill="' + color + '"/></svg>';
   }
   function setHeroAir(airNow, inputs, hourly){
     var aqi = null, cat = null;
