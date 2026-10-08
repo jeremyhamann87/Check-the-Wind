@@ -139,14 +139,14 @@
   .m-loc-row{display:none}
   .search-drawer, .sd-sheet, .sd-body{display:contents}
   .sd-backdrop, .sd-head, .sd-card{display:none}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .m-loc-row{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:4px}
     .m-actions{display:flex; align-items:center}
     .m-search-btn{
       flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0;
       border:0; border-radius:4px; background:transparent; color:var(--text); cursor:pointer;
     }
-    @media (min-width:31.25em){ .m-search-btn:hover{background:var(--hover-bg)} }
+    @media (min-width:64em){ .m-search-btn:hover{background:var(--hover-bg)} }
     .m-search-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
     .m-search-btn svg{width:22px; height:22px}
     .m-loc-name{min-width:0; font-size:1.25rem; font-weight:600; line-height:1.2; color:var(--text); overflow-wrap:anywhere}
@@ -166,7 +166,7 @@
     .sd-head{display:flex; align-items:center; justify-content:space-between; padding:12px 12px 12px 16px; background:var(--surface); border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)); flex:0 0 auto}
     .sd-head h2{margin:0; font-size:1.125rem; font-weight:500; color:var(--text-muted)}
     .sd-close{display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--text-muted); cursor:pointer}
-    @media (min-width:31.25em){ .sd-close:hover{background:var(--hover-bg)} }
+    @media (min-width:64em){ .sd-close:hover{background:var(--hover-bg)} }
     .sd-close:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0}
     .sd-close svg{width:22px; height:22px}
     .sd-body{display:block; flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:16px}
@@ -193,7 +193,7 @@
     .sd-row{display:flex; align-items:center; gap:4px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
     .sd-row:first-child{border-top:0}
     .sd-item{flex:1 1 auto; min-width:0; min-height:48px; padding:0 4px; border:0; background:transparent; color:var(--text); font:inherit; font-size:1rem; text-align:left; cursor:pointer}
-    @media (min-width:31.25em){ .sd-item:hover{background:var(--hover-bg)} }
+    @media (min-width:64em){ .sd-item:hover{background:var(--hover-bg)} }
     .sd-item:focus-visible, .sd-save:focus-visible, .sd-star:focus-visible, .sd-clear:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0}
     .sd-star{flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:0; background:transparent; color:var(--text-muted); cursor:pointer}
     .sd-empty{margin:4px 0 0; font-size:1rem; color:var(--text-muted); line-height:1.5}
@@ -205,7 +205,7 @@
   .main-head-tools{display:flex; align-items:center; gap:8px; flex:0 0 auto}
   .main-clock{font-size:1rem; font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
   .main-refresh{display:flex; align-items:center; justify-content:center; width:36px; height:36px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--text-muted); cursor:pointer}
-  @media (min-width:31.25em){ .main-refresh:hover{background:var(--hover-bg); color:var(--text)} }
+  @media (min-width:64em){ .main-refresh:hover{background:var(--hover-bg); color:var(--text)} }
   .main-refresh:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
   .main-refresh svg{width:20px; height:20px}
   .main-refresh.busy svg{animation:ptrSpin .8s linear infinite}
@@ -275,7 +275,7 @@
     width:44px; height:44px; min-height:0; padding:0; display:flex; align-items:center; justify-content:center;
     background:transparent; border:0; border-radius:0 4px 4px 0; color:var(--text); opacity:.6; cursor:pointer;
   }
-  @media (min-width:31.25em){ form.search .clear-loc-btn:hover{opacity:1; background:var(--hover-bg)} }
+  @media (min-width:64em){ form.search .clear-loc-btn:hover{opacity:1; background:var(--hover-bg)} }
   form.search .clear-loc-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0; opacity:1}
   .clear-loc-btn svg{width:16px; height:16px; pointer-events:none}
   .loc-suggestions{
@@ -292,10 +292,10 @@
     display:flex; align-items:center; min-height:44px;
   }
   .loc-suggestion.active{background:var(--hover-bg)}
-  @media (min-width:31.25em){ .loc-suggestion:hover{background:var(--hover-bg)} }
+  @media (min-width:64em){ .loc-suggestion:hover{background:var(--hover-bg)} }
   /* Tablet & desktop: Current / Favorites / Recents panel under the location field */
   .loc-places{display:none}
-  @media (min-width:31.25em){
+  @media (min-width:64em){
     .loc-places{
       display:block; position:absolute; top:calc(100% + 6px); left:0; width:max(100%, 340px); z-index:40;
       background:color-mix(in srgb, var(--text) 5%, var(--surface)); border:1px solid var(--border); border-radius:4px;
@@ -311,7 +311,7 @@
     .lp-row:first-child{border-top:0}
     .lp-list{list-style:none; margin:0; padding:0}
     form.search .loc-places .lp-item{flex:1 1 auto; min-width:0; min-height:44px; padding:0 4px; border:0; border-radius:4px; background:transparent; color:var(--text); font:inherit; font-size:1rem; text-align:left; cursor:pointer}
-    @media (min-width:31.25em){ form.search .loc-places .lp-item:hover, form.search .loc-places .lp-star:hover, form.search .loc-places .lp-clear:hover{background:var(--hover-bg)} }
+    @media (min-width:64em){ form.search .loc-places .lp-item:hover, form.search .loc-places .lp-star:hover, form.search .loc-places .lp-clear:hover{background:var(--hover-bg)} }
     form.search .loc-places .lp-star{flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:0; border-radius:4px; background:transparent; color:var(--text-muted); cursor:pointer}
     form.search .loc-places .lp-star svg{width:22px; height:22px}
     form.search .loc-places .lp-star[aria-pressed="true"] svg{fill:var(--accent); stroke:var(--accent)}
@@ -353,14 +353,14 @@
     border:0; border-radius:4px; background:transparent; color:var(--text-muted);
     font:inherit; font-size:1rem; font-weight:500; cursor:pointer;
   }
-  @media (min-width:31.25em){ .bw-custom-btn:hover{background:var(--hover-bg); color:var(--text)} }
+  @media (min-width:64em){ .bw-custom-btn:hover{background:var(--hover-bg); color:var(--text)} }
   .bw-custom-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
   .bw-custom-btn svg{width:20px; height:20px}
   /* The Customize button is icon-only at every width (its accessible name is still "Customize") */
   .bw-card .card-head{flex-wrap:nowrap}
   .bw-custom-btn{padding:0; width:44px; justify-content:center; flex:0 0 auto; margin-right:-12px}  /* the 20px icon sits flush with the header's right margin */
   .bw-custom-lab{position:absolute!important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     /* Customize modal on phones: each row keeps its slider and the standard value; the one-line rule stays for screen readers only */
     .bp-help{justify-content:flex-end}
     .bp-help > span:first-child{position:absolute!important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
@@ -405,10 +405,10 @@
     min-height:44px; padding:0 18px; border:1px solid var(--border); border-radius:4px; background:var(--surface-2); color:var(--text);
     font:inherit; font-size:1rem; font-weight:600; cursor:pointer;
   }
-  @media (min-width:31.25em){ .bp-btn:hover{background:var(--hover-bg)} }
+  @media (min-width:64em){ .bp-btn:hover{background:var(--hover-bg)} }
   .bp-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
   .bp-primary{background:var(--text); color:var(--surface); border-color:var(--text)}
-  @media (min-width:31.25em){ .bp-primary:hover{background:color-mix(in srgb, var(--text) 85%, var(--surface))} }
+  @media (min-width:64em){ .bp-primary:hover{background:color-mix(in srgb, var(--text) 85%, var(--surface))} }
   form.search button:focus{outline:4px solid var(--focus-ring); outline-offset:-4px; box-shadow:none}
   form.search input:focus{outline:2px solid var(--focus-ring); outline-offset:-2px; box-shadow:none}
   form.search button{
@@ -417,7 +417,7 @@
     padding:0 14px; min-height:44px; font-size:1rem; font-family:'Nunito',sans-serif; font-weight:600;
     cursor:pointer;
   }
-  @media (min-width:31.25em){ form.search button:hover{background:var(--hover-bg)} }
+  @media (min-width:64em){ form.search button:hover{background:var(--hover-bg)} }
   form.search button[type="submit"]{display:none}
   form.search .geo-btn{
     display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
@@ -425,7 +425,7 @@
     background:var(--surface-2); color:var(--text); border:1px solid var(--border);
     cursor:pointer; padding:0;
   }
-  @media (min-width:31.25em){ form.search .geo-btn:hover{background:var(--hover-bg)} }
+  @media (min-width:64em){ form.search .geo-btn:hover{background:var(--hover-bg)} }
   .geo-btn svg{width:21.06px; height:21.06px}
   .hdr-loc{display:none}
   .locbar{
@@ -486,7 +486,7 @@
     display:flex; align-items:center; gap:12px; width:100%; padding:8px 16px; border:0; cursor:pointer;
     background:var(--surface); color:var(--text); font:inherit; text-align:left;
   }
-  @media (min-width:31.25em){ .alert-item-head:hover{background:var(--surface-2)} }
+  @media (min-width:64em){ .alert-item-head:hover{background:var(--surface-2)} }
   .alert-item-head:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-4px}
   .alert-item-head .alert-title{font-size:1rem}
   .alert-item-head .alert-sub{color:var(--text-muted); opacity:1}
@@ -494,7 +494,7 @@
   .alert-item-head .alert-toggle{color:var(--text-muted)}
   .alert-item-body{padding:2px 20px 18px 42px; color:var(--text); font-size:1rem; line-height:1.5}
   .alert-item-body[hidden]{display:none}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .alerts{margin-top:16px}
     .alerts:not([hidden]) + #heroSection, .alerts:not([hidden]) + #bestSection{margin-top:24px}
     .alerts:not([hidden]) + #bestSection{margin-top:40px}
@@ -513,10 +513,10 @@
     width:44px; height:44px; margin:-10px; padding:0; border:0; border-radius:50%;
     background:transparent; color:var(--text-muted); cursor:pointer;
   }
-  @media (min-width:31.25em){ .info-btn{width:24px; height:24px; margin:0} }
+  @media (min-width:64em){ .info-btn{width:24px; height:24px; margin:0} }
   .info-btn svg{width:18px; height:18px}
   .info-btn:focus-visible{color:var(--text)}
-  @media (min-width:31.25em){ .info-btn:hover{color:var(--text)} }
+  @media (min-width:64em){ .info-btn:hover{color:var(--text)} }
   .info-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
   /* Wind Key (opens in the shared info modal from the ? beside the hero wind label) */
   .hero-pill-row{display:inline-flex; align-items:center; gap:4px}
@@ -602,10 +602,10 @@
     width:44px; height:44px; padding:0; border-radius:4px; border:0;
     background:rgba(0,0,0,.44); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;
   }
-  @media (min-width:31.25em){ .radar-expand-btn:hover{background:rgba(0,0,0,.62)} }
+  @media (min-width:64em){ .radar-expand-btn:hover{background:rgba(0,0,0,.62)} }
   .radar-expand-btn:focus-visible{outline:2px solid #fff; outline-offset:-2px}
   .radar-expand-btn svg{width:16px; height:16px}
-  @media (min-width:31.25em){ .radar-expand-btn{width:30px; height:30px; border-radius:4px} }
+  @media (min-width:64em){ .radar-expand-btn{width:30px; height:30px; border-radius:4px} }
 
   .radar-modal{
     position:fixed; inset:0; z-index:100;
@@ -625,7 +625,7 @@
   /* The embedded page supplies its own header/title/close/controls now —
      this is just the iframe filling the whole panel, edge to edge. */
   .radar-modal-map{flex:1 1 auto; min-height:0; width:100%; height:100%; background:#0a0a0a; border:0}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .radar-modal{padding:0}
     .radar-modal-panel{width:100%; height:100%; max-height:100%; border-radius:0}
   }
@@ -638,7 +638,7 @@
   /* Wind Today: the card's padding (24px, 16px on phones — same as Air Quality) is the whole margin; tiles add no vertical padding of their own */
   #todaySection .htile{ padding-block:0 }
   /* 8px between the chart and its horizontal scrollbar (the chart only scrolls sideways when the strip is wider than the card) */
-  @media (min-width:31.25em){ #todaySection .hscroll{ padding-bottom:8px } }
+  @media (min-width:64em){ #todaySection .hscroll{ padding-bottom:8px } }
   .today-inner:focus-visible{outline-offset:4px; border-radius:4px}
   .hscroll{
     position:relative; display:flex; gap:2px; width:max-content; min-width:100%;
@@ -660,7 +660,7 @@
   /* The "mph" label is visually dropped (kept for screen readers); the direction arrow sits under the speed */
   #todaySection .htile .spunit{position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap}
   .htile .hdir{display:flex}
-  @media (min-width:31.25em){
+  @media (min-width:64em){
     .htile .spwrap{flex-direction:column; align-items:center; gap:0; line-height:1.25}
     .htile .sp-row{flex-direction:column; align-items:center; gap:2px}
     .htile .hdir svg{width:20px; height:20px}
@@ -813,7 +813,7 @@
 
   .wind-legend{margin-top:16px}
   .wind-legend.in-header{display:none}
-  @media (min-width:31.25em){
+  @media (min-width:64em){
     header.top{padding-bottom:7px}
     form.search{margin-bottom:0}
   }
@@ -835,7 +835,7 @@
     letter-spacing:.02em; text-align:center; overflow:hidden; text-overflow:ellipsis;
   }
   .wind-range{display:none}
-  @media (min-width:31.25em){
+  @media (min-width:64em){
     .wind-range{
       display:block; margin-top:4px; font-size:1rem; font-weight:600;
       text-align:center; font-family:'Nunito',monospace; letter-spacing:.02em;
@@ -961,7 +961,7 @@
     font:inherit; font-size:1rem;
     color:var(--text-faint); text-decoration:underline; text-underline-offset:2px; cursor:pointer;
   }
-  @media (min-width:31.25em){ .disclaimers-link:hover{color:var(--text-muted)} }
+  @media (min-width:64em){ .disclaimers-link:hover{color:var(--text-muted)} }
   @media (min-width:64em){ .hero-wrap .hero-pill-row .wk-btn{ display:none } }
   .disclaimers-link:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:2px}
   .data-asof{font-size:1rem; color:var(--text-faint)}
@@ -977,7 +977,7 @@
     background:none; border:none; cursor:pointer; color:var(--text-muted);
     padding:6px; display:flex; border-radius:4px;
   }
-  @media (min-width:31.25em){ .disclaimers-modal-close:hover{background:var(--hover-bg)} }
+  @media (min-width:64em){ .disclaimers-modal-close:hover{background:var(--hover-bg)} }
   .disclaimers-modal-close:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0}
   .disclaimers-modal-close svg{width:18px; height:18px}
   .disclaimers-modal-body{
@@ -993,7 +993,7 @@
   @keyframes skelRowFade{0%,100%{opacity:.7}50%{opacity:1}}
   @media (prefers-reduced-motion: reduce){ .skel{animation:none} .skel-htile, .skel-dayrow{animation:none} }
 
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     html, body{overflow-anchor:none}
     body{margin:0; padding-top:9px}
     .wrap, .hdr-in{padding-inline:16px}
@@ -1119,7 +1119,7 @@
     border:1px solid var(--border); border-radius:4px; background:var(--surface-2); color:var(--text);
     font-family:inherit; font-size:1rem; font-weight:600; cursor:pointer;
   }
-  @media (min-width:31.25em){ .load-error-btn:hover{background:var(--hover-bg)} }
+  @media (min-width:64em){ .load-error-btn:hover{background:var(--hover-bg)} }
   .load-error-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
   .load-error-btn:disabled{cursor:default}
   .load-error-btn svg{width:18px; height:18px}
@@ -1128,7 +1128,7 @@
 
   /* ================================================================
      Design B additions — same breakpoints as Design A:
-       mobile:  max-width:31.1875em  (~499px)
+       mobile:  max-width:63.99em  (~499px)
        tablet:  31.25em – 63.99em    (500px – ~1023px; inherits base rules)
        desktop: min-width:64em       (~1024px+, new — Design A has no
                  distinct desktop layout to reuse, so this is the one new
@@ -1147,14 +1147,14 @@
     border-radius:4px;
     overflow:hidden;
   }
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .wind-legend-inhero{ padding:16px; border-radius:4px }
   }
 
   /* 7-Day Wind Outlook as a card grid — desktop only, confined to the
      right column (it lives inside .db-content, so it never spans under
      the sidebar). Tablet and mobile keep the existing full-width rows. */
-  @media (min-width:31.25em){
+  @media (min-width:64em){
     #weekSection .daylist{
       display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:10px;
       background:transparent; border:0; border-radius:0; overflow:visible;
@@ -1329,7 +1329,7 @@
     .db-layout > .hero-wrap{ padding-bottom:16px }
     .hero-wrap .hero{ padding-bottom:0 }
   }
-  @media (min-width:31.25em) and (max-width:63.99em){
+  @media (min-width:64em) and (max-width:63.99em){
     .db-layout > header.top{ padding:32px 32px 0 }
     .db-layout > .hero-wrap{ padding:16px 32px 16px }
     /* Tablet page chrome: side margins match the hero (32px), modules have no outline, desktop's soft shadow,
@@ -1339,19 +1339,19 @@
     .db-content .bw-list, .db-content .today-card{ border:0; box-shadow:var(--shadow) }
     #weekSection .dayrow{ border:0; border-top:8px solid var(--card-band, var(--table-border)); box-shadow:var(--shadow) }
   }
-  @media (min-width:31.25em) and (max-width:40.99em){
+  @media (min-width:64em) and (max-width:63.99em){
     .hero-wrap .radar{ aspect-ratio:16 / 9 }
     .hero-wrap .hero-reading .val{ font-size:5.4rem }
     header.top .brand h1{ font-size:1.00625rem }
     header.top .brand h1.logo svg{ width:1.25em; height:1.25em }
   }
   /* Tablet: radar sits to the right of the current conditions, a square matched to their height (like Design A) */
-  @media (min-width:41em) and (max-width:63.99em){
+  @media (min-width:64em) and (max-width:63.99em){
     .hero-wrap .hero-top{ flex-direction:row; align-items:flex-start; justify-content:space-between; gap:24px }
     .hero-wrap .hero-reading .val{ font-size:5.4rem }
     .hero-wrap .radar{ flex:0 0 auto; width:auto; aspect-ratio:auto }
   }
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     /* Phone hero: 40% smaller wind number */
     header.top .brand h1{ font-size:1.00625rem }
     .hero-wrap .hero-reading .val{ font-size:4.8rem }
@@ -1383,7 +1383,7 @@
     .db-content .bw-list{ border:0; box-shadow:var(--shadow) }
   }
   /* 7-Day Outlook phone design: phone and narrow desktop only — tablet uses the 7-card desktop grid */
-  @media (max-width:31.1875em), (min-width:64em) and (max-width:77.9375em){
+  @media (max-width:63.99em), (min-width:64em) and (max-width:77.9375em){
     #weekSection .daylist{
       display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px;
       background:transparent; border:0; border-radius:0; overflow:visible;
@@ -1427,7 +1427,7 @@
   }
   /* Phone 7-Day Outlook: the day cards are joined into one "super card" — no gaps, shadow on the group,
      only the top of the first card and the bottom of the last card are rounded. */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .week-card .card-body{ padding:0 }
     #weekSection .daylist{ gap:0; border-radius:0; overflow:hidden; background:transparent; box-shadow:none }
     #weekSection .dayrow{ border-radius:0; box-shadow:none }
@@ -1449,19 +1449,19 @@
   #weekSection .dayrow .dnames .dname{ font-weight:300; color:var(--text-muted) }
   #airCard .pollen-row-label{ font-weight:300; color:var(--text-muted) }
   /* 7-Day cards sit inside the module card: no individual shadow, a 2px wind-range stroke all around (the 8px top bar stays) */
-  @media (min-width:31.25em){
+  @media (min-width:64em){
     #weekSection .dayrow{ box-shadow:none; border:2px solid var(--card-band, var(--table-border)); border-top-width:8px }
   }
   /* Tablet & wide desktop 7-Day cards: day & date sit in a header in the wind range's light shade that fills the top of the card;
      the text is the standard dark text color in both themes */
-  @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
+  @media (min-width:64em) and (max-width:63.99em), (min-width:78em){
     #weekSection .dayrow{ border:2px solid var(--card-band); overflow:hidden }
     #weekSection .dayrow .dnames{ width:auto; margin:-16px -14px 0; padding:8px 14px; background:var(--card-band) }
     #weekSection .dayrow .dnames .dname, #weekSection .dayrow .dnames .ddate{ color:#333333 }  /* fixed dark text: the header stays a light pastel in dark mode too */
     #weekSection .dayrow .dnames .dname{ font-weight:400 }
   }
   /* Phone header: logo + title and the search button share one vertically-centered row, location underneath */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .db-layout > header.top{ padding:14px 16px 0 }
     header.top .hdr-in{ display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:12px; align-items:center }
     header.top .hdr-in > *{ grid-column:1 / -1 }
@@ -1473,7 +1473,7 @@
     header.top .m-actions{ grid-column:2; grid-row:1; align-self:center }
   }
   /* Phone hero: wind-range tag 15% smaller, mph + tag centered on the wind speed */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .hero-reading .hero-band-pill{ font-size:.85rem; padding:2px 8.5px }
     /* no drop shadow on the module cards */
     .bw-card, .week-card, .db-content .today-card, .db-content .bw-list, #airCard.air-card, #todaySection .today-card{ box-shadow:none }
@@ -1498,25 +1498,25 @@
     .db-layout > .db-content{ position:relative; z-index:1 }
   }
   /* Tablet: equal 24px between the search bar, current conditions and every module */
-  @media (min-width:31.25em) and (max-width:63.99em){
+  @media (min-width:64em) and (max-width:63.99em){
     .db-layout > .hero-wrap{ padding:24px 32px 0 }
     .db-content section{ margin-top:24px }
   }
   /* Tablet 7-Day headers: day over date on every card, so headers are the same height and the rows below line up */
-  @media (min-width:31.25em) and (max-width:63.99em){
+  @media (min-width:64em) and (max-width:63.99em){
     #weekSection .dayrow .dnames .dval{ flex-direction:column; align-items:flex-start; gap:0 }
     /* on narrow tablets the temperature wraps under its icon instead of being clipped */
     #weekSection .dayrow .temps .dval{ flex-wrap:wrap; gap:2px 6px }
   }
   /* Tablet & wide desktop: the seven day cards touch (no gaps) with shared borders, and only the outer corners are rounded */
-  @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
+  @media (min-width:64em) and (max-width:63.99em), (min-width:78em){
     #weekSection .daylist{ gap:0 }
     #weekSection .dayrow{ border-radius:4px 0 0 4px }
     #weekSection .dayrow ~ .dayrow{ border-radius:0; margin-left:-1px }
     #weekSection .dayrow:last-of-type{ border-radius:0 4px 4px 0 }
   }
   /* 7-Day cards: the 2px wind-range stroke is drawn as inset lines so that, where it runs up through the pastel header, it turns white (a white divider between the headers) */
-  @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
+  @media (min-width:64em) and (max-width:63.99em), (min-width:78em){
     #weekSection .dayrow{ border:0; box-shadow:inset 1px 0 0 var(--table-border), inset -1px 0 0 var(--table-border), inset 0 -1px 0 var(--table-border) }  /* normal gray border (was the 2px wind-range color) */
     /* white dividers only BETWEEN headers: the far-left and far-right headers run colored to the card's outer edge */
     #weekSection .dayrow .dnames{ box-shadow:inset -1px 0 0 #fff }
@@ -1526,7 +1526,7 @@
   /* Compact Best Times: the whole row is the tap target for expand/collapse */
   @media (max-width:77.9375em){
     .bw-row{ cursor:pointer; -webkit-tap-highlight-color:transparent }
-    @media (min-width:31.25em){ .bw-row:hover{ background:color-mix(in srgb, var(--text) 3%, transparent) } }
+    @media (min-width:64em){ .bw-row:hover{ background:color-mix(in srgb, var(--text) 3%, transparent) } }
   }
   /* Desktop preview: the hero's tinted wind-field is the background of the whole page, like phone & tablet */
   @media (min-width:64em){
@@ -1543,14 +1543,14 @@
   /* Every button is a rounded square (no circles) */
   .info-btn, .main-refresh, .sd-close, .sd-star, .bw-toggle{ border-radius:4px }
   /* Phone hero preview: all the current-conditions data is centered horizontally */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .hero-reading{ justify-content:center }
     .hero-wrap .weather-now, .hero-wrap .ground-now{ justify-content:center; text-align:center }
     .hero-wrap .weather-now .wtext, .hero-wrap .ground-now .gtext{ flex:0 1 auto }
     header.top .m-loc-name{ text-align:center }
   }
   /* Phones: the wind tag is the link to the wind key; the separate (?) button is hidden */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .hero-pill-row .wk-btn{ display:none }
     .hero-wrap .wk-tag[role="button"]{ position:relative; cursor:pointer }
     .hero-wrap .wk-tag[role="button"]::after{ content:""; position:absolute; inset:-11px -8px }  /* 44px-tall touch target */
@@ -1559,7 +1559,7 @@
   /* Tablet & wide desktop 7-Day Wind Outlook: the day cards run full width (edge to edge, flush with the divider and the module's bottom).
      Inside, the first and last cards' content is inset 24px so it lines up with the module header's left and right margins; those two
      cards are 12px wider so their content area is at least as wide as the middle cards' (24px outer + 14px inner vs. 14px + 14px). */
-  @media (min-width:31.25em) and (max-width:63.99em), (min-width:78em){
+  @media (min-width:64em) and (max-width:63.99em), (min-width:78em){
     .week-card .card-body{ padding:0 }
     #weekSection .daylist{ grid-template-columns:calc((100% - 24px) / 7 + 12px) repeat(5, calc((100% - 24px) / 7)) calc((100% - 24px) / 7 + 12px) }
     #weekSection .dayrow, #weekSection .dayrow ~ .dayrow{ border-radius:0 }
@@ -1581,18 +1581,18 @@
     }
   }
   /* Phone: the alert banner sits above the place name in the current-conditions header (the name moves down a row when it shows) */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     header.top .alerts{ grid-column:1 / -1; grid-row:2; margin:12px 0 4px }
     header.top .m-loc-name{ grid-row:3 }
   }
   /* Phone alert banner: the "+N more" count moves into the subtitle line; the tag and the More/Less word are hidden, leaving just the caret */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .alert-head .alert-sub-more{ display:inline }
     .alert-head .alert-more, .alert-head .alert-toggle-lab{ display:none }
     .alert-side{ gap:0 }
   }
   /* Tablet main header: logo on the left; time, refresh and pause/play on the right */
-  @media (min-width:31.25em) and (max-width:63.99em){
+  @media (min-width:64em) and (max-width:63.99em){
     header.top .hdr-in{ display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:12px; align-items:center }
     header.top .hdr-in > *, header.top .hdr-in form.search{ grid-column:1 / -1 }
     header.top .brand{ grid-column:1; grid-row:1 }
@@ -1616,7 +1616,7 @@
     .main-head h2{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
   }
   /* Phone: the top bar (logo, pause, search) is sticky with the page rolling underneath it; its top margin is half what it was */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .db-layout > header.top{
       position:sticky; top:0; z-index:20; padding:7px 16px 4px;
       background:color-mix(in srgb, var(--hero-band, var(--band-calm)) var(--tint-hero), var(--surface));
@@ -1630,7 +1630,7 @@
   .logo-swap{display:inline-grid; min-width:0}
   .logo-swap > span{grid-area:1 / 1; transition:opacity .2s}
   .logo-loc{display:none}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .logo-loc{display:block; opacity:0; pointer-events:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
     header.top.show-loc .logo-loc{ opacity:1 }
     header.top.show-loc .logo-text{ opacity:0 }
@@ -1639,7 +1639,7 @@
     header.top .brand{ min-width:0 }
   }
   /* Phone 7-Day Wind Outlook: a small wind-category tag beside each speed; no colored top bars; rows stay ~47px tall (25% shorter than before) and are separated by the same line as the card header's border */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     #weekSection .dayrow, #weekSection .dayrow ~ .dayrow{ padding-block:11.5px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }  /* same line as the card header's border */
     #weekSection .dayrow-head + template + .dayrow, #weekSection .daylist > .dayrow:nth-of-type(2){ border-top-color:transparent }
     /* small wind-category tag to the right of the wind speed */
@@ -1689,7 +1689,7 @@
   .db-content .alerts:not([hidden]) + #verdictSection{margin-top:40px}
   .db-content #verdictSection:not([hidden]) + #bestSection{margin-top:32px}
   .hero-wrap #verdictSection{margin:8px 0 16px; flex:0 0 auto}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap #verdictSection{margin:0}
     .vd-body{padding:16px}
     .vd-verdict{font-size:1.5rem}
@@ -1703,7 +1703,7 @@
     display:flex; align-items:center; justify-content:center; min-width:44px; height:44px; margin:-8px -12px -8px auto; padding:0 12px;
     border:0; border-radius:4px; background:transparent; color:var(--text-muted); cursor:pointer;
   }
-  @media (min-width:31.25em){ .vd-toggle:hover{background:var(--hover-bg); color:var(--text)} }
+  @media (min-width:64em){ .vd-toggle:hover{background:var(--hover-bg); color:var(--text)} }
   .vd-toggle:focus-visible{outline:2px solid var(--focus-ring); outline-offset:0}
   .vd-toggle svg{width:20px; height:20px; transition:transform .15s}
   .vd-body.is-open .vd-toggle svg{transform:rotate(180deg)}
@@ -1712,7 +1712,7 @@
 
   /* Phone hero, organised as one story: place -> the answer (verdict + why) -> "Right now" conditions as the evidence -> radar.
      The conditions become a left-aligned card matching the verdict card, so the hero reads as a stack of three equal blocks. */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .hero-top{ gap:16px; margin-top:6px }
     .vd-card{ box-shadow:none }  /* like the other phone module cards */
     .hero-wrap .hero-now{ background:var(--surface); border-radius:4px; padding:12px 16px 16px; text-align:left }
@@ -1726,7 +1726,7 @@
 
   /* Lighter verdict card on phones: the title is a small label inside the body (no header bar or divider), the answer is a
      bold colored word instead of a filled pill, and the summary is a single short line */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .vd-card .card-head{ border-bottom:0; padding:12px 16px 0 }
     .vd-card .card-head h2{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
     .vd-body{ padding:4px 16px 12px }
@@ -1737,7 +1737,7 @@
 
   /* Phones: no hover highlights (they stick after a tap), no tap flash and no ring on a tapped button. Hover styles above only
      apply from tablet width up; keyboard focus rings (:focus-visible) are kept. */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     *{ -webkit-tap-highlight-color:transparent }
     form.search button:focus{ outline:none }
   }
@@ -1747,7 +1747,7 @@
   .vd-verdict svg{width:1.05em; height:1.05em; flex:0 0 auto}
 
   /* Phone "Right now" card: the wind speed is a line like the weather and ground lines (compass icon, "5 mph", tag) */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .hero-now .hero-reading{ display:flex; align-items:center; gap:12px; margin-top:8px }
     .hero-wrap .hero-now .hero-reading .unit-wrap{ display:contents }
     .hero-wrap .hero-now .hero-reading .unit-wrap > svg{ order:-1; flex:0 0 24px; width:24px; height:24px; position:static }
@@ -1760,7 +1760,7 @@
 
   /* "Right now" air-quality row (phone only) and its animated icon */
   .air-now{display:none}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .hero-now .air-now:not([hidden]){ display:flex }
   }
   .aq-cloud{animation:aqdrift 4s ease-in-out infinite}
@@ -1770,7 +1770,7 @@
   /* Mobile design C: the verdict is plain text under the place name (no card); the conditions card below has its own "Current Conditions" header */
   .vd-prose{display:none}
   .hn-head{display:none}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap #verdictSection{ margin:0 }
     .hero-wrap .vd-card{ background:transparent; box-shadow:none; border-radius:0; overflow:visible }
     .hero-wrap .vd-card .card-head, .hero-wrap .vd-top, .hero-wrap .vd-sentence, .hero-wrap .vd-acts-line, .hero-wrap .vd-details, .hero-wrap .vd-next{ display:none !important }
@@ -1783,13 +1783,13 @@
   }
 
   /* Phone: 16px above and below the radar (same as between the other modules) */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .db-layout > .hero-wrap{ padding-bottom:0 }
   }
 
   /* Phone: every module header (the combined top card, Best Times, Wind Today, 7-Day, Air Quality) shares one treatment:
      small muted title, 6px / 16px padding and the same 40px minimum height */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .db-content .card-head, .hero-wrap .hn-head{ display:flex; align-items:center; min-height:40px; padding:6px 16px }
     .hero-wrap .hn-head{ margin:0 -16px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }
     .db-content .card-head h2, .db-content .card-head h3, .hero-wrap .hn-head h2{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
@@ -1798,24 +1798,24 @@
 
   /* Phone top card: a second sentence names the activities the conditions suit (tablet/desktop list them as chips instead) */
   .vd-acts-line{display:none}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .hero-now .vd-acts-line{ display:block; margin:2px 0 0; font-size:1rem; line-height:1.45; color:var(--text) }
   }
 
   /* Phone "current conditions" wind line: its own wind icon on the left (in the wind category color); the compass moves to the right of the speed */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .hero-now .hero-reading .wind-ico{ display:block; order:-2; flex:0 0 24px; width:24px; height:24px }
     .hero-wrap .hero-now .hero-reading .unit-wrap > svg{ order:3; margin-left:-4px }
   }
 
   /* Phone: 16px between the alert banner and the place name (same vertical spacing as between the modules) */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .alerts{ margin-bottom:16px }
   }
 
   /* Phone (design C): upcoming weather is its own row with a clock icon, shown only when there is some; the inline pill is hidden */
   .upcoming-now{display:none}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-wrap .hero-now .upcoming-now{ display:flex }
     .hero-wrap .hero-now .weather-now .hazard-eta{ display:none }
   }
@@ -1823,13 +1823,13 @@
   .wind-ico{display:none}
 
   /* Tablet and desktop: the "Is it a Good Time to Go Outside?" module is the written summary (same sentences as on phones), above Best Times */
-  @media (min-width:31.25em){
+  @media (min-width:64em){
     .vd-top, .vd-sentence, .vd-acts-line, .vd-details, .vd-next{ display:none !important }
     .vd-prose{ display:block; margin:0; font-size:1.0625rem; line-height:1.55; color:var(--text); }
     .vd-body{ padding:16px 24px 20px }
   }
   /* Tablet: no card, just the written summary as plain text above the current conditions (like on phones) */
-  @media (min-width:31.25em) and (max-width:63.99em){
+  @media (min-width:64em) and (max-width:63.99em){
     .hero-wrap #verdictSection{ margin:0 0 16px }
     .hero-wrap .vd-card{ background:transparent; box-shadow:none; border-radius:0; overflow:visible }
     .hero-wrap .vd-card .card-head{ display:flex !important; align-items:center; justify-content:space-between; gap:12px; padding:0 0 8px; border-bottom:0 }
@@ -1854,7 +1854,7 @@
   .ag-word{font-size:.6875rem; font-weight:500; text-align:center}
   .ag-num{font-size:1.125rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums}
   /* Phone: the gauge card hugs its content (16px under the dials); touch scrolling needs no visible scrollbar */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .ag-grid{ padding-bottom:0; scrollbar-width:none }
     .ag-grid::-webkit-scrollbar{ display:none }
   }
@@ -1862,12 +1862,12 @@
   /* Mobile design D: the place name sits left with a go / stay tag at the far right, and the summary is left-aligned */
   .hero-head{display:none}
   .vd-tag{display:none}
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     .hero-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0; margin:4px 0 8px }
     .db-layout > .hero-wrap .hero-head .m-loc-name{ display:block; flex:1 1 auto; min-width:0; margin:0; text-align:left }
     .hero-head .vd-tag:not([hidden]), header.top.show-loc .m-actions .vd-tag:not([hidden]){
       display:inline-flex; align-items:center; flex:0 0 auto; padding:3px 10px; border-radius:4px; font-size:.8125rem; font-weight:700; line-height:1.3; white-space:nowrap;
-      color:var(--tg); background:color-mix(in srgb, var(--tg) 15%, var(--surface));
+      color:color-mix(in srgb, var(--tg) 78%, var(--text)); background:color-mix(in srgb, var(--tg) 15%, var(--surface));
     }
     .hero-head .vd-tag::before, .m-actions .vd-tag::before{ content:""; flex:0 0 auto; width:9px; height:9px; margin-right:6px; border-radius:50%; background:var(--tg) }
     .hero-head .vd-tag, .m-actions .vd-tag{ box-shadow:0 1px 2px rgba(16,28,38,.14), 0 3px 8px -2px rgba(16,28,38,.22) }  /* a soft drop shadow under the tag */
@@ -1879,7 +1879,7 @@
   }
 
   /* Phone: once the place name has scrolled away, the sticky bar shows the tag too, to the left of the pause button */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     header.top .m-actions{ display:flex; align-items:center; gap:4px }
     header.top .m-actions .vd-tag{ margin-right:0; padding:2px 6px; font-size:.6875rem }
     header.top .m-actions .vd-tag::before{ width:7px; height:7px; margin-right:4px }
@@ -1887,7 +1887,7 @@
   }
 
   /* Phone: no pause button in the header (animations simply play) */
-  @media (max-width:31.1875em){
+  @media (max-width:63.99em){
     #mPause{ display:none }
   }
 
@@ -1896,14 +1896,21 @@
   .vd-tag--yellow{ --tg:var(--aqi-moderate-ink) }
   .vd-tag--orange{ --tg:var(--aqi-usg-ink) }
   .vd-tag--red{ --tg:var(--aqi-unhealthy-ink) }
-  @media (min-width:31.25em){
+  @media (min-width:64em){
     .vd-card .card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px }
     .vd-card .vd-tag:not([hidden]){
       display:inline-flex; align-items:center; flex:0 0 auto; margin-left:auto; padding:3px 10px; border-radius:4px; font-size:.8125rem; font-weight:700; line-height:1.3; white-space:nowrap;
-      color:var(--tg); background:color-mix(in srgb, var(--tg) 15%, var(--surface));
+      color:color-mix(in srgb, var(--tg) 78%, var(--text)); background:color-mix(in srgb, var(--tg) 15%, var(--surface));
       box-shadow:0 1px 2px rgba(16,28,38,.14), 0 3px 8px -2px rgba(16,28,38,.22);
     }
     .vd-card .vd-tag::before{ content:""; flex:0 0 auto; width:9px; height:9px; margin-right:6px; border-radius:50%; background:var(--tg) }
+  }
+
+  /* Tablet uses the phone layout, but the radar sits to the right of the Current Conditions card (the summary spans both) */
+  @media (min-width:31.25em) and (max-width:63.99em){
+    .hero-wrap .hero-top{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:stretch }
+    .hero-wrap .hero-top > #verdictSection{ grid-column:1 / -1 }
+    .hero-wrap .hero-top > .radar{ width:100%; height:auto; min-height:260px; aspect-ratio:auto; align-self:stretch }
   }
 </style>
 </head>
@@ -2737,7 +2744,7 @@
   /* Tablet: the time / refresh / pause controls live in the main page header (beside the logo); elsewhere they stay in the "Weather Details" row */
   var mainTools = document.querySelector('.main-head-tools');
   mainTools.hidden = mainHead.hidden;
-  var toolsTabletMq = window.matchMedia('(min-width:31.25em) and (max-width:63.99em)');
+  var toolsTabletMq = window.matchMedia('(min-width:64em) and (max-width:63.99em)');
   function placeMainTools(){
     var hdrIn = document.querySelector('header.top .hdr-in'), brand = hdrIn && hdrIn.querySelector('.brand');
     if(!hdrIn || !brand) return;
@@ -3219,7 +3226,7 @@
     var leftCol = box.previousElementSibling;
     /* Design B: the hero stacks text-above-radar on phones and in the desktop sidebar; at tablet widths the
        radar sits beside the conditions as a square matched to their height, same as Design A. */
-    var stacked = window.matchMedia('(max-width:40.99em), (min-width:64em)').matches;
+    var stacked = window.matchMedia('(max-width:63.99em), (min-width:64em)').matches;
     if(leftCol && !stacked){
       box.style.width = '0px';
       box.style.height = '0px';
@@ -3681,7 +3688,7 @@
   }
   todayInner.addEventListener('scroll', updateScrollFade, {passive: true});
 
-  var todayMobileMQ = window.matchMedia('(max-width:31.1875em)');
+  var todayMobileMQ = window.matchMedia('(max-width:63.99em)');
   function updateTodayA11y(){
     hourlyStrip.setAttribute('aria-label', 'Hourly wind for the next 10 hours');
     if(todayMobileMQ.matches){
@@ -4812,7 +4819,7 @@
   // On phones the header is a sticky top bar (logo + buttons only): the alert banner and the place name move down into
   // the current-conditions area, in that order, ahead of the wind reading.
   var alertsMobileMq = window.matchMedia('(max-width:63.99em)');
-  var phoneBarMq = window.matchMedia('(max-width:31.1875em)');
+  var phoneBarMq = window.matchMedia('(max-width:63.99em)');
   var verdictHeroMq = window.matchMedia('(max-width:63.99em)');
   // Phones (design C): the plain-language summary leads the hero, ahead of the Current Conditions card and the radar. Tablets (<64em): it leads the page, inside the hero block.
   // Two-column layout: it heads the right column, above Best Times.
@@ -5273,7 +5280,7 @@
   });
 
   /* ---------- Mobile search drawer: Search, Favorites, Recents ---------- */
-  var sdMQ = window.matchMedia('(max-width:31.1875em)');
+  var sdMQ = window.matchMedia('(max-width:63.99em)');
   var sdDrawer = document.getElementById('searchDrawer');
   var sdSheet = document.getElementById('sdSheet');
   var sdSearchBtn = document.getElementById('mSearchBtn');
@@ -5522,7 +5529,7 @@
   });
 
   /* ---------- Tablet & desktop: Current / Favorites / Recents panel under the location field ---------- */
-  window.placesDesktopMQ = window.matchMedia('(min-width:31.25em)');
+  window.placesDesktopMQ = window.matchMedia('(min-width:64em)');
   var lpPanel = document.getElementById('locPlaces');
   var lpInput = document.getElementById('locInput');
   var lpField = lpInput.closest('.field');
@@ -5789,7 +5796,7 @@
 
   /* ---------- Pause / play all animation (desktop header button) ---------- */
   var PAUSE_KEY = 'checkTheWind.animPaused';
-  var animDesktopMQ = window.matchMedia('(min-width:31.25em)');  // phones have no pause button, so a saved pause never applies there
+  var animDesktopMQ = window.matchMedia('(min-width:64em)');  // phones have no pause button, so a saved pause never applies there
   var animPaused = false;
   try{ animPaused = localStorage.getItem(PAUSE_KEY) === '1'; }catch(e){}
   function animEffectivePaused(){ return animPaused && animDesktopMQ.matches; }
