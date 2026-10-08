@@ -1918,9 +1918,9 @@
     .hero-wrap .hero-top > .hero-now{ align-self:start }
   }
 
-  /* Tablet: Wind Today keeps the desktop hourly chart (under the phone header style) beside the phone's scrolling Air Quality gauge row; the two cards are the same height */
+  /* Tablet: Wind Today keeps the desktop hourly chart (under the phone header style), stacked above the phone's scrolling Air Quality gauge row */
   @media (min-width:31.25em) and (max-width:63.99em){
-    .wind-row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:stretch; margin-top:16px }
+    .wind-row{ display:grid; grid-template-columns:minmax(0,1fr); gap:16px; align-items:start; margin-top:16px }  /* stacked: Wind Today, then Air Quality & Pollen */
     .db-content .wind-row > section{ margin-top:0; min-width:0; display:flex; flex-direction:column }
     #todaySection .today-card{ flex:1 1 auto; min-height:0; box-sizing:border-box; padding:0; display:flex; flex-direction:column }
     #todaySection .card-body{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column }
