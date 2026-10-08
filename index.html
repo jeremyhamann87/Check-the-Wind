@@ -4105,9 +4105,9 @@
       '<div class="card-body"><div class="ag-wrap"><div class="ag-grid" tabindex="0" role="group" aria-label="Air quality and pollen gauges, scrolls sideways">' +
         arcGauge('Air Quality Index', aqiG && aqiG.v, 300, AG_AQI_BANDS, aqiG ? aqiG.lv.label : 'Unavailable', aqiG ? aqiG.lv.ink : null, 'ag-main') +
         arcGauge('Pollutants (PM2.5)', pmG && pmG.v, 300, AG_AQI_BANDS, pmG ? pmG.lv.label : 'Unavailable', pmG ? pmG.lv.ink : null) +
+        arcGauge('Weeds', pollen.weed, 100, AG_POLLEN_BANDS, weedLv.label, weedLv.ink) +
         arcGauge('Trees', pollen.tree, 100, AG_POLLEN_BANDS, treeLv.label, treeLv.ink) +
         arcGauge('Grasses', pollen.grass, 100, AG_POLLEN_BANDS, grassLv.label, grassLv.ink) +
-        arcGauge('Weeds', pollen.weed, 100, AG_POLLEN_BANDS, weedLv.label, weedLv.ink) +
       '</div></div></div>';
     agWireFade();
     airSection.hidden = false;
