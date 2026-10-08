@@ -743,7 +743,7 @@
   }
   .bw-list{background:var(--surface); border-radius:4px; overflow:hidden; border:1px solid var(--table-border)}
   .bw-head{padding:9px 24px 6.5px; background:color-mix(in srgb, var(--text) 5%, var(--surface)); border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
-  .bw-row{padding:12px 24px; border-bottom:.5px solid var(--table-border); font-size:1rem}
+  .bw-row{padding:12px 24px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)); font-size:1rem}  /* a 1px hairline (like the card headers); a .5px line can drop out on some phones */
   .bw-row.bw-row--top{padding:12px 24px}
   .bw-row:last-of-type{border-bottom:none}
   .bw-cell{min-width:0}
@@ -1775,7 +1775,7 @@
     .hero-wrap .vd-card{ background:transparent; box-shadow:none; border-radius:0; overflow:visible }
     .hero-wrap .vd-card .card-head, .hero-wrap .vd-top, .hero-wrap .vd-sentence, .hero-wrap .vd-acts-line, .hero-wrap .vd-details, .hero-wrap .vd-next{ display:none !important }
     .hero-wrap .vd-body{ padding:0 }
-    .hero-wrap .vd-prose{ display:block; margin:0; padding:0; text-align:center; font-size:1rem; line-height:1.5; color:var(--text); text-wrap:pretty }
+    .hero-wrap .vd-prose{ display:block; margin:0; padding:0; text-align:center; font-size:1rem; line-height:1.5; color:var(--text); }
     .hero-wrap .hero-now::before{ content:none }
     .hero-wrap .hero-now{ padding:0 16px 16px }
     .hero-wrap .hero-now .hn-head{ display:flex }
@@ -1825,7 +1825,7 @@
   /* Tablet and desktop: the "Is it a Good Time to Go Outside?" module is the written summary (same sentences as on phones), above Best Times */
   @media (min-width:31.25em){
     .vd-top, .vd-sentence, .vd-acts-line, .vd-details, .vd-next{ display:none !important }
-    .vd-prose{ display:block; margin:0; font-size:1.0625rem; line-height:1.55; color:var(--text); text-wrap:pretty }
+    .vd-prose{ display:block; margin:0; font-size:1.0625rem; line-height:1.55; color:var(--text); }
     .vd-body{ padding:16px 24px 20px }
   }
   /* Tablet: no card, just the written summary as plain text above the current conditions (like on phones) */
