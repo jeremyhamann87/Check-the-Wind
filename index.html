@@ -1972,6 +1972,16 @@
   @media (min-width:64em){
     .vd-card .vd-tag:not([hidden]){ box-shadow:none }
   }
+
+  /* Desktop: every card has 16px of padding all the way around its content */
+  @media (min-width:64em){
+    .db-content .card-head{ padding:6px 16px }
+    .db-content .card-body, #airCard .card-body, #todaySection .card-body, .vd-body{ padding:16px }
+    .bw-head{ padding-inline:16px }
+    .bw-row{ padding-inline:16px }
+    .bw-row:last-of-type{ padding-bottom:16px }
+    #todaySection .hscroll{ padding-bottom:0 }  /* the chart fits, so no extra gap for a scrollbar */
+  }
 </style>
 </head>
 <body>
