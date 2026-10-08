@@ -3488,7 +3488,7 @@
         key: dateStr,
         label: i === 0 ? 'Today' : fmtDow(dateStr),
         date: fmtMD(dateStr),
-        windHtml: '<b style="color:' + band.css + '">' + Math.round(wd.avg) + ' mph</b>' +
+        windHtml: '<b style="color:' + band.css + '">' + wd.high + ' mph</b>' +
           windArrowSvg(p.windDirection, band.css, 22) + srDir(p.windDirection),
         bandLabel: band.label,
         bandPill: band.pill,
