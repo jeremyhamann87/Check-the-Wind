@@ -1982,6 +1982,14 @@
     .bw-row:last-of-type{ padding-bottom:16px }
     #todaySection .hscroll{ padding-bottom:0 }  /* the chart fits, so no extra gap for a scrollbar */
   }
+
+  /* Desktop: 24px between modules */
+  @media (min-width:64em){
+    .db-content section{ margin-top:24px }
+    .db-content #verdictSection:not([hidden]) + #bestSection{ margin-top:24px }
+    .wind-row{ gap:24px; margin-top:24px }
+    .db-content .wind-row > section{ margin-top:0 }
+  }
 </style>
 </head>
 <body>
