@@ -1993,6 +1993,16 @@
     .wind-row{ gap:24px; margin-top:24px }
     .db-content .wind-row > section{ margin-top:0 }
   }
+
+  /* Night Time tag: a purple scheme and a moon instead of a dot */
+  :root{ --night-ink:#5A3E9B }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --night-ink:#C3B2F6 } }
+  :root[data-theme="dark"]{ --night-ink:#C3B2F6 }
+  .vd-tag--night{ --tg:var(--night-ink) }
+  .hero-head .vd-tag--night::before, .m-actions .vd-tag--night::before, .vd-card .vd-tag--night::before{
+    width:12px; height:12px; margin-right:5px; border-radius:0; background:var(--tg);
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
 </style>
 </head>
 <body>
@@ -4597,15 +4607,29 @@
   var vdBody = document.getElementById('vdBody');
 
   var VD_ACTIVITIES = [
-    {name:'Walking & dog walks', verb:'go for a walk', short:'walking', ok:function(a){ return a.tMin >= 32 && a.tMax <= 92 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
-    {name:'Running', verb:'run', short:'running',             ok:function(a){ return a.tMin >= 28 && a.tMax <= 78 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
-    {name:'Cycling', verb:'bike', short:'cycling',             ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 15 && a.pop < 20 && a.wet < 0.15 && a.aqi <= 100; }},
-    {name:'Hiking', verb:'hike', short:'hiking',              ok:function(a){ return a.tMin >= 35 && a.tMax <= 88 && a.wMax < 22 && a.pop < 30 && a.wet < 0.45 && a.aqi <= 100; }},
+    {name:'Walking & dog walks', verb:'take a stroll', short:'walking', ok:function(a){ return a.tMin >= 32 && a.tMax <= 92 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
+    {name:'Running', verb:'go for a run', short:'running',            ok:function(a){ return a.tMin >= 28 && a.tMax <= 78 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
+    {name:'Cycling', verb:'go for a bike ride', short:'cycling',      ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 15 && a.pop < 20 && a.wet < 0.15 && a.aqi <= 100; }},
+    {name:'Hiking', verb:'hit a trail', short:'hiking',              ok:function(a){ return a.tMin >= 35 && a.tMax <= 88 && a.wMax < 22 && a.pop < 30 && a.wet < 0.45 && a.aqi <= 100; }},
+    {name:'Fishing', verb:'wet a line', short:'fishing',             ok:function(a){ return a.tMin >= 45 && a.tMax <= 95 && a.wMax < 15 && a.pop < 30 && a.aqi <= 100; }},
+    {name:'Golf', verb:'play a round of golf', short:'golf',         ok:function(a){ return a.tMin >= 50 && a.tMax <= 92 && a.wMax < 15 && a.pop < 20 && a.wet < 0.45 && a.aqi <= 100; }},
+    {name:'Swimming', verb:'take a swim', short:'swimming',          ok:function(a){ return a.tMin >= 78 && a.wMax < 15 && a.pop < 20 && a.aqi <= 100; }},
+    {name:'Sunbathing', verb:'soak up some sun', short:'sunbathing', ok:function(a){ return a.tMin >= 72 && a.tMax <= 95 && a.wMax < 12 && a.pop < 15 && a.aqi <= 100; }},
+    {name:'Hammock time', verb:'swing in a hammock', short:'hammock time', ok:function(a){ return a.tMin >= 58 && a.tMax <= 88 && a.wMax < 10 && a.pop < 15 && a.aqi <= 100; }},
     {name:'Picnics & patio time', verb:'have a picnic', short:'picnics',ok:function(a){ return a.tMin >= 62 && a.tMax <= 88 && a.wMax < 12 && a.pop < 20 && a.wet < 0.45 && a.aqi <= 100; }},
-    {name:'Gardening & yard work', verb:'garden', short:'yard work',ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
-    {name:'Kite flying', verb:'fly a kite', short:'kite flying',         ok:function(a){ return a.wMin >= 8 && a.wMax <= 24 && a.pop < 30 && a.tMin >= 32; }},
-    {name:'Drone flying', verb:'fly a drone', short:'drone flying',        ok:function(a){ return a.wMax < 14 && a.pop < 20 && a.tMin >= 32 && a.tMax <= 95; }}
+    {name:'Gardening & yard work', verb:'putter in the garden', short:'yard work',ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
+    {name:'Kite flying', verb:'fly a kite', short:'kite flying',      ok:function(a){ return a.wMin >= 8 && a.wMax <= 24 && a.pop < 30 && a.tMin >= 32; }},
+    {name:'Drone flying', verb:'fly a drone', short:'drone flying',   ok:function(a){ return a.wMax < 14 && a.pop < 20 && a.tMin >= 32 && a.tMax <= 95; }}
   ];
+
+  // Stable "randomness": the same wording all day (changes with the date), so re-renders never flicker
+  function vdSeed(c){ var n = 0, t = c.todayStr || ''; for(var i = 0; i < t.length; i++) n += t.charCodeAt(i) * (i + 1); return n; }
+  function vdPick(arr, seed, salt){ return arr[(seed + (salt || 0) * 7) % arr.length]; }
+  function vdPickActs(list, seed, n){
+    if(!list.length) return [];
+    var k = seed % list.length, rot = list.slice(k).concat(list.slice(0, k));
+    return rot.slice(0, n);
+  }
 
   function vdAgg(hs){
     var t = hs.map(function(h){ return h.temp; }), w = hs.map(function(h){ return h.mph; });
@@ -4717,6 +4741,8 @@
     function finish(r, agg){
       r.agg = agg;
       if(severe){ r.alert = severe.event.toLowerCase(); if(r.state === 'yes') r.state = 'maybe'; }
+      // night time: darkness is the only thing ruling the hour out, and the weather itself is calm
+      r.night = !!(!severe && r.state !== 'yes' && now.why.length === 1 && /dark out/.test(now.why[0]) && now.mph < 16);
       return r;
     }
   }
@@ -4740,7 +4766,7 @@
     var phrases = [];
     next.why.forEach(function(w){
       var m;
-      if(/dark out/.test(w)) phrases.push('it gets dark');
+      if(/dark out/.test(w)) phrases.push('the light fades');
       else if(/^(thunderstorms|rain|showers|snow)$/.test(w)) phrases.push('expect ' + w);
       else if((m = /^wind up to (\d+) mph/.exec(w))) phrases.push('winds pick up to ' + m[1] + ' mph');
       else if((m = /^(\d+)% chance of precipitation/.exec(w))) phrases.push('the chance of precipitation rises to ' + m[1] + '%');
@@ -4752,56 +4778,88 @@
       else if(/wet ground/.test(w)) phrases.push('the ground gets wet');
     });
     // When darkness is the only thing changing, say what the night looks like instead of just "it gets dark"
-    if(phrases.length === 1 && phrases[0] === 'it gets dark'){
+    if(phrases.length === 1 && phrases[0] === 'the light fades'){
       var kind = classifySky(next.fc), fcl = (next.fc || '').toLowerCase();
       var windAdj = next.mph < 8 ? 'calm' : next.mph < 16 ? 'breezy' : 'windy';
       if(kind === 'clear' || kind === 'partly'){
         var sky = kind === 'clear' ? 'clear' : /mostly (clear|sunny)/.test(fcl) ? 'mostly clear' : 'partly cloudy';
-        phrases[0] = 'it gets dark but stays ' + sky + ' and ' + windAdj;
+        phrases[0] = 'the light fades but it stays ' + sky + ' and ' + windAdj;
       }else if(kind === 'cloudy'){
-        phrases[0] = 'it gets dark, with ' + (/mostly cloudy/.test(fcl) ? 'mostly cloudy' : 'cloudy') + ' skies and ' + windAdj + ' conditions';
+        phrases[0] = 'the light fades, with ' + (/mostly cloudy/.test(fcl) ? 'mostly cloudy' : 'cloudy') + ' skies and ' + windAdj + ' conditions';
       }else{
-        phrases[0] = 'it gets dark, with ' + {rain:'rain possible', thunder:'thunderstorms possible', snow:'snow possible', fog:'fog'}[kind];
+        phrases[0] = 'the light fades, with ' + {rain:'rain possible', thunder:'thunderstorms possible', snow:'snow possible', fog:'fog'}[kind];
       }
     }
     if(!phrases.length) phrases.push('conditions turn less ideal');
     return 'After ' + clock + ', ' + vdList(phrases.slice(0, 2)) + '.';
   }
   function vdProse(r, c, actList){
-    var out = [];
-    var acts = actList.slice(0, 3).map(function(x){ return x.verb; });
-    var actsSentence = acts.length ? 'This is great weather to ' + vdList(acts) + '.' : 'A short outing should be fine.';
+    var out = [], seed = vdSeed(c);
+    var acts = vdPickActs(actList, seed, 3).map(function(x){ return x.verb; });
+    var actsSentence = acts.length
+      ? vdPick(['This is great weather to ', 'It’s a lovely time to ', 'You could ', 'Perfect conditions to '], seed, 3) + vdList(acts) + '.'
+      : 'Even a short outing should feel nice.';
+    // Warnings stay serious, just kind
     if(r.alert && r.state !== 'no'){
       var spa = vdSpan(r.hs, c);
       var lead = r.hs[0].i === 0 ? (r.fair ? 'Conditions are okay ' : 'Conditions look good ') + spa.phrase
         : 'Conditions should be good ' + spa.day + ' ' + spa.phrase;
-      out.push(lead + ', but there\u2019s an active ' + r.alert + ' for your area.');
+      out.push(lead + ', but there’s an active ' + r.alert + ' for your area.');
       var aft4 = vdAfter(r, c); if(aft4) out.push(aft4);
-      out.push('Be careful, and check the alert above before heading outside.');
+      out.push('Please be careful, and check the alert above before heading outside.');
+      return out.join(' ');
+    }
+    // Night time with otherwise calm weather
+    if(r.night){
+      var now0 = c.hrs[0], kind0 = classifySky(now0.fc);
+      var calmWord = now0.mph < 8 ? 'calm' : 'breezy';
+      out.push('It’s night time and dark out, so most outdoor activities will be challenging unless you have a good headlamp.');
+      out.push(kind0 === 'clear' || kind0 === 'partly'
+        ? 'It’s ' + calmWord + ' and ' + (kind0 === 'clear' ? 'clear' : 'partly cloudy') + ' out there, a nice night for a little stargazing.'
+        : 'It’s ' + calmWord + ' out there, a cozy night to stay in.');
+      var nw = r.state === 'maybe' ? r.hs : r.nextHs;
+      if(nw){
+        var spn = vdSpan(nw, c);
+        out.push(r.state === 'maybe' ? 'Good news: the sun’s back soon, and ' + spn.day + ' ' + spn.phrase + ' looks lovely.'
+          : 'Your next good window is ' + spn.day + ' ' + spn.phrase + ', so sweet dreams until then.');
+      }
       return out.join(' ');
     }
     if(r.state === 'yes'){
       var sp = vdSpan(r.hs, c);
-      out.push(vdCap(sp.day) + ' ' + sp.phrase + ' is a great time to get outside.');
-      out.push('It will be ' + vdLc(vdGoodSentence(r.agg)));
+      var comfy = r.agg.tAvg >= 50 && r.agg.tAvg <= 86 && r.agg.wet < 0.45;  // only call it "lovely" when it is mild and not soggy
+      out.push(comfy ? vdPick([
+        vdCap(sp.day) + ' ' + sp.phrase + ' is a lovely time to get outside.',
+        'Good news: ' + sp.day + ' ' + sp.phrase + ' is a great time to get outside.',
+        'Go on, get outside! ' + vdCap(sp.day) + ' ' + sp.phrase + ' looks lovely.'
+      ], seed, 1) : vdPick([
+        vdCap(sp.day) + ' ' + sp.phrase + ' is a good time to get outside.',
+        'Good news: ' + sp.day + ' ' + sp.phrase + ' works for getting outside.'
+      ], seed, 1));
+      out.push(vdPick(['It will be ', 'Expect '], seed, 2) + vdLc(vdGoodSentence(r.agg)));
       out.push(actsSentence);
       var aft = vdAfter(r, c); if(aft) out.push(aft);
     }else if(r.state === 'maybe' && r.hs[0].i === 0){
-      out.push('It’s okay to be outside right now, but not ideal.');
+      out.push('You can head out right now, though conditions aren’t the dreamiest.');
       var weak = vdWeakPoints(vdAgg([c.hrs[0]]));
-      if(weak.length) out.push('Watch for ' + vdList(weak.slice(0, 2)) + '.');
+      if(weak.length) out.push('Keep an eye out for ' + vdList(weak.slice(0, 2)) + '.');
       out.push(actsSentence);
       var aft2 = vdAfter(r, c); if(aft2) out.push(aft2);
     }else if(r.state === 'maybe'){
       var sp2 = vdSpan(r.hs, c);
-      out.push('Not right now, but ' + sp2.day + ' ' + sp2.phrase + ' looks like a good time to get outside.');
+      out.push('Hang tight: ' + sp2.day + ' ' + sp2.phrase + ' looks like a lovely time to get outside.');
       out.push('Then it will be ' + vdLc(vdGoodSentence(r.agg)));
       out.push(actsSentence);
       var aft3 = vdAfter(r, c); if(aft3) out.push(aft3);
     }else{
-      out.push('It’s not a good time to be outside right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
-      if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next good window is ' + sp3.day + ' ' + sp3.phrase + '.'); }
-      else out.push('There’s no good window in the next 48 hours.');
+      if(r.alert){
+        // a Severe / Extreme warning: kind, but not playful
+        out.push('It’s best to stay inside for now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '. Please stay safe, and check the alert above.');
+      }else{
+        out.push('It’s a cozy-inside kind of moment right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
+      }
+      if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next good window is ' + sp3.day + ' ' + sp3.phrase + (r.alert ? '.' : ', so it’s worth the wait.')); }
+      else out.push('There’s no good window in the next 48 hours, so it’s a fine time for a movie and a snack.');
     }
     return out.join(' ');
   }
@@ -4872,6 +4930,7 @@
   // The short go / stay tag beside the place name on phones
   function vdTagFor(r){
     if(r.alert && r.state !== 'no') return {t:'Use Caution', k:'orange'};
+    if(r.night) return {t:'Night Time', k:'night'};
     if(r.state === 'yes') return {t:'Go Outside!', k:'green'};
     if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for Now', k:'yellow'} : {t:'Wait a Bit', k:'yellow'};
     return r.nextHs ? {t:'Not Today', k:'orange'} : {t:'Stay In', k:'red'};
