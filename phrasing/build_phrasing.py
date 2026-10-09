@@ -92,7 +92,9 @@ for s in ['It will be [the summary sentence, lowercased]','Expect [the summary s
 for s in ['This is great weather to [activities].','It’s a lovely time to [activities].','You could [activities].','Perfect conditions to [activities].']: a(P,pw,s,'Yes/Maybe with at least one fitting activity.','Up to 3 activity verbs, e.g. "take a stroll, hit a trail and fly a kite"; lead-in and activities rotate by date')
 a(P,pw,'Even a short outing should feel nice.','Yes/Maybe but no activity fits.')
 a(P,pw,'You can head out right now, though conditions aren’t the dreamiest. Keep an eye out for [weak points]. [Activities sentence] [After-window sentence]','Verdict is Maybe and the window starts now.')
-a(P,pw,'Hang tight: [day] [time] looks like a lovely time to get outside. Then it will be [summary]. [Activities sentence] [After-window sentence]','Verdict is Maybe with a window later today.')
+a(P,pw,'[Why it is not good right now], so hang tight: [day] [time] looks like a lovely time to get outside. Then it will be [summary]. [Activities sentence] [After-window sentence]','Verdict is Maybe with a window later today.','Up to two reasons, e.g. "Winds up to 33 mph right now, so hang tight: today from 5 to 7 PM looks like a lovely time…"')
+for ph,wh in [('it’s dark out','No daylight right now.'),('winds up to [N] mph','Wind at or above the limit.'),('a [N]% chance of precipitation','Chance of precipitation at or above the limit.'),('it’s raining / it’s snowing / there are showers around / there are thunderstorms around','Precipitation in the forecast right now.'),('the ground is snowy or icy','Ice or snow on the ground.'),('the ground is wet','Wet ground (when that setting is on).'),('it’s cold at [temp] / it’s hot at [temp]','Outside the temperature limits.'),('air quality is poor (AQI [N])','AQI above the limit.'),('it’s humid','Humidity above the limit.')]:
+    a(P,pw,ph,wh + ' Used in the "so hang tight" line.','')
 
 AF='After-window sentence'
 a(AF,'End of the Yes / Maybe paragraph','After [time], [phrases].','A good window is followed by an hour that is ruled out. Shows up to 2 phrases.','')
@@ -196,7 +198,7 @@ for ph,wh,n in [
  ('Beauty day, eh? [Day] [time] is a great time to get outside. / Give’r! [Day] [time] looks like a beauty. / [Day] [time] is a beauty of a time to get outside, don’t you know.','Verdict is Yes and comfortable.','Replaces the three standard Yes openers'),
  ('[Day] [time] works for getting outside, eh? / Not bad at all: [day] [time] is a good time to get outside, eh?','Verdict is Yes but not especially comfortable.','Replaces the two standard openers'),
  ('You can head out right now, though conditions aren’t the dreamiest, eh.','Verdict is Maybe and the window starts now.',''),
- ('Hang tight, eh: [day] [time] looks like a lovely time to get outside.','Verdict is Maybe with a window later today.',''),
+ ('[Why it is not good right now], so hang tight, eh: [day] [time] looks like a lovely time to get outside.','Verdict is Maybe with a window later today.',''),
  ('It’s a beauty of a day to [activities] / Time to [activities]','Yes/Maybe with a fitting activity.','Two of the four activity lead-ins'),
  ('Keep your toque handy.','Average temp under 7°C (45°F) in a Yes or Maybe window.','One extra sentence, chosen by the date'),
  ('The maple leaves should be putting on a show, too.','September to November, little chance of rain.','One extra sentence, chosen by the date'),
