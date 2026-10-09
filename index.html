@@ -5449,10 +5449,10 @@
     }
     if(r.state === 'yes'){
       var comfy = r.agg.tAvg >= 50 && r.agg.tAvg <= 86 && r.agg.wet < 0.45;
-      if(r.incoming) return 'Good until ' + vdClock(c.hrs[r.incoming.i]) + ', then ' + vdWxWord(r.incoming.why[0]) + '.';
+      if(r.incoming) return 'Nice out until ' + vdClock(c.hrs[r.incoming.i]) + ', then ' + vdWxWord(r.incoming.why[0]) + '.';
       var when = r.hs[0].i === 0 ? 'until ' + endAt(r.hs) : vdRange(r.hs, c);
-      if(ca) return comfy ? vdPick(['Beauty day, eh? Good ' + when + '.', 'Give’r! Lovely ' + when + '.'], seed, 1) : 'Not bad, eh. Good ' + when + '.';
-      return comfy ? 'Lovely ' + when + '.' : 'Good ' + when + '.';
+      if(ca) return comfy ? vdPick(['Beauty day, eh? Nice out ' + when + '.', 'Give’r! Lovely ' + when + '.'], seed, 1) : 'Not bad, eh. Nice out ' + when + '.';
+      return comfy ? 'Lovely ' + when + '.' : 'Nice out ' + when + '.';
     }
     if(r.state === 'maybe' && r.hs[0].i === 0){
       var weak = vdWeakPoints(vdAgg([c.hrs[0]]));

@@ -191,9 +191,9 @@ a('Units','Every temperature and wind speed shown','°C and km/h for visitors in
 HL='Headline (bold, top of the hero)'
 hw='Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.'
 for ph,wh,n in [
- ('Lovely until [time]. / Lovely [day] [time range].','Verdict Yes and comfortable (average 50–86°F, ground not wet).','Canadian: "Beauty day, eh? Good until [time]." / "Give’r! Lovely until [time]."'),
- ('Good until [time]. / Good [day] [time range].','Verdict Yes, not especially comfortable.','Canadian: "Not bad, eh. Good until [time]."'),
- ('Good until [time], then [rain / snow / storms / wind / ice].','Stay Aware: weather arrives within 3 hours.',''),
+ ('Lovely until [time]. / Lovely [day] [time range].','Verdict Yes and comfortable (average 50–86°F, ground not wet).','Canadian: "Beauty day, eh? Nice out until [time]." / "Give’r! Lovely until [time]."'),
+ ('Nice out until [time]. / Nice out [day] [time range].','Verdict Yes, not especially comfortable.','Canadian: "Not bad, eh. Nice out until [time]."'),
+ ('Nice out until [time], then [rain / snow / storms / wind / ice].','Stay Aware: weather arrives within 3 hours.',''),
  ('Doable, not ideal: [first weak point]. / Doable now, but [weather] by [time].','Verdict Maybe and the window starts now.',''),
  ('[Why short] now. Lovely [day] [time range].','Verdict Maybe with a window later today (why: Dark out, Storms, Rain, Snow, Showers, Windy, Rain likely, Icy ground, Cold, Hot, Poor air, Humid, Wet ground).','Canadian: "Lovely, eh: …"'),
  ('[Why short]. Next best window to get outside: [day] [time range].','Verdict No (no alert), a good window within 48 hours.',''),
