@@ -5153,6 +5153,23 @@
     if(a.wet < 0.15 && a.pop < 20) opts.push('Give’r!');
     return opts.length ? vdPick(opts, seed, 5) : '';
   }
+  // Why the current hour is ruled out, as a plain clause ("it’s dark out", "winds up to 25 mph", "the ground is wet")
+  function vdNowClause(w){
+    var m;
+    if((m = /^wind up to (.+)$/.exec(w))) return 'winds up to ' + m[1];
+    if((m = /^(\d+% chance of precipitation)$/.exec(w))) return 'a ' + m[1];
+    if((m = /^cold at (.+)$/.exec(w))) return 'it’s cold at ' + m[1];
+    if((m = /^hot at (.+)$/.exec(w))) return 'it’s hot at ' + m[1];
+    if((m = /^poor air quality (\(.+\))$/.exec(w))) return 'air quality is poor ' + m[1];
+    if(w === 'snowy or icy ground') return 'the ground is snowy or icy';
+    if(w === 'wet ground') return 'the ground is wet';
+    if(w === 'high humidity') return 'it’s humid';
+    if(w === 'thunderstorms') return 'there are thunderstorms around';
+    if(w === 'showers') return 'there are showers around';
+    if(w === 'rain') return 'it’s raining';
+    if(w === 'snow') return 'it’s snowing';
+    return w;
+  }
   function vdProse(r, c, actList){
     var out = [], seed = vdSeed(c);
     var acts = vdPickActs(actList, seed, 3).map(function(x, i){ return (caVoice && x.verbCa && (seed + i) % 2 === 0) ? x.verbCa : x.verb; });
@@ -5262,7 +5279,8 @@
       var aft2 = vdAfter(r, c); if(aft2) out.push(aft2);
     }else if(r.state === 'maybe'){
       var sp2 = vdSpan(r.hs, c);
-      out.push((caVoice ? 'Hang tight, eh: ' : 'Hang tight: ') + sp2.day + ' ' + sp2.phrase + ' looks like a lovely time to get outside.');
+      var nowWhy = r.why && r.why.length ? vdCap(vdList(r.why.slice(0, 2).map(vdNowClause))) + ' right now, so hang tight' : 'Hang tight';
+      out.push(nowWhy + (caVoice ? ', eh: ' : ': ') + sp2.day + ' ' + sp2.phrase + ' looks like a lovely time to get outside.');
       out.push('Then it will be ' + vdLc(vdGoodSentence(r.agg)));
       out.push(actsSentence);
       if(caVoice){ var cx3 = caExtra(r, c, seed); if(cx3) out.push(cx3); }
