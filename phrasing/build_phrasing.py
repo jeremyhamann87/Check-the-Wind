@@ -208,6 +208,10 @@ a(BC,'Activities line','Better saved for museums, shows and a good restaurant.',
 a(BC,'Verdict details','A good time for a museum, a show or a long dinner.','Big city and the verdict is No.','Other places say "A good time for indoor plans."')
 a(BC,bcw,'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a museum, a show or a long dinner out.','Big city, verdict No, no window in 48 hours, no alert.','')
 
+for city,tr in [('New York','the subway'),('Los Angeles','the Metro'),('Chicago','the L'),('Houston','the light rail'),('Phoenix','the light rail'),('Philadelphia','the subway'),('San Diego','the trolley'),('Dallas','the light rail'),('San Jose','the light rail'),('Charlotte','the light rail'),('San Francisco','BART or Muni'),('Seattle','the light rail (Link; Seattle has no subway)'),('Denver','the light rail'),('Washington, DC','the Metro'),('Boston','the T'),('Baltimore','the Metro'),('Tucson','the streetcar'),('Sacramento','the light rail'),('Atlanta','MARTA'),('Kansas City','the streetcar'),('Miami','Metrorail'),('Oakland','BART'),('Minneapolis','the light rail'),('Cleveland','the rapid transit'),('New Orleans','the streetcar'),('Pittsburgh','the light rail'),('Cincinnati','the streetcar'),('St. Louis','the light rail'),('Salt Lake City','the light rail'),('Portland','the light rail'),('Norfolk','the light rail'),('Buffalo','the Metro Rail'),('Toronto','the subway'),('Montreal','the Metro'),('Vancouver','the SkyTrain'),('Calgary','the CTrain'),('Edmonton','the LRT'),('Ottawa','the O-Train')]:
+    a('Big city transit','Used in the "or a cab beats a long walk" line',city + ': ' + tr,'Big city with rain, snow, bitter cold or strong wind.','Checked against Wikipedia lists of U.S. heavy rail and light rail systems')
+a('Big city transit','Used in the "or a cab beats a long walk" line','All other big cities: a bus','Big city with rain, snow, bitter cold or strong wind.','No rail system, or only a limited one')
+
 WR='What to wear and pets'
 wrw='Last sentences of the hero paragraph, and "What to wear." / "Pets." in the verdict details (everywhere, every state)'
 wr_cond='Based on the coldest and warmest temperature, strongest wind and any rain or snow from now through the next 6 hours, so it covers weather on its way.'
@@ -227,7 +231,7 @@ for ph,wh in [
  ('Rain is on the way, so keep an umbrella or a rain jacket handy.','Rain or showers arrive later in the next 6 hours.'),
  ('A windproof layer will help with the wind.','Wind of 16 mph (26 km/h) or more, unless it is below freezing.'),
  ('Comfortable shoes are a must for all that walking.','Big city, calm conditions (replaces the subway line).'),
- ('The subway or a cab beats a long walk.','Big city with rain, snow, a coldest hour under 25°F, or wind of 25 mph (40 km/h) or more.')]:
+ ('[Transit] or a cab beats a long walk.  ([Transit] is the city’s own: the subway, the Metro, the L, the light rail, a bus… see the Big city transit rows)','Big city with rain, snow, a coldest hour under 25°F, or wind of 25 mph (40 km/h) or more.')]:
     a(WR,wrw,ph,wh + ' ' + wr_cond,'At most two extra sentences are added after the main clothing sentence')
 for ph,wh in [
  ('It’s dangerously cold for pets: keep them indoors except for quick potty breaks, and bring in any animals that live outside.','Coldest hour under 20°F (−7°C).'),
