@@ -239,6 +239,8 @@ for ph,wh in [
  ('It’s chilly for pets, especially small or short-haired ones: keep walks short and consider a coat.','Coldest hour 32–39°F.')]:
     a(WR,wrw,ph,wh,'Pet safety')
 
+a('Alert priority','Alert banner order, the Use Caution tag and the verdict text','Tornado Warning, then Hurricane Warning, then Tornado Watch, then Hurricane Watch, then every other alert (warnings before watches before advisories, most severe first).','Several alerts are active at once (e.g. Pensacola with a hurricane warning plus flood and wind alerts).','The first one in this order is the alert named in the verdict text (e.g. "there is an active hurricane warning"). A tornado or hurricane warning always counts as the severe alert.')
+a('Alert priority','Hero paragraph','No clothing or pet tips are shown while a severe alert is active.','Any Severe/Extreme alert.','The text stays about safety only')
 CA='Canada alerts'
 a(CA,'Alert banner (Canada)','[Topic] [Warning / Watch / Advisory], e.g. "Frost Advisory"','An Environment Canada warning, watch or advisory is active for the nearest forecast location.','Yellow alerts count as Moderate, orange as Severe (so the verdict shows Use Caution), red as Extreme. Special weather statements are not shown.')
 a(CA,'Alert banner details','Issued by Environment and Climate Change Canada. Read the full alert, with details and what to do, at [link].','Every Canadian alert.','Canadian alerts link to the full text at weather.gc.ca')

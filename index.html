@@ -5093,7 +5093,9 @@
     var goodRuns = vdRuns(hrs, good);
     var res = {state:'no', hs:null, sentence:'', next:null, why:[]};
 
-    var severe = lastAlerts.filter(function(a){ return a.severity === 'Severe' || a.severity === 'Extreme'; })[0];
+    // a tornado or hurricane warning always counts as the severe alert (and is the one named); otherwise the first Severe/Extreme one
+    var severe = lastAlerts.filter(function(a){ return alertPriority(a.event) <= 1; })[0] ||
+      lastAlerts.filter(function(a){ return a.severity === 'Severe' || a.severity === 'Extreme'; })[0];
     var nextRun = goodRuns.filter(function(r){ return r[0].i > 0; })[0] || null;
     var laterToday = nextRun && localDate(nextRun[0].iso) === c.todayStr ? nextRun : null;
 
@@ -5229,7 +5231,9 @@
     return w;
   }
   function vdProse(r, c, actList){
-    var base = vdProseCore(r, c, actList).join(' '), g = vdGear(c);
+    var base = vdProseCore(r, c, actList).join(' ');
+    if(r.alert) return base;   // under a severe alert the text is only about safety: no clothing or pet tips
+    var g = vdGear(c);
     return base + ' ' + g.wear + (g.pet ? ' ' + g.pet : '');
   }
   function vdProseCore(r, c, actList){
@@ -5460,6 +5464,7 @@
   function vdSubText(r, c, actList){
     var sents = vdProseCore(r, c, actList), g = vdGear(c);
     var keep = (r.night || (r.state === 'no' && !r.alert)) ? sents.slice(0, -1) : sents.slice(1);
+    if(r.alert) return keep.join(' ');   // severe alert: safety only, no clothing or pet tips
     return keep.concat([g.wear]).concat(g.pet ? [g.pet] : []).join(' ');
   }
   // One gray line: what to wear (and how to get around in a city, and pet safety in the cold)
@@ -5681,6 +5686,16 @@
   ptrMobileMq.addEventListener('change', placePtr);
   var lastAlertSig = '';
 
+  // Tornadoes and hurricanes come before every other alert, wherever the alerts are listed or the verdict picks one:
+  // tornado warning, hurricane warning, then tornado watch, hurricane watch, then the rest
+  function alertPriority(ev){
+    ev = String(ev || '');
+    if(/^tornado warning/i.test(ev)) return 0;
+    if(/^hurricane warning/i.test(ev)) return 1;
+    if(/^tornado watch/i.test(ev)) return 2;
+    if(/^hurricane watch/i.test(ev)) return 3;
+    return 4;
+  }
   function alertKind(ev){
     if(/warning$/i.test(ev)) return 'warning';
     if(/watch$/i.test(ev)) return 'watch';
@@ -5693,7 +5708,7 @@
       var wpA = await wxPoint(lat, lon);
       if(wpA.region === 'ca'){
         var sevRankC = {Extreme:0, Severe:1, Moderate:2, Minor:3};
-        return (await canadaBundle(lat, lon)).alerts.slice().sort(function(a, b){ return (sevRankC[a.severity] != null ? sevRankC[a.severity] : 3) - (sevRankC[b.severity] != null ? sevRankC[b.severity] : 3); });
+        return (await canadaBundle(lat, lon)).alerts.slice().sort(function(a, b){ return alertPriority(a.event) - alertPriority(b.event) || (sevRankC[a.severity] != null ? sevRankC[a.severity] : 3) - (sevRankC[b.severity] != null ? sevRankC[b.severity] : 3); });
       }
       var alertsUrl = 'https://api.weather.gov/alerts/active?point=' + lat.toFixed(4) + ',' + lon.toFixed(4);
       var data;
@@ -5709,7 +5724,8 @@
         var end = Date.parse(p.ends || p.expires);
         return isNaN(end) || end > now;
       }).sort(function(a, b){
-        return kindRank[alertKind(a.event)] - kindRank[alertKind(b.event)] ||
+        return alertPriority(a.event) - alertPriority(b.event) ||
+          kindRank[alertKind(a.event)] - kindRank[alertKind(b.event)] ||
           (sevRank[a.severity] != null ? sevRank[a.severity] : 4) - (sevRank[b.severity] != null ? sevRank[b.severity] : 4) ||
           Date.parse(a.ends || a.expires) - Date.parse(b.ends || b.expires);
       });
