@@ -2020,6 +2020,14 @@
     #weekSection .dayrow .dwind .dval b{ white-space:nowrap }
   }
 
+  /* Desktop: the text under the air gauges is 12px, and a gauge with no reading says NA */
+  .ag-na{ display:none }
+  @media (min-width:64em){
+    .db-content .ag-word, .db-content .ag-word *{ font-size:.75rem !important }
+    .ag-word .ag-full{ display:none }
+    .ag-word .ag-na{ display:inline }
+  }
+
   /* Desktop: every font in the right-hand content column is 14px */
   @media (min-width:64em){
     .db-content, .db-content *{ font-size:.875rem !important }
@@ -4193,7 +4201,7 @@
     }
     return '<div class="ag ' + (cls || '') + '"><div class="ag-title">' + title + '</div>' +
       '<div class="ag-dial"><svg viewBox="0 0 200 100" aria-hidden="true" focusable="false">' + svg + '</svg>' +
-      '<div class="ag-center"><span class="ag-word" style="color:' + (ink || 'var(--text-muted)') + '">' + word + '</span>' +
+      '<div class="ag-center"><span class="ag-word" style="color:' + (ink || 'var(--text-muted)') + '">' + (word === 'Unavailable' ? '<span class="ag-full">Unavailable</span><span class="ag-na">NA</span>' : word) + '</span>' +
       (has ? '<span class="ag-num">' + Math.round(value) + '</span>' : '') + '</div></div></div>';
   }
 
