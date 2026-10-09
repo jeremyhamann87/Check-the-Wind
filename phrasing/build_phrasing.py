@@ -189,6 +189,29 @@ a(CA,'Alert banner (Canada)','[Topic] [Warning / Watch / Advisory], e.g. "Frost 
 a(CA,'Alert banner details','Issued by Environment and Climate Change Canada. Read the full alert, with details and what to do, at [link].','Every Canadian alert.','Canadian alerts link to the full text at weather.gc.ca')
 a(CA,'Radar (Canada)','Looping last hour of national radar (6-minute frames); no expanded or forecast radar','Any Canadian location.','')
 
+CV='Canadian voice'
+cw='Hero paragraph (visitors in Canada only)'
+cond_ca='Visitor has a Canadian time zone or language; never used under a Severe/Extreme alert.'
+for ph,wh,n in [
+ ('Beauty day, eh? [Day] [time] is a great time to get outside. / Give’r! [Day] [time] looks like a beauty. / [Day] [time] is a beauty of a time to get outside, don’t you know.','Verdict is Yes and comfortable.','Replaces the three standard Yes openers'),
+ ('[Day] [time] works for getting outside, eh? / Not bad at all: [day] [time] is a good time to get outside, eh?','Verdict is Yes but not especially comfortable.','Replaces the two standard openers'),
+ ('You can head out right now, though conditions aren’t the dreamiest, eh.','Verdict is Maybe and the window starts now.',''),
+ ('Hang tight, eh: [day] [time] looks like a lovely time to get outside.','Verdict is Maybe with a window later today.',''),
+ ('It’s a beauty of a day to [activities] / Time to [activities]','Yes/Maybe with a fitting activity.','Two of the four activity lead-ins'),
+ ('Keep your toque handy.','Average temp under 7°C (45°F) in a Yes or Maybe window.','One extra sentence, chosen by the date'),
+ ('The maple leaves should be putting on a show, too.','September to November, little chance of rain.','One extra sentence, chosen by the date'),
+ ('Might be worth a loonie or two for an ice cream.','Average temp 27°C (80°F) or higher.','One extra sentence, chosen by the date'),
+ ('Give’r!','Dry ground and almost no chance of rain.','One extra sentence, chosen by the date'),
+ ('It’s a bit of a gong show out there right now: [reasons] / Bit of a gong show outside right now: [reasons]','Verdict is No with two or more reasons, or wind of 25 mph (40 km/h) or more.',''),
+ ('There’s a bit of a weather kerfuffle going on right now: [reasons] / Even the Mounties would sit this one out: [reasons] / It’s a cozy-inside kind of moment right now: [reasons]','Verdict is No (milder reasons).',''),
+ ('There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a double-double from Tim Hortons. / ... and pancakes with real maple syrup.','Verdict is No with no window in 48 hours.',''),
+ ('It’s night time and dark out, eh, so most outdoor activities will be a challenge unless you’ve got a good headlamp.','Night Time tag, small town.','Replaces one of the six standard openers'),
+ ('Stargazing is free, so save your loonies and toonies for tomorrow’s coffee. It’s [calm/breezy] and [clear/partly cloudy] out there.','Night Time, small town, clear or partly cloudy sky.','Replaces one of the three standard star lines'),
+ ('Bring your toque if you do step out.','Night Time and under 10°C (50°F).','Extra sentence')]:
+    a(CV,cw,ph,wh + ' ' + cond_ca,n)
+for v,c2 in [('walk → stretch your legs for a few clicks','Walking'),('run → run a few clicks','Running'),('bike ride → go out for a rip on your bike','Cycling'),('picnic → have a picnic with something drizzled in maple syrup','Picnics'),('al fresco → enjoy a Tim Hortons coffee on a patio','Dining al fresco')]:
+    a(CV,'Activity verb (visitors in Canada)',v,'Half of the time, for visitors in Canada.',c2)
+
 C='Consent banner'
 a(C,'Bottom bar, first visit','Help us count visits? We use Google Analytics to see how many people use Check the Wind and which features they use. It’s for analytics only, with no ads. [What we track]','Shown until the visitor chooses; hides after Accept or Opt Out and is remembered.','Buttons: Opt Out / Accept')
 
