@@ -73,7 +73,7 @@ for name,verb,short,cond in [
  ('Picnics & patio time','have a picnic','picnics','Temp 62–88°F, wind under 12 mph, precip under 20%, ground under 0.45, AQI 100 or less'),
  ('Gardening & yard work','putter in the garden','yard work','Temp 40–90°F, wind under 20 mph, precip under 30%, AQI 100 or less'),
  ('Kite flying','fly a kite','kite flying','Wind 8–24 mph throughout, precip under 30%, temp 32°F or higher'),
- ('Dog walks','walk your dog','dog walks','Temp 25–88°F, wind under 25 mph, precip under 40%, AQI 100 or less'),
+ ('Dog walks','walk your dog','dog walks','Temp 35–88°F, wind under 25 mph, precip under 40%, AQI 100 or less'),
  ('Bird watching','go bird watching','bird watching','Temp 35–90°F, wind under 15 mph, precip under 20%, AQI 100 or less'),
  ('Mowing the lawn','mow the lawn','mowing','Temp 50–92°F, wind under 20 mph, precip under 10%, ground dry (under 0.15), AQI 100 or less'),
  ('Pruning flowers','prune your flowers','pruning flowers','Temp 40–88°F, wind under 20 mph, precip under 30%, ground under 0.45, AQI 100 or less'),
@@ -188,6 +188,53 @@ for s,w in [('We can’t reach the weather services right now. Check your intern
     a(E,'Error view',s,w)
 
 a('Units','Every temperature and wind speed shown','°C and km/h for visitors in Canada and for anyone viewing a Canadian place; °F and mph everywhere else','The browser reports a Canadian time zone (Toronto, Vancouver, Halifax, etc.) or a Canadian language (en-CA, fr-CA), OR the place being viewed is in Canada.','Wind categories in km/h: Calm 0–12, Breezy 13–25, Windy 26–39, Blustery 40–54, Howling 55+')
+BC='Big cities'
+bcw='Hero paragraph and details (cities of roughly the top ~75 U.S./Canadian metros)'
+bc_cond='The place is within about 30 km of a large U.S. or Canadian city centre.'
+for name,verb,short,cond in [
+ ('City walks','wander the neighborhoods on foot','city walks','Temp 28–95°F, wind under 25 mph, precip under 40%, AQI 100 or less'),
+ ('Park time','spend time in the park','park time','Temp 45–90°F, wind under 20 mph, precip under 30%, AQI 100 or less'),
+ ('Sidewalk cafés & patios','grab a table on a patio','patio dining','Temp 58–90°F, wind under 14 mph, precip under 15%, AQI 100 or less'),
+ ('Rooftop bars','have a drink at a rooftop bar','rooftop bars','Temp 62–92°F, wind under 12 mph, precip under 15%, AQI 100 or less'),
+ ('Outdoor concerts','catch a concert outdoors','outdoor concerts','Temp 55–90°F, wind under 15 mph, precip under 10%, AQI 100 or less'),
+ ('Museums & theaters','visit a museum or catch a show','museums and shows','Temp 15–100°F, wind under 30 mph, precip under 60%, AQI 150 or less'),
+ ('Dinner out','head out to dinner at a favorite restaurant','dinner out','Temp 20–100°F, wind under 30 mph, precip under 50%, AQI 150 or less'),
+ ('Street markets','browse a street market','street markets','Temp 45–90°F, wind under 18 mph, precip under 20%, AQI 100 or less'),
+ ('Cycling','cruise the bike lanes','cycling','Temp 40–90°F, wind under 15 mph, precip under 20%, ground dry, AQI 100 or less'),
+ ('Running','go for a run','running','Temp 28–78°F, wind under 20 mph, precip under 30%, AQI 100 or less'),
+ ('Dog walks','walk your dog','dog walks','Temp 35–88°F, wind under 25 mph, precip under 40%, AQI 100 or less')]:
+    a(BC,'Chip / paragraph (big cities use this list instead of the general Activities list)',f'{name}  |  short: {short}  |  verb: "{verb}"',bc_cond + ' ' + cond,'')
+a(BC,'Activities line','Better saved for museums, shows and a good restaurant.','Big city and the verdict is No.','Other places say "Better saved for indoor plans."')
+a(BC,'Verdict details','A good time for a museum, a show or a long dinner.','Big city and the verdict is No.','Other places say "A good time for indoor plans."')
+a(BC,bcw,'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a museum, a show or a long dinner out.','Big city, verdict No, no window in 48 hours, no alert.','')
+
+WR='What to wear and pets'
+wrw='Last sentences of the hero paragraph, and "What to wear." / "Pets." in the verdict details (everywhere, every state)'
+wr_cond='Based on the coldest and warmest temperature, strongest wind and any rain or snow from now through the next 6 hours, so it covers weather on its way.'
+for ph,wh in [
+ ('It’s bitter out, so wear a heavy coat, [a warm hat / a toque], insulated [gloves / mitts], a scarf and warm waterproof boots.','Coldest hour under 15°F (−9°C).'),
+ ('Bundle up with a warm coat, [a warm hat / a toque], [gloves / mitts] and a scarf, and wear warm boots.','Coldest hour 15–31°F.'),
+ ('Wear a warm coat with [a warm hat / a toque] and [gloves / mitts], and layer up underneath.','Coldest hour 32–44°F.'),
+ ('Dress in layers: a jacket or sweater now, and it warms up later.','Coldest hour 45–57°F and it reaches 68°F or more.'),
+ ('Bring a jacket or a warm sweater.','Coldest hour 45–57°F.'),
+ ('Dress light in breathable clothes, wear sunscreen and a hat, and bring water.','Warmest hour 85°F or more (and not cold).'),
+ ('Light, breathable clothes will feel best, and sunscreen is a good idea.','Warmest hour 72–84°F.'),
+ ('Light layers will do.','Otherwise (58–71°F).'),
+ ('Wear waterproof boots with good grip for the snow.','Snow in the forecast right now.'),
+ ('Snow is on the way, so wear waterproof boots with good grip.','Snow arrives later in the next 6 hours.'),
+ ('Watch for ice: wear boots with good grip and take small steps.','Icy conditions and it is 34°F or colder (no snow).'),
+ ('Bring an umbrella or a rain jacket.','Rain or showers right now.'),
+ ('Rain is on the way, so keep an umbrella or a rain jacket handy.','Rain or showers arrive later in the next 6 hours.'),
+ ('A windproof layer will help with the wind.','Wind of 16 mph (26 km/h) or more, unless it is below freezing.'),
+ ('Comfortable shoes are a must for all that walking.','Big city, calm conditions (replaces the subway line).'),
+ ('The subway or a cab beats a long walk.','Big city with rain, snow, a coldest hour under 25°F, or wind of 25 mph (40 km/h) or more.')]:
+    a(WR,wrw,ph,wh + ' ' + wr_cond,'At most two extra sentences are added after the main clothing sentence')
+for ph,wh in [
+ ('It’s dangerously cold for pets: keep them indoors except for quick potty breaks, and bring in any animals that live outside.','Coldest hour under 20°F (−7°C).'),
+ ('Keep pets inside when you can, keep walks short, and wipe their paws afterward to clear ice, salt and snow.','Coldest hour 20–31°F.'),
+ ('It’s chilly for pets, especially small or short-haired ones: keep walks short and consider a coat.','Coldest hour 32–39°F.')]:
+    a(WR,wrw,ph,wh,'Pet safety')
+
 CA='Canada alerts'
 a(CA,'Alert banner (Canada)','[Topic] [Warning / Watch / Advisory], e.g. "Frost Advisory"','An Environment Canada warning, watch or advisory is active for the nearest forecast location.','Yellow alerts count as Moderate, orange as Severe (so the verdict shows Use Caution), red as Extreme. Special weather statements are not shown.')
 a(CA,'Alert banner details','Issued by Environment and Climate Change Canada. Read the full alert, with details and what to do, at [link].','Every Canadian alert.','Canadian alerts link to the full text at weather.gc.ca')

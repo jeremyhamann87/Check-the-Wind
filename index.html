@@ -1696,6 +1696,8 @@
   .vd-acts-lab{font-size:.8125rem; font-weight:500; color:var(--text-muted)}
   .vd-chips{display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none}
   .vd-chips li{padding:3px 10px; border-radius:4px; background:var(--surface-2); color:var(--text); font-size:.9375rem; font-weight:600}
+  .vd-wear{margin:12px 0 0; font-size:1rem; line-height:1.45; color:var(--text-muted)}
+  .vd-wear strong{font-weight:600; color:var(--text)}
   .vd-acts-none, .vd-next{margin:12px 0 0; font-size:1rem; line-height:1.45; color:var(--text-muted)}
   .vd-next{color:var(--text)}
   .vd-skel-a{height:38px; width:55%}
@@ -4965,13 +4967,29 @@
     {name:'Picnics & patio time', verb:'have a picnic', verbCa:'have a picnic with something drizzled in maple syrup', short:'picnics',ok:function(a){ return a.tMin >= 62 && a.tMax <= 88 && a.wMax < 12 && a.pop < 20 && a.wet < 0.45 && a.aqi <= 100; }},
     {name:'Gardening & yard work', verb:'putter in the garden', short:'yard work',ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
     {name:'Kite flying', verb:'fly a kite', short:'kite flying',      ok:function(a){ return a.wMin >= 8 && a.wMax <= 24 && a.pop < 30 && a.tMin >= 32; }},
-    {name:'Dog walks', verb:'walk your dog', short:'dog walks',      ok:function(a){ return a.tMin >= 25 && a.tMax <= 88 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
+    {name:'Dog walks', verb:'walk your dog', short:'dog walks',      ok:function(a){ return a.tMin >= 35 && a.tMax <= 88 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
     {name:'Bird watching', verb:'go bird watching', short:'bird watching', ok:function(a){ return a.tMin >= 35 && a.tMax <= 90 && a.wMax < 15 && a.pop < 20 && a.aqi <= 100; }},
     {name:'Mowing the lawn', verb:'mow the lawn', short:'mowing',     ok:function(a){ return a.tMin >= 50 && a.tMax <= 92 && a.wMax < 20 && a.pop < 10 && a.wet < 0.15 && a.aqi <= 100; }},
     {name:'Pruning flowers', verb:'prune your flowers', short:'pruning flowers', ok:function(a){ return a.tMin >= 40 && a.tMax <= 88 && a.wMax < 20 && a.pop < 30 && a.wet < 0.45 && a.aqi <= 100; }},
     {name:'Washing the car', verb:'wash the car', short:'car washing', ok:function(a){ return a.tMin >= 50 && a.tMax <= 95 && a.wMax < 20 && a.pop < 20 && a.aqi <= 100; }},
     {name:'Dining al fresco', verb:'dine al fresco', verbCa:'enjoy a Tim Hortons coffee on a patio', short:'dining al fresco', ok:function(a){ return a.tMin >= 58 && a.tMax <= 90 && a.wMax < 12 && a.pop < 15 && a.aqi <= 100; }}
   ];
+
+  // Big cities: what people there actually do. Parks, patios, bars, concerts, museums, theaters, long walks and the subway
+  var VD_CITY_ACTIVITIES = [
+    {name:'City walks', verb:'wander the neighborhoods on foot', short:'city walks', ok:function(a){ return a.tMin >= 28 && a.tMax <= 95 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
+    {name:'Park time', verb:'spend time in the park', short:'park time', ok:function(a){ return a.tMin >= 45 && a.tMax <= 90 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
+    {name:'Sidewalk cafés & patios', verb:'grab a table on a patio', short:'patio dining', ok:function(a){ return a.tMin >= 58 && a.tMax <= 90 && a.wMax < 14 && a.pop < 15 && a.aqi <= 100; }},
+    {name:'Rooftop bars', verb:'have a drink at a rooftop bar', short:'rooftop bars', ok:function(a){ return a.tMin >= 62 && a.tMax <= 92 && a.wMax < 12 && a.pop < 15 && a.aqi <= 100; }},
+    {name:'Outdoor concerts', verb:'catch a concert outdoors', short:'outdoor concerts', ok:function(a){ return a.tMin >= 55 && a.tMax <= 90 && a.wMax < 15 && a.pop < 10 && a.aqi <= 100; }},
+    {name:'Museums & theaters', verb:'visit a museum or catch a show', short:'museums and shows', ok:function(a){ return a.tMin >= 15 && a.tMax <= 100 && a.wMax < 30 && a.pop < 60 && a.aqi <= 150; }},
+    {name:'Dinner out', verb:'head out to dinner at a favorite restaurant', short:'dinner out', ok:function(a){ return a.tMin >= 20 && a.tMax <= 100 && a.wMax < 30 && a.pop < 50 && a.aqi <= 150; }},
+    {name:'Street markets', verb:'browse a street market', short:'street markets', ok:function(a){ return a.tMin >= 45 && a.tMax <= 90 && a.wMax < 18 && a.pop < 20 && a.aqi <= 100; }},
+    {name:'Cycling', verb:'cruise the bike lanes', short:'cycling', ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 15 && a.pop < 20 && a.wet < 0.15 && a.aqi <= 100; }},
+    {name:'Running', verb:'go for a run', short:'running', ok:function(a){ return a.tMin >= 28 && a.tMax <= 78 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
+    {name:'Dog walks', verb:'walk your dog', short:'dog walks', ok:function(a){ return a.tMin >= 35 && a.tMax <= 88 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }}
+  ];
+  function vdActivities(){ return vdBigCity() ? VD_CITY_ACTIVITIES : VD_ACTIVITIES; }
 
   // Stable "randomness": the same wording all day (changes with the date), so re-renders never flicker
   function vdSeed(c){ var n = 0, t = c.todayStr || ''; for(var i = 0; i < t.length; i++) n += t.charCodeAt(i) * (i + 1); return n; }
@@ -5185,6 +5203,10 @@
     return w;
   }
   function vdProse(r, c, actList){
+    var base = vdProseCore(r, c, actList), g = vdGear(c);
+    return base + ' ' + g.wear + (g.pet ? ' ' + g.pet : '');
+  }
+  function vdProseCore(r, c, actList){
     var out = [], seed = vdSeed(c);
     var acts = vdPickActs(actList, seed, 3).map(function(x, i){ return (caVoice && x.verbCa && (seed + i) % 2 === 0) ? x.verbCa : x.verb; });
     var actsSentence = acts.length
@@ -5310,9 +5332,47 @@
           : 'It’s a cozy-inside kind of moment right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
       }
       if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next good window is ' + sp3.day + ' ' + sp3.phrase + (r.alert ? '.' : ', so it’s worth the wait.')); }
+      else if(vdBigCity() && !r.alert) out.push('There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a museum, a show or a long dinner out.');
       else out.push(caVoice && !r.alert ? vdPick(['There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a double-double from Tim Hortons.', 'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and pancakes with real maple syrup.'], seed, 6) : 'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a snack.');
     }
     return out.join(' ');
+  }
+
+
+  /* What to wear (and how to keep pets safe in the cold), from the conditions now through the next 6 hours, so it also covers
+     weather that is on its way. Shown in the paragraph and in the details. */
+  function vdGear(c){
+    var hs = c.hrs.slice(0, 7), ca = caVoice, city = vdBigCity();
+    var minT = Math.min.apply(null, hs.map(function(h){ return h.temp; })), maxT = Math.max.apply(null, hs.map(function(h){ return h.temp; }));
+    var maxW = Math.max.apply(null, hs.map(function(h){ return h.mph; }));
+    function first(pred){ for(var i = 0; i < hs.length; i++) if(pred(hs[i])) return i; return -1; }
+    var rainAt = first(function(h){ return /rain|shower|drizzle|thunder/i.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40); });
+    var snowAt = first(function(h){ return /snow|flurr|sleet|blizzard/i.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40); });
+    var iceAt = first(function(h){ return /freezing|ice|icy|sleet/i.test(h.fc) || h.why.some(function(w){ return /snowy or icy/.test(w); }); });
+    var hat = ca ? 'a toque' : 'a warm hat', gloves = ca ? 'mitts' : 'gloves';
+    var base;
+    if(minT < 15) base = 'It’s bitter out, so wear a heavy coat, ' + hat + ', insulated ' + gloves + ', a scarf and warm waterproof boots.';
+    else if(minT < 32) base = 'Bundle up with a warm coat, ' + hat + ', ' + gloves + ' and a scarf, and wear warm boots.';
+    else if(minT < 45) base = 'Wear a warm coat with ' + hat + ' and ' + gloves + ', and layer up underneath.';
+    else if(minT < 58) base = maxT >= 68 ? 'Dress in layers: a jacket or sweater now, and it warms up later.' : 'Bring a jacket or a warm sweater.';
+    else if(maxT >= 85) base = 'Dress light in breathable clothes, wear sunscreen and a hat, and bring water.';
+    else if(maxT >= 72) base = 'Light, breathable clothes will feel best, and sunscreen is a good idea.';
+    else base = 'Light layers will do.';
+    var mods = [];
+    function when(i, now, later){ return i === 0 ? now : later; }
+    if(snowAt >= 0) mods.push(when(snowAt, 'Wear waterproof boots with good grip for the snow.', 'Snow is on the way, so wear waterproof boots with good grip.'));
+    else if(iceAt >= 0 && minT <= 34) mods.push('Watch for ice: wear boots with good grip and take small steps.');
+    if(rainAt >= 0) mods.push(when(rainAt, 'Bring an umbrella or a rain jacket.', 'Rain is on the way, so keep an umbrella or a rain jacket handy.'));
+    if(maxW >= 16 && !(minT < 32)) mods.push('A windproof layer will help with the wind.');
+    if(city){
+      if(rainAt >= 0 || snowAt >= 0 || minT < 25 || maxW >= 25) mods.push('The subway or a cab beats a long walk.');
+      else mods.push('Comfortable shoes are a must for all that walking.');
+    }
+    var pet = '';
+    if(minT < 20) pet = 'It’s dangerously cold for pets: keep them indoors except for quick potty breaks, and bring in any animals that live outside.';
+    else if(minT < 32) pet = 'Keep pets inside when you can, keep walks short, and wipe their paws afterward to clear ice, salt and snow.';
+    else if(minT < 40) pet = 'It’s chilly for pets, especially small or short-haired ones: keep walks short and consider a coat.';
+    return {wear: (base + ' ' + mods.slice(0, 2).join(' ')).trim(), pet: pet, cold: minT < 40};
   }
 
   function vdEsc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -5338,23 +5398,25 @@
       ['Precip', a.pop + '%'],
       ['Air quality', a.aqi !== null ? a.aqi + ' · ' + aqiWord(a.aqi) : '—']
     ];
-    var actList = r.state === 'no' ? [] : VD_ACTIVITIES.filter(function(x){ return x.ok(a); });
+    var actList = r.state === 'no' ? [] : vdActivities().filter(function(x){ return x.ok(a); });
     if(r.alert && r.state !== 'no') r.sentence = 'Conditions look fine, but there\u2019s an active ' + r.alert + '. Be careful.';
     var actsLine = r.alert && r.state !== 'no' ? 'Check the alert above before heading out.'
-      : r.state === 'no' ? 'Better saved for indoor plans.'
+      : r.state === 'no' ? (vdBigCity() ? 'Better saved for museums, shows and a good restaurant.' : 'Better saved for indoor plans.')
       : actList.length ? 'Good for ' + vdList(actList.slice(0, 3).map(function(x){ return x.short; })) + '.'
       : 'Fine for a short outing.';
     var details = '<dl class="vd-stats">' + stats.map(function(s){
         return '<div class="vd-stat"><dt>' + s[0] + '</dt><dd>' + vdEsc(s[1]) + '</dd></div>';
       }).join('') + '</dl>';
     if(r.state === 'no'){
-      details += '<p class="vd-acts-none">A good time for indoor plans.</p>';
+      details += '<p class="vd-acts-none">' + (vdBigCity() ? 'A good time for a museum, a show or a long dinner.' : 'A good time for indoor plans.') + '</p>';
     }else{
-      var acts = VD_ACTIVITIES.filter(function(x){ return x.ok(a); }).slice(0, 5);
+      var acts = vdActivities().filter(function(x){ return x.ok(a); }).slice(0, 5);
       details += acts.length
         ? '<div class="vd-acts"><span class="vd-acts-lab">Good for</span><ul class="vd-chips">' + acts.map(function(x){ return '<li>' + vdEsc(x.name) + '</li>'; }).join('') + '</ul></div>'
         : '<p class="vd-acts-none">Fine for a short outing.</p>';
     }
+    var gearNow = vdGear(vdCtx);
+    details += '<p class="vd-wear"><strong>What to wear.</strong> ' + vdEsc(gearNow.wear) + '</p>' + (gearNow.pet ? '<p class="vd-wear"><strong>Pets.</strong> ' + vdEsc(gearNow.pet) + '</p>' : '');
     var icons = {
       yes:   '<path d="M8 12.5l2.7 2.7L16.2 9.5"/>',
       maybe: '<path d="M8.5 12h7"/>',
