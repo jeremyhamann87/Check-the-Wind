@@ -5463,7 +5463,7 @@
   // The gray text under the headline: the earlier paragraph's wording (minus what the headline already says) plus clothing and pet advice
   function vdSubText(r, c, actList){
     var sents = vdProseCore(r, c, actList), g = vdGear(c);
-    var keep = (r.night || (r.state === 'no' && !r.alert)) ? sents.slice(0, -1) : sents.slice(1);
+    var keep = (r.night || (r.state === 'no' && !r.alert)) ? sents.slice(0, -1) : (r.state === 'no' ? sents : sents.slice(1));  // a severe-alert No keeps its safety sentence
     if(r.alert) return keep.join(' ');   // severe alert: safety only, no clothing or pet tips
     return keep.concat([g.wear]).concat(g.pet ? [g.pet] : []).join(' ');
   }
