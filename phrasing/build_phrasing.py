@@ -23,7 +23,7 @@ a('Verdict word','Verdict card (details)','Yes / Maybe / No','Matches the verdic
 
 S='One-line summary'
 sw='Verdict card, first sentence'
-a(S,sw,'[Freezing/Cold/Cool/Mild/Warm/Hot], [calm/breezy/windy/blustery/howling] and [dry/damp/wet], with [clean/moderate] air.','Verdict is Yes (no alert).','Feel from average temp: under 32 freezing, under 45 cold, under 58 cool, under 72 mild, under 85 warm, otherwise hot. Wind from the top wind in the window (see Wind categories). Ground: under 0.15 dry, under 0.45 damp, else wet. Air: AQI 50 or less is "clean air", higher is "moderate air"; left out if AQI is unknown.')
+a(S,sw,'[Freezing/Cold/Cool/Mild/Warm/Hot], [calm/breezy/windy/blustery/howling] and [dry/damp/wet], with [good/moderate] air quality.','Verdict is Yes (no alert).','Feel from average temp: under 32 freezing, under 45 cold, under 58 cool, under 72 mild, under 85 warm, otherwise hot. Wind from the top wind in the window (see Wind categories). Ground: under 0.15 dry, under 0.45 damp, else wet. Air: AQI 50 or less is "good air quality", higher is "moderate air quality"; left out if AQI is unknown.')
 a(S,sw,'Okay for now, but not ideal: [weak points].','Verdict is Maybe and the window starts now.','Up to 2 weak points (see Weak points).')
 a(S,sw,'Not right now — [reasons]. Later: [the Yes sentence, lowercased]','Verdict is Maybe with a window later today.','Up to 2 reasons (see Reasons a time is ruled out).')
 a(S,sw,'Better to skip it for now: [reasons].','Verdict is No.','Up to 2 reasons; a Severe/Extreme alert is listed first as "an active [alert]".')

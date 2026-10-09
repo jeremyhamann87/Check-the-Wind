@@ -5054,7 +5054,7 @@
     var wind = k === 'calm' ? 'calm' : k === 'breezy' ? 'breezy' : k === 'windy' ? 'windy' : k === 'verywindy' ? 'blustery' : 'howling';
     var ground = a.wet < 0.15 ? 'dry' : a.wet < 0.45 ? 'damp' : 'wet';
     var out = vdCap(vdFeel(a.tAvg)) + ', ' + wind + ' and ' + ground;
-    if(a.aqi !== null) out += ', with ' + (a.aqi <= 50 ? 'clean air' : 'moderate air');
+    if(a.aqi !== null) out += ', with ' + (a.aqi <= 50 ? 'good air quality' : 'moderate air quality');
     return out + '.';
   }
   function vdWeakPoints(a){
