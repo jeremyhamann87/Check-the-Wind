@@ -2473,7 +2473,7 @@
       </p>
       <p>
         <strong>Canada.</strong> Canadian forecasts come from the nearest Environment Canada forecast location, which can be some
-        distance from the place you searched. Metric values are converted to &deg;F &amp; mph, and visitors in Canada (judged from the browser&rsquo;s time zone or language) see temperatures in &deg;C. The city-page hourly forecast covers 24
+        distance from the place you searched. Metric values are converted to &deg;F &amp; mph, and visitors in Canada (judged from the browser&rsquo;s time zone or language) see temperatures in &deg;C and wind in km/h. The city-page hourly forecast covers 24
         hours, so Check the Wind fills the hours after that, and the wind on days the 7-day forecast doesn&rsquo;t mention it
         (Environment Canada only reports wind of 20 km/h or more), with Environment Canada&rsquo;s own GEM forecast model, relayed
         by <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Canadian alerts show each warning, watch or
@@ -2625,6 +2625,12 @@
   })();
   function tempNum(f){ return useCelsius ? Math.round((f - 32) * 5 / 9) : Math.round(f); }
   function fmtTemp(f){ return tempNum(f) + (useCelsius ? '°C' : '°F'); }
+  /* Wind speed: km/h for the same visitors. Everything (bands, limits, scoring) stays in mph; only what is shown is converted. */
+  var useKmh = useCelsius;
+  function windNum(mph){ return useKmh ? Math.round(mph * 1.609344) : Math.round(mph); }
+  var windUnit = useKmh ? 'km/h' : 'mph';
+  function fmtWind(mph){ return windNum(mph) + ' ' + windUnit; }
+  var WIND_RANGES = useKmh ? ['0–12 km/h','13–25 km/h','26–39 km/h','40–54 km/h','55+ km/h'] : ['0–7 mph','8–15 mph','16–24 mph','25–33 mph','34+ mph'];
 
   function bandFor(mph){
     if(mph < 8)  return {key:'calm',       label:'Calm',        css:'var(--band-calm)',      pill:'var(--pill-calm)',      pillInk:'var(--seg-ink-calm)'};
@@ -2636,17 +2642,18 @@
 
   function parseWind(text){
     if(!text) return {low:0, high:0, avg:0};
-    var m = String(text).match(/(\d+)\s*(?:to\s*(\d+))?\s*mph/i);
+    var m = String(text).match(/(\d+)\s*(?:to\s*(\d+))?\s*(mph|km\/h)/i);
     if(!m) return {low:0, high:0, avg:0};
-    var low = parseInt(m[1],10);
-    var high = m[2] ? parseInt(m[2],10) : low;
+    var k = /km/i.test(m[3]) ? kmhToMph(1) : 1;   // Canadian forecasts arrive in km/h; everything inside works in mph
+    var low = parseInt(m[1],10) * k;
+    var high = (m[2] ? parseInt(m[2],10) : parseInt(m[1],10)) * k;
     return {low:low, high:high, avg:(low+high)/2};
   }
 
   function extractGust(detailed){
     if(!detailed) return null;
-    var m = detailed.match(/gusts?[^.]*?(\d+)\s*mph/i);
-    return m ? m[1] : null;
+    var m = detailed.match(/gusts?[^.]*?(\d+)\s*(mph|km\/h)/i);
+    return m ? String(/km/i.test(m[2]) ? +m[1] * kmhToMph(1) : +m[1]) : null;
   }
 
   function classifySky(text){
@@ -3212,7 +3219,7 @@
   // 24 and the wind on days the city-page forecast says nothing about it (ECCC only mentions wind of 20 km/h or more)
   async function eccGem(lat, lon){
     return fetchOptionalJson('https://api.open-meteo.com/v1/forecast?latitude=' + lat.toFixed(3) + '&longitude=' + lon.toFixed(3) +
-      '&timezone=auto&models=gem_seamless&wind_speed_unit=mph&temperature_unit=fahrenheit&forecast_days=7' +
+      '&timezone=auto&models=gem_seamless&wind_speed_unit=kmh&forecast_days=7' +
       '&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m');
   }
   var WMO_TEXT = {0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Cloudy',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',56:'Freezing drizzle',57:'Freezing drizzle',
@@ -3230,7 +3237,7 @@
       var DAY = 86400000, len = ((set - rise) % DAY + DAY) % DAY, d = ((ms - rise) % DAY + DAY) % DAY;
       return d < len;
     }
-    function mph(v){ var n = parseFloat(v); return isNaN(n) ? 0 : Math.round(kmhToMph(n)); }
+    function mph(v){ var n = parseFloat(v); return isNaN(n) ? 0 : Math.round(n); }  // km/h, whole numbers (the name is kept short; the unit is added where used)
     function dirOf(o){ var d = String(ev(o) || '').toUpperCase(); return COMPASS[d] != null ? d : ''; }
     function num(v){ var n = parseFloat(v); return isNaN(n) ? null : n; }
     var cc = p.currentConditions || {};
@@ -3240,8 +3247,8 @@
     var curT = num(ev(cc.temperature));
     if(curT != null){
       var cw = cc.wind || {};
-      hourly.push({startTime: eccLocalIso(hrNow, tz), temperature: Math.round(cToF(curT)), temperatureUnit: 'F',
-        windSpeed: mph(ev(cw.speed)) + ' mph', windDirection: dirOf(cw.direction),
+      hourly.push({startTime: eccLocalIso(hrNow, tz), temperature: cToF(curT), temperatureUnit: 'F',
+        windSpeed: mph(ev(cw.speed)) + ' km/h', windDirection: dirOf(cw.direction),
         shortForecast: ev(cc.condition) || firstCond || '', probabilityOfPrecipitation: {value: hf[0] && hf[0].lop ? num(ev(hf[0].lop)) : 0},
         relativeHumidity: {value: num(ev(cc.relativeHumidity))}, isDaytime: isDay(now)});
     }
@@ -3250,8 +3257,8 @@
       if(isNaN(ts) || (curT != null && ts <= hrNow)) return;
       var w = h.wind || {}, t = num(ev(h.temperature));
       if(t == null) return;
-      hourly.push({startTime: eccLocalIso(ts, tz), temperature: Math.round(cToF(t)), temperatureUnit: 'F',
-        windSpeed: mph(ev(w.speed)) + ' mph', windDirection: dirOf(w.direction), shortForecast: ev(h.condition) || '',
+      hourly.push({startTime: eccLocalIso(ts, tz), temperature: cToF(t), temperatureUnit: 'F',
+        windSpeed: mph(ev(w.speed)) + ' km/h', windDirection: dirOf(w.direction), shortForecast: ev(h.condition) || '',
         probabilityOfPrecipitation: {value: h.lop ? num(ev(h.lop)) : 0}, relativeHumidity: {value: null}, isDaytime: isDay(ts)});
     });
 
@@ -3268,7 +3275,7 @@
       var lastMs = hourly.length ? Date.parse(hourly[hourly.length - 1].startTime) : 0;
       gemHrs.forEach(function(g){
         if(g.ms <= lastMs || g.ms < hrNow || g.ms > now + 48 * 3600000) return;
-        hourly.push({startTime: eccLocalIso(g.ms, tz), temperature: Math.round(g.temp), temperatureUnit: 'F', windSpeed: g.mph + ' mph', windDirection: g.dir,
+        hourly.push({startTime: eccLocalIso(g.ms, tz), temperature: cToF(g.temp), temperatureUnit: 'F', windSpeed: g.mph + ' km/h', windDirection: g.dir,
           shortForecast: WMO_TEXT[g.code] || '', probabilityOfPrecipitation: {value: typeof g.pop === 'number' ? g.pop : 0},
           relativeHumidity: {value: typeof g.hum === 'number' ? g.hum : null}, isDaytime: isDay(g.ms)});
       });
@@ -3296,10 +3303,10 @@
       var abbr = f.abbreviatedForecast || {};
       var sky = String(ev(f.cloudPrecip) || '');
       daily.push({name: nm, isDaytime: !night, startTime: cursor + (night ? 'T18:00:00' : 'T06:00:00') + offset,
-        temperature: tv == null ? 0 : Math.round(cToF(tv)), temperatureUnit: 'F',
-        windSpeed: sp + ' mph', windDirection: dir, shortForecast: ev(abbr.textSummary) || '',
+        temperature: tv == null ? 0 : cToF(tv), temperatureUnit: 'F',
+        windSpeed: sp + ' km/h', windDirection: dir, shortForecast: ev(abbr.textSummary) || '',
         probabilityOfPrecipitation: {value: null},
-        detailedForecast: (sky + ' Wind ' + (dir || 'light') + ' ' + sp + ' mph' + (gust > sp ? ', gusting to ' + gust + ' mph' : '') + '.').trim()});
+        detailedForecast: (sky + ' Wind ' + (dir || 'light') + ' ' + sp + ' km/h' + (gust > sp ? ', gusting to ' + gust + ' km/h' : '') + '.').trim()});
     });
 
     var alerts = [];
@@ -3566,10 +3573,10 @@
           '<div class="card-head hn-head"><h2 id="hnTitle">Current Conditions</h2></div>' +
           '<div class="hero-reading">' +
             '<svg class="wind-ico" width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><g transform="scale(2)" stroke="' + band.css + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></g></svg>' +
-            '<span class="val num" style="color:' + band.css + '">' + w.high + '</span>' +
+            '<span class="val num" style="color:' + band.css + '">' + windNum(w.high) + '</span>' +
             '<span class="unit-wrap">' +
               '<span class="unit-top">' +
-                '<span class="unit">mph</span>' +
+                '<span class="unit">' + windUnit + '</span>' +
                 '<span class="hero-pill-row">' +
                   '<span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span>' +
                   '<button type="button" class="info-btn wk-btn" data-info="wind" aria-haspopup="dialog">' +
@@ -3834,12 +3841,16 @@
   // Info (?) buttons open this shared modal (same look as Disclaimers & Data Sources) — no hover tooltips.
   var infoModal = document.getElementById('infoModal');
   var infoModalLastFocus = null;
+  [].forEach.call(document.querySelectorAll('.wind-range'), function(el){
+    var i = {'0–7 mph':0,'8–15 mph':1,'16–24 mph':2,'25–33 mph':3,'34+ mph':4}[el.textContent.trim()];
+    if(i != null) el.textContent = WIND_RANGES[i];
+  });
   var WIND_KEY_ROWS = [
-    ['Calm','calm','0–7 mph','var(--band-calm)'],
-    ['Breezy','breezy','8–15 mph','var(--band-breezy)'],
-    ['Windy','windy','16–24 mph','var(--band-windy)'],
-    ['Blustery','blustery','25–33 mph','var(--band-verywindy)'],
-    ['Howling','howling','34+ mph','var(--band-gale)']
+    ['Calm','calm',WIND_RANGES[0],'var(--band-calm)'],
+    ['Breezy','breezy',WIND_RANGES[1],'var(--band-breezy)'],
+    ['Windy','windy',WIND_RANGES[2],'var(--band-windy)'],
+    ['Blustery','blustery',WIND_RANGES[3],'var(--band-verywindy)'],
+    ['Howling','howling',WIND_RANGES[4],'var(--band-gale)']
   ];
   function fillInfoModal(kind){
     var title = document.getElementById('infoModalTitle');
@@ -3933,7 +3944,7 @@
       help:'Colder windows are skipped.'},
     {k:'tmax',   label:'Highest temperature',       min:70, max:120, step:1, fmt:function(v){ return fmtTemp(v); },
       help:'Hotter windows are skipped.'},
-    {k:'wind',   label:'Wind stays under',          min:5,  max:40,  step:1, fmt:function(v){ return v + ' mph'; },
+    {k:'wind',   label:'Wind stays under',          min:5,  max:40,  step:1, fmt:function(v){ return fmtWind(v); },
       help:'Wind at or above this is skipped.'},
     {k:'pop',    label:'Chance of precipitation',   min:10, max:100, step:5, fmt:function(v){ return v >= 100 ? 'Any' : 'Under ' + v + '%'; },
       help:'Higher-chance windows are skipped.'},
@@ -4066,10 +4077,10 @@
         '<div class="barwrap"><div class="bar" style="--h:' + h + 'px; --pct:' + pct + '%; background:' + band.pill + '"></div></div>' +
         '<div class="spwrap">' +
           '<span class="sp-row">' +
-            '<span class="sp" style="color:' + band.css + '">' + w.high + '</span>' +
+            '<span class="sp" style="color:' + band.css + '">' + windNum(w.high) + '</span>' +
             '<span class="hdir">' + windArrowSvg(p.windDirection, band.css, 22) + '</span>' +
           '</span>' +
-          '<span class="spunit">mph</span>' +
+          '<span class="spunit">' + windUnit + '</span>' +
           srDir(p.windDirection) +
         '</div>' +
       '</div>';
@@ -4186,12 +4197,12 @@
         key: dateStr,
         label: i === 0 ? 'Today' : fmtDow(dateStr),
         date: fmtMD(dateStr),
-        windHtml: '<b style="color:' + band.css + '">' + wd.high + ' mph</b>' +
+        windHtml: '<b style="color:' + band.css + '">' + fmtWind(wd.high) + '</b>' +
           windArrowSvg(p.windDirection, band.css, 22) + srDir(p.windDirection),
         bandLabel: band.label,
         bandPill: band.pill,
         bandPillInk: band.pillInk,
-        gust: extractGust(p.detailedForecast) || '',
+        gust: extractGust(p.detailedForecast) ? String(windNum(+extractGust(p.detailedForecast))) : '',
         icon: weatherIcon(p.shortForecast, true, 28),
         short: ampText(p.shortForecast),
         temp: tempNum(p.temperature) + '°'
@@ -4581,7 +4592,7 @@
       var why = [];
       if(!daylight) why.push('it\u2019s dark out');
       if(hz) why.push(hz.toLowerCase());
-      if(mph >= P.wind) why.push('wind up to ' + mph + ' mph');
+      if(mph >= P.wind) why.push('wind up to ' + fmtWind(mph));
       if(P.pop < 100 && pop >= P.pop) why.push(Math.round(pop) + '% chance of precipitation');
       if(icyOrSnowy) why.push('snowy or icy ground');
       if(temp < P.tmin) why.push('cold at ' + fmtTemp(temp));
@@ -4748,12 +4759,12 @@
 
       if(sentences.length){
         // Precipitation already leads the message — wind gets a second clause.
-        sentences.push('Wind picks up too, gusting to ' + peak.mph + ' mph (' + band + ') around ' + peakTime + '.');
+        sentences.push('Wind picks up too, gusting to ' + fmtWind(peak.mph) + ' (' + band + ') around ' + peakTime + '.');
       }else{
         var wFirst = windBad[0], wLast = windBad[windBad.length - 1];
         var wLead = wFirst.i === 0
-          ? band + ' wind is already blowing, gusting to ' + peak.mph + ' mph'
-          : band + ' wind picks up around ' + describeHazardTime(wFirst.p.startTime, todayStr, tomorrowStr) + ', gusting to ' + peak.mph + ' mph';
+          ? band + ' wind is already blowing, gusting to ' + fmtWind(peak.mph)
+          : band + ' wind picks up around ' + describeHazardTime(wFirst.p.startTime, todayStr, tomorrowStr) + ', gusting to ' + fmtWind(peak.mph);
         wLead += wLast.i >= n - 1
           ? ', staying gusty through the next 48 hours.'
           : ', calming down by ' + describeHazardTime(wLast.p.startTime, todayStr, tomorrowStr) + '.';
@@ -4879,8 +4890,9 @@
       var day = dateStr === todayStr ? 'Today' : dateStr === tomorrowStr ? 'Tomorrow' : fmtDow(dateStr) + ' ' + fmtMD(dateStr);
       var when = fmtWindowRange(first.hour, last.hour + 1, first.i === 0);
       var temps = h.map(function(x){ return x.temp; });
-      var tMin = Math.round(Math.min.apply(null, temps));
-      var tMax = Math.round(Math.max.apply(null, temps));
+      var tMinRaw = Math.min.apply(null, temps), tMaxRaw = Math.max.apply(null, temps);
+      var tMin = Math.round(tMinRaw);
+      var tMax = Math.round(tMaxRaw);
       var mph = Math.max.apply(null, h.map(function(x){ return x.mph; }));
       var wetMax = Math.max.apply(null, h.map(function(x){ return x.wet; }));
       var popMax = Math.max.apply(null, h.map(function(x){ return x.pop; }));
@@ -4894,8 +4906,8 @@
         day: day,
         time: when,
         when: day + ' ' + when,
-        temp: (tMin === tMax ? tempNum(tMax) : tempNum(tMin) + '–' + tempNum(tMax)) + (useCelsius ? '°C' : '°F'),
-        wind: mph + ' mph',
+        temp: (tempNum(tMinRaw) === tempNum(tMaxRaw) ? tempNum(tMaxRaw) : tempNum(tMinRaw) + '–' + tempNum(tMaxRaw)) + (useCelsius ? '°C' : '°F'),
+        wind: fmtWind(mph),
         precip: Math.round(popMax) + '%',
         humidity: humAvg !== null ? humAvg + '%' : '—',
         ground: groundWord(wetMax),
@@ -4966,7 +4978,7 @@
     var t = hs.map(function(h){ return h.temp; }), w = hs.map(function(h){ return h.mph; });
     var aq = hs.filter(function(h){ return h.aqi !== null; }).map(function(h){ return h.aqi; });
     return {
-      tMin: Math.round(Math.min.apply(null, t)), tMax: Math.round(Math.max.apply(null, t)),
+      tMin: Math.round(Math.min.apply(null, t)), tMax: Math.round(Math.max.apply(null, t)), tMinRaw: Math.min.apply(null, t), tMaxRaw: Math.max.apply(null, t),
       tAvg: t.reduce(function(a, b){ return a + b; }, 0) / t.length,
       wMin: Math.min.apply(null, w), wMax: Math.max.apply(null, w),
       pop: Math.round(Math.max.apply(null, hs.map(function(h){ return h.pop; }))),
@@ -4996,7 +5008,7 @@
   }
   function vdWeakPoints(a){
     var w = [];
-    if(a.wMax >= 16) w.push('wind up to ' + a.wMax + ' mph');
+    if(a.wMax >= 16) w.push('wind up to ' + fmtWind(a.wMax));
     if(a.tAvg < 40) w.push('chilly at ' + fmtTemp(a.tAvg)); else if(a.tAvg > 88) w.push('hot at ' + fmtTemp(a.tAvg));
     if(a.pop >= 30) w.push(a.pop + '% chance of precipitation');
     if(a.wet >= 0.15) w.push('damp ground');
@@ -5099,7 +5111,7 @@
       var m;
       if(/dark out/.test(w)) phrases.push('the light fades');
       else if(/^(thunderstorms|rain|showers|snow)$/.test(w)) phrases.push('expect ' + w);
-      else if((m = /^wind up to (\d+) mph/.exec(w))) phrases.push('winds pick up to ' + m[1] + ' mph');
+      else if((m = /^wind up to (\d+) (mph|km\/h)/.exec(w))) phrases.push('winds pick up to ' + m[1] + ' ' + m[2]);
       else if((m = /^(\d+)% chance of precipitation/.exec(w))) phrases.push('the chance of precipitation rises to ' + m[1] + '%');
       else if((m = /^cold at (\S+)/.exec(w))) phrases.push('it drops to ' + m[1]);
       else if((m = /^hot at (\S+)/.exec(w))) phrases.push('it heats up to ' + m[1]);
@@ -5264,8 +5276,8 @@
     var word = r.state === 'yes' ? 'Yes' : r.state === 'maybe' ? 'Maybe' : 'No';
     var range = r.state === 'no' ? 'Right now' : vdRange(r.hs, vdCtx);
     var stats = [
-      ['Temp', (a.tMin === a.tMax ? tempNum(a.tMax) : tempNum(a.tMin) + '–' + tempNum(a.tMax)) + (useCelsius ? '°C' : '°F')],
-      ['Wind', (a.wMin === a.wMax ? a.wMax : a.wMin + '–' + a.wMax) + ' mph'],
+      ['Temp', (tempNum(a.tMinRaw) === tempNum(a.tMaxRaw) ? tempNum(a.tMaxRaw) : tempNum(a.tMinRaw) + '–' + tempNum(a.tMaxRaw)) + (useCelsius ? '°C' : '°F')],
+      ['Wind', (a.wMin === a.wMax ? windNum(a.wMax) : windNum(a.wMin) + '–' + windNum(a.wMax)) + ' ' + windUnit],
       ['Precip', a.pop + '%'],
       ['Air quality', a.aqi !== null ? a.aqi + ' · ' + aqiWord(a.aqi) : '—']
     ];
@@ -5760,7 +5772,7 @@
 
     setStatus('');
     var nowW = parseWind(hourly[0].windSpeed), nowBand = bandFor(nowW.high);
-    announce('Forecast updated for ' + hdrLoc.textContent + '. Wind now ' + nowW.high + ' miles per hour' +
+    announce('Forecast updated for ' + hdrLoc.textContent + '. Wind now ' + windNum(nowW.high) + (useKmh ? ' kilometres per hour' : ' miles per hour') +
       (dirWord(hourly[0].windDirection) ? ' from the ' + dirWord(hourly[0].windDirection) : '') + ', ' + nowBand.label.toLowerCase() + '. ' +
       ampText(hourly[0].shortForecast) + ', ' + tempNum(hourly[0].temperature) + (useCelsius ? ' degrees Celsius. ' : ' degrees. ') +
       (bestWhen ? 'Best window outside: ' + bestWhen + '.' : 'No good window outside in the next 48 hours.'));
@@ -6259,8 +6271,8 @@
     }
     var cur = data.cur, w = parseWind(cur.windSpeed), band = bandFor(w.high);
     var row = document.createElement('div'); row.className = 'pk-reading';
-    var val = document.createElement('span'); val.className = 'pk-val'; val.style.color = band.css; val.textContent = w.high;
-    var unit = document.createElement('span'); unit.className = 'pk-unit'; unit.textContent = 'mph';
+    var val = document.createElement('span'); val.className = 'pk-val'; val.style.color = band.css; val.textContent = windNum(w.high);
+    var unit = document.createElement('span'); unit.className = 'pk-unit'; unit.textContent = windUnit;
     var pill = document.createElement('span'); pill.className = 'pk-pill'; pill.style.background = band.pill; pill.style.color = band.pillInk; pill.textContent = band.label;
     row.appendChild(val); row.appendChild(unit); row.appendChild(pill);
     if(cur.windDirection){
