@@ -5068,7 +5068,7 @@
     if(r.night) return {t:'Night Time', k:'night'};
     if(r.state === 'yes') return {t:'Go Outside!', k:'green'};
     if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for Now', k:'yellow'} : {t:'Wait a Bit', k:'yellow'};
-    return r.nextHs ? {t:'Not Today', k:'orange'} : {t:'Stay In', k:'red'};
+    return r.nextHs ? {t:'Stay Inside', k:'orange'} : {t:'Stay In', k:'red'};
   }
 
   if(vdBody) vdBody.addEventListener('click', function(e){

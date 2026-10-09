@@ -13,7 +13,7 @@ tw='Tag pill'
 a(T,tw,'Go Outside!','Verdict is Yes: the current hour passes every limit and scores well (score 0.5 or higher), with no Severe/Extreme alert.','Green')
 a(T,tw,'Okay for Now','Verdict is Maybe and the window starts now: the current hour passes the limits but is not ideal.','Yellow')
 a(T,tw,'Wait a Bit','Verdict is Maybe and a good window starts later today.','Yellow')
-a(T,tw,'Not Today','Verdict is No right now, but a good window exists within the next 48 hours (not later today).','Orange')
+a(T,tw,'Stay Inside','Verdict is No right now, but a good window exists within the next 48 hours (not later today).','Orange')
 a(T,tw,'Stay In','Verdict is No and there is no good window in the next 48 hours.','Red')
 a(T,tw,'Use Caution','A Severe or Extreme National Weather Service alert is active and the verdict is not No (a Yes is downgraded to Maybe).','Orange; takes priority over the other tags unless the verdict is No')
 a(T,tw,'Night Time','Darkness is the ONLY reason the hour is ruled out, wind is under 16 mph, no Severe/Extreme alert, and the verdict is not Yes.','Purple with a moon')
