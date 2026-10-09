@@ -2028,6 +2028,13 @@
     .ag-word .ag-na{ display:inline }
   }
 
+  /* Phone: the "best times" empty state puts the illustration on top and lets the text use the full width of the module */
+  @media (max-width:31.1875em){
+    .bw-empty{ flex-direction:column-reverse; align-items:stretch; gap:12px; padding:16px }
+    .bw-empty > [role="cell"]:last-child{ display:flex; justify-content:center }
+    .bw-empty svg{ max-width:100%; height:auto }
+  }
+
   /* Desktop: every font in the right-hand content column is 14px */
   @media (min-width:64em){
     .db-content, .db-content *{ font-size:.875rem !important }
