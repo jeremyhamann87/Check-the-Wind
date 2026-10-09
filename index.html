@@ -5033,6 +5033,11 @@
     };
   }
 
+  // "a, b or c": a choice between options (activities)
+  function vdListOr(items){
+    if(items.length < 2) return items.join('');
+    return items.slice(0, -1).join(', ') + ' or ' + items[items.length - 1];
+  }
   function vdList(items){
     if(items.length < 2) return items.join('');
     return items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1];
@@ -5123,7 +5128,7 @@
     if(severe) res.why.unshift(('an active ' + severe.event).toLowerCase());
     res.hs = hrs.slice(0, 3);
     res.sentence = 'Better to skip it for now' + (res.why.length ? ': ' + vdList(res.why.slice(0, 2)) : '') + '.';
-    if(nextRun){ res.next = 'Next good window: ' + vdRange(nextRun, c) + '.'; res.nextHs = nextRun; }
+    if(nextRun){ res.next = 'Next best window to get outside: ' + vdRange(nextRun, c) + '.'; res.nextHs = nextRun; }
     else res.next = 'No good window in the next 48 hours.';
     return finish(res, vdAgg(res.hs));
 
@@ -5237,7 +5242,7 @@
     var out = [], seed = vdSeed(c);
     var acts = vdPickActs(actList, seed, 3).map(function(x, i){ return (caVoice && x.verbCa && (seed + i) % 2 === 0) ? x.verbCa : x.verb; });
     var actsSentence = acts.length
-      ? vdPick(caVoice ? ['This is great weather to ', 'It’s a beauty of a day to ', 'You could ', 'Time to '] : ['This is great weather to ', 'It’s a lovely time to ', 'You could ', 'Perfect conditions to '], seed, 3) + vdList(acts) + '.'
+      ? vdPick(caVoice ? ['This is great weather to ', 'It’s a beauty of a day to ', 'You could ', 'Time to '] : ['This is great weather to ', 'It’s a lovely time to ', 'You could ', 'Perfect conditions to '], seed, 3) + vdListOr(acts) + '.'
       : 'Even a short outing should feel nice.';
     // Warnings stay serious, just kind
     if(r.alert && r.state !== 'no'){
@@ -5300,12 +5305,12 @@
           'Hang in there, the sun will be back soon, and ' + spn.day + ' ' + spn.phrase + ' looks lovely.',
           'Morning is on its way, and ' + spn.day + ' ' + spn.phrase + ' looks like a lovely time to head out.'
         ], nseed, 3) : vdPick(big ? [
-          'Your next good window is ' + spn.day + ' ' + spn.phrase + ', and the city will be right here waiting.',
-          'Your next good window is ' + spn.day + ' ' + spn.phrase + ', so enjoy the lights until then.',
+          'Your next best window to get outside is ' + spn.day + ' ' + spn.phrase + ', and the city will be right here waiting.',
+          'Your next best window to get outside is ' + spn.day + ' ' + spn.phrase + ', so enjoy the lights until then.',
           'Things look good again ' + spn.day + ' ' + spn.phrase + '.'
         ] : [
-          'Your next good window is ' + spn.day + ' ' + spn.phrase + ', so sweet dreams until then.',
-          'Your next good window is ' + spn.day + ' ' + spn.phrase + ', so rest up until then.',
+          'Your next best window to get outside is ' + spn.day + ' ' + spn.phrase + ', so sweet dreams until then.',
+          'Your next best window to get outside is ' + spn.day + ' ' + spn.phrase + ', so rest up until then.',
           'Things look good again ' + spn.day + ' ' + spn.phrase + ', so get some rest.'
         ], nseed, 3));
       }
@@ -5358,7 +5363,7 @@
           ? vdPick(gong ? ['It’s a bit of a gong show out there right now', 'Bit of a gong show outside right now'] : ['There’s a bit of a weather kerfuffle going on right now', 'Even the Mounties would sit this one out', 'It’s a cozy-inside kind of moment right now'], seed, 1) + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.'
           : 'It’s a cozy-inside kind of moment right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
       }
-      if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next good window is ' + sp3.day + ' ' + sp3.phrase + (r.alert ? '.' : ', so it’s worth the wait.')); }
+      if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next best window to get outside is ' + sp3.day + ' ' + sp3.phrase + (r.alert ? '.' : ', so it’s worth the wait.')); }
       else if(vdBigCity() && !r.alert) out.push('There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a museum, a show or a long dinner out.');
       else out.push(caVoice && !r.alert ? vdPick(['There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a double-double from Tim Hortons.', 'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and pancakes with real maple syrup.'], seed, 6) : 'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a snack.');
     }
@@ -5440,7 +5445,7 @@
     if(r.state === 'no' && r.alert) return vdCap(r.alert) + ' in effect.';
     if(r.night){
       var nw = r.state === 'maybe' ? r.hs : r.nextHs;
-      return (ca ? 'Dark out, eh. ' : 'Dark out. ') + (nw ? 'Next good window: ' + vdRange(nw, c) + '.' : 'Not a night for outdoor plans.');
+      return (ca ? 'Dark out, eh. ' : 'Dark out. ') + (nw ? 'Next best window to get outside: ' + vdRange(nw, c) + '.' : 'Not a night for outdoor plans.');
     }
     if(r.state === 'yes'){
       var comfy = r.agg.tAvg >= 50 && r.agg.tAvg <= 86 && r.agg.wet < 0.45;
@@ -5459,7 +5464,7 @@
       return (r.why && r.why.length ? vdWhyShort(r.why[0]) + ' now. ' : '') + (ca ? 'Lovely, eh: ' : 'Lovely ') + sp.day + ' ' + sp.phrase + '.';
     }
     var why = r.why && r.why.length ? vdWhyShort(r.why[0]) + '. ' : '';
-    if(r.nextHs) return why + 'Next good window: ' + vdRange(r.nextHs, c) + '.';
+    if(r.nextHs) return why + 'Next best window to get outside: ' + vdRange(r.nextHs, c) + '.';
     return (why || '') + 'No good window for 48 hours.';
   }
   // The gray text under the headline: the earlier paragraph's wording (minus what the headline already says) plus clothing and pet advice
@@ -5535,7 +5540,7 @@
     if(r.alert && r.state !== 'no') r.sentence = 'Conditions look fine, but there\u2019s an active ' + r.alert + '. Be careful.';
     var actsLine = r.alert && r.state !== 'no' ? 'Check the alert above before heading out.'
       : r.state === 'no' ? (vdBigCity() ? 'Better saved for museums, shows and a good restaurant.' : 'Better saved for indoor plans.')
-      : actList.length ? 'Good for ' + vdList(actList.slice(0, 3).map(function(x){ return x.short; })) + '.'
+      : actList.length ? 'Good for ' + vdListOr(actList.slice(0, 3).map(function(x){ return x.short; })) + '.'
       : 'Fine for a short outing.';
     var details = '<dl class="vd-stats">' + stats.map(function(s){
         return '<div class="vd-stat"><dt>' + s[0] + '</dt><dd>' + vdEsc(s[1]) + '</dd></div>';
