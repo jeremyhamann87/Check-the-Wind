@@ -950,6 +950,8 @@
     100%{transform:translate(56px, 28px) rotate(720deg)}
   }
 
+  .hc-spin{transform-box:view-box; transform-origin:24px 24px; animation:hcSpin 2.6s linear infinite}
+  @keyframes hcSpin{to{transform:rotate(360deg)}}
   .wx-sun-rays{animation:wxSunSpin 16s linear infinite}
   @keyframes wxSunSpin{to{transform:rotate(360deg)}}
   .wx-sun-disc{animation:wxSunGlow 4s ease-in-out infinite}
@@ -963,6 +965,7 @@
     .gr-frog{animation:none}
     .gr-tumbleweed{animation:none; opacity:0}
     .wx-sun-rays{animation:none}
+    .hc-spin{animation:none}
     .wx-sun-disc{animation:none; transform:none}
   }
 
@@ -2692,6 +2695,7 @@
 
   function classifySky(text){
     var t = (text || '').toLowerCase();
+    if (/hurricane|tropical storm|tropical cyclone|typhoon/.test(t)) return 'hurricane';
     if (/thunder/.test(t)) return 'thunder';
     if (/snow|flurr|sleet|ice/.test(t)) return 'snow';
     if (/rain|shower|drizzle/.test(t)) return 'rain';
@@ -2752,9 +2756,26 @@
   // Display "and" as "&" in weather descriptions that come from the NWS forecast (e.g. "Showers And Thunderstorms").
   function ampText(s){ return String(s || '').replace(/\s+and\s+/gi, ' & '); }
 
+  // A spinning hurricane: three spiral arms around an eye (stands still for people who prefer reduced motion)
+  function hurricaneIcon(size){
+    var arms = '';
+    for(var a = 0; a < 3; a++){
+      var pts = [];
+      for(var t = 0; t <= 4.2; t += 0.15){
+        var ang = t + a * 2.0944, r = 3.5 + t * 3.9;
+        pts.push((24 + r * Math.cos(ang)).toFixed(1) + ',' + (24 + r * Math.sin(ang)).toFixed(1));
+      }
+      arms += '<polyline points="' + pts.join(' ') + '"/>';
+    }
+    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hurricane">' +
+      '<circle cx="24" cy="24" r="22" stroke="var(--icon-blue)" stroke-width="1.2" opacity=".28"/>' +
+      '<g class="hc-spin" stroke="var(--icon-blue)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">' + arms + '</g>' +
+      '<circle cx="24" cy="24" r="3.2" fill="var(--surface)" stroke="var(--icon-blue)" stroke-width="1.6"/></svg>';
+  }
   function weatherIcon(shortForecast, isDaytime, size){
     size = size || 40;
     var kind = classifySky(shortForecast);
+    if(kind === 'hurricane') return hurricaneIcon(size);
     var body = '';
     switch(kind){
       case 'clear':
@@ -5190,7 +5211,7 @@
       }else if(kind === 'cloudy'){
         phrases[0] = 'the light fades, with ' + (/mostly cloudy/.test(fcl) ? 'mostly cloudy' : 'cloudy') + ' skies and ' + windAdj + ' conditions';
       }else{
-        phrases[0] = 'the light fades, with ' + {rain:'rain possible', thunder:'thunderstorms possible', snow:'snow possible', fog:'fog'}[kind];
+        phrases[0] = 'the light fades, with ' + {rain:'rain possible', thunder:'thunderstorms possible', snow:'snow possible', fog:'fog', hurricane:'hurricane conditions possible'}[kind];
       }
     }
     if(!phrases.length) phrases.push('conditions turn less ideal');
@@ -5842,6 +5863,11 @@
 
   function renderAlerts(list){
     lastAlerts = list || [];
+    // under a hurricane or tropical storm warning the Current Conditions icon is the spinning hurricane
+    if((list || []).some(function(a){ return /^(hurricane|tropical storm) warning/i.test(a.event); })){
+      var wiHz = document.querySelector('.weather-now .wicon');
+      if(wiHz) wiHz.innerHTML = hurricaneIcon(38);
+    }
     if(vdCtx) renderVerdict();
     alertsEl.textContent = '';
     if(!list || !list.length){ alertsEl.hidden = true; lastAlertSig = ''; alertsLiveEl.textContent = ''; return; }
