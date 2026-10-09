@@ -5,6 +5,7 @@ Verdict tag,Tag pill,Wait a Bit,Verdict is Maybe and a good window starts later 
 Verdict tag,Tag pill,Wait a Bit,Verdict is No right now but it is passing weather: a good window opens within the next 12 hours (usually tomorrow morning).,Yellow (same tag as the later-today Maybe case)
 Verdict tag,Tag pill,Stay Inside,Verdict is No right now and the next good window is more than 12 hours away (but within 48 hours).,Orange
 Verdict tag,Tag pill,Stay In All Day,Verdict is No and there is no good window in the next 48 hours.,Red
+Verdict tag,Tag pill,Stay Aware,"It is fine to be out right now (verdict Yes, or Maybe with the window starting now), but rain, snow, storms, strong wind or a rising chance of precipitation arrives within the next 3 hours. No Severe/Extreme alert.",Blue; Use Caution and Night Time take priority over it
 Verdict tag,Tag pill,Use Caution,A Severe or Extreme National Weather Service alert is active and the verdict is not No (a Yes is downgraded to Maybe).,Orange; takes priority over the other tags unless the verdict is No
 Verdict tag,Tag pill,Night Time,"Darkness is the ONLY reason the hour is ruled out, wind is under 16 mph, no Severe/Extreme alert, and the verdict is not Yes.",Purple with a moon
 Verdict word,Verdict card (details),Yes / Maybe / No,Matches the verdict state above.,"Also shows the time range (e.g. ""from now until 6 PM""); ""Right now"" when No"
@@ -66,6 +67,7 @@ Paragraph (hero / verdict card),Hero paragraph,Good news: [day] [time] is a grea
 Paragraph (hero / verdict card),Hero paragraph,"Go on, get outside! [Day] [time] looks lovely.","Verdict is Yes and it is comfortable (average 50–86°F, ground not wet).","One of three, chosen by the date"
 Paragraph (hero / verdict card),Hero paragraph,[Day] [time] is a good time to get outside.,Verdict is Yes but not especially comfortable.,"One of two, chosen by the date"
 Paragraph (hero / verdict card),Hero paragraph,Good news: [day] [time] works for getting outside.,Verdict is Yes but not especially comfortable.,"One of two, chosen by the date"
+Paragraph (hero / verdict card),Hero paragraph,"Stay aware: after [time], [what is coming].",Stay Aware tag: weather arrives within 3 hours.,"Replaces the plain ""After [time]…"" sentence"
 Paragraph (hero / verdict card),Hero paragraph,"It will be [the summary sentence, lowercased]",Verdict is Yes (second sentence).,One of two
 Paragraph (hero / verdict card),Hero paragraph,"Expect [the summary sentence, lowercased]",Verdict is Yes (second sentence).,One of two
 Paragraph (hero / verdict card),Hero paragraph,This is great weather to [activities].,Yes/Maybe with at least one fitting activity.,"Up to 3 activity verbs, e.g. ""take a stroll, hit a trail and fly a kite""; lead-in and activities rotate by date"

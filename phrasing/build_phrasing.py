@@ -16,6 +16,7 @@ a(T,tw,'Wait a Bit','Verdict is Maybe and a good window starts later today.','Ye
 a(T,tw,'Wait a Bit','Verdict is No right now but it is passing weather: a good window opens within the next 12 hours (usually tomorrow morning).','Yellow (same tag as the later-today Maybe case)')
 a(T,tw,'Stay Inside','Verdict is No right now and the next good window is more than 12 hours away (but within 48 hours).','Orange')
 a(T,tw,'Stay In All Day','Verdict is No and there is no good window in the next 48 hours.','Red')
+a(T,tw,'Stay Aware','It is fine to be out right now (verdict Yes, or Maybe with the window starting now), but rain, snow, storms, strong wind or a rising chance of precipitation arrives within the next 3 hours. No Severe/Extreme alert.','Blue; Use Caution and Night Time take priority over it')
 a(T,tw,'Use Caution','A Severe or Extreme National Weather Service alert is active and the verdict is not No (a Yes is downgraded to Maybe).','Orange; takes priority over the other tags unless the verdict is No')
 a(T,tw,'Night Time','Darkness is the ONLY reason the hour is ruled out, wind is under 16 mph, no Severe/Extreme alert, and the verdict is not Yes.','Purple with a moon')
 a('Verdict word','Verdict card (details)','Yes / Maybe / No','Matches the verdict state above.','Also shows the time range (e.g. "from now until 6 PM"); "Right now" when No')
@@ -88,6 +89,7 @@ a(P,pw,'It’s a cozy-inside kind of moment right now: [reasons]. Your next good
 y1=['[Day] [time] is a lovely time to get outside.','Good news: [day] [time] is a great time to get outside.','Go on, get outside! [Day] [time] looks lovely.']
 for s in y1: a(P,pw,s,'Verdict is Yes and it is comfortable (average 50–86°F, ground not wet).','One of three, chosen by the date')
 for s in ['[Day] [time] is a good time to get outside.','Good news: [day] [time] works for getting outside.']: a(P,pw,s,'Verdict is Yes but not especially comfortable.','One of two, chosen by the date')
+a(P,pw,'Stay aware: after [time], [what is coming].','Stay Aware tag: weather arrives within 3 hours.','Replaces the plain "After [time]…" sentence')
 for s in ['It will be [the summary sentence, lowercased]','Expect [the summary sentence, lowercased]']: a(P,pw,s,'Verdict is Yes (second sentence).','One of two')
 for s in ['This is great weather to [activities].','It’s a lovely time to [activities].','You could [activities].','Perfect conditions to [activities].']: a(P,pw,s,'Yes/Maybe with at least one fitting activity.','Up to 3 activity verbs, e.g. "take a stroll, hit a trail and fly a kite"; lead-in and activities rotate by date')
 a(P,pw,'Even a short outing should feel nice.','Yes/Maybe but no activity fits.')

@@ -2012,6 +2012,7 @@
   @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --night-ink:#C3B2F6 } }
   :root[data-theme="dark"]{ --night-ink:#C3B2F6 }
   .vd-tag--night{ --tg:var(--night-ink) }
+  .vd-tag--aware{ --tg:var(--icon-blue) }  /* Stay Aware: fine now, weather on the way */
   .hero-head .vd-tag--night::before, .m-actions .vd-tag--night::before, .vd-card .vd-tag--night::before{
     width:12px; height:12px; margin-right:5px; border-radius:0; background:var(--tg);
     -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
@@ -5086,6 +5087,13 @@
       if(severe){ r.alert = severe.event.toLowerCase(); if(r.state === 'yes') r.state = 'maybe'; }
       // night time: darkness is the only thing ruling the hour out, and the weather itself is calm
       r.night = !!(!severe && r.state !== 'yes' && now.why.length === 1 && /dark out/.test(now.why[0]) && now.mph < 16);
+      // Stay Aware: it's fine to be out right now, but weather (rain, snow, wind, storms) arrives within the next 3 hours
+      if(!severe && !r.night && (r.state === 'yes' || (r.state === 'maybe' && r.hs && r.hs[0].i === 0))){
+        for(var k = 1; k <= 3 && k < hrs.length; k++){
+          var wx = hrs[k].why.filter(function(w){ return /^(thunderstorms|rain|showers|snow)$|chance of precipitation|^wind up to|snowy or icy/.test(w); });
+          if(wx.length){ r.incoming = {i: k, why: wx}; break; }
+        }
+      }
       return r;
     }
   }
@@ -5269,14 +5277,14 @@
       out.push(vdPick(['It will be ', 'Expect '], seed, 2) + vdLc(vdGoodSentence(r.agg)));
       out.push(actsSentence);
       if(caVoice){ var cx1 = caExtra(r, c, seed); if(cx1) out.push(cx1); }
-      var aft = vdAfter(r, c); if(aft) out.push(aft);
+      var aft = vdAfter(r, c); if(aft) out.push(r.incoming ? 'Stay aware: ' + vdLc(aft) : aft);
     }else if(r.state === 'maybe' && r.hs[0].i === 0){
       out.push(caVoice ? 'You can head out right now, though conditions aren’t the dreamiest, eh.' : 'You can head out right now, though conditions aren’t the dreamiest.');
       var weak = vdWeakPoints(vdAgg([c.hrs[0]]));
       if(weak.length) out.push('Keep an eye out for ' + vdList(weak.slice(0, 2)) + '.');
       out.push(actsSentence);
       if(caVoice && r.agg.tAvg < 45) out.push('Keep your toque handy.');
-      var aft2 = vdAfter(r, c); if(aft2) out.push(aft2);
+      var aft2 = vdAfter(r, c); if(aft2) out.push(r.incoming ? 'Stay aware: ' + vdLc(aft2) : aft2);
     }else if(r.state === 'maybe'){
       var sp2 = vdSpan(r.hs, c);
       var nowWhy = r.why && r.why.length ? vdCap(vdList(r.why.slice(0, 2).map(vdNowClause))) + ' right now, so hang tight' : 'Hang tight';
@@ -5368,6 +5376,7 @@
   function vdTagFor(r){
     if(r.alert && r.state !== 'no') return {t:'Use Caution', k:'orange'};
     if(r.night) return {t:'Night Time', k:'night'};
+    if(r.incoming) return {t:'Stay Aware', k:'aware'};
     if(r.state === 'yes') return {t:'Go Outside!', k:'green'};
     if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for Now', k:'yellow'} : {t:'Wait a Bit', k:'yellow'};
     // a good window within 12 hours means it's passing weather: wait it out. Further away, stay inside. None in 48 hours: all day.
