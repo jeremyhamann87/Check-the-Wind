@@ -186,7 +186,7 @@ for s,w in [('We can’t reach the weather services right now. Check your intern
 CA='Canada alerts'
 a(CA,'Alert banner (Canada)','[Topic] [Warning / Watch / Advisory], e.g. "Frost Advisory"','An Environment Canada warning, watch or advisory is active for the nearest forecast location.','Yellow alerts count as Moderate, orange as Severe (so the verdict shows Use Caution), red as Extreme. Special weather statements are not shown.')
 a(CA,'Alert banner details','Issued by Environment and Climate Change Canada. Read the full alert, with details and what to do, at [link].','Every Canadian alert.','Canadian alerts link to the full text at weather.gc.ca')
-a(CA,'Radar (Canada)','Latest national radar image (no animation, no expanded or forecast radar)','Any Canadian location.','')
+a(CA,'Radar (Canada)','Looping last hour of national radar (6-minute frames); no expanded or forecast radar','Any Canadian location.','')
 
 C='Consent banner'
 a(C,'Bottom bar, first visit','Help us count visits? We use Google Analytics to see how many people use Check the Wind and which features they use. It’s for analytics only, with no ads. [What we track]','Shown until the visitor chooses; hides after Accept or Opt Out and is remembered.','Buttons: Opt Out / Accept')

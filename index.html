@@ -2484,9 +2484,9 @@
         <a href="https://mesonet.agron.iastate.edu" target="_blank" rel="noopener">Iowa Environmental Mesonet</a>. The expanded radar
         uses NOAA MRMS observations &amp; NOAA HRRR model forecasts, which Check the Wind processes and extends a short way ahead
         using the recent motion of the storms. The forecast part is an estimate and storms can change quickly. In Canada, the
-        radar map shows the latest national radar image from Environment and Climate Change Canada
-        (<a href="https://eccc-msc.github.io/open-data/msc-geomet/readme_en/" target="_blank" rel="noopener">MSC GeoMet</a>); it isn&rsquo;t
-        animated, and there is no expanded or forecast radar there yet.
+        radar map loops the last hour of Environment and Climate Change Canada&rsquo;s national radar images
+        (<a href="https://eccc-msc.github.io/open-data/msc-geomet/readme_en/" target="_blank" rel="noopener">MSC GeoMet</a>); there is no
+        expanded or forecast radar there yet.
       </p>
       <p>
         <strong>Air quality &amp; pollen.</strong> The Air Quality Index &amp; Pollutants (PM2.5) are sourced live from AirNow
@@ -3640,26 +3640,39 @@
       maxZoom:12, minZoom:3, referrerPolicy:'strict-origin-when-cross-origin'
     }).addTo(map);
 
-    // Canada: ECCC's national radar mosaic (GeoMet WMS), latest frame only
-    var caRadar = radarRegion === 'ca';
-    var radarLayer = caRadar
-      ? L.tileLayer.wms('https://geo.weather.gc.ca/geomet', {layers:'RADAR_1KM_RRAI', format:'image/png', transparent:true, version:'1.3.0', opacity:0.75}).addTo(map)
-      : L.tileLayer(radarFrameUrl(45), {opacity:0.75}).addTo(map);
+    // Canada: ECCC's national radar mosaic (GeoMet WMS), the last hour in 6-minute frames. Each frame is ONE image sized to the
+    // map (not a grid of tiles), so a whole loop is 10 requests: the service rate-limits heavy callers.
+    var caRadar = radarRegion === 'ca', caTimes = [], caOverlay = null;
+    function caUrl(ms){
+      var b = map.getBounds(), sw = L.CRS.EPSG3857.project(b.getSouthWest()), ne = L.CRS.EPSG3857.project(b.getNorthEast()), sz = map.getSize();
+      return 'https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=RADAR_1KM_RRAI&STYLES=&FORMAT=image/png&TRANSPARENT=true&CRS=EPSG:3857' +
+        '&WIDTH=' + sz.x + '&HEIGHT=' + sz.y + '&BBOX=' + [sw.x, sw.y, ne.x, ne.y].join(',') + '&TIME=' + new Date(ms).toISOString().replace('.000Z', 'Z');
+    }
+    var radarLayer = null;
+    if(caRadar){
+      var stepMs = 6 * 60000, latest = Math.floor((Date.now() - 8 * 60000) / stepMs) * stepMs;
+      for(var ci = 9; ci >= 0; ci--) caTimes.push(latest - ci * stepMs);
+      caOverlay = L.imageOverlay(caUrl(caTimes[caTimes.length - 1]), map.getBounds(), {opacity:0.75}).addTo(map);
+      caTimes.forEach(function(ms){ var im = new Image(); im.src = caUrl(ms); });  // preload so the loop plays smoothly
+    }else{
+      radarLayer = L.tileLayer(radarFrameUrl(45), {opacity:0.75}).addTo(map);
+    }
 
     L.circleMarker([lat, lon], {
       radius:6, color:'#fff', weight:2.5, fillColor:'#FF5A36', fillOpacity:1
     }).addTo(map);
 
     var refTime = new Date();
-    var minuteSteps = caRadar ? [0] : [45,40,35,30,25,20,15,10,5,0];
+    var minuteSteps = caRadar ? caTimes : [45,40,35,30,25,20,15,10,5,0];
     var idx = 0;
     var timer = null;
 
     function showFrame(i){
       idx = ((i % minuteSteps.length) + minuteSteps.length) % minuteSteps.length;
-      if(!caRadar) radarLayer.setUrl(radarFrameUrl(minuteSteps[idx]));
+      if(caRadar) caOverlay.setUrl(caUrl(caTimes[idx]));
+      else radarLayer.setUrl(radarFrameUrl(minuteSteps[idx]));
       if(tagEl){
-        var frameTime = new Date(refTime.getTime() - minuteSteps[idx] * 60000);
+        var frameTime = caRadar ? new Date(caTimes[idx]) : new Date(refTime.getTime() - minuteSteps[idx] * 60000);
         tagEl.textContent = frameTime.toLocaleTimeString([], locTimeOpts());
       }
     }
@@ -3677,7 +3690,7 @@
     function destroy(){ pause(); map.remove(); }
 
     showFrame(0);
-    if(!caRadar && !animEffectivePaused()) play();
+    if(!animEffectivePaused()) play();
 
     return {
       map: map, play: play, pause: pause,
