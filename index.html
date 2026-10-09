@@ -1699,6 +1699,7 @@
   .vd-chips li{padding:3px 10px; border-radius:4px; background:var(--surface-2); color:var(--text); font-size:.9375rem; font-weight:600}
   .vd-wear{margin:12px 0 0; font-size:1rem; line-height:1.45; color:var(--text-muted)}
   .vd-wear strong{font-weight:600; color:var(--text)}
+  .vd-hl{display:block}
   .vd-head{display:block; font-size:1.1875rem; font-weight:700; line-height:1.3; color:var(--text)}
   .vd-detail{display:block; margin-top:6px; font-size:1rem; line-height:1.5; color:var(--text-muted)}
   .vd-line{margin:8px 0 0}
@@ -5560,7 +5561,7 @@
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>' +
       '<p class="vd-sentence">' + vdEsc(r.sentence) + '</p>' +
       '<p class="vd-acts-line">' + vdEsc(actsLine) + '</p>' +
-      '<div class="vd-prose"><span class="vd-head">' + vdEsc(vdNbTimes(vdHeadline(r, vdCtx))) + '</span><div class="vd-detail">' + vdEsc(vdSubLines(r, vdCtx, actList).map(function(l){ return l.text; }).join(' ')) + '</div></div>' +
+      '<div class="vd-prose"><span class="vd-head">' + vdNbTimes(vdHeadline(r, vdCtx)).replace(/([.?!])\s+/g, '$1\n').split('\n').map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(vdSubLines(r, vdCtx, actList).map(function(l){ return l.text; }).join(' ')) + '</div></div>' +
       (r.state === 'no' && r.next ? '<p class="vd-next">' + vdEsc(r.next) + '</p>' : '') +
       '<div class="vd-details" id="vdDetails"' + (vdOpen ? '' : ' hidden') + '>' + details + '</div>';
     var minor = lastAlerts.filter(function(x){ return !(x.severity === 'Severe' || x.severity === 'Extreme'); })[0];
