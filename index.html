@@ -758,6 +758,7 @@
   .bw-head{padding:9px 24px 6.5px; background:color-mix(in srgb, var(--text) 5%, var(--surface)); border-bottom:.5px solid var(--table-border); font-size:1rem; color:var(--text-muted)}
   .bw-row{padding:12px 24px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)); font-size:1rem}  /* a 1px hairline (like the card headers); a .5px line can drop out on some phones */
   .bw-row.bw-row--top{padding:12px 24px}
+
   .bw-row:last-of-type{border-bottom:none}
   .bw-cell{min-width:0}
   .bw-lab{position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap}
@@ -1698,6 +1699,12 @@
   .vd-chips li{padding:3px 10px; border-radius:4px; background:var(--surface-2); color:var(--text); font-size:.9375rem; font-weight:600}
   .vd-wear{margin:12px 0 0; font-size:1rem; line-height:1.45; color:var(--text-muted)}
   .vd-wear strong{font-weight:600; color:var(--text)}
+  .vd-hl{display:block}
+  .vd-head{display:block; font-size:1.1875rem; font-weight:700; line-height:1.3; color:var(--text)}
+  .vd-detail{display:block; margin-top:6px; font-size:1rem; line-height:1.5; color:var(--text-muted)}
+  .vd-line{margin:8px 0 0}
+  .vd-line:first-child{margin-top:0}
+  .vd-line b{margin-right:6px; font-weight:700; color:var(--text)}
   .vd-acts-none, .vd-next{margin:12px 0 0; font-size:1rem; line-height:1.45; color:var(--text-muted)}
   .vd-next{color:var(--text)}
   .vd-skel-a{height:38px; width:55%}
@@ -2067,9 +2074,22 @@
   /* Canada has no expanded radar: hide the expand button */
   #radarBox.no-expand .radar-expand-btn{ display:none }
 
+  /* Phone and tablet hero: the place name is a small gray label (with the tag at the right), the headline is the title, the gray text follows */
+  @media (max-width:63.99em){
+    .db-layout > .hero-wrap .hero-head .m-loc-name{ font-size:1rem !important; font-weight:700; color:var(--text-muted); letter-spacing:.01em }
+    .hero-head{ margin:4px 0 6px }
+    .hero-wrap .vd-head{ font-size:1.5rem; line-height:1.2; letter-spacing:-.01em }
+    .hero-wrap .vd-detail{ margin-top:8px }
+  }
+
   /* Desktop: every font in the right-hand content column is 14px */
   @media (min-width:64em){
     .db-content, .db-content *{ font-size:.875rem !important }
+  }
+
+  /* Desktop: the headline in the verdict card is 20px (the rest of the column stays 14px) */
+  @media (min-width:64em){
+    .db-content .vd-head{ font-size:1.25rem !important; line-height:1.25 }
   }
 
   /* Desktop: the air quality line (AQI + level, with the half-ring icon) also sits under the ground conditions in the hero */
@@ -5208,7 +5228,7 @@
     return w;
   }
   function vdProse(r, c, actList){
-    var base = vdProseCore(r, c, actList);
+    var base = vdProseCore(r, c, actList).join(' ');
     if(r.alert) return base;   // under a severe alert the text is only about safety: no clothing or pet tips
     var g = vdGear(c);
     return base + ' ' + g.wear + (g.pet ? ' ' + g.pet : '');
@@ -5227,7 +5247,7 @@
       out.push(lead + ', but there’s an active ' + r.alert + ' for your area.');
       var aft4 = vdAfter(r, c); if(aft4) out.push(aft4);
       out.push('Please be careful, and check the alert above before heading outside.');
-      return out.join(' ');
+      return out;
     }
     // Night time with otherwise calm weather
     if(r.night){
@@ -5289,7 +5309,7 @@
           'Things look good again ' + spn.day + ' ' + spn.phrase + ', so get some rest.'
         ], nseed, 3));
       }
-      return out.join(' ');
+      return out;
     }
     if(r.state === 'yes'){
       var sp = vdSpan(r.hs, c);
@@ -5342,7 +5362,7 @@
       else if(vdBigCity() && !r.alert) out.push('There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a museum, a show or a long dinner out.');
       else out.push(caVoice && !r.alert ? vdPick(['There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a double-double from Tim Hortons.', 'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and pancakes with real maple syrup.'], seed, 6) : 'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a snack.');
     }
-    return out.join(' ');
+    return out;
   }
 
 
@@ -5379,7 +5399,113 @@
     if(minT < 20) pet = 'It’s dangerously cold for pets: keep them indoors except for quick potty breaks, and bring in any animals that live outside.';
     else if(minT < 32) pet = 'Keep pets inside when you can, keep walks short, and wipe their paws afterward to clear ice, salt and snow.';
     else if(minT < 40) pet = 'It’s chilly for pets, especially small or short-haired ones: keep walks short and consider a coat.';
-    return {wear: (base + ' ' + mods.slice(0, 2).join(' ')).trim(), pet: pet, cold: minT < 40};
+    var wearText = (base + ' ' + mods.slice(0, 2).join(' ')).trim().replace(/(Bring [^.]*)\. Bring ((?:an|a) umbrella or a rain jacket)\./, '$1, plus $2.');
+    return {wear: wearText, pet: pet, cold: minT < 40};
+  }
+
+
+  /* Option 3: a bold headline and one gray detail line. Activities, the after-window note and the rest live with each Best Times window. */
+  function vdClock(h){ var t = fmtH12(h.hour); return t.n + ' ' + t.ap; }
+  function vdWxWord(w){
+    if(/^thunderstorms$/.test(w)) return 'storms';
+    if(/^(rain|showers|snow)$/.test(w)) return w;
+    if(/chance of precipitation/.test(w)) return 'rain';
+    if(/^wind up to/.test(w)) return 'wind';
+    if(/snowy or icy/.test(w)) return 'ice';
+    return 'rough weather';
+  }
+  function vdWhyShort(w){
+    if(/dark out/.test(w)) return 'Dark out';
+    if(/^thunderstorms$/.test(w)) return 'Storms';
+    if(/^(rain|showers|snow)$/.test(w)) return vdCap(w);
+    if(/^wind up to/.test(w)) return 'Windy';
+    if(/chance of precipitation/.test(w)) return 'Rain likely';
+    if(/snowy or icy/.test(w)) return 'Icy ground';
+    if(/^cold at/.test(w)) return 'Cold';
+    if(/^hot at/.test(w)) return 'Hot';
+    if(/air quality/.test(w)) return 'Poor air';
+    if(/humidity/.test(w)) return 'Humid';
+    if(/wet ground/.test(w)) return 'Wet ground';
+    return vdCap(w);
+  }
+  // Times never split across lines in the headline ("from 2 to 7 PM" stays together)
+  function vdNbTimes(t){
+    return String(t).replace(/\b(from |until |by )?(\d{1,2}(?::\d\d)?)( to |[–-])?(\d{1,2}(?::\d\d)?)? ?(AM|PM)\b/g, function(m){ return m.replace(/ /g, '\u00A0'); });
+  }
+  function vdHeadline(r, c){
+    var seed = vdSeed(c), ca = caVoice;
+    function endAt(hs){ var t = fmtH12(hs[hs.length - 1].hour + 1); return t.n + ' ' + t.ap; }
+    // (none of these repeat the wording of the tag beside them: Go Outside!, Okay for Now, Wait a Bit, Stay Aware, Stay Inside, Stay In All Day, Use Caution, Night Time)
+    if(r.alert && r.state !== 'no') return 'Fine out, but there’s an active ' + r.alert + '.';
+    if(r.state === 'no' && r.alert) return vdCap(r.alert) + ' in effect.';
+    if(r.night){
+      var nw = r.state === 'maybe' ? r.hs : r.nextHs;
+      return (ca ? 'Dark out, eh. ' : 'Dark out. ') + (nw ? 'Next good window: ' + vdRange(nw, c) + '.' : 'Not a night for outdoor plans.');
+    }
+    if(r.state === 'yes'){
+      var comfy = r.agg.tAvg >= 50 && r.agg.tAvg <= 86 && r.agg.wet < 0.45;
+      if(r.incoming) return 'Good until ' + vdClock(c.hrs[r.incoming.i]) + ', then ' + vdWxWord(r.incoming.why[0]) + '.';
+      var when = r.hs[0].i === 0 ? 'until ' + endAt(r.hs) : vdRange(r.hs, c);
+      if(ca) return comfy ? vdPick(['Beauty day, eh? Good ' + when + '.', 'Give’r! Lovely ' + when + '.'], seed, 1) : 'Not bad, eh. Good ' + when + '.';
+      return comfy ? 'Lovely ' + when + '.' : 'Good ' + when + '.';
+    }
+    if(r.state === 'maybe' && r.hs[0].i === 0){
+      var weak = vdWeakPoints(vdAgg([c.hrs[0]]));
+      if(r.incoming) return 'Doable now, but ' + vdWxWord(r.incoming.why[0]) + ' by ' + vdClock(c.hrs[r.incoming.i]) + '.';
+      return 'Doable, not ideal' + (weak.length ? ': ' + weak[0] : '') + '.';
+    }
+    if(r.state === 'maybe'){
+      var sp = vdSpan(r.hs, c);
+      return (r.why && r.why.length ? vdWhyShort(r.why[0]) + ' now. ' : '') + (ca ? 'Lovely, eh: ' : 'Lovely ') + sp.day + ' ' + sp.phrase + '.';
+    }
+    var why = r.why && r.why.length ? vdWhyShort(r.why[0]) + '. ' : '';
+    if(r.nextHs) return why + 'Next good window: ' + vdRange(r.nextHs, c) + '.';
+    return (why || '') + 'No good window for 48 hours.';
+  }
+  // The gray text under the headline: the earlier paragraph's wording (minus what the headline already says) plus clothing and pet advice
+  function vdSubLines(r, c, actList){
+    var sents = vdProseCore(r, c, actList), g = vdGear(c), planning = (r.state === 'yes' || r.state === 'maybe') && !r.alert;
+    var keep = (r.night || (r.state === 'no' && !r.alert)) ? sents.slice(0, -1) : (r.state === 'no' ? sents : sents.slice(1));  // a severe-alert No keeps its safety sentence
+    var lines = [];
+    if(keep.length) lines.push({label: planning ? 'Do' : '', text: keep.join(' ')});
+    if(!r.alert) lines.push({label: 'Wear', text: g.wear + (g.pet ? ' ' + g.pet : '')});   // severe alert: safety only, no clothing or pet tips
+    return lines;
+  }
+  // One gray line: what to wear (and how to get around in a city, and pet safety in the cold)
+  function vdDetailLine(c){
+    var g = vdGearShort(c), parts = [vdCap(g.items.slice(0, 4).join(' + '))];
+    if(g.getAround) parts.push(g.getAround);
+    if(g.pet) parts.push(g.pet);
+    return parts.join(' · ');
+  }
+  function vdGearShort(c){
+    var hs = c.hrs.slice(0, 7), ca = caVoice, city = vdBigCityInfo();
+    var minT = Math.min.apply(null, hs.map(function(h){ return h.temp; })), maxT = Math.max.apply(null, hs.map(function(h){ return h.temp; }));
+    var maxW = Math.max.apply(null, hs.map(function(h){ return h.mph; }));
+    function any(re){ return hs.some(function(h){ return re.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40); }); }
+    var rain = any(/rain|shower|drizzle|thunder/i), snow = any(/snow|flurr|sleet|blizzard/i);
+    var ice = hs.some(function(h){ return /freezing|ice|icy|sleet/i.test(h.fc) || h.why.some(function(w){ return /snowy or icy/.test(w); }); });
+    var hat = ca ? 'toque' : 'hat', gloves = ca ? 'mitts' : 'gloves', items;
+    if(minT < 15) items = ['heavy coat', hat, 'insulated ' + gloves, 'scarf'];
+    else if(minT < 32) items = ['warm coat', hat, gloves, 'scarf'];
+    else if(minT < 45) items = ['warm coat', hat, gloves];
+    else if(minT < 58) items = maxT >= 68 ? ['jacket', 'layers'] : ['jacket'];
+    else if(maxT >= 85) items = ['light clothes', 'sunscreen', 'hat'];
+    else if(maxT >= 72) items = ['light clothes', 'sunscreen'];
+    else items = ['light layers'];
+    if(snow) items.push('waterproof boots'); else if(ice && minT <= 34) items.push('boots with grip'); else if(minT < 32) items.push('warm boots');
+    if(rain) items.push('umbrella');
+    if(maxW >= 16 && minT >= 32) items.push('windbreaker');
+    var getAround = '';
+    if(city){
+      if(rain || snow || minT < 25 || maxW >= 25) getAround = 'Take ' + city.transit + ' or a cab';
+      else items.push('comfy shoes');
+    }
+    var pet = '';
+    if(minT < 20) pet = 'keep pets indoors';
+    else if(minT < 32) pet = 'short pet walks, wipe paws';
+    else if(minT < 40) pet = 'short pet walks';
+    return {items: items, getAround: getAround, pet: pet};
   }
 
   function vdEsc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -5435,7 +5561,7 @@
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>' +
       '<p class="vd-sentence">' + vdEsc(r.sentence) + '</p>' +
       '<p class="vd-acts-line">' + vdEsc(actsLine) + '</p>' +
-      '<p class="vd-prose">' + vdEsc(vdProse(r, vdCtx, actList)) + '</p>' +
+      '<div class="vd-prose"><span class="vd-head">' + vdNbTimes(vdHeadline(r, vdCtx)).replace(/([.?!])\s+/g, '$1\n').split('\n').map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(vdSubLines(r, vdCtx, actList).map(function(l){ return l.text; }).join(' ')) + '</div></div>' +
       (r.state === 'no' && r.next ? '<p class="vd-next">' + vdEsc(r.next) + '</p>' : '') +
       '<div class="vd-details" id="vdDetails"' + (vdOpen ? '' : ' hidden') + '>' + details + '</div>';
     var minor = lastAlerts.filter(function(x){ return !(x.severity === 'Severe' || x.severity === 'Extreme'); })[0];
