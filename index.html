@@ -2024,6 +2024,11 @@
   @media (min-width:64em){
     .db-content, .db-content *{ font-size:.875rem !important }
   }
+
+  /* Desktop: the air quality line (AQI + level, with the half-ring icon) also sits under the ground conditions in the hero */
+  @media (min-width:64em){
+    .hero-wrap .hero-now .air-now:not([hidden]){ display:flex }
+  }
 </style>
 </head>
 <body>
