@@ -187,7 +187,7 @@ for s,w in [('We can’t reach the weather services right now. Check your intern
 ('We couldn’t find “[search]” in the U.S. or Canada. Try a city & state or province, like “Denver, CO” or “Toronto, ON”, or a ZIP code.','A search matched no U.S. or Canadian place.')]:
     a(E,'Error view',s,w)
 
-a('Units','Every temperature and wind speed shown','°C and km/h for visitors in Canada; °F and mph everywhere else','The browser reports a Canadian time zone (Toronto, Vancouver, Halifax, etc.) or a Canadian language (en-CA, fr-CA).','Wind categories in km/h: Calm 0–12, Breezy 13–25, Windy 26–39, Blustery 40–54, Howling 55+')
+a('Units','Every temperature and wind speed shown','°C and km/h for visitors in Canada and for anyone viewing a Canadian place; °F and mph everywhere else','The browser reports a Canadian time zone (Toronto, Vancouver, Halifax, etc.) or a Canadian language (en-CA, fr-CA), OR the place being viewed is in Canada.','Wind categories in km/h: Calm 0–12, Breezy 13–25, Windy 26–39, Blustery 40–54, Howling 55+')
 CA='Canada alerts'
 a(CA,'Alert banner (Canada)','[Topic] [Warning / Watch / Advisory], e.g. "Frost Advisory"','An Environment Canada warning, watch or advisory is active for the nearest forecast location.','Yellow alerts count as Moderate, orange as Severe (so the verdict shows Use Caution), red as Extreme. Special weather statements are not shown.')
 a(CA,'Alert banner details','Issued by Environment and Climate Change Canada. Read the full alert, with details and what to do, at [link].','Every Canadian alert.','Canadian alerts link to the full text at weather.gc.ca')
@@ -195,7 +195,7 @@ a(CA,'Radar (Canada)','Looping last hour of national radar (6-minute frames); no
 
 CV='Canadian voice'
 cw='Hero paragraph (visitors in Canada only)'
-cond_ca='Visitor has a Canadian time zone or language; never used under a Severe/Extreme alert.'
+cond_ca='Visitor has a Canadian time zone or language, or is viewing a Canadian place; never used under a Severe/Extreme alert.'
 for ph,wh,n in [
  ('Beauty day, eh? [Day] [time] is a great time to get outside. / Give’r! [Day] [time] looks like a beauty. / [Day] [time] is a beauty of a time to get outside, don’t you know.','Verdict is Yes and comfortable.','Replaces the three standard Yes openers'),
  ('[Day] [time] works for getting outside, eh? / Not bad at all: [day] [time] is a good time to get outside, eh?','Verdict is Yes but not especially comfortable.','Replaces the two standard openers'),

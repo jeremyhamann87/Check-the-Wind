@@ -2474,7 +2474,7 @@
       </p>
       <p>
         <strong>Canada.</strong> Canadian forecasts come from the nearest Environment Canada forecast location, which can be some
-        distance from the place you searched. Metric values are converted to &deg;F &amp; mph, and visitors in Canada (judged from the browser&rsquo;s time zone or language) see temperatures in &deg;C and wind in km/h. The city-page hourly forecast covers 24
+        distance from the place you searched. Metric values are converted to &deg;F &amp; mph, and temperatures show in &deg;C and wind in km/h for visitors in Canada (judged from the browser&rsquo;s time zone or language) and for anyone looking at a Canadian place. The city-page hourly forecast covers 24
         hours, so Check the Wind fills the hours after that, and the wind on days the 7-day forecast doesn&rsquo;t mention it
         (Environment Canada only reports wind of 20 km/h or more), with Environment Canada&rsquo;s own GEM forecast model, relayed
         by <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Canadian alerts show each warning, watch or
@@ -2614,9 +2614,9 @@
     try{ localStorage.setItem(LAST_LOC_KEY, JSON.stringify({lat:lat, lon:lon, label:label})); }catch(err){}
   }
 
-  /* Temperature units: visitors in Canada (judged by the browser's time zone or language) see °C, everyone else °F.
-     All the logic still runs in °F; only what is shown is converted. */
-  var useCelsius = (function(){
+  /* Units: °C and km/h for visitors in Canada (judged by the browser's time zone or language) AND for anyone looking at a
+     Canadian place; everyone else gets °F and mph. All the logic still runs in °F / mph; only what is shown is converted. */
+  var visitorCa = (function(){
     try{
       var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
       if(/^America\/(Toronto|Montreal|Halifax|St_Johns|Winnipeg|Regina|Edmonton|Vancouver|Whitehorse|Yellowknife|Iqaluit|Rankin_Inlet|Cambridge_Bay|Resolute|Glace_Bay|Moncton|Goose_Bay|Thunder_Bay|Nipigon|Pangnirtung|Inuvik|Dawson|Dawson_Creek|Fort_Nelson|Creston|Swift_Current|Blanc-Sablon|Atikokan|Coral_Harbour|Rainy_River)$/.test(tz)) return true;
@@ -2624,14 +2624,25 @@
     try{ return /-CA$/i.test(navigator.language || ''); }catch(e){}
     return false;
   })();
+  var placeCa = false, useCelsius = visitorCa, useKmh = visitorCa, caVoice = visitorCa, windUnit = visitorCa ? 'km/h' : 'mph';
+  var WIND_RANGES_MPH = ['0–7 mph','8–15 mph','16–24 mph','25–33 mph','34+ mph'], WIND_RANGES_KMH = ['0–12 km/h','13–25 km/h','26–39 km/h','40–54 km/h','55+ km/h'];
+  var WIND_RANGES = visitorCa ? WIND_RANGES_KMH : WIND_RANGES_MPH;
+  var windRangeEls = [].map.call(document.querySelectorAll('.wind-range'), function(el){ return {el: el, i: WIND_RANGES_MPH.indexOf(el.textContent.trim())}; });
+  function applyWindRanges(){ windRangeEls.forEach(function(x){ if(x.i >= 0) x.el.textContent = WIND_RANGES[x.i]; }); }
+  // Called for each place that loads: a Canadian place switches the page to metric even for a visitor outside Canada
+  function setUnitsFor(isCa){
+    placeCa = !!isCa;
+    var on = visitorCa || placeCa;
+    useCelsius = useKmh = caVoice = on;
+    windUnit = on ? 'km/h' : 'mph';
+    WIND_RANGES = on ? WIND_RANGES_KMH : WIND_RANGES_MPH;
+    applyWindRanges();
+  }
   function tempNum(f){ return useCelsius ? Math.round((f - 32) * 5 / 9) : Math.round(f); }
   function fmtTemp(f){ return tempNum(f) + (useCelsius ? '°C' : '°F'); }
-  /* Wind speed: km/h for the same visitors. Everything (bands, limits, scoring) stays in mph; only what is shown is converted. */
-  var useKmh = useCelsius;
   function windNum(mph){ return useKmh ? Math.round(mph * 1.609344) : Math.round(mph); }
-  var windUnit = useKmh ? 'km/h' : 'mph';
   function fmtWind(mph){ return windNum(mph) + ' ' + windUnit; }
-  var WIND_RANGES = useKmh ? ['0–12 km/h','13–25 km/h','26–39 km/h','40–54 km/h','55+ km/h'] : ['0–7 mph','8–15 mph','16–24 mph','25–33 mph','34+ mph'];
+  applyWindRanges();
 
   function bandFor(mph){
     if(mph < 8)  return {key:'calm',       label:'Calm',        css:'var(--band-calm)',      pill:'var(--pill-calm)',      pillInk:'var(--seg-ink-calm)'};
@@ -3842,17 +3853,13 @@
   // Info (?) buttons open this shared modal (same look as Disclaimers & Data Sources) — no hover tooltips.
   var infoModal = document.getElementById('infoModal');
   var infoModalLastFocus = null;
-  [].forEach.call(document.querySelectorAll('.wind-range'), function(el){
-    var i = {'0–7 mph':0,'8–15 mph':1,'16–24 mph':2,'25–33 mph':3,'34+ mph':4}[el.textContent.trim()];
-    if(i != null) el.textContent = WIND_RANGES[i];
-  });
-  var WIND_KEY_ROWS = [
+  function windKeyRows(){ return [
     ['Calm','calm',WIND_RANGES[0],'var(--band-calm)'],
     ['Breezy','breezy',WIND_RANGES[1],'var(--band-breezy)'],
     ['Windy','windy',WIND_RANGES[2],'var(--band-windy)'],
     ['Blustery','blustery',WIND_RANGES[3],'var(--band-verywindy)'],
     ['Howling','howling',WIND_RANGES[4],'var(--band-gale)']
-  ];
+  ]; }
   function fillInfoModal(kind){
     var title = document.getElementById('infoModalTitle');
     var body = document.getElementById('infoModalBody');
@@ -3876,7 +3883,7 @@
       head.appendChild(hr);
       table.appendChild(head);
       var tb = document.createElement('tbody');
-      WIND_KEY_ROWS.forEach(function(r){
+      windKeyRows().forEach(function(r){
         var tr = document.createElement('tr');
         var c1 = document.createElement('td');
         var pill = document.createElement('span');
@@ -5152,7 +5159,6 @@
     return VD_BIG_CITIES.some(function(c){ var dy = (c[0] - la) * 111.2, dx = (c[1] - lo) * kx; return dx * dx + dy * dy < 900; });
   }
   // Visitors in Canada get a little local flavour (eh, toque, give'r, Tim Hortons...) in the playful text. Warnings stay serious.
-  var caVoice = useCelsius;
   function caExtra(r, c, seed){
     var opts = [], a = r.agg, mon = +String(c.todayStr || '').slice(5, 7);
     if(a.tAvg < 45) opts.push('Keep your toque handy.');
@@ -5751,6 +5757,7 @@
       props = wp.points.properties;
     }
     radarRegion = ca ? 'ca' : 'us';
+    setUnitsFor(!!ca);
     var place = label || (props.relativeLocation && props.relativeLocation.properties
       ? props.relativeLocation.properties.city + ', ' + props.relativeLocation.properties.state
       : lat.toFixed(2)+', '+lon.toFixed(2));
@@ -6293,7 +6300,7 @@
       if(wpP.region === 'ca'){
         var cbP = await canadaBundle(lat, lon);
         if(!cbP.hourly[0]) throw new Error('no data');
-        return {tz: cbP.tz || null, cur: cbP.hourly[0], alerts: await alertsP};
+        return {tz: cbP.tz || null, cur: cbP.hourly[0], alerts: await alertsP, ca: true};
       }
       var points = wpP.points;
       var hourly = await fetchJson(points.properties.forecastHourly);
@@ -6314,6 +6321,11 @@
     peekEl.style.left = left + 'px'; peekEl.style.top = top + 'px';
   }
   function peekRender(name, data, state){
+    var keepCa = placeCa;
+    if(state !== 'loading' && state !== 'error' && data) setUnitsFor(!!data.ca);
+    try{ peekRenderInner(name, data, state); } finally{ setUnitsFor(keepCa); }
+  }
+  function peekRenderInner(name, data, state){
     peekEl.textContent = '';
     var h = document.createElement('p'); h.className = 'pk-name'; h.textContent = name; peekEl.appendChild(h);
     if(state === 'loading' || state === 'error'){
