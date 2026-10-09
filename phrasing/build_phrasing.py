@@ -109,14 +109,14 @@ nq=['It’s night time and dark out, so most outdoor activities will be challeng
 'Night has settled in, and with so little light around, trails and open spaces are best saved for daylight.',
 'The sun is down, so most outdoor activities will be a challenge unless you’re packing a headlamp and a sense of adventure.',
 'Darkness has rolled in, so most outdoor activities will be hard going unless you have a good light with you.']
-for s in nq: a(N,pw,s,'Night Time tag, and the place is NOT within about 30 km of a large U.S. city.','Opening sentence: one of six, chosen by the date and the place')
+for s in nq: a(N,pw,s,'Night Time tag, and the place is NOT within about 30 km of a large U.S. or Canadian city.','Opening sentence: one of six, chosen by the date and the place')
 nb=['It’s night time, but a city this size never really goes dark, and plenty of folks are still out and about.',
 'It’s late, but the streetlights are glowing and the sidewalks are still lively, so an evening stroll is on the table.',
 'The sun is down, but between the city lights and the night owls, the place is still wide awake.',
 'It’s dark out, though the city glow makes it easy to see, and there’s usually someone out for a late walk or a bite.',
 'Night has fallen and the city is shining. Lit streets and late crowds make it a fine time for a stroll, just stick to well-lit routes.',
 'The sky is dark but the skyline isn’t, so with lights and people all around, a short evening outing is easy to enjoy.']
-for s in nb: a(N,pw,s,'Night Time tag, and the place is within about 30 km of one of ~65 large U.S. metro centers.','Opening sentence: one of six')
+for s in nb: a(N,pw,s,'Night Time tag, and the place is within about 30 km of one of ~75 large U.S. and Canadian city centers.','Opening sentence: one of six')
 for s in ['It’s [calm/breezy] and [clear/partly cloudy] out there, a nice night for a little stargazing.','With [calm/breezy], [clear/partly cloudy] conditions, the stars should put on a good show.','It’s [calm/breezy] and [clear/partly cloudy], so if you do step out, look up: the night sky is worth a peek.']:
     a(N,pw,s,'Night Time, small town, sky is clear or partly cloudy.','Second sentence: one of three. "calm" under 8 mph, "breezy" otherwise')
 for s in ['It’s [calm/breezy] out there, a cozy night to stay in.','It’s [calm/breezy] out there, so settle in with something warm and let the night go by.']:
@@ -174,14 +174,19 @@ for s,w in [('We can’t reach the weather services right now. Check your intern
 ('Something unexpected got in the way. Give it a moment & try again, or search for a different place.','Any other failure.'),
 ('We couldn’t refresh just now. Pull down to try again in a moment.','Background refresh failed.'),
 ('We couldn’t look up that place right now. Give it a moment, then try searching again.','Place search failed.'),
-('The National Weather Service doesn’t cover this spot. Try a nearby U.S. city or town instead.','Location outside NWS coverage.'),
+('We don’t have weather data for this spot yet. Try a nearby U.S. or Canadian city or town instead.','Location outside U.S. and Canadian coverage.'),
 ('The National Weather Service doesn’t have hourly wind data for this area yet. Try a nearby town, or check back soon.','No hourly data for the area.'),
 ('Your browser can’t share your location. Try searching for a city or ZIP code instead.','Browser has no location support.'),
 ('We couldn’t get your location. Allow location access for this site in your browser settings, or search for a city instead.','Location permission denied.'),
 ('Your device couldn’t work out where you are. Try again in a moment, or search for a city or ZIP code.','Location unavailable.'),
 ('Finding your location is taking too long. Try again, or search for a city or ZIP code.','Location timed out.'),
-('We couldn’t find “[search]” in the U.S. Try a city & state, like “Denver, CO”, or a ZIP code.','A search matched no U.S. place.')]:
+('We couldn’t find “[search]” in the U.S. or Canada. Try a city & state or province, like “Denver, CO” or “Toronto, ON”, or a ZIP code.','A search matched no U.S. or Canadian place.')]:
     a(E,'Error view',s,w)
+
+CA='Canada alerts'
+a(CA,'Alert banner (Canada)','[Topic] [Warning / Watch / Advisory], e.g. "Frost Advisory"','An Environment Canada warning, watch or advisory is active for the nearest forecast location.','Yellow alerts count as Moderate, orange as Severe (so the verdict shows Use Caution), red as Extreme. Special weather statements are not shown.')
+a(CA,'Alert banner details','Issued by Environment and Climate Change Canada. Read the full alert, with details and what to do, at [link].','Every Canadian alert.','Canadian alerts link to the full text at weather.gc.ca')
+a(CA,'Radar (Canada)','Latest national radar image (no animation, no expanded or forecast radar)','Any Canadian location.','')
 
 C='Consent banner'
 a(C,'Bottom bar, first visit','Help us count visits? We use Google Analytics to see how many people use Check the Wind and which features they use. It’s for analytics only, with no ads. [What we track]','Shown until the visitor chooses; hides after Accept or Opt Out and is remembered.','Buttons: Opt Out / Accept')

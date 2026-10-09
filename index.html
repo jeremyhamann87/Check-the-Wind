@@ -20,13 +20,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%221.05%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10.10%209.8L6.71%2022.6M11.90%209.8L15.29%2022.6M8.83%2014.6H13.17M7.77%2018.6H14.23%22/%3E%3Cpath%20d%3D%22M11%206.6H19%22/%3E%3Crect%20x%3D%2217.6%22%20y%3D%225.3%22%20width%3D%223%22%20height%3D%222.6%22%20rx%3D%22.3%22/%3E%3Cg%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%226.6%22%20r%3D%225.3%22/%3E%3Cpath%20d%3D%22M11%206.6L16.10%206.60M11%206.6L15.42%209.15M11%206.6L13.55%2011.02M11%206.6L11.00%2011.70M11%206.6L8.45%2011.02M11%206.6L6.58%209.15M11%206.6L5.90%206.60M11%206.6L6.58%204.05M11%206.6L8.45%202.18M11%206.6L11.00%201.50M11%206.6L13.55%202.18M11%206.6L15.42%204.05%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%226.6%22%20r%3D%221.1%22%20fill%3D%22%23000%22/%3E%3C/svg%3E">
 <title>Check the Wind — wind, weather and the best times to be outside</title>
-<meta name="description" content="Check the Wind shows live wind speed and direction, the hourly and 7-day wind outlook, weather alerts, air quality, and the best times to be outside for any U.S. location.">
+<meta name="description" content="Check the Wind shows live wind speed and direction, the hourly and 7-day wind outlook, weather alerts, air quality, and the best times to be outside for any U.S. or Canadian location.">
 <link rel="canonical" href="https://www.checkthewind.com/">
 <meta name="theme-color" content="#E7EEF2">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Check the Wind">
 <meta property="og:title" content="Check the Wind — wind, weather and the best times to be outside">
-<meta property="og:description" content="Live wind speed and direction, the 7-day wind outlook, alerts, air quality and the best times to be outside, for any U.S. location.">
+<meta property="og:description" content="Live wind speed and direction, the 7-day wind outlook, alerts, air quality and the best times to be outside, for any U.S. or Canadian location.">
 <meta property="og:url" content="https://www.checkthewind.com/">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Check the Wind">
@@ -2061,6 +2061,9 @@
   .consent-actions .bp-btn{ min-height:40px; padding:0 22px }
   @media (max-width:40em){ .consent-actions{ flex:1 1 100% } .consent-actions .bp-btn{ flex:1 1 0 } }
 
+  /* Canada has no expanded radar: hide the expand button */
+  #radarBox.no-expand .radar-expand-btn{ display:none }
+
   /* Desktop: every font in the right-hand content column is 14px */
   @media (min-width:64em){
     .db-content, .db-content *{ font-size:.875rem !important }
@@ -2112,7 +2115,7 @@
                 <button type="button" id="clearLocBtn" class="clear-loc-btn" aria-label="Clear location" hidden :hidden="query.length === 0" @click="clear()">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
-                <input id="locInput" type="text" placeholder="U.S. city, ZIP, or place — e.g. Corpus Christi, TX" autocomplete="off" value="Longmont, CO"
+                <input id="locInput" type="text" placeholder="U.S. or Canadian city, ZIP, or place — e.g. Corpus Christi, TX" autocomplete="off" value="Longmont, CO"
                   role="combobox" aria-expanded="false" aria-controls="locSuggestions" aria-autocomplete="list"
                   x-ref="input" x-model="query" @input="onInput($event)" @keydown="onKey($event)" @blur="onBlur()" @focus="onFocus()"
                   :aria-expanded="open" :aria-activedescendant="active >= 0 ? 'locSuggestion-' + active : null">
@@ -2460,27 +2463,42 @@
     </div>
     <div class="disclaimers-modal-body">
       <p>
-        <strong>Weather.</strong> Wind speed, gusts, direction, temperature, forecasts &amp; weather alerts come live from the
+        <strong>Weather.</strong> In the U.S., wind speed, gusts, direction, temperature, forecasts &amp; weather alerts come live from the
         National Weather Service (<a href="https://api.weather.gov" target="_blank" rel="noopener">api.weather.gov</a>), NOAA.
-        Coverage is limited to U.S. locations &amp; territories. Forecasts update hourly at the source; reload to refresh.
+        In Canada they come from Environment and Climate Change Canada&rsquo;s MSC GeoMet open data
+        (<a href="https://api.weather.gc.ca" target="_blank" rel="noopener">api.weather.gc.ca</a>), used under the
+        <a href="https://eccc-msc.github.io/open-data/licence/readme_en/" target="_blank" rel="noopener">ECCC open data licence</a>:
+        current conditions, the city-page hourly &amp; 7-day forecasts, and weather alerts. Coverage is limited to U.S. locations &amp;
+        territories and Canada. Forecasts update hourly at the source; reload to refresh.
+      </p>
+      <p>
+        <strong>Canada.</strong> Canadian forecasts come from the nearest Environment Canada forecast location, which can be some
+        distance from the place you searched. Metric values are converted to &deg;F &amp; mph. The city-page hourly forecast covers 24
+        hours, so Check the Wind fills the hours after that, and the wind on days the 7-day forecast doesn&rsquo;t mention it
+        (Environment Canada only reports wind of 20 km/h or more), with Environment Canada&rsquo;s own GEM forecast model, relayed
+        by <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Canadian alerts show each warning, watch or
+        advisory with a link to its full text at weather.gc.ca; special weather statements are not shown. Forecast text is in English only.
       </p>
       <p>
         <strong>Radar.</strong> Current radar is NOAA NEXRAD imagery served by Iowa State University's
         <a href="https://mesonet.agron.iastate.edu" target="_blank" rel="noopener">Iowa Environmental Mesonet</a>. The expanded radar
         uses NOAA MRMS observations &amp; NOAA HRRR model forecasts, which Check the Wind processes and extends a short way ahead
-        using the recent motion of the storms. The forecast part is an estimate and storms can change quickly.
+        using the recent motion of the storms. The forecast part is an estimate and storms can change quickly. In Canada, the
+        radar map shows the latest national radar image from Environment and Climate Change Canada
+        (<a href="https://eccc-msc.github.io/open-data/msc-geomet/readme_en/" target="_blank" rel="noopener">MSC GeoMet</a>); it isn&rsquo;t
+        animated, and there is no expanded or forecast radar there yet.
       </p>
       <p>
         <strong>Air quality &amp; pollen.</strong> The Air Quality Index &amp; Pollutants (PM2.5) are sourced live from AirNow
         (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>), EPA — coverage depends on the nearest
-        reporting monitor. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
+        reporting monitor. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Pollutants gauge says Unavailable. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
         <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Pollen isn't available from any free public
         U.S. source, so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement.
       </p>
       <p>
-        <strong>Places, maps &amp; sun times.</strong> Place search uses Open-Meteo's geocoding service (GeoNames data,
+        <strong>Places, maps &amp; sun times.</strong> Place search covers the U.S. and Canada and uses Open-Meteo's geocoding service (GeoNames data,
         <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>); place names for
-        &ldquo;Use my location&rdquo; come from the National Weather Service. Map tiles are &copy;
+        &ldquo;Use my location&rdquo; come from the National Weather Service or, in Canada, Environment Canada. Map tiles are &copy;
         <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, shown with
         <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>.
         Sunrise &amp; sunset times by <a href="https://sunrise-sunset.org" target="_blank" rel="noopener">SUNRISE-SUNSET.ORG</a>.
@@ -2954,6 +2972,7 @@
   var sunEvents = [];
   var lastHourly = null;
   var radarLat = null;
+  var radarRegion = 'us';
   var radarLon = null;
 
   function locTimeOpts(){
@@ -2992,7 +3011,7 @@
     generic:   'Something unexpected got in the way. Give it a moment & try again, or search for a different place.',
     refresh:   'We couldn’t refresh just now. Pull down to try again in a moment.',
     lookup:    'We couldn’t look up that place right now. Give it a moment, then try searching again.',
-    coverage:  'The National Weather Service doesn’t cover this spot. Try a nearby U.S. city or town instead.',
+    coverage:  'We don’t have weather data for this spot yet. Try a nearby U.S. or Canadian city or town instead.',
     noHourly:  'The National Weather Service doesn’t have hourly wind data for this area yet. Try a nearby town, or check back soon.',
     noGeo:     'Your browser can’t share your location. Try searching for a city or ZIP code instead.',
     geoDenied: 'We couldn’t get your location. Allow location access for this site in your browser settings, or search for a city instead.',
@@ -3016,13 +3035,18 @@
      It matches on the place name, so "Dayton, OH" / "Dayton Ohio" are split into a name plus a state hint, and results are
      narrowed to that state. ZIP codes work as-is. */
   var US_STATES = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',DC:'District of Columbia',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',PR:'Puerto Rico',GU:'Guam',VI:'U.S. Virgin Islands'};
+  var CA_PROVINCES = {AB:'Alberta',BC:'British Columbia',MB:'Manitoba',NB:'New Brunswick',NL:'Newfoundland and Labrador',NS:'Nova Scotia',NT:'Northwest Territories',NU:'Nunavut',ON:'Ontario',PE:'Prince Edward Island',QC:'Quebec',SK:'Saskatchewan',YT:'Yukon'};
+  function plainText(t){ return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
   function stateFromText(t){
     t = String(t || '').trim().replace(/\.$/, '');
     if(!t) return '';
     if(US_STATES[t.toUpperCase()]) return US_STATES[t.toUpperCase()];
-    var low = t.toLowerCase();
+    if(CA_PROVINCES[t.toUpperCase()]) return CA_PROVINCES[t.toUpperCase()];
+    var low = plainText(t);
     var k = Object.keys(US_STATES).find(function(c){ return US_STATES[c].toLowerCase() === low; });
-    return k ? US_STATES[k] : '';
+    if(k) return US_STATES[k];
+    k = Object.keys(CA_PROVINCES).find(function(c){ return plainText(CA_PROVINCES[c]) === low; });
+    return k ? CA_PROVINCES[k] : '';
   }
   function splitPlaceQuery(q){
     var parts = String(q).split(',').map(function(x){ return x.trim(); }).filter(Boolean);
@@ -3048,13 +3072,21 @@
     if(sp.name.length < 2) return [];
     var key = (sp.name + '|' + sp.state + '|' + limit).toLowerCase();
     if(geoCache[key]) return geoCache[key];
-    var url = 'https://geocoding-api.open-meteo.com/v1/search?count=' + (sp.state ? 30 : 12) +
-      '&language=en&format=json&countryCode=US&name=' + encodeURIComponent(sp.name);
-    var res = await fetch(url, {headers:{'Accept':'application/json'}, signal: signal});
-    if(!res.ok) throw appError(COPY.lookup);
-    var data = await res.json();
-    var list = (data && data.results) || [];
-    if(sp.state) list = list.filter(function(r){ return r.admin1 === sp.state; });
+    var base = 'https://geocoding-api.open-meteo.com/v1/search?count=' + (sp.state ? 30 : 12) +
+      '&language=en&format=json&name=' + encodeURIComponent(sp.name) + '&countryCode=';
+    // the U.S. and Canada are searched side by side
+    var both = await Promise.all(['US', 'CA'].map(function(cc){
+      return fetch(base + cc, {headers:{'Accept':'application/json'}, signal: signal})
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .catch(function(e){ if(e && e.name === 'AbortError') throw e; return null; });
+    }));
+    if(!both[0] && !both[1]) throw appError(COPY.lookup);
+    var usList = (both[0] && both[0].results) || [], caList = (both[1] && both[1].results) || [];
+    var list = usList.concat(caList);
+    // with Canadian matches in the mix, the bigger place comes first ("Toronto, Ontario" before a tiny U.S. Toronto)
+    if(caList.length && !sp.state) list = list.map(function(r, i){ return {r: r, i: i}; })
+      .sort(function(a, b){ return (b.r.population || 0) - (a.r.population || 0) || a.i - b.i; }).map(function(x){ return x.r; });
+    if(sp.state) list = list.filter(function(r){ return plainText(r.admin1) === plainText(sp.state); });
     // towns and ZIP matches first, then everything else (parks, airports, ...), each group in the service's own order
     list = list.filter(function(r){ return /^(PPL|ADM)/.test(r.feature_code || ''); })
       .concat(list.filter(function(r){ return !/^(PPL|ADM)/.test(r.feature_code || ''); }));
@@ -3079,13 +3111,15 @@
 
   async function geocode(query){
     var found = await geocodeSearch(query, 1);
-    if(!found.length) throw appError('We couldn’t find “' + query + '” in the U.S. Try a city & state, like “Denver, CO”, or a ZIP code.', true);
+    if(!found.length) throw appError('We couldn’t find “' + query + '” in the U.S. or Canada. Try a city & state or province, like “Denver, CO” or “Toronto, ON”, or a ZIP code.', true);
     return found[0];
   }
 
   // "City, ST" for a spot, from the National Weather Service's own point lookup (no extra service involved)
   async function reverseGeocode(lat, lon){
-    var points = await fetchJson('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4));
+    var wp = await wxPoint(lat, lon);
+    if(wp.region === 'ca'){ var cb = await canadaBundle(lat, lon); return [cb.city, cb.prov].filter(Boolean).join(', '); }
+    var points = wp.points;
     var rl = points && points.properties && points.properties.relativeLocation && points.properties.relativeLocation.properties;
     if(!rl) throw new Error('Reverse lookup failed');
     return [rl.city, rl.state].filter(Boolean).join(', ');
@@ -3098,6 +3132,188 @@
       throw appError('The National Weather Service is having trouble right now (error ' + res.status + '). Please try again in a minute.');
     }
     return res.json();
+  }
+
+  /* ---------- Canada: Environment and Climate Change Canada (MSC GeoMet city-page weather) ----------
+     The U.S. National Weather Service only covers the U.S., so a spot it doesn't know is looked up with ECCC instead.
+     ECCC's city-page forecast (open data, no key) is converted into the same shape as the NWS forecast, so everything
+     downstream (hero, hourly chart, 7-day outlook, Best Times, verdict) works unchanged. Metric values are converted
+     to °F / mph. The city-page hourly forecast covers the next 24 hours, so Canadian places have a shorter Best Times horizon. */
+  var ECCC_ITEMS = 'https://api.weather.gc.ca/collections/citypageweather-realtime/items';
+  var ECCC_MAX_KM = 150;
+  var regionCache = {};
+  function regionKey(lat, lon){ return lat.toFixed(3) + ',' + lon.toFixed(3); }
+  // Which service covers this spot: {region:'us', points} from the NWS, or {region:'ca'} when the NWS doesn't know it
+  function wxPoint(lat, lon){
+    var k = regionKey(lat, lon);
+    if(!regionCache[k]){
+      regionCache[k] = (async function(){
+        try{ return {region: 'us', points: await fetchJson('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4))}; }
+        catch(e){ if(e && e.friendly && e.message === COPY.coverage) return {region: 'ca'}; throw e; }
+      })();
+      regionCache[k].catch(function(){ delete regionCache[k]; });
+    }
+    return regionCache[k];
+  }
+  function ev(x){
+    if(x == null) return null;
+    if(typeof x !== 'object') return x;
+    if('en' in x) return x.en;
+    return x.value != null ? ev(x.value) : null;
+  }
+  function cToF(c){ return c * 9 / 5 + 32; }
+  function kmhToMph(k){ return k * 0.621371; }
+  function kmBetween(la1, lo1, la2, lo2){
+    var dy = (la2 - la1) * 111.2, dx = (lo2 - lo1) * 111.2 * Math.cos((la1 + la2) / 2 * Math.PI / 180);
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+  function eccLocalIso(ms, tz){
+    try{
+      var parts = {};
+      new Intl.DateTimeFormat('en-CA', {timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'})
+        .formatToParts(new Date(ms)).forEach(function(q){ parts[q.type] = q.value; });
+      var asUtc = Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute, +parts.second);
+      var off = Math.round((asUtc - Math.floor(ms / 1000) * 1000) / 60000), a = Math.abs(off);
+      function pad(n){ return (n < 10 ? '0' : '') + n; }
+      return parts.year + '-' + parts.month + '-' + parts.day + 'T' + parts.hour + ':' + parts.minute + ':' + parts.second + (off < 0 ? '-' : '+') + pad(Math.floor(a / 60)) + ':' + pad(a % 60);
+    }catch(e){ return new Date(ms).toISOString(); }
+  }
+  async function eccNearest(lat, lon){
+    var best = null, radii = [0.6, 2, 4];
+    for(var i = 0; i < radii.length; i++){
+      var r = radii[i], dx = r / Math.max(Math.cos(lat * Math.PI / 180), 0.2);
+      var url = ECCC_ITEMS + '?f=json&lang=en&limit=60&bbox=' + [lon - dx, lat - r, lon + dx, lat + r].map(function(n){ return n.toFixed(3); }).join(',');
+      var data = await fetchJson(url);
+      (data.features || []).forEach(function(f){
+        var c = f.geometry && f.geometry.coordinates;
+        if(!c) return;
+        var km = kmBetween(lat, lon, c[1], c[0]);
+        if(!best || km < best.km) best = {f: f, km: km};
+      });
+      if(best && best.km <= r * 100) break;
+    }
+    if(!best || best.km > ECCC_MAX_KM) throw appError(COPY.coverage);
+    return best.f;
+  }
+  // ECCC's own GEM model run, relayed by Open-Meteo: it also gives the place's time zone, fills the hours after the city page's
+  // 24 and the wind on days the city-page forecast says nothing about it (ECCC only mentions wind of 20 km/h or more)
+  async function eccGem(lat, lon){
+    return fetchOptionalJson('https://api.open-meteo.com/v1/forecast?latitude=' + lat.toFixed(3) + '&longitude=' + lon.toFixed(3) +
+      '&timezone=auto&models=gem_seamless&wind_speed_unit=mph&temperature_unit=fahrenheit&forecast_days=7' +
+      '&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,weather_code,wind_speed_10m,wind_direction_10m');
+  }
+  var WMO_TEXT = {0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Cloudy',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',56:'Freezing drizzle',57:'Freezing drizzle',
+    61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',
+    80:'Light rain showers',81:'Rain showers',82:'Heavy rain showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorms',96:'Thunderstorms',99:'Thunderstorms'};
+  var COMPASS16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  function degToCompass(d){ return typeof d === 'number' ? COMPASS16[Math.round(d / 22.5) % 16] : ''; }
+  function eccTitle(t){ return String(t || '').toLowerCase().replace(/\b[a-z]/g, function(c){ return c.toUpperCase(); }); }
+  function eccBuild(feat, gem){
+    var tz = (gem && gem.timezone) || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    var p = feat.properties, id = String(feat.id || p.identifier || ''), prov = (id.split('-')[0] || '').toUpperCase();
+    var now = Date.now(), rs = p.riseSet || {}, rise = Date.parse(ev(rs.sunrise)), set = Date.parse(ev(rs.sunset));
+    function isDay(ms){
+      if(isNaN(rise) || isNaN(set)){ var h = +eccLocalIso(ms, tz).slice(11, 13); return h >= 7 && h < 20; }
+      var DAY = 86400000, len = ((set - rise) % DAY + DAY) % DAY, d = ((ms - rise) % DAY + DAY) % DAY;
+      return d < len;
+    }
+    function mph(v){ var n = parseFloat(v); return isNaN(n) ? 0 : Math.round(kmhToMph(n)); }
+    function dirOf(o){ var d = String(ev(o) || '').toUpperCase(); return COMPASS[d] != null ? d : ''; }
+    function num(v){ var n = parseFloat(v); return isNaN(n) ? null : n; }
+    var cc = p.currentConditions || {};
+    var hf = (p.hourlyForecastGroup && p.hourlyForecastGroup.hourlyForecasts) || [];
+    var hourly = [], hrNow = Math.floor(now / 3600000) * 3600000;
+    var firstCond = hf[0] ? ev(hf[0].condition) : '';
+    var curT = num(ev(cc.temperature));
+    if(curT != null){
+      var cw = cc.wind || {};
+      hourly.push({startTime: eccLocalIso(hrNow, tz), temperature: Math.round(cToF(curT)), temperatureUnit: 'F',
+        windSpeed: mph(ev(cw.speed)) + ' mph', windDirection: dirOf(cw.direction),
+        shortForecast: ev(cc.condition) || firstCond || '', probabilityOfPrecipitation: {value: hf[0] && hf[0].lop ? num(ev(hf[0].lop)) : 0},
+        relativeHumidity: {value: num(ev(cc.relativeHumidity))}, isDaytime: isDay(now)});
+    }
+    hf.forEach(function(h){
+      var ts = Date.parse(h.timestamp);
+      if(isNaN(ts) || (curT != null && ts <= hrNow)) return;
+      var w = h.wind || {}, t = num(ev(h.temperature));
+      if(t == null) return;
+      hourly.push({startTime: eccLocalIso(ts, tz), temperature: Math.round(cToF(t)), temperatureUnit: 'F',
+        windSpeed: mph(ev(w.speed)) + ' mph', windDirection: dirOf(w.direction), shortForecast: ev(h.condition) || '',
+        probabilityOfPrecipitation: {value: h.lop ? num(ev(h.lop)) : 0}, relativeHumidity: {value: null}, isDaytime: isDay(ts)});
+    });
+
+    // GEM hours (model data), indexed by local date + hour, to extend the forecast and fill wind gaps
+    var gemHrs = [];
+    if(gem && gem.hourly && gem.hourly.time){
+      var gh = gem.hourly, goff = typeof gem.utc_offset_seconds === 'number' ? gem.utc_offset_seconds : null;
+      gh.time.forEach(function(t, i){
+        if(typeof gh.temperature_2m[i] !== 'number' || goff == null) return;
+        var ms = Date.parse(t + ':00Z') - goff * 1000;
+        gemHrs.push({ms: ms, local: t, temp: gh.temperature_2m[i], hum: gh.relative_humidity_2m[i], pop: gh.precipitation_probability[i],
+          code: gh.weather_code[i], mph: Math.round(gh.wind_speed_10m[i] || 0), dir: degToCompass(gh.wind_direction_10m[i])});
+      });
+      var lastMs = hourly.length ? Date.parse(hourly[hourly.length - 1].startTime) : 0;
+      gemHrs.forEach(function(g){
+        if(g.ms <= lastMs || g.ms < hrNow || g.ms > now + 48 * 3600000) return;
+        hourly.push({startTime: eccLocalIso(g.ms, tz), temperature: Math.round(g.temp), temperatureUnit: 'F', windSpeed: g.mph + ' mph', windDirection: g.dir,
+          shortForecast: WMO_TEXT[g.code] || '', probabilityOfPrecipitation: {value: typeof g.pop === 'number' ? g.pop : 0},
+          relativeHumidity: {value: typeof g.hum === 'number' ? g.hum : null}, isDaytime: isDay(g.ms)});
+      });
+    }
+
+    var offset = eccLocalIso(now, tz).slice(19), cursor = eccLocalIso(now, tz).slice(0, 10), daily = [];
+    ((p.forecastGroup && p.forecastGroup.forecasts) || []).forEach(function(f, i){
+      var nm = String(ev(f.period && f.period.textForecastName) || ''), night = /night/i.test(nm);
+      if(i > 0 && !night) cursor = nextDateStr(cursor);
+      var temps = (f.temperatures && f.temperatures.temperature) || [], tv = temps.length ? num(ev(temps[0])) : null;
+      var sp = 0, gust = 0, dir = '';
+      ((f.winds && f.winds.periods) || []).forEach(function(w){
+        var v = mph(ev(w.speed)), g = mph(ev(w.gust));
+        if(v >= sp){ sp = v; dir = dirOf(w.direction); }
+        if(g > gust) gust = g;
+      });
+      if(!sp && !gust && gemHrs.length){
+        // the city page says nothing about wind that day (under 20 km/h): use the model's strongest hour in that half-day
+        gemHrs.forEach(function(g){
+          if(g.local.slice(0, 10) !== cursor) return;
+          var h = +g.local.slice(11, 13), inHalf = night ? (h >= 18) : (h >= 6 && h < 18);
+          if(inHalf && g.mph >= sp){ sp = g.mph; dir = g.dir; }
+        });
+      }
+      var abbr = f.abbreviatedForecast || {};
+      var sky = String(ev(f.cloudPrecip) || '');
+      daily.push({name: nm, isDaytime: !night, startTime: cursor + (night ? 'T18:00:00' : 'T06:00:00') + offset,
+        temperature: tv == null ? 0 : Math.round(cToF(tv)), temperatureUnit: 'F',
+        windSpeed: sp + ' mph', windDirection: dir, shortForecast: ev(abbr.textSummary) || '',
+        probabilityOfPrecipitation: {value: null},
+        detailedForecast: (sky + ' Wind ' + (dir || 'light') + ' ' + sp + ' mph' + (gust > sp ? ', gusting to ' + gust + ' mph' : '') + '.').trim()});
+    });
+
+    var alerts = [];
+    (p.warnings || []).forEach(function(w, i){
+      var type = String(ev(w.type) || '').toLowerCase(), colour = String(ev(w.alertColourLevel) || '').toLowerCase();
+      if(type !== 'warning' && type !== 'watch' && type !== 'advisory') return;
+      var title = String(ev(w.description) || ''), topic = title.indexOf(' - ') > -1 ? title.split(' - ').slice(1).join(' - ') : title;
+      var exp = ev(w.expiryTime), url = ev(w.url);
+      alerts.push({id: 'eccc-' + id + '-' + i, event: eccTitle(topic) + ' ' + eccTitle(type), headline: title,
+        severity: colour === 'red' ? 'Extreme' : colour === 'orange' ? 'Severe' : colour === 'yellow' ? 'Moderate' : 'Minor',
+        description: 'Issued by Environment and Climate Change Canada. Read the full alert, with details and what to do, at ' + (url || 'weather.gc.ca') + '.',
+        senderName: 'Environment and Climate Change Canada', areaDesc: ev(p.region) || '', onset: ev(w.eventIssue), expires: exp, ends: exp,
+        status: 'Actual', messageType: 'Alert'});
+    });
+    return {tz: tz, city: ev(p.name) || '', prov: prov, hourly: hourly, daily: daily, alerts: alerts, siteName: ev(p.name) || ''};
+  }
+  var eccCache = {};
+  function canadaBundle(lat, lon){
+    var k = regionKey(lat, lon), hit = eccCache[k];
+    if(hit && Date.now() - hit.t < 300000) return hit.p;
+    var pr = (async function(){
+      var got = await Promise.all([eccNearest(lat, lon), eccGem(lat, lon)]);
+      return eccBuild(got[0], got[1]);
+    })();
+    eccCache[k] = {t: Date.now(), p: pr};
+    pr.catch(function(){ delete eccCache[k]; });
+    return pr;
   }
 
   function renderHeroSkeleton(){
@@ -3424,20 +3640,24 @@
       maxZoom:12, minZoom:3, referrerPolicy:'strict-origin-when-cross-origin'
     }).addTo(map);
 
-    var radarLayer = L.tileLayer(radarFrameUrl(45), {opacity:0.75}).addTo(map);
+    // Canada: ECCC's national radar mosaic (GeoMet WMS), latest frame only
+    var caRadar = radarRegion === 'ca';
+    var radarLayer = caRadar
+      ? L.tileLayer.wms('https://geo.weather.gc.ca/geomet', {layers:'RADAR_1KM_RRAI', format:'image/png', transparent:true, version:'1.3.0', opacity:0.75}).addTo(map)
+      : L.tileLayer(radarFrameUrl(45), {opacity:0.75}).addTo(map);
 
     L.circleMarker([lat, lon], {
       radius:6, color:'#fff', weight:2.5, fillColor:'#FF5A36', fillOpacity:1
     }).addTo(map);
 
     var refTime = new Date();
-    var minuteSteps = [45,40,35,30,25,20,15,10,5,0];
+    var minuteSteps = caRadar ? [0] : [45,40,35,30,25,20,15,10,5,0];
     var idx = 0;
     var timer = null;
 
     function showFrame(i){
       idx = ((i % minuteSteps.length) + minuteSteps.length) % minuteSteps.length;
-      radarLayer.setUrl(radarFrameUrl(minuteSteps[idx]));
+      if(!caRadar) radarLayer.setUrl(radarFrameUrl(minuteSteps[idx]));
       if(tagEl){
         var frameTime = new Date(refTime.getTime() - minuteSteps[idx] * 60000);
         tagEl.textContent = frameTime.toLocaleTimeString([], locTimeOpts());
@@ -3457,7 +3677,7 @@
     function destroy(){ pause(); map.remove(); }
 
     showFrame(0);
-    if(!animEffectivePaused()) play();
+    if(!caRadar && !animEffectivePaused()) play();
 
     return {
       map: map, play: play, pause: pause,
@@ -3476,6 +3696,7 @@
     sizeRadar();
     box.setAttribute('aria-label', 'Weather radar map centered on ' + (hdrLoc.textContent || 'the selected location') + ', latest frame shown. Press to expand.');
 
+    box.classList.toggle('no-expand', radarRegion === 'ca');  // no expanded radar for Canada (it needs U.S.-only radar data)
     radarLat = lat;
     radarLon = lon;
     radarLoop = buildRadarMap(mapEl, tag, lat, lon, false);
@@ -3493,7 +3714,7 @@
   pendingStores.radar = {
     open: false,
     show: function(){
-      if(radarLat == null || radarLon == null) return;
+      if(radarLat == null || radarLon == null || radarRegion === 'ca') return;
       var self = this;
       radarModalLastFocus = document.activeElement;
       self.open = true;
@@ -4877,8 +5098,8 @@
     if(!phrases.length) phrases.push('conditions turn less ideal');
     return 'After ' + clock + ', ' + vdList(phrases.slice(0, 2)) + '.';
   }
-  // Large U.S. cities (lat, lon): within ~30 km of one of these the night is bright and people are out late
-  var VD_BIG_CITIES = [[40.71,-74.01],[34.05,-118.24],[41.88,-87.63],[29.76,-95.37],[33.45,-112.07],[39.95,-75.17],[29.42,-98.49],[32.72,-117.16],[32.78,-96.80],[37.34,-121.89],[30.27,-97.74],[30.33,-81.66],[32.75,-97.33],[39.96,-83.00],[35.23,-80.84],[37.77,-122.42],[39.77,-86.16],[47.61,-122.33],[39.74,-104.99],[38.91,-77.04],[36.16,-86.78],[42.36,-71.06],[31.76,-106.49],[42.33,-83.05],[35.47,-97.52],[36.17,-115.14],[35.15,-90.05],[38.25,-85.76],[39.29,-76.61],[43.04,-87.91],[35.08,-106.65],[32.22,-110.97],[36.75,-119.77],[38.58,-121.49],[33.75,-84.39],[39.10,-94.58],[41.26,-95.94],[35.78,-78.64],[25.76,-80.19],[37.80,-122.27],[44.98,-93.27],[36.15,-95.99],[41.50,-81.69],[27.95,-82.46],[29.95,-90.07],[21.31,-157.86],[40.44,-80.00],[39.10,-84.51],[38.63,-90.20],[28.54,-81.38],[40.76,-111.89],[45.52,-122.68],[41.76,-72.67],[43.16,-77.61],[37.54,-77.44],[33.52,-86.80],[36.85,-76.29],[26.12,-80.14],[34.00,-81.03],[43.05,-76.15],[42.89,-78.88],[42.65,-73.76],[41.82,-71.41],[35.96,-83.92],[61.22,-149.90]];
+  // Large U.S. and Canadian cities (lat, lon): within ~30 km of one of these the night is bright and people are out late
+  var VD_BIG_CITIES = [[40.71,-74.01],[34.05,-118.24],[41.88,-87.63],[29.76,-95.37],[33.45,-112.07],[39.95,-75.17],[29.42,-98.49],[32.72,-117.16],[32.78,-96.80],[37.34,-121.89],[30.27,-97.74],[30.33,-81.66],[32.75,-97.33],[39.96,-83.00],[35.23,-80.84],[37.77,-122.42],[39.77,-86.16],[47.61,-122.33],[39.74,-104.99],[38.91,-77.04],[36.16,-86.78],[42.36,-71.06],[31.76,-106.49],[42.33,-83.05],[35.47,-97.52],[36.17,-115.14],[35.15,-90.05],[38.25,-85.76],[39.29,-76.61],[43.04,-87.91],[35.08,-106.65],[32.22,-110.97],[36.75,-119.77],[38.58,-121.49],[33.75,-84.39],[39.10,-94.58],[41.26,-95.94],[35.78,-78.64],[25.76,-80.19],[37.80,-122.27],[44.98,-93.27],[36.15,-95.99],[41.50,-81.69],[27.95,-82.46],[29.95,-90.07],[21.31,-157.86],[40.44,-80.00],[39.10,-84.51],[38.63,-90.20],[28.54,-81.38],[40.76,-111.89],[45.52,-122.68],[41.76,-72.67],[43.16,-77.61],[37.54,-77.44],[33.52,-86.80],[36.85,-76.29],[26.12,-80.14],[34.00,-81.03],[43.05,-76.15],[42.89,-78.88],[42.65,-73.76],[41.82,-71.41],[35.96,-83.92],[61.22,-149.90],[43.65,-79.38],[45.50,-73.57],[49.28,-123.12],[51.05,-114.07],[53.55,-113.49],[45.42,-75.70],[49.90,-97.14],[46.81,-71.21],[43.26,-79.87]];
   function vdBigCity(){
     if(!lastLoad || typeof lastLoad.lat !== 'number') return false;
     var la = lastLoad.lat, lo = lastLoad.lon, kx = Math.cos(la * Math.PI / 180) * 111.2;
@@ -5187,6 +5408,11 @@
 
   async function fetchAlerts(lat, lon){
     try{
+      var wpA = await wxPoint(lat, lon);
+      if(wpA.region === 'ca'){
+        var sevRankC = {Extreme:0, Severe:1, Moderate:2, Minor:3};
+        return (await canadaBundle(lat, lon)).alerts.slice().sort(function(a, b){ return (sevRankC[a.severity] != null ? sevRankC[a.severity] : 3) - (sevRankC[b.severity] != null ? sevRankC[b.severity] : 3); });
+      }
       var alertsUrl = 'https://api.weather.gov/alerts/active?point=' + lat.toFixed(4) + ',' + lon.toFixed(4);
       var data;
       try{ data = await fetchJson(alertsUrl); }
@@ -5425,10 +5651,16 @@
     var bestInputsPromise = fetchBestInputs(lat, lon);
     var airNowPromise = fetchAirNowCurrent(lat, lon);
     var alertsPromise = fetchAlerts(lat, lon);
-    if(!quiet) setStatus('Contacting NOAA/NWS…');
+    if(!quiet) setStatus('Contacting the weather service…');
 
-    var points = await fetchJson('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4));
-    var props = points.properties;
+    var wp = await wxPoint(lat, lon), ca = null, props;
+    if(wp.region === 'ca'){
+      ca = await canadaBundle(lat, lon);
+      props = {timeZone: ca.tz, relativeLocation: {properties: {city: ca.city, state: ca.prov}}};
+    }else{
+      props = wp.points.properties;
+    }
+    radarRegion = ca ? 'ca' : 'us';
     var place = label || (props.relativeLocation && props.relativeLocation.properties
       ? props.relativeLocation.properties.city + ', ' + props.relativeLocation.properties.state
       : lat.toFixed(2)+', '+lon.toFixed(2));
@@ -5443,12 +5675,17 @@
     dataAsOf.textContent = new Date().toLocaleTimeString([], dataAsOfOpts());
     locBar.hidden = false;
 
-    var results = await Promise.all([
-      fetchJson(props.forecastHourly),
-      fetchJson(props.forecast)
-    ]);
-    var hourly = results[0].properties.periods;
-    var daily = results[1].properties.periods;
+    var hourly, daily;
+    if(ca){
+      hourly = ca.hourly; daily = ca.daily;
+    }else{
+      var results = await Promise.all([
+        fetchJson(props.forecastHourly),
+        fetchJson(props.forecast)
+      ]);
+      hourly = results[0].properties.periods;
+      daily = results[1].properties.periods;
+    }
 
     if(!hourly.length){ throw appError(COPY.noHourly); }
 
@@ -5720,7 +5957,7 @@
   function showDrawerError(msg){ sdError.textContent = msg; sdError.hidden = false; }
   function clearDrawerError(){ sdError.hidden = true; sdError.textContent = ''; }
   // Check that the weather service covers a spot BEFORE the page behind the drawer is touched, so a failed search leaves it as it was
-  async function drawerPreflight(lat, lon){ await fetchJson('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4)); }
+  async function drawerPreflight(lat, lon){ var wpD = await wxPoint(lat, lon); if(wpD.region === 'ca') await canadaBundle(lat, lon); }
   document.getElementById('locInput').addEventListener('input', clearDrawerError);
 
   function closeSearchDrawer(returnFocus){
@@ -5962,7 +6199,13 @@
     if(hit && Date.now() - hit.t < PEEK_TTL) return hit.p;
     var alertsP = fetchAlerts(lat, lon);
     var p = (async function(){
-      var points = await fetchJson('https://api.weather.gov/points/' + lat.toFixed(4) + ',' + lon.toFixed(4));
+      var wpP = await wxPoint(lat, lon);
+      if(wpP.region === 'ca'){
+        var cbP = await canadaBundle(lat, lon);
+        if(!cbP.hourly[0]) throw new Error('no data');
+        return {tz: cbP.tz || null, cur: cbP.hourly[0], alerts: await alertsP};
+      }
+      var points = wpP.points;
       var hourly = await fetchJson(points.properties.forecastHourly);
       var cur = hourly.properties.periods[0];
       if(!cur) throw new Error('no data');
