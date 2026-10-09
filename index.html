@@ -5068,7 +5068,9 @@
     if(r.night) return {t:'Night Time', k:'night'};
     if(r.state === 'yes') return {t:'Go Outside!', k:'green'};
     if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for Now', k:'yellow'} : {t:'Wait a Bit', k:'yellow'};
-    return r.nextHs ? {t:'Stay Inside', k:'orange'} : {t:'Stay In', k:'red'};
+    // a good window within 12 hours means it's passing weather: wait it out. Further away, stay inside. None in 48 hours: all day.
+    if(r.nextHs) return r.nextHs[0].i <= 12 ? {t:'Wait a Bit', k:'yellow'} : {t:'Stay Inside', k:'orange'};
+    return {t:'Stay In All Day', k:'red'};
   }
 
   if(vdBody) vdBody.addEventListener('click', function(e){
