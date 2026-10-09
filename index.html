@@ -5556,7 +5556,7 @@
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>' +
       '<p class="vd-sentence">' + vdEsc(r.sentence) + '</p>' +
       '<p class="vd-acts-line">' + vdEsc(actsLine) + '</p>' +
-      '<div class="vd-prose"><span class="vd-head">' + vdEsc(vdHeadline(r, vdCtx)) + '</span><div class="vd-detail">' + vdSubLines(r, vdCtx, actList).map(function(l){ return '<p class="vd-line">' + (l.label ? '<b>' + l.label + '</b>' : '') + vdEsc(l.text) + '</p>'; }).join('') + '</div></div>' +
+      '<div class="vd-prose"><span class="vd-head">' + vdEsc(vdHeadline(r, vdCtx)) + '</span><div class="vd-detail">' + vdEsc(vdSubLines(r, vdCtx, actList).map(function(l){ return l.text; }).join(' ')) + '</div></div>' +
       (r.state === 'no' && r.next ? '<p class="vd-next">' + vdEsc(r.next) + '</p>' : '') +
       '<div class="vd-details" id="vdDetails"' + (vdOpen ? '' : ' hidden') + '>' + details + '</div>';
     var minor = lastAlerts.filter(function(x){ return !(x.severity === 'Severe' || x.severity === 'Extreme'); })[0];
