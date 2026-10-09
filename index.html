@@ -2006,6 +2006,12 @@
 
   /* the moon in the sticky header's tag is bigger than the dots on the other tags */
   header.top .m-actions .vd-tag--night::before{ width:12px; height:12px; margin-right:4px }
+
+  /* Phone and tablet: the hero's text, Current Conditions and radar are centered in the same 850px column as the modules below,
+     so on wide tablets they no longer stretch past the modules' side margins */
+  @media (max-width:63.99em){
+    .db-layout > .hero-wrap{ max-width:850px; margin-inline:auto; width:100% }
+  }
 </style>
 </head>
 <body>
