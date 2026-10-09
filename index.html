@@ -2012,6 +2012,18 @@
   @media (max-width:63.99em){
     .db-layout > .hero-wrap{ max-width:850px; margin-inline:auto; width:100% }
   }
+
+  /* Desktop 7-Day Wind Outlook: light gray dividers between the days */
+  @media (min-width:64em){
+    #weekSection .dayrow ~ .dayrow{ box-shadow:-1px 0 0 var(--table-border) }  /* drawn outside each column, so no column gets narrower */
+    #weekSection .dayrow .dwind .dval{ flex-wrap:nowrap; column-gap:4px }  /* a two-digit speed and its arrow stay on one line, even in the last column */
+    #weekSection .dayrow .dwind .dval b{ white-space:nowrap }
+  }
+
+  /* Desktop: every font in the right-hand content column is 14px */
+  @media (min-width:64em){
+    .db-content, .db-content *{ font-size:.875rem !important }
+  }
 </style>
 </head>
 <body>
