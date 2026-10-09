@@ -2048,16 +2048,18 @@
     .bw-empty svg{ max-width:100%; height:auto }
   }
 
-  /* Analytics consent banner: bottom-left card on desktop, full-width card on phones */
-  .consent{ position:fixed; z-index:70; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); max-width:26rem;
-    padding:16px; background:var(--surface); color:var(--text); border:1px solid var(--table-border); border-radius:4px; box-shadow:var(--shadow) }
+  /* Analytics consent banner: a full-width bar along the bottom of the page with a drop shadow; text left and buttons right on wider screens */
+  .consent{ position:fixed; z-index:70; left:0; right:0; bottom:0; padding:16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    background:var(--surface); color:var(--text); border-top:1px solid var(--table-border); box-shadow:0 -6px 20px rgba(16,28,38,.16), 0 -1px 3px rgba(16,28,38,.10) }
   .consent[hidden]{ display:none }
-  .consent-title{ margin:0 0 4px; font-size:1rem; font-weight:700 }
+  .consent-inner{ display:flex; align-items:center; gap:16px 32px; flex-wrap:wrap; max-width:1200px; margin:0 auto }
+  .consent-copy{ flex:1 1 22rem; min-width:0 }
+  .consent-title{ margin:0 0 2px; font-size:1rem; font-weight:700 }
   .consent-text{ margin:0; font-size:.9375rem; line-height:1.45; color:var(--text-muted) }
   .consent-text button{ padding:0; border:0; background:none; font:inherit; color:var(--text); text-decoration:underline; cursor:pointer }
-  .consent-actions{ display:flex; gap:10px; margin-top:12px }
-  .consent-actions .bp-btn{ flex:1 1 0; min-height:40px; padding:0 12px }
-  @media (min-width:64em){ .consent{ left:16px; bottom:16px } }
+  .consent-actions{ display:flex; gap:10px; flex:0 0 auto }
+  .consent-actions .bp-btn{ min-height:40px; padding:0 22px }
+  @media (max-width:40em){ .consent-actions{ flex:1 1 100% } .consent-actions .bp-btn{ flex:1 1 0 } }
 
   /* Desktop: every font in the right-hand content column is 14px */
   @media (min-width:64em){
@@ -6522,11 +6524,15 @@
 })();
 </script>
 <div class="consent" id="consentBanner" role="region" aria-label="Analytics" hidden>
-  <p class="consent-title">Help us count visits?</p>
-  <p class="consent-text">We use Google Analytics to see how many people use Check the Wind and which features they use. It&rsquo;s for analytics only, with no ads. <button type="button" id="consentMore">What we track</button></p>
-  <div class="consent-actions">
-    <button type="button" class="bp-btn" id="consentNo">No thanks</button>
-    <button type="button" class="bp-btn bp-primary" id="consentYes">Accept</button>
+  <div class="consent-inner">
+    <div class="consent-copy">
+      <p class="consent-title">Help us count visits?</p>
+      <p class="consent-text">We use Google Analytics to see how many people use Check the Wind and which features they use. It&rsquo;s for analytics only, with no ads. <button type="button" id="consentMore">What we track</button></p>
+    </div>
+    <div class="consent-actions">
+      <button type="button" class="bp-btn" id="consentNo">Opt Out</button>
+      <button type="button" class="bp-btn bp-primary" id="consentYes">Accept</button>
+    </div>
   </div>
 </div>
 <script>
