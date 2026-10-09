@@ -2756,26 +2756,31 @@
   // Display "and" as "&" in weather descriptions that come from the NWS forecast (e.g. "Showers And Thunderstorms").
   function ampText(s){ return String(s || '').replace(/\s+and\s+/gi, ' & '); }
 
-  // A spinning hurricane: three spiral arms around an eye (stands still for people who prefer reduced motion)
-  function hurricaneIcon(size){
-    var arms = '';
-    for(var a = 0; a < 3; a++){
-      var pts = [];
-      for(var t = 0; t <= 4.2; t += 0.15){
-        var ang = t + a * 2.0944, r = 3.5 + t * 3.9;
-        pts.push((24 + r * Math.cos(ang)).toFixed(1) + ',' + (24 + r * Math.sin(ang)).toFixed(1));
-      }
-      arms += '<polyline points="' + pts.join(' ') + '"/>';
-    }
-    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hurricane">' +
-      '<circle cx="24" cy="24" r="22" stroke="var(--icon-blue)" stroke-width="1.2" opacity=".28"/>' +
-      '<g class="hc-spin" stroke="var(--icon-blue)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">' + arms + '</g>' +
-      '<circle cx="24" cy="24" r="3.2" fill="var(--surface)" stroke="var(--icon-blue)" stroke-width="1.6"/></svg>';
+  // Saffir-Simpson category from sustained wind (mph). Below hurricane force the label is "TS" (tropical storm).
+  function hurricaneCategory(mph){
+    return mph >= 157 ? 5 : mph >= 130 ? 4 : mph >= 111 ? 3 : mph >= 96 ? 2 : mph >= 74 ? 1 : 0;
   }
-  function weatherIcon(shortForecast, isDaytime, size){
+  // A spinning hurricane: solid red curved blades (more blades and sharper edges as the category rises) around a still white
+  // circle that holds the category number. Only the blades turn; the number stays put. Stands still for reduced motion.
+  function hurricaneIcon(size, mph){
+    var cat = hurricaneCategory(mph || 0), n = [2, 1, 3, 5, 7, 8][cat], blades = '';
+    var R0 = 11, R1 = 23, sweep = [1.5, 1.7, 1.3, 1.15, 1.0, 0.95][cat], thick = n === 1 ? 3.1 : (2 * Math.PI / n) * 0.94, pw = [0.8, 0.8, 0.85, 0.9, 1.0, 1.05][cat];
+    for(var i = 0; i < n; i++){
+      var base = i * 2 * Math.PI / n, lead = [], trail = [], k, f, ang, r;
+      for(k = 0; k <= 16; k++){ f = k / 16; r = R0 + (R1 - R0) * f; ang = base + sweep * Math.pow(f, 1.15); lead.push([24 + r * Math.cos(ang), 24 + r * Math.sin(ang)]); }
+      for(k = 16; k >= 0; k--){ f = k / 16; r = R0 + (R1 - R0) * f; ang = base + sweep * Math.pow(f, 1.15) - thick * (1 - Math.pow(f, pw)); trail.push([24 + r * Math.cos(ang), 24 + r * Math.sin(ang)]); }
+      blades += '<polygon points="' + lead.concat(trail).map(function(q){ return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ') + '"/>';
+    }
+    var dur = (3.4 - 0.34 * cat).toFixed(2), label = cat ? String(cat) : 'TS';
+    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' + (cat ? 'Category ' + cat + ' hurricane' : 'Tropical storm') + '">' +
+      '<g class="hc-spin" style="animation-duration:' + dur + 's" fill="#D32F2F" stroke="#D32F2F" stroke-width="1.1" stroke-linejoin="round"><circle cx="24" cy="24" r="13"/>' + blades + '</g>' +
+      '<circle cx="24" cy="24" r="8.6" fill="#fff"/>' +
+      '<text x="24" y="' + (cat ? 28.4 : 27.4) + '" text-anchor="middle" font-family="Nunito, Arial, sans-serif" font-weight="800" font-size="' + (cat ? 12 : 8.4) + '" fill="#D32F2F">' + label + '</text></svg>';
+  }
+  function weatherIcon(shortForecast, isDaytime, size, mph){
     size = size || 40;
     var kind = classifySky(shortForecast);
-    if(kind === 'hurricane') return hurricaneIcon(size);
+    if(kind === 'hurricane') return hurricaneIcon(size, mph);
     var body = '';
     switch(kind){
       case 'clear':
@@ -3604,6 +3609,7 @@
     var band = bandFor(w.high);
     heroEl.style.setProperty('--hero-band', band.css);
     document.documentElement.style.setProperty('--hero-band', band.css);
+    lastNowMph = w.high;
     heroEl.style.setProperty('--wind-mph', w.high);
     document.documentElement.style.setProperty('--wind-mph', w.high);
 
@@ -3644,7 +3650,7 @@
             '</span>' +
           '</div>' +
           '<div class="weather-now">' +
-            '<div class="wicon">' + weatherIcon(current.shortForecast, current.isDaytime, 38) + '</div>' +
+            '<div class="wicon">' + weatherIcon(current.shortForecast, current.isDaytime, 38, parseWind(current.windSpeed).high) + '</div>' +
             '<div class="wtext"><b>' + fmtTemp(current.temperature) + '</b> · ' + ampText(current.shortForecast) +
               (outlook ? ' <span class="hazard-eta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' + outlook + '</span>' : '') + '</div>' +
           '</div>' +
@@ -4139,7 +4145,7 @@
 
     var tiles = [];
     next10.forEach(function(p){
-      tiles.push(tileHtml(p, fmtHour(p.startTime), weatherIcon(p.shortForecast, p.isDaytime, 28), p.shortForecast || 'Forecast unavailable'));
+      tiles.push(tileHtml(p, fmtHour(p.startTime), weatherIcon(p.shortForecast, p.isDaytime, 28, parseWind(p.windSpeed).high), p.shortForecast || 'Forecast unavailable'));
       var start = new Date(p.startTime).getTime();
       sunEvents.forEach(function(evt){
         var t = evt.time.getTime();
@@ -4254,7 +4260,7 @@
         bandPill: band.pill,
         bandPillInk: band.pillInk,
         gust: extractGust(p.detailedForecast) ? String(windNum(+extractGust(p.detailedForecast))) : '',
-        icon: weatherIcon(p.shortForecast, true, 28),
+        icon: weatherIcon(p.shortForecast, true, 28, parseWind(p.windSpeed).high),
         short: ampText(p.shortForecast),
         temp: tempNum(p.temperature) + '°'
       };
@@ -5861,12 +5867,13 @@
     setTimeout(function(){ alertsLiveEl.textContent = msg; }, 400);
   }
 
+  var lastNowMph = 0;
   function renderAlerts(list){
     lastAlerts = list || [];
     // under a hurricane or tropical storm warning the Current Conditions icon is the spinning hurricane
     if((list || []).some(function(a){ return /^(hurricane|tropical storm) warning/i.test(a.event); })){
       var wiHz = document.querySelector('.weather-now .wicon');
-      if(wiHz) wiHz.innerHTML = hurricaneIcon(38);
+      if(wiHz) wiHz.innerHTML = hurricaneIcon(38, lastNowMph);
     }
     if(vdCtx) renderVerdict();
     alertsEl.textContent = '';
@@ -6584,7 +6591,7 @@
     }
     peekEl.appendChild(row);
     var sky = document.createElement('div'); sky.className = 'pk-sky';
-    var ic = document.createElement('span'); ic.setAttribute('aria-hidden', 'true'); ic.innerHTML = weatherIcon(cur.shortForecast, cur.isDaytime, 24); ic.style.display = 'inline-flex';
+    var ic = document.createElement('span'); ic.setAttribute('aria-hidden', 'true'); ic.innerHTML = weatherIcon(cur.shortForecast, cur.isDaytime, 24, parseWind(cur.windSpeed).high); ic.style.display = 'inline-flex';
     var tx = document.createElement('span'); tx.textContent = fmtTemp(cur.temperature) + ' \u00b7 ' + cur.shortForecast;
     sky.appendChild(ic); sky.appendChild(tx); peekEl.appendChild(sky);
     var list = data.alerts || [];
