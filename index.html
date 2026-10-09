@@ -2070,6 +2070,14 @@
   /* Canada has no expanded radar: hide the expand button */
   #radarBox.no-expand .radar-expand-btn{ display:none }
 
+  /* Phone and tablet hero: the place name is a small gray label (with the tag at the right), the headline is the title, the gray text follows */
+  @media (max-width:63.99em){
+    .db-layout > .hero-wrap .hero-head .m-loc-name{ font-size:.9375rem !important; font-weight:600; color:var(--text-muted); letter-spacing:.01em }
+    .hero-head{ margin:4px 0 6px }
+    .hero-wrap .vd-head{ font-size:1.5rem; line-height:1.2; letter-spacing:-.01em; text-wrap:balance }
+    .hero-wrap .vd-detail{ margin-top:8px }
+  }
+
   /* Desktop: every font in the right-hand content column is 14px */
   @media (min-width:64em){
     .db-content, .db-content *{ font-size:.875rem !important }
