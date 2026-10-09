@@ -1699,6 +1699,9 @@
   .vd-chips li{padding:3px 10px; border-radius:4px; background:var(--surface-2); color:var(--text); font-size:.9375rem; font-weight:600}
   .vd-wear{margin:12px 0 0; font-size:1rem; line-height:1.45; color:var(--text-muted)}
   .vd-wear strong{font-weight:600; color:var(--text)}
+  .vd-headrow{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+  .vd-headrow .vd-head{flex:1 1 auto; min-width:0}
+  .vd-headrow .vd-tag{flex:0 0 auto; margin-top:3px}
   .vd-head{display:block; font-size:1.1875rem; font-weight:700; line-height:1.3; color:var(--text)}
   .vd-detail{display:block; margin-top:6px; font-size:1rem; line-height:1.5; color:var(--text-muted)}
   .vd-acts-none, .vd-next{margin:12px 0 0; font-size:1rem; line-height:1.45; color:var(--text-muted)}
@@ -1887,12 +1890,12 @@
   @media (max-width:63.99em){
     .hero-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0; margin:4px 0 8px }
     .db-layout > .hero-wrap .hero-head .m-loc-name{ display:block; flex:1 1 auto; min-width:0; margin:0; text-align:left }
-    .hero-head .vd-tag:not([hidden]), header.top.show-loc .m-actions .vd-tag:not([hidden]){
+    .hero-head .vd-tag:not([hidden]), header.top.show-loc .m-actions .vd-tag:not([hidden]), .vd-headrow .vd-tag{
       display:inline-flex; align-items:center; flex:0 0 auto; padding:3px 10px; border-radius:4px; font-size:.8125rem; font-weight:700; line-height:1.3; white-space:nowrap;
       color:color-mix(in srgb, var(--tg) 78%, var(--text)); background:color-mix(in srgb, var(--tg) 15%, var(--surface));
     }
-    .hero-head .vd-tag::before, .m-actions .vd-tag::before{ content:""; flex:0 0 auto; width:9px; height:9px; margin-right:6px; border-radius:50%; background:var(--tg) }
-    .hero-head .vd-tag, .m-actions .vd-tag{ box-shadow:0 1px 2px rgba(16,28,38,.14), 0 3px 8px -2px rgba(16,28,38,.22) }  /* a soft drop shadow under the tag */
+    .hero-head .vd-tag::before, .m-actions .vd-tag::before, .vd-headrow .vd-tag::before{ content:""; flex:0 0 auto; width:9px; height:9px; margin-right:6px; border-radius:50%; background:var(--tg) }
+    .hero-head .vd-tag, .m-actions .vd-tag, .vd-headrow .vd-tag{ box-shadow:0 1px 2px rgba(16,28,38,.14), 0 3px 8px -2px rgba(16,28,38,.22) }  /* a soft drop shadow under the tag */
     .vd-tag--green{ --tg:var(--aqi-good-ink) }
     .vd-tag--yellow{ --tg:var(--aqi-moderate-ink) }
     .vd-tag--orange{ --tg:var(--aqi-usg-ink) }
@@ -2070,10 +2073,14 @@
   /* Canada has no expanded radar: hide the expand button */
   #radarBox.no-expand .radar-expand-btn{ display:none }
 
+  /* Desktop: the tag stays in the card header, not beside the headline */
+  @media (min-width:64em){ .vd-headrow .vd-tag{ display:none !important } }
+
   /* Phone and tablet hero: the place name is a small gray label (with the tag at the right), the headline is the title, the gray text follows */
   @media (max-width:63.99em){
     .db-layout > .hero-wrap .hero-head .m-loc-name{ font-size:.9375rem !important; font-weight:600; color:var(--text-muted); letter-spacing:.01em }
     .hero-head{ margin:4px 0 6px }
+    .hero-head #vdTag{ display:none !important }  /* the tag now sits beside the headline */
     .hero-wrap .vd-head{ font-size:1.5rem; line-height:1.2; letter-spacing:-.01em; text-wrap:balance }
     .hero-wrap .vd-detail{ margin-top:8px }
   }
@@ -5540,7 +5547,7 @@
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>' +
       '<p class="vd-sentence">' + vdEsc(r.sentence) + '</p>' +
       '<p class="vd-acts-line">' + vdEsc(actsLine) + '</p>' +
-      '<p class="vd-prose"><span class="vd-head">' + vdEsc(vdHeadline(r, vdCtx)) + '</span><span class="vd-detail">' + vdEsc(vdSubText(r, vdCtx, actList)) + '</span></p>' +
+      '<div class="vd-prose"><div class="vd-headrow"><span class="vd-head">' + vdEsc(vdHeadline(r, vdCtx)) + '</span><span class="vd-tag vd-tag--' + vdTagFor(r).k + '">' + vdTagFor(r).t + '</span></div><span class="vd-detail">' + vdEsc(vdSubText(r, vdCtx, actList)) + '</span></div>' +
       (r.state === 'no' && r.next ? '<p class="vd-next">' + vdEsc(r.next) + '</p>' : '') +
       '<div class="vd-details" id="vdDetails"' + (vdOpen ? '' : ' hidden') + '>' + details + '</div>';
     var minor = lastAlerts.filter(function(x){ return !(x.severity === 'Severe' || x.severity === 'Extreme'); })[0];
