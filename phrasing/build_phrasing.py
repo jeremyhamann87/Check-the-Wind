@@ -188,6 +188,19 @@ for s,w in [('We can’t reach the weather services right now. Check your intern
     a(E,'Error view',s,w)
 
 a('Units','Every temperature and wind speed shown','°C and km/h for visitors in Canada and for anyone viewing a Canadian place; °F and mph everywhere else','The browser reports a Canadian time zone (Toronto, Vancouver, Halifax, etc.) or a Canadian language (en-CA, fr-CA), OR the place being viewed is in Canada.','Wind categories in km/h: Calm 0–12, Breezy 13–25, Windy 26–39, Blustery 40–54, Howling 55+')
+LY='Hero paragraph vs More'
+a(LY,'Hero paragraph (always visible)','Why / when sentence (the verdict opener, "…so hang tight: …", "Keep an eye out for…", the next good window, or the alert lead and "Please be careful…").','Every state.','About 30 words in total')
+a(LY,'Hero paragraph (always visible)','Wear: [a warm coat, a hat, gloves, an umbrella…].','Every state. Up to five items from the temperature, rain, snow, ice and wind.','Replaces the long clothing sentences, which now live under "More"')
+a(LY,'Hero paragraph (always visible)','Pet safety sentence','Only when it is dangerously cold for pets (coldest hour under 20°F / −7°C).','Other pet advice is under "More"')
+a(LY,'Hero paragraph (always visible)','Stay aware: after [time], [what is coming].','Stay Aware tag.','')
+a(LY,'More (tap to expand): Conditions','Expect / It will be / Then it will be [warm, calm and dry, with clean air].','Yes and Maybe states.','')
+a(LY,'More (tap to expand): Ideas','[You could / This is great weather to / It’s a beauty of a day to / Time to] [activities]. Plus any Canadian extra (toque, maple leaves, loonie, Give’r!).','Yes and Maybe states with a fitting activity.','')
+a(LY,'More (tap to expand): Wear','The full clothing sentences (one main sentence plus up to two for rain, snow, ice or wind, including "on the way").','Every state.','')
+a(LY,'More (tap to expand): Getting around','[Transit] or a cab beats a long walk. / Comfortable shoes are a must for all that walking.','Big cities only.','')
+a(LY,'More (tap to expand): Later','After [time], [what changes].','A good window that ends.','')
+a(LY,'More (tap to expand): Tonight','The sky and stars line for Night Time.','Night Time tag.','')
+a(LY,'More (tap to expand): Pets','Cold-weather pet advice (below 40°F / 4°C).','Whenever it is cold but not dangerous.','')
+
 BC='Big cities'
 bcw='Hero paragraph and details (cities of roughly the top ~75 U.S./Canadian metros)'
 bc_cond='The place is within about 30 km of a large U.S. or Canadian city centre.'
