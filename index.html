@@ -1643,7 +1643,7 @@
     header.top .brand{ min-width:0 }
   }
   /* Phone 7-Day Wind Outlook: a small wind-category tag beside each speed; no colored top bars; rows stay ~47px tall (25% shorter than before) and are separated by the same line as the card header's border */
-  @media (max-width:63.99em){
+  @media (max-width:77.9375em){
     #weekSection .dayrow, #weekSection .dayrow ~ .dayrow{ padding-block:11.5px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }  /* same line as the card header's border */
     #weekSection .dayrow-head + template + .dayrow, #weekSection .daylist > .dayrow:nth-of-type(2){ border-top-color:transparent }
     /* small wind-category tag to the right of the wind speed */
@@ -2014,7 +2014,7 @@
   }
 
   /* Desktop 7-Day Wind Outlook: light gray dividers between the days */
-  @media (min-width:64em){
+  @media (min-width:78em){
     #weekSection .dayrow ~ .dayrow{ box-shadow:-1px 0 0 var(--table-border) }  /* drawn outside each column, so no column gets narrower */
     #weekSection .dayrow .dwind .dval{ flex-wrap:nowrap; column-gap:4px }  /* a two-digit speed and its arrow stay on one line, even in the last column */
     #weekSection .dayrow .dwind .dval b{ white-space:nowrap }
