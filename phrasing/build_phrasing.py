@@ -188,6 +188,23 @@ for s,w in [('We can’t reach the weather services right now. Check your intern
     a(E,'Error view',s,w)
 
 a('Units','Every temperature and wind speed shown','°C and km/h for visitors in Canada and for anyone viewing a Canadian place; °F and mph everywhere else','The browser reports a Canadian time zone (Toronto, Vancouver, Halifax, etc.) or a Canadian language (en-CA, fr-CA), OR the place being viewed is in Canada.','Wind categories in km/h: Calm 0–12, Breezy 13–25, Windy 26–39, Blustery 40–54, Howling 55+')
+HL='Headline (bold, top of the hero)'
+hw='Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.'
+for ph,wh,n in [
+ ('Lovely until [time]. / Lovely [day] [time range].','Verdict Yes and comfortable (average 50–86°F, ground not wet).','Canadian: "Beauty day, eh? Good until [time]." / "Give’r! Lovely until [time]."'),
+ ('Good until [time]. / Good [day] [time range].','Verdict Yes, not especially comfortable.','Canadian: "Not bad, eh. Good until [time]."'),
+ ('Good until [time], then [rain / snow / storms / wind / ice].','Stay Aware: weather arrives within 3 hours.',''),
+ ('Doable, not ideal: [first weak point]. / Doable now, but [weather] by [time].','Verdict Maybe and the window starts now.',''),
+ ('[Why short] now. Lovely [day] [time range].','Verdict Maybe with a window later today (why: Dark out, Storms, Rain, Snow, Showers, Windy, Rain likely, Icy ground, Cold, Hot, Poor air, Humid, Wet ground).','Canadian: "Lovely, eh: …"'),
+ ('[Why short]. Next good window: [day] [time range].','Verdict No (no alert), a good window within 48 hours.',''),
+ ('[Why short]. No good window for 48 hours.','Verdict No, no window in 48 hours.',''),
+ ('Dark out. Next good window: [day] [time range]. / Dark out. Not a night for outdoor plans.','Night Time tag.','Canadian: "Dark out, eh."'),
+ ('Fine out, but there’s an active [alert].','Severe/Extreme alert and the verdict is Yes or Maybe.',''),
+ ('[Alert] in effect.','Severe/Extreme alert and the verdict is No (e.g. "Hurricane warning in effect.").','')]:
+    a(HL,hw,ph,wh,n)
+a(HL,'Gray text under the headline','The earlier paragraph’s sentences (conditions, ideas, after-window, "hang tight" reasons, clothing, transit, pets) minus the sentence the headline already says. One paragraph.','Every state. A severe alert shows its safety sentence only (no clothing or pet tips).','The headline never repeats the wording of the tag (Go Outside!, Okay for Now, Wait a Bit, Stay Aware, Stay Inside, Stay In All Day, Use Caution, Night Time).')
+a(HL,'Gray text under the headline','Bring a jacket or a warm sweater, plus an umbrella or a rain jacket.','Cool and rain.','Two "Bring…" sentences are merged into one')
+
 BC='Big cities'
 bcw='Hero paragraph and details (cities of roughly the top ~75 U.S./Canadian metros)'
 bc_cond='The place is within about 30 km of a large U.S. or Canadian city centre.'
