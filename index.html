@@ -4686,11 +4686,11 @@
   var vdBody = document.getElementById('vdBody');
 
   var VD_ACTIVITIES = [
-    {name:'Walking & dog walks', verb:'take a stroll', short:'walking', ok:function(a){ return a.tMin >= 32 && a.tMax <= 92 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
+    {name:'Walking', verb:'take a stroll', short:'walking', ok:function(a){ return a.tMin >= 32 && a.tMax <= 92 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
     {name:'Running', verb:'go for a run', short:'running',            ok:function(a){ return a.tMin >= 28 && a.tMax <= 78 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
     {name:'Cycling', verb:'go for a bike ride', short:'cycling',      ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 15 && a.pop < 20 && a.wet < 0.15 && a.aqi <= 100; }},
     {name:'Hiking', verb:'hit a trail', short:'hiking',              ok:function(a){ return a.tMin >= 35 && a.tMax <= 88 && a.wMax < 22 && a.pop < 30 && a.wet < 0.45 && a.aqi <= 100; }},
-    {name:'Fishing', verb:'wet a line', short:'fishing',             ok:function(a){ return a.tMin >= 45 && a.tMax <= 95 && a.wMax < 15 && a.pop < 30 && a.aqi <= 100; }},
+    {name:'Fishing', verb:'go fishing', short:'fishing',             ok:function(a){ return a.tMin >= 45 && a.tMax <= 95 && a.wMax < 15 && a.pop < 30 && a.aqi <= 100; }},
     {name:'Golf', verb:'play a round of golf', short:'golf',         ok:function(a){ return a.tMin >= 50 && a.tMax <= 92 && a.wMax < 15 && a.pop < 20 && a.wet < 0.45 && a.aqi <= 100; }},
     {name:'Swimming', verb:'take a swim', short:'swimming',          ok:function(a){ return a.tMin >= 78 && a.wMax < 15 && a.pop < 20 && a.aqi <= 100; }},
     {name:'Sunbathing', verb:'soak up some sun', short:'sunbathing', ok:function(a){ return a.tMin >= 72 && a.tMax <= 95 && a.wMax < 12 && a.pop < 15 && a.aqi <= 100; }},
@@ -4698,7 +4698,12 @@
     {name:'Picnics & patio time', verb:'have a picnic', short:'picnics',ok:function(a){ return a.tMin >= 62 && a.tMax <= 88 && a.wMax < 12 && a.pop < 20 && a.wet < 0.45 && a.aqi <= 100; }},
     {name:'Gardening & yard work', verb:'putter in the garden', short:'yard work',ok:function(a){ return a.tMin >= 40 && a.tMax <= 90 && a.wMax < 20 && a.pop < 30 && a.aqi <= 100; }},
     {name:'Kite flying', verb:'fly a kite', short:'kite flying',      ok:function(a){ return a.wMin >= 8 && a.wMax <= 24 && a.pop < 30 && a.tMin >= 32; }},
-    {name:'Drone flying', verb:'fly a drone', short:'drone flying',   ok:function(a){ return a.wMax < 14 && a.pop < 20 && a.tMin >= 32 && a.tMax <= 95; }}
+    {name:'Dog walks', verb:'walk your dog', short:'dog walks',      ok:function(a){ return a.tMin >= 25 && a.tMax <= 88 && a.wMax < 25 && a.pop < 40 && a.aqi <= 100; }},
+    {name:'Bird watching', verb:'go bird watching', short:'bird watching', ok:function(a){ return a.tMin >= 35 && a.tMax <= 90 && a.wMax < 15 && a.pop < 20 && a.aqi <= 100; }},
+    {name:'Mowing the lawn', verb:'mow the lawn', short:'mowing',     ok:function(a){ return a.tMin >= 50 && a.tMax <= 92 && a.wMax < 20 && a.pop < 10 && a.wet < 0.15 && a.aqi <= 100; }},
+    {name:'Pruning flowers', verb:'prune your flowers', short:'pruning flowers', ok:function(a){ return a.tMin >= 40 && a.tMax <= 88 && a.wMax < 20 && a.pop < 30 && a.wet < 0.45 && a.aqi <= 100; }},
+    {name:'Washing the car', verb:'wash the car', short:'car washing', ok:function(a){ return a.tMin >= 50 && a.tMax <= 95 && a.wMax < 20 && a.pop < 20 && a.aqi <= 100; }},
+    {name:'Dining al fresco', verb:'dine al fresco', short:'dining al fresco', ok:function(a){ return a.tMin >= 58 && a.tMax <= 90 && a.wMax < 12 && a.pop < 15 && a.aqi <= 100; }}
   ];
 
   // Stable "randomness": the same wording all day (changes with the date), so re-renders never flicker

@@ -39,11 +39,11 @@ Activities line,Verdict card under the sentence,Check the alert above before hea
 Activities line,Verdict details (expanded),A good time for indoor plans.,Verdict is No.,
 Activities line,Verdict details (expanded),Good for: [up to 5 activity names as chips],Yes or Maybe; the chips use the full names in the Activities list.,
 Activities line,Verdict details (expanded),"Stats: Temp / Wind / Precip / Air quality (Good, Moderate, Sensitive groups)","Always, for the verdict window.",
-Activities,Chip / paragraph,"Walking & dog walks  |  short: walking  |  verb: ""take a stroll""","Temp 32–92°F, wind under 25 mph, precip under 40%, AQI 100 or less","Needs the whole window to fit (lowest/highest temp, top wind, highest precip chance)"
+Activities,Chip / paragraph,"Walking  |  short: walking  |  verb: ""take a stroll""","Temp 32–92°F, wind under 25 mph, precip under 40%, AQI 100 or less","Needs the whole window to fit (lowest/highest temp, top wind, highest precip chance)"
 Activities,Chip / paragraph,"Running  |  short: running  |  verb: ""go for a run""","Temp 28–78°F, wind under 20 mph, precip under 30%, AQI 100 or less",
 Activities,Chip / paragraph,"Cycling  |  short: cycling  |  verb: ""go for a bike ride""","Temp 40–90°F, wind under 15 mph, precip under 20%, ground dry (under 0.15), AQI 100 or less",
 Activities,Chip / paragraph,"Hiking  |  short: hiking  |  verb: ""hit a trail""","Temp 35–88°F, wind under 22 mph, precip under 30%, ground under 0.45, AQI 100 or less",
-Activities,Chip / paragraph,"Fishing  |  short: fishing  |  verb: ""wet a line""","Temp 45–95°F, wind under 15 mph, precip under 30%, AQI 100 or less",
+Activities,Chip / paragraph,"Fishing  |  short: fishing  |  verb: ""go fishing""","Temp 45–95°F, wind under 15 mph, precip under 30%, AQI 100 or less",
 Activities,Chip / paragraph,"Golf  |  short: golf  |  verb: ""play a round of golf""","Temp 50–92°F, wind under 15 mph, precip under 20%, ground under 0.45, AQI 100 or less",
 Activities,Chip / paragraph,"Swimming  |  short: swimming  |  verb: ""take a swim""","Low temp 78°F or higher, wind under 15 mph, precip under 20%, AQI 100 or less",
 Activities,Chip / paragraph,"Sunbathing  |  short: sunbathing  |  verb: ""soak up some sun""","Temp 72–95°F, wind under 12 mph, precip under 15%, AQI 100 or less",
@@ -51,7 +51,12 @@ Activities,Chip / paragraph,"Hammock time  |  short: hammock time  |  verb: ""sw
 Activities,Chip / paragraph,"Picnics & patio time  |  short: picnics  |  verb: ""have a picnic""","Temp 62–88°F, wind under 12 mph, precip under 20%, ground under 0.45, AQI 100 or less",
 Activities,Chip / paragraph,"Gardening & yard work  |  short: yard work  |  verb: ""putter in the garden""","Temp 40–90°F, wind under 20 mph, precip under 30%, AQI 100 or less",
 Activities,Chip / paragraph,"Kite flying  |  short: kite flying  |  verb: ""fly a kite""","Wind 8–24 mph throughout, precip under 30%, temp 32°F or higher",
-Activities,Chip / paragraph,"Drone flying  |  short: drone flying  |  verb: ""fly a drone""","Wind under 14 mph, precip under 20%, temp 32–95°F",
+Activities,Chip / paragraph,"Dog walks  |  short: dog walks  |  verb: ""walk your dog""","Temp 25–88°F, wind under 25 mph, precip under 40%, AQI 100 or less",
+Activities,Chip / paragraph,"Bird watching  |  short: bird watching  |  verb: ""go bird watching""","Temp 35–90°F, wind under 15 mph, precip under 20%, AQI 100 or less",
+Activities,Chip / paragraph,"Mowing the lawn  |  short: mowing  |  verb: ""mow the lawn""","Temp 50–92°F, wind under 20 mph, precip under 10%, ground dry (under 0.15), AQI 100 or less",
+Activities,Chip / paragraph,"Pruning flowers  |  short: pruning flowers  |  verb: ""prune your flowers""","Temp 40–88°F, wind under 20 mph, precip under 30%, ground under 0.45, AQI 100 or less",
+Activities,Chip / paragraph,"Washing the car  |  short: car washing  |  verb: ""wash the car""","Temp 50–95°F, wind under 20 mph, precip under 20%, AQI 100 or less",
+Activities,Chip / paragraph,"Dining al fresco  |  short: dining al fresco  |  verb: ""dine al fresco""","Temp 58–90°F, wind under 12 mph, precip under 15%, AQI 100 or less",
 Paragraph (hero / verdict card),Hero paragraph,"Conditions look good [from now until 6 PM / today 2 to 6 PM], but there’s an active [alert] for your area. [After-window sentence] Please be careful, and check the alert above before heading outside.",Severe/Extreme alert and verdict is Yes/Maybe.,"""Conditions are okay"" instead of ""look good"" when the verdict is the Okay-for-Now kind; ""Conditions should be good [day] [time]"" when the window is later."
 Paragraph (hero / verdict card),Hero paragraph,"It’s best to stay inside for now: there is an active [alert] and [other reason]. Please stay safe, and check the alert above. Your next good window is [day time]. / There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a snack.",Severe/Extreme alert and the verdict is No.,"Serious tone, no playful wording"
 Paragraph (hero / verdict card),Hero paragraph,"It’s a cozy-inside kind of moment right now: [reasons]. Your next good window is [day time], so it’s worth the wait. / There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a snack.","Verdict is No, no alert.",

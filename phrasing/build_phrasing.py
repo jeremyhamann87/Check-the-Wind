@@ -59,11 +59,11 @@ a(A,'Verdict details (expanded)','Stats: Temp / Wind / Precip / Air quality (Goo
 
 # activities
 for name,verb,short,cond in [
- ('Walking & dog walks','take a stroll','walking','Temp 32–92°F, wind under 25 mph, precip under 40%, AQI 100 or less'),
+ ('Walking','take a stroll','walking','Temp 32–92°F, wind under 25 mph, precip under 40%, AQI 100 or less'),
  ('Running','go for a run','running','Temp 28–78°F, wind under 20 mph, precip under 30%, AQI 100 or less'),
  ('Cycling','go for a bike ride','cycling','Temp 40–90°F, wind under 15 mph, precip under 20%, ground dry (under 0.15), AQI 100 or less'),
  ('Hiking','hit a trail','hiking','Temp 35–88°F, wind under 22 mph, precip under 30%, ground under 0.45, AQI 100 or less'),
- ('Fishing','wet a line','fishing','Temp 45–95°F, wind under 15 mph, precip under 30%, AQI 100 or less'),
+ ('Fishing','go fishing','fishing','Temp 45–95°F, wind under 15 mph, precip under 30%, AQI 100 or less'),
  ('Golf','play a round of golf','golf','Temp 50–92°F, wind under 15 mph, precip under 20%, ground under 0.45, AQI 100 or less'),
  ('Swimming','take a swim','swimming','Low temp 78°F or higher, wind under 15 mph, precip under 20%, AQI 100 or less'),
  ('Sunbathing','soak up some sun','sunbathing','Temp 72–95°F, wind under 12 mph, precip under 15%, AQI 100 or less'),
@@ -71,7 +71,12 @@ for name,verb,short,cond in [
  ('Picnics & patio time','have a picnic','picnics','Temp 62–88°F, wind under 12 mph, precip under 20%, ground under 0.45, AQI 100 or less'),
  ('Gardening & yard work','putter in the garden','yard work','Temp 40–90°F, wind under 20 mph, precip under 30%, AQI 100 or less'),
  ('Kite flying','fly a kite','kite flying','Wind 8–24 mph throughout, precip under 30%, temp 32°F or higher'),
- ('Drone flying','fly a drone','drone flying','Wind under 14 mph, precip under 20%, temp 32–95°F')]:
+ ('Dog walks','walk your dog','dog walks','Temp 25–88°F, wind under 25 mph, precip under 40%, AQI 100 or less'),
+ ('Bird watching','go bird watching','bird watching','Temp 35–90°F, wind under 15 mph, precip under 20%, AQI 100 or less'),
+ ('Mowing the lawn','mow the lawn','mowing','Temp 50–92°F, wind under 20 mph, precip under 10%, ground dry (under 0.15), AQI 100 or less'),
+ ('Pruning flowers','prune your flowers','pruning flowers','Temp 40–88°F, wind under 20 mph, precip under 30%, ground under 0.45, AQI 100 or less'),
+ ('Washing the car','wash the car','car washing','Temp 50–95°F, wind under 20 mph, precip under 20%, AQI 100 or less'),
+ ('Dining al fresco','dine al fresco','dining al fresco','Temp 58–90°F, wind under 12 mph, precip under 15%, AQI 100 or less')]:
     a('Activities','Chip / paragraph',f'{name}  |  short: {short}  |  verb: "{verb}"',cond,'Needs the whole window to fit (lowest/highest temp, top wind, highest precip chance)' if name.startswith('Walking') else '')
 
 P='Paragraph (hero / verdict card)'
