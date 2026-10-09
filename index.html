@@ -4939,12 +4939,12 @@
     }else{
       if(r.alert){
         // a Severe / Extreme warning: kind, but not playful
-        out.push('It’s best to stay inside for now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '. Please stay safe, and check the alert above.');
+        out.push('It’s best to stay inside for now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2).map(function(w){ return w.replace(/^an active /, 'there is an active '); })) : '') + '. Please stay safe, and check the alert above.');
       }else{
         out.push('It’s a cozy-inside kind of moment right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
       }
       if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next good window is ' + sp3.day + ' ' + sp3.phrase + (r.alert ? '.' : ', so it’s worth the wait.')); }
-      else out.push('There’s no good window in the next 48 hours, so it’s a fine time for a movie and a snack.');
+      else out.push('There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a snack.');
     }
     return out.join(' ');
   }
