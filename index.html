@@ -7,6 +7,10 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  /* Consent Mode: analytics storage stays off until the visitor says yes (see the banner at the end of the page) */
+  var ctwConsent = 'denied';
+  try{ if(localStorage.getItem('checkTheWind.analytics') === 'granted') ctwConsent = 'granted'; }catch(e){}
+  gtag('consent', 'default', {analytics_storage: ctwConsent, ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
   gtag('js', new Date());
 
   gtag('config', 'G-74F2EJF0ZC');
@@ -2043,6 +2047,17 @@
     .bw-empty > [role="cell"]:last-child{ display:flex; justify-content:center }
     .bw-empty svg{ max-width:100%; height:auto }
   }
+
+  /* Analytics consent banner: bottom-left card on desktop, full-width card on phones */
+  .consent{ position:fixed; z-index:70; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); max-width:26rem;
+    padding:16px; background:var(--surface); color:var(--text); border:1px solid var(--table-border); border-radius:4px; box-shadow:var(--shadow) }
+  .consent[hidden]{ display:none }
+  .consent-title{ margin:0 0 4px; font-size:1rem; font-weight:700 }
+  .consent-text{ margin:0; font-size:.9375rem; line-height:1.45; color:var(--text-muted) }
+  .consent-text button{ padding:0; border:0; background:none; font:inherit; color:var(--text); text-decoration:underline; cursor:pointer }
+  .consent-actions{ display:flex; gap:10px; margin-top:12px }
+  .consent-actions .bp-btn{ flex:1 1 0; min-height:40px; padding:0 12px }
+  @media (min-width:64em){ .consent{ left:16px; bottom:16px } }
 
   /* Desktop: every font in the right-hand content column is 14px */
   @media (min-width:64em){
@@ -6504,6 +6519,29 @@
     }
   }
   initialLoad();
+})();
+</script>
+<div class="consent" id="consentBanner" role="region" aria-label="Analytics" hidden>
+  <p class="consent-title">Help us count visits?</p>
+  <p class="consent-text">We use Google Analytics to see how many people use Check the Wind and which features they use. It&rsquo;s for analytics only, with no ads. <button type="button" id="consentMore">What we track</button></p>
+  <div class="consent-actions">
+    <button type="button" class="bp-btn" id="consentNo">No thanks</button>
+    <button type="button" class="bp-btn bp-primary" id="consentYes">Accept</button>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY = 'checkTheWind.analytics', box = document.getElementById('consentBanner'), saved = null;
+  try{ saved = localStorage.getItem(KEY); }catch(e){}
+  if(saved !== 'granted' && saved !== 'denied') box.hidden = false;
+  function choose(v){
+    try{ localStorage.setItem(KEY, v); }catch(e){}
+    if(window.gtag) gtag('consent', 'update', {analytics_storage: v});
+    box.hidden = true;
+  }
+  document.getElementById('consentYes').addEventListener('click', function(){ choose('granted'); });
+  document.getElementById('consentNo').addEventListener('click', function(){ choose('denied'); });
+  document.getElementById('consentMore').addEventListener('click', function(){ var b = document.getElementById('disclaimersOpenBtn'); if(b) b.click(); });
 })();
 </script>
 </body>
