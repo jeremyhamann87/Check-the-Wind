@@ -2473,7 +2473,7 @@
       </p>
       <p>
         <strong>Canada.</strong> Canadian forecasts come from the nearest Environment Canada forecast location, which can be some
-        distance from the place you searched. Metric values are converted to &deg;F &amp; mph. The city-page hourly forecast covers 24
+        distance from the place you searched. Metric values are converted to &deg;F &amp; mph, and visitors in Canada (judged from the browser&rsquo;s time zone or language) see temperatures in &deg;C. The city-page hourly forecast covers 24
         hours, so Check the Wind fills the hours after that, and the wind on days the 7-day forecast doesn&rsquo;t mention it
         (Environment Canada only reports wind of 20 km/h or more), with Environment Canada&rsquo;s own GEM forecast model, relayed
         by <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Canadian alerts show each warning, watch or
@@ -2612,6 +2612,19 @@
     if(typeof lat !== 'number' || typeof lon !== 'number' || !label) return;
     try{ localStorage.setItem(LAST_LOC_KEY, JSON.stringify({lat:lat, lon:lon, label:label})); }catch(err){}
   }
+
+  /* Temperature units: visitors in Canada (judged by the browser's time zone or language) see °C, everyone else °F.
+     All the logic still runs in °F; only what is shown is converted. */
+  var useCelsius = (function(){
+    try{
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      if(/^America\/(Toronto|Montreal|Halifax|St_Johns|Winnipeg|Regina|Edmonton|Vancouver|Whitehorse|Yellowknife|Iqaluit|Rankin_Inlet|Cambridge_Bay|Resolute|Glace_Bay|Moncton|Goose_Bay|Thunder_Bay|Nipigon|Pangnirtung|Inuvik|Dawson|Dawson_Creek|Fort_Nelson|Creston|Swift_Current|Blanc-Sablon|Atikokan|Coral_Harbour|Rainy_River)$/.test(tz)) return true;
+    }catch(e){}
+    try{ return /-CA$/i.test(navigator.language || ''); }catch(e){}
+    return false;
+  })();
+  function tempNum(f){ return useCelsius ? Math.round((f - 32) * 5 / 9) : Math.round(f); }
+  function fmtTemp(f){ return tempNum(f) + (useCelsius ? '°C' : '°F'); }
 
   function bandFor(mph){
     if(mph < 8)  return {key:'calm',       label:'Calm',        css:'var(--band-calm)',      pill:'var(--pill-calm)',      pillInk:'var(--seg-ink-calm)'};
@@ -3570,7 +3583,7 @@
           '</div>' +
           '<div class="weather-now">' +
             '<div class="wicon">' + weatherIcon(current.shortForecast, current.isDaytime, 38) + '</div>' +
-            '<div class="wtext"><b>' + Math.round(current.temperature) + '°'+ (current.temperatureUnit||'F') + '</b> · ' + ampText(current.shortForecast) +
+            '<div class="wtext"><b>' + fmtTemp(current.temperature) + '</b> · ' + ampText(current.shortForecast) +
               (outlook ? ' <span class="hazard-eta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' + outlook + '</span>' : '') + '</div>' +
           '</div>' +
           (outlook ? '<div class="ground-now upcoming-now"><div class="gicon"><svg width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="16" fill="var(--cloud)"/><circle cx="24" cy="24" r="16" stroke="var(--cloud-2)" stroke-width="2.4"/><path d="M24 14v10.5l6.5 4" stroke="var(--icon-blue)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
@@ -3916,9 +3929,9 @@
   var BP_KEY = 'checkTheWind.bestPrefs';
   var BP_STD = {tmin:25, tmax:100, wind:25, pop:40, hum:100, ground:2, aqi:150};
   var BP_FIELDS = [
-    {k:'tmin',   label:'Lowest temperature',        min:0,  max:70,  step:1, fmt:function(v){ return v + '°F'; },
+    {k:'tmin',   label:'Lowest temperature',        min:0,  max:70,  step:1, fmt:function(v){ return fmtTemp(v); },
       help:'Colder windows are skipped.'},
-    {k:'tmax',   label:'Highest temperature',       min:70, max:120, step:1, fmt:function(v){ return v + '°F'; },
+    {k:'tmax',   label:'Highest temperature',       min:70, max:120, step:1, fmt:function(v){ return fmtTemp(v); },
       help:'Hotter windows are skipped.'},
     {k:'wind',   label:'Wind stays under',          min:5,  max:40,  step:1, fmt:function(v){ return v + ' mph'; },
       help:'Wind at or above this is skipped.'},
@@ -4181,7 +4194,7 @@
         gust: extractGust(p.detailedForecast) || '',
         icon: weatherIcon(p.shortForecast, true, 28),
         short: ampText(p.shortForecast),
-        temp: p.temperature + '°'
+        temp: tempNum(p.temperature) + '°'
       };
     });
     w.state = 'ready';
@@ -4571,8 +4584,8 @@
       if(mph >= P.wind) why.push('wind up to ' + mph + ' mph');
       if(P.pop < 100 && pop >= P.pop) why.push(Math.round(pop) + '% chance of precipitation');
       if(icyOrSnowy) why.push('snowy or icy ground');
-      if(temp < P.tmin) why.push('cold at ' + Math.round(temp) + '\u00B0F');
-      if(temp > P.tmax) why.push('hot at ' + Math.round(temp) + '\u00B0F');
+      if(temp < P.tmin) why.push('cold at ' + fmtTemp(temp));
+      if(temp > P.tmax) why.push('hot at ' + fmtTemp(temp));
       if(aqi !== null && aqi > P.aqi) why.push('poor air quality (AQI ' + Math.round(aqi) + ')');
       if(hum !== null && hum > P.hum) why.push('high humidity');
       if(!groundOk && !icyOrSnowy) why.push('wet ground');
@@ -4881,7 +4894,7 @@
         day: day,
         time: when,
         when: day + ' ' + when,
-        temp: (tMin === tMax ? tMax : tMin + '–' + tMax) + '°F',
+        temp: (tMin === tMax ? tempNum(tMax) : tempNum(tMin) + '–' + tempNum(tMax)) + (useCelsius ? '°C' : '°F'),
         wind: mph + ' mph',
         precip: Math.round(popMax) + '%',
         humidity: humAvg !== null ? humAvg + '%' : '—',
@@ -4984,7 +4997,7 @@
   function vdWeakPoints(a){
     var w = [];
     if(a.wMax >= 16) w.push('wind up to ' + a.wMax + ' mph');
-    if(a.tAvg < 40) w.push('chilly at ' + Math.round(a.tAvg) + '°F'); else if(a.tAvg > 88) w.push('hot at ' + Math.round(a.tAvg) + '°F');
+    if(a.tAvg < 40) w.push('chilly at ' + fmtTemp(a.tAvg)); else if(a.tAvg > 88) w.push('hot at ' + fmtTemp(a.tAvg));
     if(a.pop >= 30) w.push(a.pop + '% chance of precipitation');
     if(a.wet >= 0.15) w.push('damp ground');
     if(a.aqi !== null && a.aqi > 50) w.push('moderate air quality');
@@ -5251,7 +5264,7 @@
     var word = r.state === 'yes' ? 'Yes' : r.state === 'maybe' ? 'Maybe' : 'No';
     var range = r.state === 'no' ? 'Right now' : vdRange(r.hs, vdCtx);
     var stats = [
-      ['Temp', (a.tMin === a.tMax ? a.tMax : a.tMin + '–' + a.tMax) + '°F'],
+      ['Temp', (a.tMin === a.tMax ? tempNum(a.tMax) : tempNum(a.tMin) + '–' + tempNum(a.tMax)) + (useCelsius ? '°C' : '°F')],
       ['Wind', (a.wMin === a.wMax ? a.wMax : a.wMin + '–' + a.wMax) + ' mph'],
       ['Precip', a.pop + '%'],
       ['Air quality', a.aqi !== null ? a.aqi + ' · ' + aqiWord(a.aqi) : '—']
@@ -5749,7 +5762,7 @@
     var nowW = parseWind(hourly[0].windSpeed), nowBand = bandFor(nowW.high);
     announce('Forecast updated for ' + hdrLoc.textContent + '. Wind now ' + nowW.high + ' miles per hour' +
       (dirWord(hourly[0].windDirection) ? ' from the ' + dirWord(hourly[0].windDirection) : '') + ', ' + nowBand.label.toLowerCase() + '. ' +
-      ampText(hourly[0].shortForecast) + ', ' + Math.round(hourly[0].temperature) + ' degrees. ' +
+      ampText(hourly[0].shortForecast) + ', ' + tempNum(hourly[0].temperature) + (useCelsius ? ' degrees Celsius. ' : ' degrees. ') +
       (bestWhen ? 'Best window outside: ' + bestWhen + '.' : 'No good window outside in the next 48 hours.'));
     window.dispatchEvent(new Event('resize'));
   }
@@ -6259,7 +6272,7 @@
     peekEl.appendChild(row);
     var sky = document.createElement('div'); sky.className = 'pk-sky';
     var ic = document.createElement('span'); ic.setAttribute('aria-hidden', 'true'); ic.innerHTML = weatherIcon(cur.shortForecast, cur.isDaytime, 24); ic.style.display = 'inline-flex';
-    var tx = document.createElement('span'); tx.textContent = cur.temperature + '\u00b0' + (cur.temperatureUnit || 'F') + ' \u00b7 ' + cur.shortForecast;
+    var tx = document.createElement('span'); tx.textContent = fmtTemp(cur.temperature) + ' \u00b7 ' + cur.shortForecast;
     sky.appendChild(ic); sky.appendChild(tx); peekEl.appendChild(sky);
     var list = data.alerts || [];
     if(list.length){

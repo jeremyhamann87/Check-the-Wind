@@ -183,6 +183,7 @@ for s,w in [('We can’t reach the weather services right now. Check your intern
 ('We couldn’t find “[search]” in the U.S. or Canada. Try a city & state or province, like “Denver, CO” or “Toronto, ON”, or a ZIP code.','A search matched no U.S. or Canadian place.')]:
     a(E,'Error view',s,w)
 
+a('Temperature units','Every temperature shown','°C for visitors in Canada, °F everywhere else','The browser reports a Canadian time zone (Toronto, Vancouver, Halifax, etc.) or a Canadian language (en-CA, fr-CA).','Wind stays in mph for now')
 CA='Canada alerts'
 a(CA,'Alert banner (Canada)','[Topic] [Warning / Watch / Advisory], e.g. "Frost Advisory"','An Environment Canada warning, watch or advisory is active for the nearest forecast location.','Yellow alerts count as Moderate, orange as Severe (so the verdict shows Use Caution), red as Extreme. Special weather statements are not shown.')
 a(CA,'Alert banner details','Issued by Environment and Climate Change Canada. Read the full alert, with details and what to do, at [link].','Every Canadian alert.','Canadian alerts link to the full text at weather.gc.ca')
