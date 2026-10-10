@@ -1,7 +1,7 @@
 name: Build and deploy the site
 
 # One workflow builds and publishes everything at www.checkthewind.com:
-#   * the site itself (index.html, 404.html, robots.txt, sitemap.xml, phrasing.csv, CNAME)
+#   * the site itself (index.html, 404.html, robots.txt, sitemap.xml, phrasing.csv, og-image.png, CNAME)
 #   * the radar page (futurecast/index.html)
 #   * the radar frames + manifest, freshly produced by pipeline/fetch_mrms.py
 #
@@ -78,7 +78,7 @@ jobs:
         run: |
           set -e
           mkdir -p _site/futurecast
-          cp index.html 404.html robots.txt sitemap.xml phrasing.csv CNAME _site/
+          cp index.html 404.html robots.txt sitemap.xml phrasing.csv og-image.png CNAME _site/
           cp futurecast/index.html _site/futurecast/
           if [ -f futurecast/manifest.json ]; then cp futurecast/manifest.json _site/futurecast/; else echo "No radar manifest yet"; fi
           if [ -d futurecast/frames ]; then cp -R futurecast/frames _site/futurecast/frames; else echo "No radar frames yet"; fi

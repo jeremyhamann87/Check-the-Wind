@@ -28,7 +28,13 @@
 <meta property="og:title" content="Check the Wind — wind, weather and the best times to get outside">
 <meta property="og:description" content="Live wind speed and direction, the 7-day wind outlook, alerts, air quality and the best times to get outside, for any U.S. or Canadian location.">
 <meta property="og:url" content="https://www.checkthewind.com/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://www.checkthewind.com/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Check the Wind: live wind, weather and air quality, plus the best times to get outside">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.checkthewind.com/og-image.png">
 <meta name="twitter:title" content="Check the Wind">
 <meta name="twitter:description" content="Live wind speed and direction, the 7-day wind outlook, alerts, air quality and the best times to get outside.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -5067,7 +5073,9 @@
         skyIcon: weatherIcon(midHr.fc, true, 30),
         summary: vdGoodSentence(vdAgg(h)),
         detail: bestDetail(h, {day: day, time: when, temp: tempText, mph: mph, dir: peak.dir, popMax: popMax, wetMax: wetMax, aqiMax: aqiMax, humVals: humVals, humAvg: humAvg}),
-        plain: day + ', ' + when + ': ' + tempText + ', ' + fmtWind(mph) + ' wind, ' + (popMax < 5 ? 'no precipitation expected' : Math.round(popMax) + '% chance of precipitation')
+        shareHead: day + ', ' + new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) + ', ' + when,
+        shareConds: [tempText, ampText(midHr.fc || '').toLowerCase(), fmtWind(mph) + ' wind',
+          popMax < 5 ? 'no precipitation expected' : Math.round(popMax) + '% chance of precipitation'].filter(Boolean).join(', ')
       };
     });
 
@@ -5108,12 +5116,9 @@
     var wins = (store('best') && store('best').windows) || [];
     if(!wins.length) return null;
     var place = (hdrLoc.textContent || '').trim();
-    var lines = wins.map(function(w, i){ return (i + 1) + '. ' + w.plain; });
-    return {
-      title: 'Best times to get outside' + (place ? ' in ' + place : ''),
-      text: 'Best times to get outside' + (place ? ' in ' + place : '') + ':\n' + lines.join('\n') + '\nFrom Check the Wind.',
-      url: shareLink()
-    };
+    var head = 'Best times to get outside' + (place ? ' in ' + place : '');
+    var lines = wins.map(function(w, i){ return (i + 1) + '. ' + w.shareHead + '\n   ' + w.shareConds; });
+    return {title: head, text: head + ':\n\n' + lines.join('\n\n'), url: shareLink()};
   }
   var toastEl = null, toastTimer = null;
   function showToast(msg){
@@ -5150,7 +5155,7 @@
       try{ await navigator.share(d); return; }
       catch(err){ if(err && err.name === 'AbortError') return; }   // closed the sheet: nothing more to do; any other failure falls back to copying
     }
-    var ok = await copyText(d.text + '\n' + d.url);
+    var ok = await copyText(d.text + '\n\n' + d.url);
     if(ok) showToast('Link and summary copied. Paste it to a friend.');
     else window.prompt('Copy this link to share:', d.url);
   });
