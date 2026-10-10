@@ -2063,7 +2063,7 @@
   .bt-card--1{--bt-tone:var(--medal-gold)}
   .bt-card--2{--bt-tone:var(--medal-silver)}
   .bt-card--3{--bt-tone:var(--medal-bronze)}
-  .bt-head{display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--table-border)}
+  .bt-head{display:flex; align-items:center; gap:10px; box-sizing:border-box; min-height:40px; padding:6px 12px; border-bottom:1px solid var(--table-border)}  /* 40px, like every module header */
   .bt-medal{display:flex; flex:0 0 auto}
   .bt-medal svg{display:block; width:22px; height:22px}
   .bt-when{display:flex; flex-flow:row wrap; align-items:baseline; gap:0 8px; min-width:0; line-height:1.3}
