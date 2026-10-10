@@ -1774,9 +1774,9 @@
   /* Phone: every module header (the combined top card, Best Times, Wind Today, 7-Day, Air Quality) shares one treatment:
      small muted title, 6px / 16px padding and the same 40px minimum height */
   @media (max-width:63.99em){
-    .db-content .card-head, .hero-wrap .hn-head{ display:flex; align-items:center; min-height:40px; padding:6px 16px }
+    .db-content .card-head, .hero-wrap .hn-head, .hero-wrap #bestSection .card-head{ display:flex; align-items:center; min-height:40px; padding:6px 16px }
     .hero-wrap .hn-head{ margin:0 -16px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }
-    .db-content .card-head h2, .db-content .card-head h3, .hero-wrap .hn-head h2{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
+    .db-content .card-head h2, .db-content .card-head h3, .hero-wrap .hn-head h2, .hero-wrap #bestSection .card-head h2{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
   }
 
 
@@ -5756,7 +5756,24 @@
   var verdictHeroMq = window.matchMedia('(max-width:63.99em)');
   // Phones (design C): the plain-language summary leads the hero, ahead of the Current Conditions card and the radar. Tablets (<64em): it leads the page, inside the hero block.
   // Two-column layout: it heads the right column, above Best Times.
+  // Phones (under 500px): Best Times sits between the Current Conditions card and the radar. It lives inside the hero markup there,
+  // which is rebuilt on each load, so this runs after every render; everywhere else it goes back to its place in the page.
+  var bestPhoneMq = window.matchMedia('(max-width:31.1875em)');
+  var bestHome = null;
+  function placeBest(){
+    var best = document.getElementById('bestSection');
+    if(!best) return;
+    if(!bestHome && best.parentNode){ bestHome = document.createComment('best-times-home'); best.after(bestHome); }
+    var radar = document.getElementById('radarBox');
+    if(bestPhoneMq.matches && radar && radar.parentNode && radar.parentNode.classList.contains('hero-top')){
+      if(radar.previousElementSibling !== best) radar.before(best);
+    }else if(bestHome && bestHome.parentNode && best.nextSibling !== bestHome){
+      bestHome.before(best);
+    }
+  }
+  bestPhoneMq.addEventListener('change', placeBest);
   function placeVerdict(){
+    placeBest();
     var v = vdEl, heroSec = document.getElementById('heroSection'), best = document.getElementById('bestSection');
     if(!v || !heroSec || !best) return;
     if(phoneBarMq.matches){
