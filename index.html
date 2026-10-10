@@ -2111,6 +2111,20 @@
     .db-layout > .hero-wrap .hero-head .m-loc-name{ font-size:14px !important }  /* beats the place name's own !important 1rem */
   }
 
+  /* Phones: the dialogs (Disclaimers, Wind Key, Best Times info and details, Customize) are 3/4-height bottom drawers, like the search.
+     The expanded radar stays full screen. */
+  @media (max-width:31.1875em){
+    .modal-drawer{align-items:flex-end; padding:0}
+    .modal-drawer .radar-modal-panel{
+      width:100%; height:75vh; height:75dvh; max-height:75dvh; border-radius:12px 12px 0 0; box-shadow:0 -8px 32px rgba(10,16,22,.28);
+    }
+    .modal-drawer .disclaimers-modal-body{flex:1 1 auto; min-height:0; overscroll-behavior:contain}
+    .modal-drawer .bp-panel .bp-body{flex:1 1 auto; min-height:0; overflow-y:auto}
+    .modal-drawer:not([hidden]) .radar-modal-panel{animation:drawerUp .3s cubic-bezier(.2,.8,.2,1)}
+    @media (prefers-reduced-motion:reduce){ .modal-drawer:not([hidden]) .radar-modal-panel{animation:none} }
+  }
+  @keyframes drawerUp{from{transform:translateY(100%)} to{transform:none}}
+
   /* Short "copied" confirmation for the Share button */
   .ctw-toast{
     position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); z-index:70; max-width:calc(100vw - 32px);
@@ -2486,7 +2500,7 @@
 </div><!-- /db-content -->
 </div><!-- /db-layout -->
 
-<div class="radar-modal" id="disclaimersModal" hidden>
+<div class="radar-modal modal-drawer" id="disclaimersModal" hidden>
   <div class="radar-modal-backdrop" id="disclaimersModalBackdrop"></div>
   <div class="radar-modal-panel disclaimers-modal-panel" role="dialog" aria-modal="true" aria-labelledby="disclaimersModalTitle">
     <div class="disclaimers-modal-head">
@@ -2572,7 +2586,7 @@
   </div>
 </div>
 
-<div class="radar-modal" id="infoModal" hidden>
+<div class="radar-modal modal-drawer" id="infoModal" hidden>
   <div class="radar-modal-backdrop" id="infoModalBackdrop"></div>
   <div class="radar-modal-panel disclaimers-modal-panel" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
     <div class="disclaimers-modal-head">
@@ -2585,7 +2599,7 @@
   </div>
 </div>
 
-<div class="radar-modal" id="bestPrefsModal" hidden>
+<div class="radar-modal modal-drawer" id="bestPrefsModal" hidden>
   <div class="radar-modal-backdrop" id="bestPrefsBackdrop"></div>
   <div class="radar-modal-panel disclaimers-modal-panel bp-panel" role="dialog" aria-modal="true" aria-labelledby="bestPrefsTitle">
     <div class="disclaimers-modal-head">
