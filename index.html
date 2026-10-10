@@ -205,7 +205,6 @@
     .sd-save[aria-pressed="true"] svg, .sd-star[aria-pressed="true"] svg{fill:var(--accent); stroke:var(--accent)}
     .sd-sheet:focus{outline:none}
     .sd-sheet{overscroll-behavior:contain}
-    html.sd-locked{overflow:hidden}
     .sd-clear{min-height:32px; padding:0 4px; border:0; background:transparent; color:var(--text-muted); font:inherit; font-size:1rem; text-decoration:underline; cursor:pointer}
     .sd-clear[hidden]{display:none}
     .sd-list{list-style:none; margin:0; padding:0}
@@ -393,6 +392,9 @@
   /* each setting is its own card on a tinted body */
   .disclaimers-modal-panel.bp-panel .bp-body{background:color-mix(in srgb, var(--text) 5%, var(--surface))}
   #bpFields{display:grid; gap:12px}
+  .bp-how{margin-top:16px; padding:12px 4px 0; border-top:1px solid var(--table-border)}
+  .disclaimers-modal-body .bp-how-h{margin:0 0 4px; font-size:1rem; font-weight:600; color:var(--text-muted)}
+  .disclaimers-modal-body .bp-how-p{margin:0; font-size:1rem; line-height:1.5; color:var(--text-muted); font-weight:400}
   .bp-row{padding:8px 16px; background:var(--surface); border:1px solid var(--table-border); border-radius:4px}
   .bp-top{display:flex; align-items:baseline; justify-content:space-between; gap:12px}
   .bp-label{font-size:1rem; font-weight:500; color:var(--text)}
@@ -2110,6 +2112,17 @@
   .bt-skel-line{display:block; height:.875rem; width:80%}
   .bt-when .bt-skel-line:first-child{width:5rem}
   .hero-wrap .hero-top > #bestSection{ margin-top:0 }  /* on phones it sits in the hero, spaced by the hero's own 16px gap */
+  /* Phones and touch tablets: buttons never show a hover, press or selected outline or highlight (keyboards on desktop keep their focus ring) */
+  @media (max-width:31.1875em), (hover:none) and (pointer:coarse){
+    button, .bt-open, .bt-card{ -webkit-tap-highlight-color:transparent }
+    button:focus, button:focus-visible, button:active,
+    .bt-open:focus, .bt-open:focus-visible{ outline:none !important }
+    .bt-open:focus-visible::after, .bt-open:focus::after{ outline:none !important }
+  }
+
+  /* A dialog, the radar or the search drawer is open: the page behind does not move */
+  html.page-locked{ overflow:hidden; overscroll-behavior:none }
+
   /* Phones: all text is 14px, including the search and Customize fields, except the hero headline. */
   @media (max-width:31.1875em){
     body :not(svg):not(svg *):not(.vd-head):not(.vd-head *){ font-size:14px !important }
@@ -2386,12 +2399,7 @@
 
   <section id="bestSection" hidden x-data :hidden="$store.best.state === 'idle'" :aria-hidden="$store.best.state === 'loading' ? 'true' : null">
     <div class="bw-card">
-    <div class="card-head"><h2>Best Times to Get Outside
-        <button type="button" class="info-btn" data-info="best" aria-haspopup="dialog">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8"/><circle cx="12" cy="16.8" r="1.4" fill="currentColor" stroke="none"/></svg>
-          <span class="sr-only">How Best Times are ranked</span>
-        </button>
-      </h2>
+    <div class="card-head"><h2>Best Times to Get Outside</h2>
       <div class="bw-actions">
         <button type="button" class="bw-custom-btn bw-share-btn" id="bestShareBtn" :hidden="$store.best.state !== 'ready'">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 15V3"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
@@ -2631,6 +2639,10 @@
     <div class="disclaimers-modal-body bp-body">
       <p class="bp-intro">Windows outside these limits are skipped. Saved in this browser.</p>
       <div id="bpFields"></div>
+      <div class="bp-how">
+        <h3 class="bp-how-h">How Best Times work</h3>
+        <p class="bp-how-p" id="bpHowText"></p>
+      </div>
     </div>
     <div class="bp-foot">
       <p class="bp-status" id="bpStatus" role="status" aria-live="polite"></p>
@@ -3871,7 +3883,7 @@
       radarModalLastFocus = document.activeElement;
       self.open = true;
       setBackgroundInert(true, document.getElementById('radarModal'));
-      document.body.style.overflow = 'hidden';
+      lockPage('radar');
       window.Alpine.nextTick(function(){
         if(!self.open) return;
         document.getElementById('radarModalMapEl').src = 'futurecast/index.html?opened=' + Date.now();
@@ -3881,9 +3893,9 @@
       if(!this.open) return;
       this.open = false;
       setBackgroundInert(false);
-      document.body.style.overflow = '';
+      unlockPage('radar');
       document.getElementById('radarModalMapEl').src = 'about:blank';
-      if(radarModalLastFocus && typeof radarModalLastFocus.focus === 'function') radarModalLastFocus.focus();
+      if(radarModalLastFocus && typeof radarModalLastFocus.focus === 'function') radarModalLastFocus.focus({preventScroll: true});
     }
   };
 
@@ -3915,6 +3927,27 @@
 
   // Everything behind an open modal is made inert (no focus, hidden from screen readers), and Tab is
   // wrapped inside the dialog as a fallback.
+  // While any dialog, the radar or the search drawer is open the page behind it cannot scroll at all: the page is pinned in place
+  // (position:fixed at its current offset) and put back exactly where it was when the last one closes.
+  var pageLockKeys = {}, pageLockY = 0;
+  function lockPage(key){
+    var any = Object.keys(pageLockKeys).length > 0;
+    pageLockKeys[key] = true;
+    if(any) return;
+    var b = document.body, h = document.documentElement;
+    pageLockY = window.pageYOffset || h.scrollTop || 0;
+    h.classList.add('page-locked');
+    b.style.position = 'fixed'; b.style.top = (-pageLockY) + 'px'; b.style.left = '0'; b.style.right = '0'; b.style.width = '100%';
+  }
+  function unlockPage(key){
+    if(!pageLockKeys[key]) return;
+    delete pageLockKeys[key];
+    if(Object.keys(pageLockKeys).length) return;
+    var b = document.body, h = document.documentElement;
+    h.classList.remove('page-locked');
+    b.style.position = ''; b.style.top = ''; b.style.left = ''; b.style.right = ''; b.style.width = '';
+    try{ window.scrollTo({top: pageLockY, left: 0, behavior: 'instant'}); }catch(e){ window.scrollTo(0, pageLockY); }
+  }
   function setBackgroundInert(on, keepEl){
     [].forEach.call(document.body.children, function(el){
       if(el === keepEl || el.tagName === 'SCRIPT') return;
@@ -3943,7 +3976,7 @@
     disclaimersModalLastFocus = document.activeElement;
     showModal(disclaimersModal);
     setBackgroundInert(true, disclaimersModal);
-    document.body.style.overflow = 'hidden';
+    lockPage('disclaimers');
     var closeBtn = document.getElementById('disclaimersModalClose');
     if(closeBtn) closeBtn.focus();
   }
@@ -3951,8 +3984,8 @@
     if(disclaimersModal.hidden) return;
     hideModal(disclaimersModal);
     setBackgroundInert(false);
-    document.body.style.overflow = '';
-    if(disclaimersModalLastFocus && typeof disclaimersModalLastFocus.focus === 'function') disclaimersModalLastFocus.focus();
+    unlockPage('disclaimers');
+    if(disclaimersModalLastFocus && typeof disclaimersModalLastFocus.focus === 'function') disclaimersModalLastFocus.focus({preventScroll: true});
   }
   disclaimersOpenBtn.addEventListener('click', openDisclaimersModal);
   document.getElementById('disclaimersModalClose').addEventListener('click', closeDisclaimersModal);
@@ -4039,11 +4072,6 @@
       });
       table.appendChild(tb);
       body.appendChild(table);
-    }else{
-      title.textContent = 'How Best Times Work';
-      var p = document.createElement('p');
-      p.textContent = store('best').note || '';
-      body.appendChild(p);
     }
   }
   function openInfoModal(kind, trigger){
@@ -4051,15 +4079,15 @@
     fillInfoModal(kind);
     showModal(infoModal);
     setBackgroundInert(true, infoModal);
-    document.body.style.overflow = 'hidden';
+    lockPage('info');
     document.getElementById('infoModalClose').focus();
   }
   function closeInfoModal(){
     if(infoModal.hidden) return;
     hideModal(infoModal);
     setBackgroundInert(false);
-    document.body.style.overflow = '';
-    if(infoModalLastFocus && typeof infoModalLastFocus.focus === 'function') infoModalLastFocus.focus();
+    unlockPage('info');
+    if(infoModalLastFocus && typeof infoModalLastFocus.focus === 'function') infoModalLastFocus.focus({preventScroll: true});
   }
   document.addEventListener('click', function(e){
     var btn = e.target.closest && e.target.closest('[data-info]');
@@ -4158,17 +4186,18 @@
   function openBp(trigger){
     bpLastFocus = trigger || document.activeElement;
     bpBuild(); bpFill(bestPrefs); bpStatus.textContent = '';
+    document.getElementById('bpHowText').textContent = store('best').how || '';
     showModal(bpModal);
     setBackgroundInert(true, bpModal);
-    document.body.style.overflow = 'hidden';
+    lockPage('customize');
     bpInputs[BP_FIELDS[0].k].inp.focus();
   }
   function closeBp(){
     if(bpModal.hidden) return;
     hideModal(bpModal);
     setBackgroundInert(false);
-    document.body.style.overflow = '';
-    if(bpLastFocus && typeof bpLastFocus.focus === 'function') bpLastFocus.focus();
+    unlockPage('customize');
+    if(bpLastFocus && typeof bpLastFocus.focus === 'function') bpLastFocus.focus({preventScroll: true});
   }
   function saveBp(){
     var vals = {};
@@ -4362,7 +4391,7 @@
   }
 
   /* ---------- Best windows outside ---------- */
-  pendingStores.best = {state:'idle', windows:[], note:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear')};
+  pendingStores.best = {state:'idle', windows:[], how:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear')};
   var BEST_HORIZON_HOURS = 48;
   var BEST_MAX_WINDOWS = 3;
 
@@ -4371,7 +4400,7 @@
     renderVerdict();
     var b = store('best');
     b.windows = [];
-    b.note = '';
+    b.how = '';
     b.state = 'loading';
   }
 
@@ -5105,14 +5134,9 @@
     if(!inputs.past) notes.push('We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.');
 
     var custom = bpIsCustom(bestPrefs);
-    if(custom){
-      notes.unshift('You are using custom Best Times settings: ' + BP_FIELDS.filter(function(f){ return bestPrefs[f.k] !== BP_STD[f.k]; }).map(function(f){
-        return f.label.toLowerCase() + ' ' + f.fmt(bestPrefs[f.k]);
-      }).join(', ') + '. Use Customize to change them or reset to the defaults.');
-    }
     var b = store('best');
     b.windows = windows;
-    b.note = notes.join(' ');
+    b.how = notes.join(' ');
     if(!windows.length){
       var empty = buildEmptyBestNote(hourly);
       b.emptyTitle = empty.title;
@@ -6515,19 +6539,7 @@
 
   /* While the drawer is open the page behind it must not scroll. `overflow:hidden` alone does not stop the page on iOS, so the
      body is pinned in place (and the scroll position restored on close). */
-  var sdScrollY = 0;
-  function sdLockPage(on){
-    var b = document.body, h = document.documentElement;
-    if(on){
-      sdScrollY = window.pageYOffset || h.scrollTop || 0;
-      h.classList.add('sd-locked');
-      b.style.position = 'fixed'; b.style.top = (-sdScrollY) + 'px'; b.style.left = '0'; b.style.right = '0'; b.style.width = '100%';
-    }else{
-      h.classList.remove('sd-locked');
-      b.style.position = ''; b.style.top = ''; b.style.left = ''; b.style.right = ''; b.style.width = '';
-      window.scrollTo(0, sdScrollY);
-    }
-  }
+  function sdLockPage(on){ if(on) lockPage('search'); else unlockPage('search'); }
   var sdInerted = [];
   function sdSetInert(on){
     if(on){
@@ -6566,7 +6578,7 @@
     sdSetInert(false);
     sdLockPage(false);
     var active = document.activeElement; if(active && sdSheet.contains(active) && active.blur) active.blur();
-    if(returnFocus !== false) sdSearchBtn.focus();
+    if(returnFocus !== false) sdSearchBtn.focus({preventScroll: true});
   }
   function sdApplyA11y(){
     if(sdMQ.matches){
