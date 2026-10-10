@@ -46,3 +46,7 @@ One-time setup:
 National Weather Service (weather, alerts, place names), NOAA MRMS / HRRR and NEXRAD via Iowa Environmental Mesonet (radar),
 AirNow / EPA and Open-Meteo (air quality, recent rainfall, place search), OpenStreetMap (map tiles),
 SUNRISE-SUNSET.ORG (sun times). Credits and terms are in the site's "Disclaimers & Data Sources" panel.
+
+## Contact
+
+Questions, feedback or bug reports: **contact@checkthewind.com**, or open an issue on this repo.
