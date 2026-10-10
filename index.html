@@ -2181,10 +2181,21 @@
   }
 
   /* A tornado, hurricane or flash flood warning is in effect: the radar sits directly under the hero text */
-  .hero-top.radar-up > #verdictSection{ order:-2 }
-  .hero-top.radar-up > .radar{ order:-1 }
+  @media (max-width:63.99em){
+    .hero-top.radar-up > #verdictSection{ order:-2 }
+    .hero-top.radar-up > .radar{ order:-1 }
+  }
+  /* Tablet: the radar spans the width; Current Conditions and Best Times sit side by side at the same width */
   @media (min-width:31.25em) and (max-width:63.99em){
+    .hero-wrap .hero-top.radar-up{ grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) }
     .hero-wrap .hero-top.radar-up > .radar{ grid-column:1 / -1; height:340px; min-height:340px; aspect-ratio:auto }
+    .hero-wrap .hero-top.radar-up > .hero-now{ align-self:stretch }
+    .hero-wrap .hero-top.radar-up > #bestSection{ order:1; align-self:stretch }
+  }
+  /* Narrow tablet: stacked, with Current Conditions stretched to the full width */
+  @media (min-width:31.25em) and (max-width:47.99em){
+    .hero-wrap .hero-top.radar-up{ grid-template-columns:minmax(0, 1fr) }
+    .hero-wrap .hero-top.radar-up > .hero-now, .hero-wrap .hero-top.radar-up > #bestSection{ grid-column:1 / -1; width:100% }
   }
 
   /* Short "copied" confirmation for the Share button */
@@ -6219,13 +6230,15 @@
   // Phones (under 500px): Best Times sits directly under the summary, ahead of the Current Conditions card. It lives inside the hero markup
   // there, which is rebuilt on each load, so this runs after every render; everywhere else it goes back to its place in the page.
   var bestPhoneMq = window.matchMedia('(max-width:31.1875em)');
+  var bestTabletMq = window.matchMedia('(min-width:31.25em) and (max-width:63.99em)');
   var bestHome = null;
   function placeBest(){
     var best = document.getElementById('bestSection');
     if(!best) return;
     if(!bestHome && best.parentNode){ bestHome = document.createComment('best-times-home'); best.after(bestHome); }
     var now = document.querySelector('#hero .hero-top > .hero-now');
-    if(bestPhoneMq.matches && now){
+    var warnTablet = bestTabletMq.matches && !!document.querySelector('#hero .hero-top.radar-up');   // warning in effect on a tablet: beside Current Conditions
+    if((bestPhoneMq.matches || warnTablet) && now){
       var v = vdEl;
       if(v && v.parentNode === now.parentNode){ if(v.nextElementSibling !== best) v.after(best); }
       else if(now.previousElementSibling !== best){ now.before(best); }
@@ -6234,6 +6247,7 @@
     }
   }
   bestPhoneMq.addEventListener('change', placeAlerts);
+  bestTabletMq.addEventListener('change', placeAlerts);
   function placeVerdict(){
     placeBest();
     var v = vdEl, heroSec = document.getElementById('heroSection'), best = document.getElementById('bestSection');
@@ -6481,6 +6495,7 @@
     var on = radarWarningActive();
     if(top.classList.contains('radar-up') === on) return;
     top.classList.toggle('radar-up', on);
+    placeBest();   // Best Times joins or leaves the hero grid with the radar
     if(radarLoop && radarLoop.map){ setTimeout(function(){ try{ radarLoop.map.invalidateSize(); }catch(e){} }, 60); }
   }
   setInterval(syncRadarUp, 60000);   // a warning that runs out moves the radar back even before the next refresh
