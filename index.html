@@ -2124,6 +2124,12 @@
     @media (prefers-reduced-motion:reduce){ .modal-drawer:not([hidden]) .radar-modal-panel{animation:none} }
   }
   @keyframes drawerUp{from{transform:translateY(100%)} to{transform:none}}
+  @keyframes drawerDown{from{transform:none} to{transform:translateY(100%)}}
+  @media (max-width:31.1875em){
+    .modal-drawer.is-closing .radar-modal-panel{animation:drawerDown .25s cubic-bezier(.4,0,1,1) forwards}
+    .modal-drawer .radar-modal-backdrop{transition:opacity .25s}
+    .modal-drawer.is-closing .radar-modal-backdrop{opacity:0}
+  }
 
   /* Short "copied" confirmation for the Share button */
   .ctw-toast{
@@ -3885,9 +3891,21 @@
     });
   }
 
+  // Phone drawers slide down when they close; every other dialog just hides
+  var drawerMq = window.matchMedia('(max-width:31.1875em)'), reduceMq = window.matchMedia('(prefers-reduced-motion:reduce)');
+  function showModal(el){ el.classList.remove('is-closing'); el.hidden = false; }
+  function hideModal(el){
+    if(el.classList.contains('is-closing')) return;
+    if(!drawerMq.matches || reduceMq.matches || !el.classList.contains('modal-drawer')){ el.hidden = true; return; }
+    el.classList.add('is-closing');
+    var fin = function(){ if(!el.classList.contains('is-closing')) return; el.classList.remove('is-closing'); el.hidden = true; };
+    el.querySelector('.radar-modal-panel').addEventListener('animationend', fin, {once: true});
+    setTimeout(fin, 400);
+  }
+
   function openDisclaimersModal(){
     disclaimersModalLastFocus = document.activeElement;
-    disclaimersModal.hidden = false;
+    showModal(disclaimersModal);
     setBackgroundInert(true, disclaimersModal);
     document.body.style.overflow = 'hidden';
     var closeBtn = document.getElementById('disclaimersModalClose');
@@ -3895,7 +3913,7 @@
   }
   function closeDisclaimersModal(){
     if(disclaimersModal.hidden) return;
-    disclaimersModal.hidden = true;
+    hideModal(disclaimersModal);
     setBackgroundInert(false);
     document.body.style.overflow = '';
     if(disclaimersModalLastFocus && typeof disclaimersModalLastFocus.focus === 'function') disclaimersModalLastFocus.focus();
@@ -3995,14 +4013,14 @@
   function openInfoModal(kind, trigger){
     infoModalLastFocus = trigger || document.activeElement;
     fillInfoModal(kind);
-    infoModal.hidden = false;
+    showModal(infoModal);
     setBackgroundInert(true, infoModal);
     document.body.style.overflow = 'hidden';
     document.getElementById('infoModalClose').focus();
   }
   function closeInfoModal(){
     if(infoModal.hidden) return;
-    infoModal.hidden = true;
+    hideModal(infoModal);
     setBackgroundInert(false);
     document.body.style.overflow = '';
     if(infoModalLastFocus && typeof infoModalLastFocus.focus === 'function') infoModalLastFocus.focus();
@@ -4104,14 +4122,14 @@
   function openBp(trigger){
     bpLastFocus = trigger || document.activeElement;
     bpBuild(); bpFill(bestPrefs); bpStatus.textContent = '';
-    bpModal.hidden = false;
+    showModal(bpModal);
     setBackgroundInert(true, bpModal);
     document.body.style.overflow = 'hidden';
     bpInputs[BP_FIELDS[0].k].inp.focus();
   }
   function closeBp(){
     if(bpModal.hidden) return;
-    bpModal.hidden = true;
+    hideModal(bpModal);
     setBackgroundInert(false);
     document.body.style.overflow = '';
     if(bpLastFocus && typeof bpLastFocus.focus === 'function') bpLastFocus.focus();
