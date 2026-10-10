@@ -5677,6 +5677,12 @@
     function finish(r, agg){
       r.agg = agg;
       if(severe){ r.alert = severe.event.toLowerCase(); if(r.state === 'yes') r.state = 'maybe'; }
+      // A flash flood warning (or emergency) adds the roadway safety message to the text
+      var flood = lastAlerts.filter(function(a){ return /^flash flood (warning|emergency)/i.test(String(a.event || '')); })[0];
+      if(flood){
+        r.flood = flood.event.toLowerCase();
+        if(!r.alert){ r.alert = r.flood; if(r.state === 'yes') r.state = 'maybe'; }
+      }
       // A tornado warning overrides everything else: shelter first
       if(severe && /tornado (warning|emergency)/i.test(severe.event)){
         r.tornado = true; r.state = 'no'; r.hs = hrs.slice(0, 3);
@@ -6046,6 +6052,7 @@
     function endAt(hs){ var t = fmtH12(hs[hs.length - 1].hour + 1); return t.n + ' ' + t.ap; }
     // (none of these repeat the wording of the tag beside them: Go Outside!, Okay for Now, Wait a Bit, Stay Aware, Stay Inside, Stay In All Day, Use Caution, Night Time)
     if(r.tornado) return vdCap(r.alert) + ' in effect: take shelter now.';
+    if(r.flood) return vdCap(r.flood) + ' in effect: turn around, don’t drown.';
     if(r.alert && r.state !== 'no') return 'Fine out, but there’s an active ' + r.alert + '.';
     if(r.state === 'no' && r.alert) return vdCap(r.alert) + ' in effect.';
     if(r.night){
@@ -6081,6 +6088,7 @@
     var sents = vdProseCore(r, c, actList), g = vdGear(c), planning = (r.state === 'yes' || r.state === 'maybe') && !r.alert;
     var keep = (r.night || (r.state === 'no' && !r.alert)) ? sents.slice(0, -1) : (r.state === 'no' ? sents : sents.slice(1));  // a severe-alert No keeps its safety sentence
     var lines = [];
+    if(r.flood && !r.tornado) keep.unshift('Never drive through flooded roadways or around barricades. Turn around, don’t drown.');
     if(planning && !r.night){ var sn = vdSunNote(c, keep.join(' ')); if(sn) keep.push(sn); }
     if(keep.length) lines.push({label: planning ? 'Do' : '', text: keep.join(' ')});
     if(!r.alert) lines.push({label: 'Wear', text: g.wear + (g.pet ? ' ' + g.pet : '')});   // severe alert: safety only, no clothing or pet tips
