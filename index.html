@@ -2182,20 +2182,21 @@
 
   /* A tornado, hurricane or flash flood warning is in effect: the radar sits directly under the hero text */
   @media (max-width:63.99em){
-    .hero-top.radar-up > #verdictSection{ order:-2 }
-    .hero-top.radar-up > .radar{ order:-1 }
+    .hero-top.warning-scenario > #verdictSection{ order:-2 }
+    .hero-top.warning-scenario > .radar{ order:-1 }
+    .hero-top.warning-scenario > #bestSection{ order:1 }   /* Current Conditions (order 0) comes before Best Times */
   }
   /* Tablet: the radar spans the width; Current Conditions and Best Times sit side by side at the same width */
   @media (min-width:31.25em) and (max-width:63.99em){
-    .hero-wrap .hero-top.radar-up{ grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) }
-    .hero-wrap .hero-top.radar-up > .radar{ grid-column:1 / -1; height:340px; min-height:340px; aspect-ratio:auto }
-    .hero-wrap .hero-top.radar-up > .hero-now{ align-self:stretch }
-    .hero-wrap .hero-top.radar-up > #bestSection{ order:1; align-self:stretch }
+    .hero-wrap .hero-top.warning-scenario{ grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) }
+    .hero-wrap .hero-top.warning-scenario > .radar{ grid-column:1 / -1; height:340px; min-height:340px; aspect-ratio:auto }
+    .hero-wrap .hero-top.warning-scenario > .hero-now{ align-self:stretch }
+    .hero-wrap .hero-top.warning-scenario > #bestSection{ order:1; align-self:stretch }
   }
   /* Narrow tablet: stacked, with Current Conditions stretched to the full width */
   @media (min-width:31.25em) and (max-width:47.99em){
-    .hero-wrap .hero-top.radar-up{ grid-template-columns:minmax(0, 1fr) }
-    .hero-wrap .hero-top.radar-up > .hero-now, .hero-wrap .hero-top.radar-up > #bestSection{ grid-column:1 / -1; width:100% }
+    .hero-wrap .hero-top.warning-scenario{ grid-template-columns:minmax(0, 1fr) }
+    .hero-wrap .hero-top.warning-scenario > .hero-now, .hero-wrap .hero-top.warning-scenario > #bestSection{ grid-column:1 / -1; width:100% }
   }
 
   /* Short "copied" confirmation for the Share button */
@@ -3923,7 +3924,7 @@
         '</div>' +
       '</div>';
     placeVerdict();
-    syncRadarUp();
+    syncWarningScenario();
     applyHeroAir();
     syncWindTag();
   }
@@ -6237,7 +6238,7 @@
     if(!best) return;
     if(!bestHome && best.parentNode){ bestHome = document.createComment('best-times-home'); best.after(bestHome); }
     var now = document.querySelector('#hero .hero-top > .hero-now');
-    var warnTablet = bestTabletMq.matches && !!document.querySelector('#hero .hero-top.radar-up');   // warning in effect on a tablet: beside Current Conditions
+    var warnTablet = bestTabletMq.matches && !!document.querySelector('#hero .hero-top.warning-scenario');   // warning in effect on a tablet: beside Current Conditions
     if((bestPhoneMq.matches || warnTablet) && now){
       var v = vdEl;
       if(v && v.parentNode === now.parentNode){ if(v.nextElementSibling !== best) v.after(best); }
@@ -6479,9 +6480,10 @@
     setTimeout(function(){ alertsLiveEl.textContent = msg; }, 400);
   }
 
-  // A tornado, hurricane or flash flood warning in effect: the radar moves up to sit directly under the hero text, and goes back
-  // to its usual place (under Current Conditions) once the warning has ended.
-  function radarWarningActive(){
+  // WARNING SCENARIO: a tornado, hurricane or flash flood warning is in effect. The radar moves up to sit directly under the hero text
+  // (phones and tablets; desktop keeps it in place), Current Conditions comes up with it, and everything goes back to the usual
+  // order once the warning has ended.
+  function warningScenarioActive(){
     var now = Date.now();
     return (lastAlerts || []).some(function(a){
       if(!/^(tornado|hurricane|flash flood) (warning|emergency)/i.test(String(a.event || ''))) return false;
@@ -6489,19 +6491,19 @@
       return !isFinite(end) || end > now;
     });
   }
-  function syncRadarUp(){
+  function syncWarningScenario(){
     var top = document.querySelector('#hero .hero-top');
     if(!top) return;
-    var on = radarWarningActive();
-    if(top.classList.contains('radar-up') === on) return;
-    top.classList.toggle('radar-up', on);
+    var on = warningScenarioActive();
+    if(top.classList.contains('warning-scenario') === on) return;
+    top.classList.toggle('warning-scenario', on);
     placeBest();   // Best Times joins or leaves the hero grid with the radar
     if(radarLoop && radarLoop.map){ setTimeout(function(){ try{ radarLoop.map.invalidateSize(); }catch(e){} }, 60); }
   }
-  setInterval(syncRadarUp, 60000);   // a warning that runs out moves the radar back even before the next refresh
+  setInterval(syncWarningScenario, 60000);   // a warning that runs out moves the radar back even before the next refresh
   function renderAlerts(list){
     lastAlerts = list || [];
-    syncRadarUp();
+    syncWarningScenario();
     // under a hurricane or tropical storm warning the Current Conditions icon is the spinning hurricane
     if((list || []).some(function(a){ return /^(hurricane|tropical storm) warning/i.test(a.event); })){
       var wiHz = document.querySelector('.weather-now .wicon');
