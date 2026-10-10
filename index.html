@@ -3974,13 +3974,14 @@
     'SV.W': '#FFA500',   // Severe Thunderstorm Warning
     'FF.W': '#32CD32',   // Flash Flood Warning (lime green)
     'FL.W': '#1B8F4B',   // Flood Warning (darker green)
+    'FA.W': '#1B8F4B',   // Areal Flood Warning
     'MA.W': '#FF8C00'    // Special Marine Warning
   };
   var warnCache = null;
   function fetchWarnings(){
     if(warnCache && Date.now() - warnCache.t < 120000) return warnCache.p;
     var p = fetchOptionalJson(WARN_URL).then(function(d){
-      return ((d && d.features) || []).filter(function(f){ return f.properties && f.properties.significance === 'W' && f.geometry; });
+      return ((d && d.features) || []).filter(function(f){ return f.properties && f.geometry && WARN_STYLES[f.properties.phenomena + '.' + f.properties.significance]; });
     });
     warnCache = {t: Date.now(), p: p};
     return p;
@@ -3996,7 +3997,7 @@
         layer = L.geoJSON(fc, {
           interactive: false,
           style: function(f){
-            var k = f.properties.phenomena + '.' + f.properties.significance, c = WARN_STYLES[k] || '#7B3FA0';
+            var k = f.properties.phenomena + '.' + f.properties.significance, c = WARN_STYLES[k];
             return {color: c, weight: 3.5, opacity: 1, fillColor: c, fillOpacity: 0.1};
           }
         }).addTo(map);

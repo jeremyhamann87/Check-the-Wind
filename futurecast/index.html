@@ -463,6 +463,7 @@
       'SV.W': {c: '#FFA500', n: 'Severe thunderstorm'},
       'FF.W': {c: '#32CD32', n: 'Flash flood'},
       'FL.W': {c: '#1B8F4B', n: 'Flood'},
+      'FA.W': {c: '#1B8F4B', n: 'Flood'},
       'MA.W': {c: '#FF8C00', n: 'Special marine'}
     };
     var KEY = 'checkTheWind.warnings', layer = null, casing = null, feats = [], on = true;
@@ -470,7 +471,7 @@
     var keyEl = document.getElementById('warnKey'), listEl = document.getElementById('warnList'), toggle = document.getElementById('warnToggle');
 
     function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]; }); }
-    function kindOf(p){ return KINDS[p.phenomena + '.' + p.significance] || {c: '#7B3FA0', n: p.ps || 'Warning'}; }
+    function kindOf(p){ return KINDS[p.phenomena + '.' + p.significance] || null; }
     function popup(p){
       var end = p.expire_utc || p.expire, when = '';
       if(end){ try{ when = new Date(end).toLocaleString([], {weekday: 'short', hour: 'numeric', minute: '2-digit'}); }catch(e){} }
@@ -508,7 +509,8 @@
     }
     function load(){
       fetch(URL_W).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
-        feats = ((d && d.features) || []).filter(function(f){ return f.properties && f.properties.significance === 'W' && f.geometry; });
+        // only the kinds with a color and a place in the key (anything else, e.g. an unlisted warning type, is left off the map)
+        feats = ((d && d.features) || []).filter(function(f){ return f.properties && f.geometry && kindOf(f.properties); });
         legend(); paint();
       }).catch(function(){});
     }
