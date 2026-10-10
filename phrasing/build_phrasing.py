@@ -23,7 +23,8 @@ a('Verdict word','Verdict card (details)','Yes / Maybe / No','Matches the verdic
 
 S='One-line summary'
 sw='Verdict card, first sentence'
-a(S,sw,'[Freezing/Cold/Cool/Mild/Warm/Hot], [calm/breezy/windy/blustery/howling] and [dry/damp/wet], with [good/moderate] air quality.','Verdict is Yes (no alert).','Feel from average temp: under 32 freezing, under 45 cold, under 58 cool, under 72 mild, under 85 warm, otherwise hot. Wind from the top wind in the window (see Wind categories). Ground: under 0.15 dry, under 0.45 damp, else wet. Air: AQI 50 or less is "good air quality", higher is "moderate air quality"; left out if AQI is unknown.')
+a(S,sw,'[Freezing/Cold/Cool/Mild/Warm/Hot], [calm/breezy/windy/blustery/howling] and dry, with [good/moderate] air quality.','Verdict is Yes (no alert), the ground is dry (wetness under 0.15) and the chance of precipitation in the window is under 10%.','Feel from average temp: under 32 freezing, under 45 cold, under 58 cool, under 72 mild, under 85 warm, otherwise hot. Wind from the top wind in the window (see Wind categories). Air: AQI 50 or less is "good air quality", higher is "moderate air quality"; left out if AQI is unknown.')
+a(S,sw,'[Feel] and [wind], with a [N]% chance of precipitation around [time] and [good/moderate] air quality. / ... with no precipitation expected and ...','Same cases as above, when the ground is damp or wet (0.15 or more) or the chance of precipitation in the window is 10% or more.','Chance is the highest in the window; the time is the hour that chance peaks. "No precipitation expected" when the chance is under 5%. Replaces the old "damp" / "wet" wording.')
 a(S,sw,'Okay for now, but not ideal: [weak points].','Verdict is Maybe and the window starts now.','Up to 2 weak points (see Weak points).')
 a(S,sw,'Not right now — [reasons]. Later: [the Yes sentence, lowercased]','Verdict is Maybe with a window later today.','Up to 2 reasons (see Reasons a time is ruled out).')
 a(S,sw,'Better to skip it for now: [reasons].','Verdict is No.','Up to 2 reasons; a Severe/Extreme alert is listed first as "an active [alert]".')
@@ -33,7 +34,7 @@ a(S,'Verdict card, below the sentence','No good window in the next 48 hours.','V
 a(S,'Verdict card, bottom','Active alert: [event]. Check the details before heading out.','Any active alert that is NOT Severe/Extreme (e.g. an advisory).')
 
 W='Weak points'
-for ph,wh in [('wind up to [N] mph','Top wind in the window is 16 mph or more.'),('chilly at [N]°F','Average temp under 40°F.'),('hot at [N]°F','Average temp over 88°F.'),('[N]% chance of precipitation','Chance of precipitation is 30% or more.'),('damp ground','Ground wetness is 0.15 or more.'),('moderate air quality','AQI is above 50.')]:
+for ph,wh in [('wind up to [N] mph','Top wind in the window is 16 mph or more.'),('chilly at [N]°F','Average temp under 40°F.'),('hot at [N]°F','Average temp over 88°F.'),('[N]% chance of precipitation around [time]','Chance of precipitation is 30% or more; also used instead of "damp ground" when the ground is damp and the chance is 5% or more.'),('damp ground','Ground wetness is 0.15 or more and the chance of precipitation is under 5%.'),('moderate air quality','AQI is above 50.')]:
     a(W,'Okay for now text',ph,wh)
 
 Rs='Reasons a time is ruled out'
@@ -152,7 +153,7 @@ a(B,'Best Times notes','We couldn’t get recent rainfall data, so ground drynes
 a(B,'Best Times notes','You are using custom Best Times settings: [list]. Use Customize to change them or reset to the defaults.','Limits differ from the defaults.')
 a(B,'Best Times cards','Card header: [medal] [Today / weekday name, e.g. Sunday] [time range, e.g. 7 AM–6 PM or Now–6 PM], above a divider','Every card.','Up to 3 cards, ranked 1 to 3 with gold, silver and bronze medals; on phones they scroll sideways')
 a(B,'Best Times cards','[low–high]°F (large) with the sky icon for the middle hour of the window','Every card.','Metric (°C) in Canada')
-a(B,'Best Times cards','[Freezing/Cold/Cool/Mild/Warm/Hot], [calm/breezy/windy/blustery/howling] and [dry/damp/wet], with [good/moderate] air quality.','Every card (same sentence as the verdict card’s Yes line, built from the window).','See the One-line summary rows for the thresholds')
+a(B,'Best Times cards','Same sentence as the verdict card’s Yes line, built from the window: [Feel], [wind] and dry, with [air quality] / [Feel] and [wind], with a [N]% chance of precipitation around [time] and [air quality]','Every card.','See the One-line summary rows for the thresholds')
 a(B,'Best Times cards','(No visible label) Tapping or clicking a card opens its detail dialog; screen readers hear “[Day] [time], show details”','Every card.','A small arrow at the right of the card header hints that the card opens')
 a(B,'Best Times detail dialog','Title: [Day] · [time range]; the place name; the summary sentence','Card detail dialog.')
 a(B,'Best Times detail dialog','Temperature: [low–high] across the window | Sky: [forecasts in the window] | Wind: [low–high] · [Calm…Howling], from the [direction] | Chance of precipitation: Up to [N]% | Ground: [Dry/Damp/Wet] | Humidity: [low–high], average [N]% | Air quality: AQI up to [N] · [Good air…]','Card detail dialog, top list.','NA when a value is not available')

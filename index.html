@@ -5241,6 +5241,12 @@
       tAvg: t.reduce(function(a, b){ return a + b; }, 0) / t.length,
       wMin: Math.min.apply(null, w), wMax: Math.max.apply(null, w),
       pop: Math.round(Math.max.apply(null, hs.map(function(h){ return h.pop; }))),
+      popAt: (function(){
+        var pk = hs[0];
+        hs.forEach(function(h){ if(h.pop > pk.pop) pk = h; });
+        var t = fmtH12(pk.hour);
+        return t.n + ' ' + t.ap;
+      })(),
       wet: Math.max.apply(null, hs.map(function(h){ return h.wet; })),
       aqi: aq.length ? Math.round(Math.max.apply(null, aq)) : null
     };
@@ -5265,17 +5271,21 @@
   function vdGoodSentence(a){
     var k = bandFor(a.wMax).key;
     var wind = k === 'calm' ? 'calm' : k === 'breezy' ? 'breezy' : k === 'windy' ? 'windy' : k === 'verywindy' ? 'blustery' : 'howling';
-    var ground = a.wet < 0.15 ? 'dry' : a.wet < 0.45 ? 'damp' : 'wet';
-    var out = vdCap(vdFeel(a.tAvg)) + ', ' + wind + ' and ' + ground;
-    if(a.aqi !== null) out += ', with ' + (a.aqi <= 50 ? 'good air quality' : 'moderate air quality');
-    return out + '.';
+    var air = a.aqi !== null ? (a.aqi <= 50 ? 'good air quality' : 'moderate air quality') : '';
+    // Dry ground and almost no chance of rain: "Mild, calm and dry". Otherwise say how likely precipitation is and when it could arrive.
+    if(a.wet < 0.15 && a.pop < 10){
+      return vdCap(vdFeel(a.tAvg)) + ', ' + wind + ' and dry' + (air ? ', with ' + air : '') + '.';
+    }
+    var an = a.pop === 8 || a.pop === 11 || a.pop === 18 || (a.pop >= 80 && a.pop <= 89);   // "an 8% chance", "a 30% chance"
+    var precip = a.pop >= 5 ? (an ? 'an ' : 'a ') + a.pop + '% chance of precipitation around ' + a.popAt : 'no precipitation expected';
+    return vdCap(vdFeel(a.tAvg)) + ' and ' + wind + ', with ' + precip + (air ? ' and ' + air : '') + '.';
   }
   function vdWeakPoints(a){
     var w = [];
     if(a.wMax >= 16) w.push('wind up to ' + fmtWind(a.wMax));
     if(a.tAvg < 40) w.push('chilly at ' + fmtTemp(a.tAvg)); else if(a.tAvg > 88) w.push('hot at ' + fmtTemp(a.tAvg));
-    if(a.pop >= 30) w.push(a.pop + '% chance of precipitation');
-    if(a.wet >= 0.15) w.push('damp ground');
+    if(a.pop >= 30) w.push(a.pop + '% chance of precipitation around ' + a.popAt);
+    else if(a.wet >= 0.15) w.push(a.pop >= 5 ? a.pop + '% chance of precipitation around ' + a.popAt : 'damp ground');
     if(a.aqi !== null && a.aqi > 50) w.push('moderate air quality');
     return w;
   }
