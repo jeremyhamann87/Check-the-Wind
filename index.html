@@ -5598,14 +5598,14 @@
 
   // The short go / stay tag beside the place name on phones
   function vdTagFor(r){
-    if(r.alert && r.state !== 'no') return {t:'Use Caution', k:'orange'};
-    if(r.night) return {t:'Night Time', k:'night'};
-    if(r.incoming) return {t:'Stay Aware', k:'aware'};
-    if(r.state === 'yes') return {t:'Go Outside!', k:'green'};
-    if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for Now', k:'yellow'} : {t:'Wait a Bit', k:'yellow'};
+    if(r.alert && r.state !== 'no') return {t:'Use caution', k:'orange'};
+    if(r.night) return {t:'Night time', k:'night'};
+    if(r.incoming) return {t:'Stay aware', k:'aware'};
+    if(r.state === 'yes') return {t:'Get outside!', k:'green'};
+    if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for now', k:'yellow'} : {t:'Wait a bit', k:'yellow'};
     // a good window within 12 hours means it's passing weather: wait it out. Further away, stay inside. None in 48 hours: all day.
-    if(r.nextHs) return r.nextHs[0].i <= 12 ? {t:'Wait a Bit', k:'yellow'} : {t:'Stay Inside', k:'orange'};
-    return {t:'Stay In All Day', k:'red'};
+    if(r.nextHs) return r.nextHs[0].i <= 12 ? {t:'Wait a bit', k:'yellow'} : {t:'Stay inside', k:'orange'};
+    return {t:'Stay in all day', k:'red'};
   }
 
   if(vdBody) vdBody.addEventListener('click', function(e){
