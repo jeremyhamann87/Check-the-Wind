@@ -392,7 +392,7 @@
   /* each setting is its own card on a tinted body */
   .disclaimers-modal-panel.bp-panel .bp-body{background:color-mix(in srgb, var(--text) 5%, var(--surface))}
   #bpFields{display:grid; gap:12px}
-  .bp-how{margin-top:16px; padding:12px 4px 0; border-top:1px solid var(--table-border)}
+  .bp-how{margin:0 0 12px; padding:0 4px 12px; border-bottom:1px solid var(--table-border)}
   .disclaimers-modal-body .bp-how-h{margin:0 0 4px; font-size:1rem; font-weight:600; color:var(--text-muted)}
   .disclaimers-modal-body .bp-how-p{margin:0; font-size:1rem; line-height:1.5; color:var(--text-muted); font-weight:400}
   .bp-row{padding:8px 16px; background:var(--surface); border:1px solid var(--table-border); border-radius:4px}
@@ -2637,12 +2637,12 @@
       </button>
     </div>
     <div class="disclaimers-modal-body bp-body">
-      <p class="bp-intro">Windows outside these limits are skipped. Saved in this browser.</p>
-      <div id="bpFields"></div>
       <div class="bp-how">
         <h3 class="bp-how-h">How Best Times work</h3>
         <p class="bp-how-p" id="bpHowText"></p>
       </div>
+      <p class="bp-intro">Windows outside these limits are skipped. Saved in this browser.</p>
+      <div id="bpFields"></div>
     </div>
     <div class="bp-foot">
       <p class="bp-status" id="bpStatus" role="status" aria-live="polite"></p>
