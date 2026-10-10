@@ -2570,6 +2570,13 @@
         territories and Canada. Forecasts update hourly at the source; reload to refresh.
       </p>
       <p>
+        <strong>Right now.</strong> The forecast is not always the same as what is falling this minute, so the current conditions are
+        checked against the nearest official weather station observation (under 90 minutes old), live radar at your location (NOAA
+        radar tiles from the Iowa Environmental Mesonet) and the Open-Meteo model&rsquo;s current weather. Rain, snow or thunderstorms seen
+        by any of them replace fog or cloud wording, and the temperature and wind shown for the current hour are the station&rsquo;s
+        reading when one is available.
+      </p>
+      <p>
         <strong>Canada.</strong> Canadian forecasts come from the nearest Environment Canada forecast location, which can be some
         distance from the place you searched. Metric values are converted to &deg;F &amp; mph, and temperatures show in &deg;C and wind in km/h for visitors in Canada (judged from the browser&rsquo;s time zone or language) and for anyone looking at a Canadian place. The city-page hourly forecast covers 24
         hours, so Check the Wind fills the hours after that, and the wind on days the 7-day forecast doesn&rsquo;t mention it
@@ -3695,6 +3702,138 @@
       }
     };
   })();
+
+
+  /* ---------- What is actually happening right now ----------
+     The National Weather Service hourly forecast is a forecast: its wording for this hour can say "Patchy Fog" while thunderstorms are
+     overhead. So the "current" hour is checked against three live sources and corrected when they disagree:
+       1. the nearest official observation (NWS station: present weather, temperature, wind), if it is under 90 minutes old
+       2. the radar itself, sampled at the place (the same Iowa Environmental Mesonet tiles the map shows)
+       3. the Open-Meteo model's current weather code and precipitation
+     Precipitation seen by radar, a station or the model wins over fog / cloud wording. U.S. places only (Canada's current
+     conditions already come from an Environment Canada observation). */
+  var COMPASS16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  // Reflectivity colour -> 0 none, 1 light (blue), 2 moderate (green), 3 heavy (yellow), 4 intense (orange, red, magenta, white)
+  function radarLevelOf(r, g, b){
+    if(r >= 200 && b >= 150) return 4;
+    if(r >= 200 && g >= 200 && b < 120) return 3;
+    if(r >= 150 && g < 225) return 4;
+    if(r < 110) return (b > g * 0.6) ? 1 : 2;
+    return 2;
+  }
+  function sampleRadarLevel(lat, lon){
+    return new Promise(function(resolve){
+      try{
+        var z = 7, n = Math.pow(2, z), rad = lat * Math.PI / 180;
+        var xf = (lon + 180) / 360 * n, yf = (1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2 * n;
+        var tx = Math.floor(xf), ty = Math.floor(yf), px = Math.floor((xf - tx) * 256), py = Math.floor((yf - ty) * 256);
+        var img = new Image();
+        var done = false, finish = function(v){ if(!done){ done = true; resolve(v); } };
+        setTimeout(function(){ finish(null); }, 4000);
+        img.crossOrigin = 'anonymous';
+        img.onload = function(){
+          try{
+            var c = document.createElement('canvas'); c.width = 256; c.height = 256;
+            var ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0);
+            var best = 0;
+            for(var dy = -2; dy <= 2; dy++) for(var dx = -2; dx <= 2; dx++){
+              var x = Math.min(255, Math.max(0, px + dx)), y = Math.min(255, Math.max(0, py + dy));
+              var d = ctx.getImageData(x, y, 1, 1).data;
+              if(d[3] < 40) continue;
+              best = Math.max(best, radarLevelOf(d[0], d[1], d[2]));
+            }
+            finish(best);
+          }catch(e){ finish(null); }
+        };
+        img.onerror = function(){ finish(null); };
+        img.src = 'https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913/' + z + '/' + tx + '/' + ty + '.png?t=' + Math.floor(Date.now() / 120000);
+      }catch(e){ resolve(null); }
+    });
+  }
+  async function fetchNowSignals(lat, lon, props){
+    var obsP = (async function(){
+      if(!props || !props.observationStations) return null;
+      var list = await fetchOptionalJson(props.observationStations);
+      var ids = ((list && list.features) || []).slice(0, 3).map(function(f){ return f.properties && f.properties.stationIdentifier; }).filter(Boolean);
+      var all = await Promise.all(ids.map(function(id){ return fetchOptionalJson('https://api.weather.gov/stations/' + id + '/observations/latest'); }));
+      for(var i = 0; i < all.length; i++){
+        var o = all[i] && all[i].properties;
+        if(!o || !o.timestamp) continue;
+        var age = Date.now() - Date.parse(o.timestamp);
+        var hasTemp = o.temperature && typeof o.temperature.value === 'number';
+        if(!(age >= 0 && age <= 90 * 60000) || (!hasTemp && !o.textDescription)) continue;
+        return {p: o, station: ids[i], ageMin: Math.round(age / 60000)};
+      }
+      return null;
+    })();
+    var mdlP = fetchOptionalJson('https://api.open-meteo.com/v1/forecast?latitude=' + lat.toFixed(3) + '&longitude=' + lon.toFixed(3) + '&current=weather_code,precipitation&timezone=auto');
+    var radP = sampleRadarLevel(lat, lon);
+    var timeout = new Promise(function(res){ setTimeout(function(){ res('timeout'); }, 4500); });
+    var got = await Promise.race([Promise.all([obsP, mdlP, radP]), timeout]);
+    if(got === 'timeout') return {obs: null, model: null, radar: null};
+    return {obs: got[0], model: got[1] && got[1].current ? got[1].current : null, radar: got[2]};
+  }
+  // Correct the current hour: what is falling (or not) and the real temperature and wind
+  function applyNowConditions(hourly, sig){
+    if(!sig || !hourly.length) return hourly;
+    var h0 = hourly[0], fc = String(h0.shortForecast || '');
+    var pop = h0.probabilityOfPrecipitation && typeof h0.probabilityOfPrecipitation.value === 'number' ? h0.probabilityOfPrecipitation.value : 0;
+    var o = sig.obs && sig.obs.p, tempF = (o && o.temperature && typeof o.temperature.value === 'number') ? o.temperature.value * 9 / 5 + 32 : h0.temperature;
+    var cold = typeof tempF === 'number' && tempF <= 33;
+    var txt = o ? String(o.textDescription || '').toLowerCase() : '';
+    var pw = o ? (o.presentWeather || []).map(function(x){ return String((x && x.weather) || '').toLowerCase(); }) : [];
+    var pwi = o ? (o.presentWeather || []).map(function(x){ return String((x && x.intensity) || '').toLowerCase(); }) : [];
+    var code = sig.model && typeof sig.model.weather_code === 'number' ? sig.model.weather_code : null;
+    var mm = sig.model && typeof sig.model.precipitation === 'number' ? sig.model.precipitation : 0;
+    var level = typeof sig.radar === 'number' ? sig.radar : 0;
+
+    var thunder = /thunder|tstm/.test(txt) || pw.some(function(w){ return /thunder/.test(w); }) || (code !== null && code >= 95) || level >= 4;
+    var obsSnow = /snow|flurr|blizzard/.test(txt) || pw.some(function(w){ return /snow/.test(w); }) || (code !== null && ((code >= 71 && code <= 77) || code === 85 || code === 86));
+    var obsRain = /rain|drizzle|shower|sleet|freezing/.test(txt) || pw.some(function(w){ return /rain|drizzle|sleet|ice_pellets|freezing/.test(w); }) || (code !== null && ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)));
+    var fogOnly = /fog|mist|haze|smoke/.test(txt) || (code === 45 || code === 48);
+    var corroborated = pop >= 30 || obsRain || obsSnow || mm > 0 || level >= 3;
+    var radarWet = level >= 2 && corroborated;
+    var wet = obsRain || obsSnow || mm >= 0.2 || radarWet || (level === 1 && (obsRain || obsSnow || mm > 0));
+    var text = '', source = 'forecast';
+    if(thunder){
+      text = cold && obsSnow ? 'Snow' : 'Thunderstorms'; source = level >= 4 ? 'radar' : 'observation';
+    }else if(wet){
+      var snow = obsSnow || (!obsRain && cold);
+      var heavy = level === 3 || pwi.indexOf('heavy') > -1 || /heavy/.test(txt) || mm >= 4 || (code === 65 || code === 75 || code === 82 || code === 86);
+      var light = !heavy && (level === 1 || pwi.indexOf('light') > -1 || /light/.test(txt) || (mm > 0 && mm < 0.6) || code === 61 || code === 71 || code === 51 || code === 53 || code === 80);
+      text = (heavy ? 'Heavy ' : light ? 'Light ' : '') + (snow ? 'Snow' : 'Rain');
+      source = (level >= 2) ? 'radar' : 'observation';
+    }else if(fogOnly && o && txt){
+      text = String(o.textDescription);
+      source = 'observation';
+    }else if(o && txt){
+      text = String(o.textDescription); source = 'observation';
+    }else{
+      text = fc;
+      if(pop >= 70 && !/rain|shower|storm|snow|drizzle|sleet|flurr|ice/i.test(fc)) text = cold ? 'Snow Likely' : 'Rain Likely';
+    }
+    var next = Object.assign({}, h0, {shortForecast: text || fc, nowSource: source});
+    if(o){
+      if(typeof tempF === 'number') next.temperature = Math.round(tempF);
+      var wv = o.windSpeed && typeof o.windSpeed.value === 'number' ? o.windSpeed.value : null;
+      if(wv !== null){
+        next.windSpeed = Math.round(wv * 0.621371) + ' mph';
+        var wd = o.windDirection && typeof o.windDirection.value === 'number' ? o.windDirection.value : null;
+        if(wd !== null) next.windDirection = COMPASS16[Math.round(wd / 22.5) % 16];
+      }
+    }
+    if(wet || thunder) next.probabilityOfPrecipitation = {value: Math.max(pop, 90), unitCode: 'wmoUnit:percent'};
+    var out = hourly.slice();
+    out[0] = next;
+    // Later hours: the gridpoint wording can lead with fog while the chance of precipitation is high. Say what is likely.
+    for(var i = 1; i < out.length; i++){
+      var hp = out[i], hpop = hp.probabilityOfPrecipitation && typeof hp.probabilityOfPrecipitation.value === 'number' ? hp.probabilityOfPrecipitation.value : 0;
+      if(hpop >= 60 && !/rain|shower|storm|snow|drizzle|sleet|flurr|ice|hail/i.test(hp.shortForecast || '')){
+        out[i] = Object.assign({}, hp, {shortForecast: (typeof hp.temperature === 'number' && hp.temperature <= 33) ? 'Snow Likely' : 'Rain Likely'});
+      }
+    }
+    return out;
+  }
 
   function renderHero(current, todayDaily, hourly){
     var w = parseWind(current.windSpeed);
@@ -5742,7 +5881,8 @@
     var minT = Math.min.apply(null, hs.map(function(h){ return h.temp; })), maxT = Math.max.apply(null, hs.map(function(h){ return h.temp; }));
     var maxW = Math.max.apply(null, hs.map(function(h){ return h.mph; }));
     function first(pred){ for(var i = 0; i < hs.length; i++) if(pred(hs[i])) return i; return -1; }
-    var rainAt = first(function(h){ return /rain|shower|drizzle|thunder/i.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40); });
+    // rain counts when the wording says it is falling (or likely), or when the chance of precipitation is high whatever the wording says
+    var rainAt = first(function(h){ return (/rain|shower|drizzle|thunder/i.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40)) || (h.pop >= 60 && !/snow|flurr|blizzard/i.test(h.fc)); });
     var snowAt = first(function(h){ return /snow|flurr|sleet|blizzard/i.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40); });
     var iceAt = first(function(h){ return /freezing|ice|icy|sleet/i.test(h.fc) || h.why.some(function(w){ return /snowy or icy/.test(w); }); });
     var hat = ca ? 'a toque' : 'a warm hat', gloves = ca ? 'mitts' : 'gloves';
@@ -5751,14 +5891,14 @@
     else if(minT < 32) base = 'Bundle up with a warm coat, ' + hat + ', ' + gloves + ' and a scarf, and wear warm boots.';
     else if(minT < 45) base = 'Wear a warm coat with ' + hat + ' and ' + gloves + ', and layer up underneath.';
     else if(minT < 58) base = maxT >= 68 ? 'Dress in layers: a jacket or sweater now, and it warms up later.' : 'Bring a jacket or a warm sweater.';
-    else if(maxT >= 85) base = 'Dress light in breathable clothes, wear sunscreen and a hat, and bring water.';
-    else if(maxT >= 72) base = 'Light, breathable clothes will feel best, and sunscreen is a good idea.';
+    else if(maxT >= 85) base = rainAt >= 0 ? 'Dress light in quick-drying clothes, and bring water.' : 'Dress light in breathable clothes, wear sunscreen and a hat, and bring water.';
+    else if(maxT >= 72) base = rainAt >= 0 ? 'Light, quick-drying clothes will feel best.' : 'Light, breathable clothes will feel best, and sunscreen is a good idea.';
     else base = 'Light layers will do.';
     var mods = [];
     function when(i, now, later){ return i === 0 ? now : later; }
     if(snowAt >= 0) mods.push(when(snowAt, 'Wear waterproof boots with good grip for the snow.', 'Snow is on the way, so wear waterproof boots with good grip.'));
     else if(iceAt >= 0 && minT <= 34) mods.push('Watch for ice: wear boots with good grip and take small steps.');
-    if(rainAt >= 0) mods.push(when(rainAt, 'Bring an umbrella or a rain jacket.', 'Rain is on the way, so keep an umbrella or a rain jacket handy.'));
+    if(rainAt >= 0) mods.unshift(when(rainAt, 'Pack an umbrella and a rain coat if you’re headed out.', 'Rain is on the way, so pack an umbrella and a rain coat if you’re headed out.'));
     if(maxW >= 16 && !(minT < 32)) mods.push('A windproof layer will help with the wind.');
     if(city){
       if(rainAt >= 0 || snowAt >= 0 || minT < 25 || maxW >= 25) mods.push(vdCap(vdBigCityInfo().transit) + ' or a cab beats a long walk.');
@@ -5768,7 +5908,7 @@
     if(minT < 20) pet = 'It’s dangerously cold for pets: keep them indoors except for quick potty breaks, and bring in any animals that live outside.';
     else if(minT < 32) pet = 'Keep pets inside when you can, keep walks short, and wipe their paws afterward to clear ice, salt and snow.';
     else if(minT < 40) pet = 'It’s chilly for pets, especially small or short-haired ones: keep walks short and consider a coat.';
-    var wearText = (base + ' ' + mods.slice(0, 2).join(' ')).trim().replace(/(Bring [^.]*)\. Bring ((?:an|a) umbrella or a rain jacket)\./, '$1, plus $2.');
+    var wearText = (base + ' ' + mods.slice(0, 2).join(' ')).trim();
     return {wear: wearText, pet: pet, cold: minT < 40};
   }
 
@@ -5882,18 +6022,18 @@
     var minT = Math.min.apply(null, hs.map(function(h){ return h.temp; })), maxT = Math.max.apply(null, hs.map(function(h){ return h.temp; }));
     var maxW = Math.max.apply(null, hs.map(function(h){ return h.mph; }));
     function any(re){ return hs.some(function(h){ return re.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40); }); }
-    var rain = any(/rain|shower|drizzle|thunder/i), snow = any(/snow|flurr|sleet|blizzard/i);
+    var rain = any(/rain|shower|drizzle|thunder/i) || hs.some(function(h){ return h.pop >= 60 && !/snow|flurr|blizzard/i.test(h.fc); }), snow = any(/snow|flurr|sleet|blizzard/i);
     var ice = hs.some(function(h){ return /freezing|ice|icy|sleet/i.test(h.fc) || h.why.some(function(w){ return /snowy or icy/.test(w); }); });
     var hat = ca ? 'toque' : 'hat', gloves = ca ? 'mitts' : 'gloves', items;
     if(minT < 15) items = ['heavy coat', hat, 'insulated ' + gloves, 'scarf'];
     else if(minT < 32) items = ['warm coat', hat, gloves, 'scarf'];
     else if(minT < 45) items = ['warm coat', hat, gloves];
     else if(minT < 58) items = maxT >= 68 ? ['jacket', 'layers'] : ['jacket'];
-    else if(maxT >= 85) items = ['light clothes', 'sunscreen', 'hat'];
-    else if(maxT >= 72) items = ['light clothes', 'sunscreen'];
+    else if(maxT >= 85) items = rain ? ['light clothes'] : ['light clothes', 'sunscreen', 'hat'];
+    else if(maxT >= 72) items = rain ? ['light clothes'] : ['light clothes', 'sunscreen'];
     else items = ['light layers'];
     if(snow) items.push('waterproof boots'); else if(ice && minT <= 34) items.push('boots with grip'); else if(minT < 32) items.push('warm boots');
-    if(rain) items.push('umbrella');
+    if(rain) items.push('umbrella', 'rain coat');
     if(maxW >= 16 && minT >= 32) items.push('windbreaker');
     var getAround = '';
     if(city){
@@ -6412,12 +6552,14 @@
     if(ca){
       hourly = ca.hourly; daily = ca.daily;
     }else{
+      var nowSigP = fetchNowSignals(lat, lon, props).catch(function(){ return null; });   // starts alongside the forecast fetch
       var results = await Promise.all([
         fetchJson(props.forecastHourly),
         fetchJson(props.forecast)
       ]);
       hourly = results[0].properties.periods;
       daily = results[1].properties.periods;
+      try{ hourly = applyNowConditions(hourly, await nowSigP); }catch(e){}   // radar / observation / model correct the current hour
     }
 
     if(!hourly.length){ throw appError(COPY.noHourly); }
