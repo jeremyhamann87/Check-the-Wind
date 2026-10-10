@@ -989,6 +989,8 @@
   @media (max-width:31.1875em){ .footer-bar{flex-direction:column; align-items:flex-start; gap:0} }
   /* Tablet: tighter gaps so all four items fit on one line at 768px */
   @media (min-width:31.25em) and (max-width:63.99em){ .footer-bar{column-gap:8px} }
+  /* Desktop: links on one row with the contact link on the right edge, "Data as of" on its own line below */
+  @media (min-width:64em){ .footer-contact{margin-left:auto} .data-asof{flex-basis:100%} }
   .disclaimers-modal-panel{
     width:min(34rem, 100%); height:auto; max-height:80vh;
   }
