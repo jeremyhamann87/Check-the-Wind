@@ -89,8 +89,7 @@
   .warn-key{margin-top:10px; padding-top:8px; border-top:1px solid var(--border)}
   .warn-key[hidden]{display:none}
   .warn-toggle{display:block; width:100%; margin:0 0 6px; padding:4px 0; border:0; background:none; font:inherit; font-size:1rem; font-weight:700; letter-spacing:.01em; color:var(--text); text-align:left; cursor:pointer}
-  .warn-toggle::after{content:" on"; font-weight:400; color:var(--text-muted)}
-  .warn-toggle[aria-pressed="false"]::after{content:" off"}
+  .warn-toggle[aria-pressed="false"]::after{content:" off"; font-weight:400; color:var(--text-muted)}
   .warn-list{list-style:none; margin:0; padding:0; display:grid; gap:4px}
   .warn-list li{display:flex; align-items:center; gap:8px; font-size:.875rem; color:var(--text-muted); white-space:nowrap}
   .warn-list .sw{width:14px; height:10px; border-radius:2px; border:2px solid; background:transparent; flex:0 0 auto}
@@ -466,7 +465,7 @@
       'FL.W': {c: '#1B8F4B', n: 'Flood'},
       'MA.W': {c: '#FF8C00', n: 'Special marine'}
     };
-    var KEY = 'checkTheWind.warnings', layer = null, feats = [], on = true;
+    var KEY = 'checkTheWind.warnings', layer = null, casing = null, feats = [], on = true;
     try{ on = localStorage.getItem(KEY) !== '0'; }catch(e){}
     var keyEl = document.getElementById('warnKey'), listEl = document.getElementById('warnList'), toggle = document.getElementById('warnToggle');
 
@@ -487,11 +486,15 @@
     }
     function paint(){
       if(layer){ map.removeLayer(layer); layer = null; }
+      if(casing){ map.removeLayer(casing); casing = null; }
       keyEl.classList.toggle('is-off', !on);
       toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
       if(!on || !feats.length) return;
-      layer = L.geoJSON({type: 'FeatureCollection', features: feats}, {
-        style: function(f){ var c = kindOf(f.properties).c; return {color: c, weight: 3, opacity: 0.95, fillColor: c, fillOpacity: 0.1}; },
+      var fc = {type: 'FeatureCollection', features: feats};
+      // a very thin black edge under the colored outline so it stands out against the radar
+      casing = L.geoJSON(fc, {interactive: false, style: function(){ return {color: '#000', weight: 5, opacity: 1, fill: false}; }}).addTo(map);
+      layer = L.geoJSON(fc, {
+        style: function(f){ var c = kindOf(f.properties).c; return {color: c, weight: 3.5, opacity: 1, fillColor: c, fillOpacity: 0.1}; },
         onEachFeature: function(f, l){ l.bindPopup(popup(f.properties)); }
       }).addTo(map);
     }

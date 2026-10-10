@@ -3966,20 +3966,23 @@
     return p;
   }
   function addWarningPolygons(map){
-    var layer = null, gone = false;
+    var casing = null, layer = null, gone = false;
     fetchWarnings().then(function(feats){
       if(gone || !feats.length) return;
       try{
-        layer = L.geoJSON({type: 'FeatureCollection', features: feats}, {
+        var fc = {type: 'FeatureCollection', features: feats};
+        // a very thin black edge under the colored outline so it stands out against the radar
+        casing = L.geoJSON(fc, {interactive: false, style: function(){ return {color: '#000', weight: 5, opacity: 1, fill: false}; }}).addTo(map);
+        layer = L.geoJSON(fc, {
           interactive: false,
           style: function(f){
             var k = f.properties.phenomena + '.' + f.properties.significance, c = WARN_STYLES[k] || '#7B3FA0';
-            return {color: c, weight: 3, opacity: 0.95, fillColor: c, fillOpacity: 0.1};
+            return {color: c, weight: 3.5, opacity: 1, fillColor: c, fillOpacity: 0.1};
           }
         }).addTo(map);
-      }catch(e){ layer = null; }
+      }catch(e){ casing = layer = null; }
     });
-    return {remove: function(){ gone = true; try{ if(layer) map.removeLayer(layer); }catch(e){} }};
+    return {remove: function(){ gone = true; try{ if(casing) map.removeLayer(casing); if(layer) map.removeLayer(layer); }catch(e){} }};
   }
 
   function buildRadarMap(mapEl, tagEl, lat, lon, interactive){
