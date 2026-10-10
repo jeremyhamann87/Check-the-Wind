@@ -1,6 +1,6 @@
 # Check the Wind
 
-Live wind, weather, alerts, air quality and "best times to be outside" for any U.S. or Canadian location.
+Live wind, weather, alerts, air quality and "best times to get outside" for any U.S. or Canadian location.
 Static site — plain HTML/CSS/JS (Alpine.js + Leaflet from a CDN), no build step.
 
 Live at **https://www.checkthewind.com**
