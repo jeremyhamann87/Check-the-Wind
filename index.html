@@ -5171,12 +5171,17 @@
   document.getElementById('bestShareBtn').addEventListener('click', async function(){
     var d = shareContent();
     if(!d) return;
+    // The same message every time: the summary of the best times, then the link, as one block of text
+    var full = d.text + '\n\n' + d.url;
     var touch = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
     if(touch && navigator.share){
-      try{ await navigator.share(d); return; }
-      catch(err){ if(err && err.name === 'AbortError') return; }   // closed the sheet: nothing more to do; any other failure falls back to copying
+      copyText(full);   // also on the clipboard, so it can be pasted as text if the app taking the share keeps only the link
+      try{ await navigator.share({title: d.title, text: full}); return; }
+      catch(err){ if(err && err.name === 'AbortError') return; }   // closed the sheet: nothing more to do; any other failure falls back to the copy message
+      showToast('Link and summary copied. Paste it to a friend.');
+      return;
     }
-    var ok = await copyText(d.text + '\n\n' + d.url);
+    var ok = await copyText(full);
     if(ok) showToast('Link and summary copied. Paste it to a friend.');
     else window.prompt('Copy this link to share:', d.url);
   });
