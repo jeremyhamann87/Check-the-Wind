@@ -150,7 +150,15 @@ a(B,'Best Times notes','Next 48 hours, daylight only. A maximum of 3 options, ra
 a(B,'Best Times notes','We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.','Air-quality data failed to load.')
 a(B,'Best Times notes','We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.','Past-rainfall data failed to load.')
 a(B,'Best Times notes','You are using custom Best Times settings: [list]. Use Customize to change them or reset to the defaults.','Limits differ from the defaults.')
-a(B,'Best Times rows','Day: Today / Tomorrow / [Weekday Month/Day]; Ground: Dry / Damp / Wet; Air: [AQI] · Good / Moderate / Sensitive groups','Every window row.','Up to 3 windows, ranked')
+a(B,'Best Times cards','Card heading: Today / Tomorrow / [Weekday Month/Day], then the time range (e.g. 7 AM–6 PM, or Now–6 PM)','Every card.','Up to 3 cards, ranked 1 to 3 with gold, silver and bronze medals; on phones they scroll sideways')
+a(B,'Best Times cards','[N] mph · [Calm / Breezy / Windy / Blustery / Howling] [wind direction arrow]','Every card (wind row, top wind in the window).','Same icon, bold value and hint layout as Current Conditions; km/h in metric places')
+a(B,'Best Times cards','[low–high]°F · [sky, e.g. Mostly Cloudy]','Every card (temperature row).','Sky is the forecast for the middle hour of the window')
+a(B,'Best Times cards','[Dry / Damp / Wet] ground · No precipitation expected / [N]% chance of precipitation','Every card (ground row).','Ground by wetness: under 0.15 dry, under 0.45 damp, else wet. "No precipitation expected" when the highest chance in the window is under 5%')
+a(B,'Best Times cards','AQI [N] · [Good air / Moderate air / Unhealthy for sensitive groups / Unhealthy air / Very unhealthy air / Hazardous air]','Every card with an air-quality reading (air row).','Row is left out when there is no air-quality data')
+a(B,'Best Times cards','[N]% · Humidity','Every card with a humidity forecast (humidity row).','Average over the window; does not affect the ranking')
+a(B,'Best Times share button','Share these best times (button name for screen readers; the button shows only a share icon)','Always, when there is at least one window.','Hidden when there is no best-time window')
+a(B,'Best Times share (phone and tablet)','Title: Best times to be outside in [place] | Text: Best times to be outside in [place]: / 1. [Day], [time]: [temp], [wind] wind, [N]% chance of precipitation / ... / From Check the Wind. | Link: the page for that exact place','Share button on a touch device, opens the phone’s share sheet.','The link carries the place (?lat=&lon=&place=) so a friend opens the same location')
+a(B,'Best Times share (desktop)','Link and summary copied. Paste it to a friend.','Share button on a computer: the same text and link are copied to the clipboard.','If copying is blocked the browser shows the link in a prompt: "Copy this link to share:"')
 
 WD='Wind categories'
 for lab,r in [('Calm','under 8 mph'),('Breezy','8–15 mph'),('Windy','16–24 mph'),('Blustery','25–33 mph'),('Howling','34 mph and up')]:
