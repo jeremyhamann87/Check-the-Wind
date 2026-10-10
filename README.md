@@ -1,6 +1,6 @@
 # Check the Wind
 
-Live wind, weather, alerts, air quality and "best times to be outside" for any U.S. location.
+Live wind, weather, alerts, air quality and "best times to be outside" for any U.S. or Canadian location.
 Static site — plain HTML/CSS/JS (Alpine.js + Leaflet from a CDN), no build step.
 
 Live at **https://www.checkthewind.com**
@@ -43,7 +43,7 @@ One-time setup:
 
 ## Data sources
 
-National Weather Service (weather, alerts, place names), NOAA MRMS / HRRR and NEXRAD via Iowa Environmental Mesonet (radar),
+National Weather Service (U.S. weather, alerts, place names), Environment and Climate Change Canada (Canadian weather, alerts and radar), NOAA MRMS / HRRR and NEXRAD via Iowa Environmental Mesonet (radar),
 AirNow / EPA and Open-Meteo (air quality, recent rainfall, place search), OpenStreetMap (map tiles),
 SUNRISE-SUNSET.ORG (sun times). Credits and terms are in the site's "Disclaimers & Data Sources" panel.
 

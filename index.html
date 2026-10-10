@@ -982,6 +982,13 @@
   @media (min-width:64em){ .hero-wrap .hero-pill-row .wk-btn{ display:none } }
   .disclaimers-link:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:2px}
   .data-asof{font-size:1rem; color:var(--text-faint)}
+  .footer-contact{font-size:1rem; color:var(--text-faint); text-decoration:underline; text-underline-offset:2px; padding:12px 0; min-height:44px; display:inline-flex; align-items:center}
+  @media (min-width:64em){ .footer-contact:hover{color:var(--text-muted)} }
+  .footer-contact:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:2px}
+  /* Phones: stack the footer links in one column; tablet and desktop keep them in a row */
+  @media (max-width:31.1875em){ .footer-bar{flex-direction:column; align-items:flex-start; gap:0} }
+  /* Tablet: tighter gaps so all four items fit on one line at 768px */
+  @media (min-width:31.25em) and (max-width:63.99em){ .footer-bar{column-gap:8px} }
   .disclaimers-modal-panel{
     width:min(34rem, 100%); height:auto; max-height:80vh;
   }
@@ -2471,6 +2478,7 @@
     <div class="footer-bar">
       <button type="button" class="disclaimers-link" id="disclaimersOpenBtn" aria-haspopup="dialog">Disclaimers &amp; Data Sources</button>
       <button type="button" class="disclaimers-link" data-info="wind" aria-haspopup="dialog">Wind Key</button>
+      <a class="footer-contact" href="mailto:contact@checkthewind.com">contact@checkthewind.com</a>
       <span class="data-asof">Data as of <span id="dataAsOf">—</span></span>
     </div>
   </footer>
