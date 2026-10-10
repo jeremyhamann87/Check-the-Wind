@@ -2057,9 +2057,15 @@
   .bt-body .bw-empty{padding:0}
   /* The cards are as wide as the longest header needs (day and time never stack), and every card matches that width.
      The row scrolls sideways when the cards don't all fit. */
-  .bt-cards{overflow-x:auto; margin-inline:-12px; padding:0 12px 2px; scroll-padding-inline:12px; scroll-snap-type:x proximity; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin}
+  .bt-wrap{position:relative; margin-inline:-12px; overflow:hidden}
+  .bt-wrap[hidden]{display:none}
+  /* Edge fades, like Wind Today and the air gauges: each shows only on a side that has more to scroll to */
+  .bt-wrap::before, .bt-wrap::after{content:""; position:absolute; top:0; bottom:0; width:56px; pointer-events:none; opacity:0; transition:opacity .15s; z-index:1}
+  .bt-wrap::after{right:0; background:linear-gradient(to right, transparent, var(--surface))}
+  .bt-wrap::before{left:0; background:linear-gradient(to left, transparent, var(--surface))}
+  .bt-wrap.can-scroll-right::after, .bt-wrap.can-scroll-left::before{opacity:1}
+  .bt-cards{overflow-x:auto; padding:0 12px 2px; scroll-padding-inline:12px; scroll-snap-type:x proximity; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin}
   @media (max-width:63.99em){ .bt-cards{scrollbar-width:none} .bt-cards::-webkit-scrollbar{display:none} }  /* touch screens swipe; desktop keeps a thin scrollbar so the hidden cards are discoverable */
-  .bt-cards[hidden]{display:none}
   .bt-track{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:10px; width:max-content}
   .bt-card{
     display:flex; flex-direction:column; min-width:0; overflow:hidden; scroll-snap-align:start;
@@ -2355,7 +2361,8 @@
         </button>
       </div></div>
     <div class="bt-body" id="bestList">
-      <div class="bt-cards" :hidden="$store.best.state === 'empty'">
+      <div class="bt-wrap" :hidden="$store.best.state === 'empty'">
+      <div class="bt-cards">
         <div class="bt-track" role="list" aria-label="Best times to be outside, ranked">
         <template x-for="n in ($store.best.state === 'loading' ? 3 : 0)" :key="n">
           <div class="bt-card bt-card--skel" aria-hidden="true">
@@ -2379,6 +2386,7 @@
           </article>
         </template>
         </div>
+      </div>
       </div>
       <template x-if="$store.best.state === 'empty'">
         <div class="bw-empty">
@@ -5095,6 +5103,21 @@
     if(ok) showToast('Link and summary copied. Paste it to a friend.');
     else window.prompt('Copy this link to share:', d.url);
   });
+
+  // Edge fades on the Best Times row: only on the side that has more cards to scroll to
+  (function(){
+    var sc = document.querySelector('.bt-cards'), wrap = sc && sc.parentElement, track = sc && sc.querySelector('.bt-track');
+    if(!sc || !wrap) return;
+    function upd(){
+      var max = sc.scrollWidth - sc.clientWidth;
+      wrap.classList.toggle('can-scroll-left', sc.scrollLeft > 1);
+      wrap.classList.toggle('can-scroll-right', sc.scrollLeft < max - 1);
+    }
+    sc.addEventListener('scroll', upd, {passive: true});
+    window.addEventListener('resize', upd);
+    if(window.ResizeObserver){ var ro = new ResizeObserver(upd); ro.observe(sc); if(track) ro.observe(track); }
+    upd();
+  })();
 
   /* A shared link opens straight to its place */
   function sharedPlace(){
