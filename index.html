@@ -479,6 +479,7 @@
   .alert--warning{--alert-bg:#A8433D; --alert-ink:#fff}
   .alert--watch{--alert-bg:#CBAA45; --alert-ink:#2B2300}
   .alert--advisory{--alert-bg:#4A6A98; --alert-ink:#fff}
+  .alert--flashflood{--alert-bg:#32CD32; --alert-ink:#0A2A0A}
   .alert-head{
     display:flex; align-items:center; gap:12px; width:100%; padding:9px 16px; border:0; cursor:pointer;
     background:var(--alert-bg); color:var(--alert-ink); font:inherit; text-align:left;
@@ -3951,8 +3952,8 @@
   var WARN_STYLES = {
     'TO.W': '#FF0000',   // Tornado Warning
     'SV.W': '#FFA500',   // Severe Thunderstorm Warning
-    'FF.W': '#8B0000',   // Flash Flood Warning
-    'FL.W': '#00A651',   // Flood Warning
+    'FF.W': '#32CD32',   // Flash Flood Warning (lime green)
+    'FL.W': '#1B8F4B',   // Flood Warning (darker green)
     'MA.W': '#FF8C00'    // Special Marine Warning
   };
   var warnCache = null;
@@ -6318,6 +6319,7 @@
     return 4;
   }
   function alertKind(ev){
+    if(/flash flood (warning|emergency)$/i.test(ev)) return 'flashflood';   // lime green everywhere a flash flood warning shows
     if(/warning$/i.test(ev)) return 'warning';
     if(/watch$/i.test(ev)) return 'watch';
     if(/advisory$/i.test(ev)) return 'advisory';
