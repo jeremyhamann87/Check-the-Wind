@@ -2323,7 +2323,7 @@
      free. Key requested at https://docs.airnowapi.org/account/request — if
      it's ever revoked/rotated, swap it below; an empty string just makes
      those two gauges read "Unavailable" (everything else keeps working). */
-  var AIRNOW_API_KEY = '54B35C41-0764-412E-B6B2-0E407036AA0D';
+  var AIRNOW_API_KEY = '';  /* intentionally empty: the live site keeps its key in a Cloudflare Worker secret */
 
   async function fetchAirNowCurrent(lat, lon){
     if(!AIRNOW_API_KEY) return null;
