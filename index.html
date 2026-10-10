@@ -2103,6 +2103,13 @@
   .bt-skel-big{display:block; height:1.75rem; width:55%}
   .bt-skel-line{display:block; height:.875rem; width:80%}
   .bt-when .bt-skel-line:first-child{width:5rem}
+  .hero-wrap .hero-top > #bestSection{ margin-top:0 }  /* on phones it sits in the hero, spaced by the hero's own 16px gap */
+  /* Phones: all text is 14px, except the hero header (place name, tag and headline). Form fields stay 16px so iOS doesn't zoom in on focus. */
+  @media (max-width:31.1875em){
+    body :not(svg):not(svg *):not(input):not(textarea):not(select):not(.vd-head):not(.vd-head *):not(#heroHead):not(#heroHead *){ font-size:14px !important }
+    .hero-wrap .hero-now .hero-reading .val{ line-height:1.3 !important }
+  }
+
   /* Short "copied" confirmation for the Share button */
   .ctw-toast{
     position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); z-index:70; max-width:calc(100vw - 32px);
