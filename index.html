@@ -4208,7 +4208,7 @@
     if(lastBest){ when = renderBest(lastBest.hourly, lastBest.inputs); }
     closeBp();
     announce('Best Times updated' + (bpIsCustom(bestPrefs) ? ' with your settings' : ' to the defaults') + '. ' +
-      (lastBest ? (when ? 'Best window outside: ' + when + '.' : 'No good window outside in the next 48 hours.') : ''));
+      (lastBest ? (when ? 'Best window outside: ' + when + '.' : 'No good window outside in the next 5 days.') : ''));
   }
   document.getElementById('bestCustomBtn').addEventListener('click', function(e){ openBp(e.currentTarget); });
   document.getElementById('bestPrefsClose').addEventListener('click', closeBp);
@@ -4392,7 +4392,7 @@
 
   /* ---------- Best windows outside ---------- */
   pendingStores.best = {state:'idle', windows:[], how:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear')};
-  var BEST_HORIZON_HOURS = 48;
+  var BEST_HORIZON_HOURS = 120;   // five days of hourly forecast
   var BEST_MAX_WINDOWS = 3;
 
   function renderBestSkeleton(){
@@ -4422,7 +4422,7 @@
   async function fetchBestInputs(lat, lon){
     var q = 'latitude=' + lat.toFixed(4) + '&longitude=' + lon.toFixed(4) + '&timezone=auto';
     var r = await Promise.all([
-      fetchOptionalJson('https://air-quality-api.open-meteo.com/v1/air-quality?' + q + '&hourly=us_aqi&forecast_days=3'),
+      fetchOptionalJson('https://air-quality-api.open-meteo.com/v1/air-quality?' + q + '&hourly=us_aqi&forecast_days=5'),
       fetchOptionalJson('https://api.open-meteo.com/v1/forecast?' + q + '&hourly=precipitation&past_days=2&forecast_days=1')
     ]);
     function toMap(data, field){
@@ -4472,8 +4472,7 @@
     }
     if(out.length){
       var last = out[out.length - 1], DAY = 86400000;
-      out.push({s: last.s + DAY, e: last.e + DAY});
-      out.push({s: last.s + 2 * DAY, e: last.e + 2 * DAY});
+      for(var k = 1; k <= 6; k++) out.push({s: last.s + k * DAY, e: last.e + k * DAY});   // later days: the same times, a day apart
     }
     return out;
   }
@@ -4858,7 +4857,7 @@
 
   // Same rain/snow/thunderstorm word-matching as hazardType(), just without
   // its "chance"-suppression — every precip-bearing hour counts here since
-  // this is summarizing a whole 48h stretch, not a single right-now reading.
+  // this is summarizing a whole five-day stretch, not a single right-now reading.
   function hourlyHazard(p){
     var s = (p.shortForecast || '').toLowerCase();
     if(/thunder/.test(s)) return 'Thunderstorms';
@@ -4878,14 +4877,14 @@
   }
 
   // Replaces the old static "stay inside" placeholder with an explanation
-  // built from the same 48h hourly data scoreBestHours already scans: names
+  // built from the same five-day hourly data scoreBestHours already scans: names
   // whichever of rain/snow/thunderstorms/wind is actually responsible, how
   // bad it gets, and when it starts and clears (or that it doesn't clear
   // within the window at all).
   function buildEmptyBestNote(hourly){
     var fallback = {
       title: 'Time to stay inside for a while.',
-      sub: 'No good window in the next 48 hours. Rain, wet ground, strong wind or poor air quality are in the way. This updates when the forecast does.',
+      sub: 'No good window in the next 5 days. Rain, wet ground, strong wind or poor air quality are in the way. This updates when the forecast does.',
       kind: 'clear'
     };
     if(!hourly || !hourly.length) return fallback;
@@ -4923,7 +4922,7 @@
         : label + ' moves in around ' + describeHazardTime(first.p.startTime, todayStr, tomorrowStr);
 
       lead += last.i >= n - 1
-        ? ', continuing through the next 48 hours with no clear break in sight.'
+        ? ', continuing through the next 5 days with no clear break in sight.'
         : ', clearing up by ' + describeHazardTime(last.p.startTime, todayStr, tomorrowStr) + '.';
 
       sentences.push(lead);
@@ -4946,7 +4945,7 @@
           ? band + ' wind is already blowing, gusting to ' + fmtWind(peak.mph)
           : band + ' wind picks up around ' + describeHazardTime(wFirst.p.startTime, todayStr, tomorrowStr) + ', gusting to ' + fmtWind(peak.mph);
         wLead += wLast.i >= n - 1
-          ? ', staying gusty through the next 48 hours.'
+          ? ', staying gusty through the next 5 days.'
           : ', calming down by ' + describeHazardTime(wLast.p.startTime, todayStr, tomorrowStr) + '.';
         sentences.push(wLead);
         title = stayInsideTitle(band + ' wind');
@@ -5129,7 +5128,7 @@
       };
     });
 
-    var notes = ['Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average.'];
+    var notes = ['Next 5 days, daylight only. Up to 3 options across those days, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average.'];
     if(!inputs.aqi) notes.push('We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.');
     if(!inputs.past) notes.push('We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.');
 
@@ -5411,7 +5410,7 @@
     res.hs = hrs.slice(0, 3);
     res.sentence = 'Better to skip it for now' + (res.why.length ? ': ' + vdList(res.why.slice(0, 2)) : '') + '.';
     if(nextRun){ res.next = 'Next best window to get outside: ' + vdRange(nextRun, c) + '.'; res.nextHs = nextRun; }
-    else res.next = 'No good window in the next 48 hours.';
+    else res.next = 'No good window in the next 5 days.';
     return finish(res, vdAgg(res.hs));
 
     // A Severe/Extreme NWS alert never makes the weather itself look better or worse: the forecast verdict stands, but a
@@ -5646,8 +5645,8 @@
           : 'It’s a cozy-inside kind of moment right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
       }
       if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next best window to get outside is ' + sp3.day + ' ' + sp3.phrase + (r.alert ? '.' : ', so it’s worth the wait.')); }
-      else if(vdBigCity() && !r.alert) out.push('There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a museum, a show or a long dinner out.');
-      else out.push(caVoice && !r.alert ? vdPick(['There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a double-double from Tim Hortons.', 'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and pancakes with real maple syrup.'], seed, 6) : 'There’s no good outdoor activity window in the next 48 hours, so it’s a fine time for a movie and a snack.');
+      else if(vdBigCity() && !r.alert) out.push('There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a museum, a show or a long dinner out.');
+      else out.push(caVoice && !r.alert ? vdPick(['There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a movie and a double-double from Tim Hortons.', 'There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a movie and pancakes with real maple syrup.'], seed, 6) : 'There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a movie and a snack.');
     }
     return out;
   }
@@ -5749,7 +5748,7 @@
     }
     var why = r.why && r.why.length ? vdWhyShort(r.why[0]) + '. ' : '';
     if(r.nextHs) return why + 'Next best window to get outside: ' + vdRange(r.nextHs, c) + '.';
-    return (why || '') + 'No good window for 48 hours.';
+    return (why || '') + 'No good window for 5 days.';
   }
   // The gray text under the headline: the earlier paragraph's wording (minus what the headline already says) plus clothing and pet advice
   function vdSubLines(r, c, actList){
@@ -5869,7 +5868,7 @@
     if(r.incoming) return {t:'Stay aware', k:'aware'};
     if(r.state === 'yes') return {t:'Get outside!', k:'green'};
     if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for now', k:'yellow'} : {t:'Wait a bit', k:'yellow'};
-    // a good window within 12 hours means it's passing weather: wait it out. Further away, stay inside. None in 48 hours: all day.
+    // a good window within 12 hours means it's passing weather: wait it out. Further away, stay inside. None in 5 days: all day.
     if(r.nextHs) return r.nextHs[0].i <= 12 ? {t:'Wait a bit', k:'yellow'} : {t:'Stay inside', k:'orange'};
     return {t:'Stay in all day', k:'red'};
   }
@@ -6360,7 +6359,7 @@
     announce('Forecast updated for ' + hdrLoc.textContent + '. Wind now ' + windNum(nowW.high) + (useKmh ? ' kilometres per hour' : ' miles per hour') +
       (dirWord(hourly[0].windDirection) ? ' from the ' + dirWord(hourly[0].windDirection) : '') + ', ' + nowBand.label.toLowerCase() + '. ' +
       ampText(hourly[0].shortForecast) + ', ' + tempNum(hourly[0].temperature) + (useCelsius ? ' degrees Celsius. ' : ' degrees. ') +
-      (bestWhen ? 'Best window outside: ' + bestWhen + '.' : 'No good window outside in the next 48 hours.'));
+      (bestWhen ? 'Best window outside: ' + bestWhen + '.' : 'No good window outside in the next 5 days.'));
     window.dispatchEvent(new Event('resize'));
   }
 
