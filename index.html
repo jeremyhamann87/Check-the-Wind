@@ -2574,7 +2574,9 @@
         checked against the nearest official weather station observation (under 90 minutes old), live radar at your location (NOAA
         radar tiles from the Iowa Environmental Mesonet) and the Open-Meteo model&rsquo;s current weather. Rain, snow or thunderstorms seen
         by any of them replace fog or cloud wording, and the temperature and wind shown for the current hour are the station&rsquo;s
-        reading when one is available.
+        reading when one is available. Active warning outlines on the radar (tornado, severe thunderstorm, flash flood, flood and
+        special marine) are the National Weather Service&rsquo;s storm-based warning polygons, served by the Iowa Environmental
+        Mesonet, for U.S. locations.
       </p>
       <p>
         <strong>Canada.</strong> Canadian forecasts come from the nearest Environment Canada forecast location, which can be some
@@ -3941,6 +3943,44 @@
   }
   window.addEventListener('resize', sizeRadar);
 
+
+  /* ---------- Warning polygons on the radar ----------
+     Active storm-based warnings (tornado, severe thunderstorm, flash flood, flood, special marine...) as outlines on the map.
+     Source: the Iowa Environmental Mesonet's live copy of the National Weather Service warning polygons (U.S. only). */
+  var WARN_URL = 'https://mesonet.agron.iastate.edu/geojson/sbw.geojson';
+  var WARN_STYLES = {
+    'TO.W': '#FF0000',   // Tornado Warning
+    'SV.W': '#FFA500',   // Severe Thunderstorm Warning
+    'FF.W': '#8B0000',   // Flash Flood Warning
+    'FL.W': '#00A651',   // Flood Warning
+    'MA.W': '#FF8C00'    // Special Marine Warning
+  };
+  var warnCache = null;
+  function fetchWarnings(){
+    if(warnCache && Date.now() - warnCache.t < 120000) return warnCache.p;
+    var p = fetchOptionalJson(WARN_URL).then(function(d){
+      return ((d && d.features) || []).filter(function(f){ return f.properties && f.properties.significance === 'W' && f.geometry; });
+    });
+    warnCache = {t: Date.now(), p: p};
+    return p;
+  }
+  function addWarningPolygons(map){
+    var layer = null, gone = false;
+    fetchWarnings().then(function(feats){
+      if(gone || !feats.length) return;
+      try{
+        layer = L.geoJSON({type: 'FeatureCollection', features: feats}, {
+          interactive: false,
+          style: function(f){
+            var k = f.properties.phenomena + '.' + f.properties.significance, c = WARN_STYLES[k] || '#7B3FA0';
+            return {color: c, weight: 3, opacity: 0.95, fillColor: c, fillOpacity: 0.1};
+          }
+        }).addTo(map);
+      }catch(e){ layer = null; }
+    });
+    return {remove: function(){ gone = true; try{ if(layer) map.removeLayer(layer); }catch(e){} }};
+  }
+
   function buildRadarMap(mapEl, tagEl, lat, lon, interactive){
     var map = L.map(mapEl, {
       zoomControl:interactive, attributionControl:false, dragging:interactive,
@@ -3969,6 +4009,8 @@
     }else{
       radarLayer = L.tileLayer(radarFrameUrl(45), {opacity:0.75}).addTo(map);
     }
+
+    if(!caRadar) addWarningPolygons(map);   // U.S. only: outlines of active warnings (the Iowa Environmental Mesonet feed has none for Canada)
 
     L.circleMarker([lat, lon], {
       radius:6, color:'#fff', weight:2.5, fillColor:'#FF5A36', fillOpacity:1
@@ -5611,6 +5653,11 @@
     function finish(r, agg){
       r.agg = agg;
       if(severe){ r.alert = severe.event.toLowerCase(); if(r.state === 'yes') r.state = 'maybe'; }
+      // A tornado warning overrides everything else: shelter first
+      if(severe && /tornado (warning|emergency)/i.test(severe.event)){
+        r.tornado = true; r.state = 'no'; r.hs = hrs.slice(0, 3);
+        r.nextHs = nextRun || null; r.next = nextRun ? 'Next best window to get outside: ' + vdRange(nextRun, c) + '.' : null;
+      }
       // night time: darkness is the only thing ruling the hour out, and the weather itself is calm
       r.night = !!(!severe && r.state !== 'yes' && now.why.length === 1 && /dark out/.test(now.why[0]) && now.mph < 16);
       // Stay Aware: it's fine to be out right now, but weather (rain, snow, wind, storms) arrives within the next 3 hours
@@ -5743,6 +5790,10 @@
   }
   function vdProseCore(r, c, actList){
     var out = [], seed = vdSeed(c);
+    if(r.tornado){
+      return ['Take shelter now: get to the lowest level of the building you’re in, and into the innermost room, away from windows.',
+        'Tune in to your local weather for the most up-to-date information.'];
+    }
     var acts = vdPickActs(actList, seed, 3).map(function(x, i){ return (caVoice && x.verbCa && (seed + i) % 2 === 0) ? x.verbCa : x.verb; });
     var actsSentence = acts.length
       ? vdPick(caVoice ? ['This is great weather to ', 'It’s a beauty of a day to ', 'You could ', 'Time to '] : ['This is great weather to ', 'It’s a lovely time to ', 'You could ', 'Perfect conditions to '], seed, 3) + vdListOr(acts) + '.'
@@ -5970,6 +6021,7 @@
     var seed = vdSeed(c), ca = caVoice;
     function endAt(hs){ var t = fmtH12(hs[hs.length - 1].hour + 1); return t.n + ' ' + t.ap; }
     // (none of these repeat the wording of the tag beside them: Go Outside!, Okay for Now, Wait a Bit, Stay Aware, Stay Inside, Stay In All Day, Use Caution, Night Time)
+    if(r.tornado) return vdCap(r.alert) + ' in effect: take shelter now.';
     if(r.alert && r.state !== 'no') return 'Fine out, but there’s an active ' + r.alert + '.';
     if(r.state === 'no' && r.alert) return vdCap(r.alert) + ' in effect.';
     if(r.night){
@@ -6114,6 +6166,7 @@
 
   // The short go / stay tag beside the place name on phones
   function vdTagFor(r){
+    if(r.tornado) return {t:'Take shelter', k:'red'};
     if(r.alert && r.state !== 'no') return {t:'Use caution', k:'orange'};
     if(r.night) return {t:'Night time', k:'night'};
     if(r.incoming) return {t:'Stay aware', k:'aware'};
