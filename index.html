@@ -2180,6 +2180,13 @@
     .hero-reading .unit-wrap > svg.wd-small{ display:block !important; flex:0 0 22px !important; width:22px !important; height:22px !important }
   }
 
+  /* A tornado, hurricane or flash flood warning is in effect: the radar sits directly under the hero text */
+  .hero-top.radar-up > #verdictSection{ order:-2 }
+  .hero-top.radar-up > .radar{ order:-1 }
+  @media (min-width:31.25em) and (max-width:63.99em){
+    .hero-wrap .hero-top.radar-up > .radar{ grid-column:1 / -1; height:340px; min-height:340px; aspect-ratio:auto }
+  }
+
   /* Short "copied" confirmation for the Share button */
   .ctw-toast{
     position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); z-index:70; max-width:calc(100vw - 32px);
@@ -3905,6 +3912,7 @@
         '</div>' +
       '</div>';
     placeVerdict();
+    syncRadarUp();
     applyHeroAir();
     syncWindTag();
   }
@@ -6457,8 +6465,28 @@
     setTimeout(function(){ alertsLiveEl.textContent = msg; }, 400);
   }
 
+  // A tornado, hurricane or flash flood warning in effect: the radar moves up to sit directly under the hero text, and goes back
+  // to its usual place (under Current Conditions) once the warning has ended.
+  function radarWarningActive(){
+    var now = Date.now();
+    return (lastAlerts || []).some(function(a){
+      if(!/^(tornado|hurricane|flash flood) (warning|emergency)/i.test(String(a.event || ''))) return false;
+      var end = Date.parse(a.ends || a.expires);
+      return !isFinite(end) || end > now;
+    });
+  }
+  function syncRadarUp(){
+    var top = document.querySelector('#hero .hero-top');
+    if(!top) return;
+    var on = radarWarningActive();
+    if(top.classList.contains('radar-up') === on) return;
+    top.classList.toggle('radar-up', on);
+    if(radarLoop && radarLoop.map){ setTimeout(function(){ try{ radarLoop.map.invalidateSize(); }catch(e){} }, 60); }
+  }
+  setInterval(syncRadarUp, 60000);   // a warning that runs out moves the radar back even before the next refresh
   function renderAlerts(list){
     lastAlerts = list || [];
+    syncRadarUp();
     // under a hurricane or tropical storm warning the Current Conditions icon is the spinning hurricane
     if((list || []).some(function(a){ return /^(hurricane|tropical storm) warning/i.test(a.event); })){
       var wiHz = document.querySelector('.weather-now .wicon');
