@@ -972,6 +972,22 @@
   .disclaimers-modal-body strong{font-weight:600; color:var(--text-muted)}
   .disclaimers-modal-body a{color:var(--text-faint)}
 
+  /* Best Times "View more" dialog: the window's figures, then every hour in it */
+  .disclaimers-modal-panel.wd-panel{width:min(46rem, 100%)}
+  .disclaimers-modal-body .wd-place{margin:0 0 4px; font-size:1rem; color:var(--text-muted)}
+  .disclaimers-modal-body .wd-sum{margin:0 0 16px; font-size:1.0625rem; color:var(--text)}
+  .wd-list{display:grid; grid-template-columns:minmax(8rem, auto) 1fr; gap:6px 16px; margin:0 0 20px}
+  .wd-list dt{color:var(--text-muted); font-size:1rem}
+  .wd-list dd{margin:0; color:var(--text); font-size:1rem}
+  .wd-h{margin:0 0 6px; font-size:1rem; font-weight:600; color:var(--text-muted)}
+  .wd-scroll{overflow-x:auto; border:1px solid var(--table-border); border-radius:4px}
+  .wd-table{width:100%; border-collapse:collapse; font-size:.9375rem; font-variant-numeric:tabular-nums}
+  .wd-table th{padding:8px 10px; text-align:left; font-weight:500; color:var(--text-muted); white-space:nowrap; background:color-mix(in srgb, var(--text) 5%, var(--surface)); border-bottom:1px solid var(--table-border)}
+  .wd-table td{padding:8px 10px; color:var(--text); border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)); white-space:nowrap}
+  .wd-table tr:last-child td{border-bottom:0}
+  .wd-table td:first-child{font-weight:600}
+  @media (max-width:31.1875em){ .wd-list{grid-template-columns:1fr; gap:0} .wd-list dd{margin-bottom:10px} }
+
   .skel-htile, .skel-dayrow{animation:skelRowFade 1.4s ease-in-out infinite}
   @keyframes skelRowFade{0%,100%{opacity:.7}50%{opacity:1}}
   @media (prefers-reduced-motion: reduce){ .skel{animation:none} .skel-htile, .skel-dayrow{animation:none} }
@@ -2041,30 +2057,38 @@
   .bt-body .bw-empty{padding:0}
   .bt-cards{display:grid; grid-template-columns:repeat(var(--bt-n, 3), minmax(0, 1fr)); gap:10px}
   .bt-card{
-    display:flex; flex-direction:column; gap:8px; min-width:0; padding:10px 12px 12px;
+    display:flex; flex-direction:column; min-width:0; overflow:hidden;
     background:var(--surface); border:1px solid var(--table-border); border-top:3px solid var(--bt-tone, var(--table-border)); border-radius:4px;
   }
   .bt-card--1{--bt-tone:var(--medal-gold)}
   .bt-card--2{--bt-tone:var(--medal-silver)}
   .bt-card--3{--bt-tone:var(--medal-bronze)}
-  .bt-head{display:flex; align-items:center; gap:8px}
+  .bt-head{display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--table-border)}
   .bt-medal{display:flex; flex:0 0 auto}
   .bt-medal svg{display:block; width:30px; height:30px}
   .bt-when{display:flex; flex-flow:row wrap; align-items:baseline; gap:0 8px; min-width:0; line-height:1.3}
   .bt-day{font-size:1rem; font-weight:600; color:var(--text)}
   .bt-time{font-size:1rem; font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
-  .bt-stats{display:flex; flex-direction:column; gap:6px}
-  .bt-stat{display:flex; align-items:center; gap:8px; min-width:0}
-  .bt-ico{flex:0 0 24px; width:24px; min-height:24px; display:flex; align-items:center; justify-content:center}
-  .bt-ico svg{display:block; width:24px; height:24px}
-  .bt-txt{min-width:0; font-size:.9375rem; line-height:1.3; color:var(--text-muted)}
-  .bt-txt b{color:var(--text); font-weight:600}
+  .bt-main{display:flex; flex-direction:column; gap:4px; padding:10px 12px 4px; flex:1 1 auto}
+  .bt-tline{display:flex; align-items:center; justify-content:space-between; gap:8px}
+  .bt-temp{font-size:1.75rem; font-weight:600; line-height:1.1; color:var(--text); font-variant-numeric:tabular-nums}
+  .bt-sky{display:flex; flex:0 0 auto}
+  .bt-sky svg{display:block; width:30px; height:30px}
+  .bt-sum{margin:0; font-size:.9375rem; line-height:1.3; color:var(--text)}
+  .bt-meta{margin:0; font-size:.8125rem; line-height:1.3; color:var(--text-muted)}
+  .bt-more{
+    margin-top:auto; padding:8px 0 0; align-self:flex-start; display:inline-flex; align-items:center; gap:2px; min-height:44px;
+    border:0; background:none; font:inherit; font-size:.9375rem; font-weight:500; color:var(--text); cursor:pointer;
+    text-decoration:underline; text-underline-offset:3px;
+  }
+  .bt-more:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:2px}
+  .bt-more svg{width:16px; height:16px}
+  @media (min-width:64em){ .bt-more{min-height:32px} .bt-more:hover{color:var(--text-muted)} }
   .bt-card--skel{min-height:11rem}
   .bt-skel-medal{width:30px; height:30px; border-radius:50%; flex:0 0 auto}
-  .bt-skel-ico{width:24px; height:24px; border-radius:50%; flex:0 0 24px}
-  .bt-skel-line{display:block; height:.875rem; width:70%}
+  .bt-skel-big{display:block; height:1.75rem; width:55%}
+  .bt-skel-line{display:block; height:.875rem; width:80%}
   .bt-when .bt-skel-line:first-child{width:5rem}
-  .bt-stat .bt-skel-line{flex:1 1 auto; width:auto}
   /* Phones: the cards sit in one row that scrolls sideways, each snapping into place with the next one peeking in */
   @media (max-width:47.9375em){
     .bt-cards{
@@ -2338,12 +2362,7 @@
         <template x-for="n in ($store.best.state === 'loading' ? 3 : 0)" :key="n">
           <div class="bt-card bt-card--skel" aria-hidden="true">
             <div class="bt-head"><span class="skel bt-skel-medal"></span><span class="bt-when"><span class="skel bt-skel-line"></span><span class="skel bt-skel-line"></span></span></div>
-            <div class="bt-stats">
-              <div class="bt-stat"><span class="skel bt-skel-ico"></span><span class="skel bt-skel-line"></span></div>
-              <div class="bt-stat"><span class="skel bt-skel-ico"></span><span class="skel bt-skel-line"></span></div>
-              <div class="bt-stat"><span class="skel bt-skel-ico"></span><span class="skel bt-skel-line"></span></div>
-              <div class="bt-stat"><span class="skel bt-skel-ico"></span><span class="skel bt-skel-line"></span></div>
-            </div>
+            <div class="bt-main"><span class="skel bt-skel-big"></span><span class="skel bt-skel-line"></span><span class="skel bt-skel-line"></span></div>
           </div>
         </template>
         <template x-for="(w, idx) in $store.best.windows" :key="w.key">
@@ -2352,7 +2371,12 @@
               <div class="bt-medal" x-html="w.medal"></div>
               <div class="bt-when"><span class="bt-day" x-text="w.day"></span><span class="bt-time" x-text="w.time"></span></div>
             </div>
-            <div class="bt-stats" x-html="w.stats"></div>
+            <div class="bt-main">
+              <div class="bt-tline"><span class="bt-temp" x-text="w.temp"></span><span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span></div>
+              <p class="bt-sum" x-text="w.summary"></p>
+              <p class="bt-meta" x-text="w.meta"></p>
+              <button type="button" class="bt-more" :data-win="idx" aria-haspopup="dialog">View more<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9,6 15,12 9,18"/></svg></button>
+            </div>
           </article>
         </template>
       </div>
@@ -3868,11 +3892,29 @@
     ['Blustery','blustery',WIND_RANGES[3],'var(--band-verywindy)'],
     ['Howling','howling',WIND_RANGES[4],'var(--band-gale)']
   ]; }
+  var winDetail = null;
+  function mk(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
   function fillInfoModal(kind){
     var title = document.getElementById('infoModalTitle');
     var body = document.getElementById('infoModalBody');
     body.textContent = '';
-    if(kind === 'wind'){
+    infoModal.querySelector('.disclaimers-modal-panel').classList.toggle('wd-panel', kind === 'window');
+    if(kind === 'window' && winDetail){
+      title.textContent = winDetail.title;
+      var place = (hdrLoc.textContent || '').trim();
+      if(place) body.appendChild(mk('p', 'wd-place', place));
+      body.appendChild(mk('p', 'wd-sum', winDetail.summary));
+      var dl = mk('dl', 'wd-list');
+      winDetail.rows.forEach(function(r){ dl.appendChild(mk('dt', null, r[0])); dl.appendChild(mk('dd', null, r[1])); });
+      body.appendChild(dl);
+      body.appendChild(mk('h3', 'wd-h', 'Hour by hour'));
+      var wrap = mk('div', 'wd-scroll'), table = mk('table', 'wd-table'), thead = mk('thead'), hr = mk('tr');
+      ['Hour', 'Temp', 'Sky', 'Wind', 'Precip', 'Humidity', 'AQI', 'Ground'].forEach(function(t){ var th = mk('th', null, t); th.scope = 'col'; hr.appendChild(th); });
+      thead.appendChild(hr); table.appendChild(thead);
+      var tb = mk('tbody');
+      winDetail.hours.forEach(function(row){ var tr = mk('tr'); row.forEach(function(c){ tr.appendChild(mk('td', null, c)); }); tb.appendChild(tr); });
+      table.appendChild(tb); wrap.appendChild(table); body.appendChild(wrap);
+    }else if(kind === 'wind'){
       title.textContent = 'Wind Key';
       var intro = document.createElement('p');
       intro.className = 'wk-intro';
@@ -3934,7 +3976,12 @@
   }
   document.addEventListener('click', function(e){
     var btn = e.target.closest && e.target.closest('[data-info]');
-    if(btn) openInfoModal(btn.getAttribute('data-info'), btn);
+    if(btn){ openInfoModal(btn.getAttribute('data-info'), btn); return; }
+    var more = e.target.closest && e.target.closest('[data-win]');
+    if(more){
+      var w = store('best').windows[+more.getAttribute('data-win')];
+      if(w){ winDetail = w.detail; openInfoModal('window', more); }
+    }
   });
   document.getElementById('infoModalClose').addEventListener('click', closeInfoModal);
   document.getElementById('infoModalBackdrop').addEventListener('click', closeInfoModal);
@@ -3954,7 +4001,7 @@
      The website's standards, plus the user's own limits (saved in this browser). A window is skipped when any limit is
      broken; everything that passes is still ranked by the same temperature / wind / dryness / air-quality score. */
   var BP_KEY = 'checkTheWind.bestPrefs';
-  var BP_STD = {tmin:25, tmax:100, wind:25, pop:40, ground:2, aqi:150};
+  var BP_STD = {tmin:25, tmax:100, wind:25, pop:40, hum:100, ground:2, aqi:150};
   var BP_FIELDS = [
     {k:'tmin',   label:'Lowest temperature',        min:0,  max:70,  step:1, fmt:function(v){ return fmtTemp(v); },
       help:'Colder windows are skipped.'},
@@ -3964,6 +4011,8 @@
       help:'Wind at or above this is skipped.'},
     {k:'pop',    label:'Chance of precipitation',   min:10, max:100, step:5, fmt:function(v){ return v >= 100 ? 'Any' : 'Under ' + v + '%'; },
       help:'Higher-chance windows are skipped.'},
+    {k:'hum',    label:'Humidity',                  min:30, max:100, step:5, fmt:function(v){ return v >= 100 ? 'Any' : 'Up to ' + v + '%'; },
+      help:'More humid windows are skipped.'},
     {k:'ground', label:'Ground wetness',            min:0,  max:2,   step:1, fmt:function(v){ return ['Dry only', 'Damp or drier', 'Any'][v]; },
       help:'Snow and ice are always skipped.'},
     {k:'aqi',    label:'Air quality index (AQI)',   min:25, max:200, step:5, fmt:function(v){ return 'Up to ' + v; },
@@ -4581,6 +4630,7 @@
       var temp = p.temperature;
       var mph = parseWind(p.windSpeed).high;
       var pop = (p.probabilityOfPrecipitation && typeof p.probabilityOfPrecipitation.value === 'number') ? p.probabilityOfPrecipitation.value : 0;
+      var hum = (p.relativeHumidity && typeof p.relativeHumidity.value === 'number') ? p.relativeHumidity.value : null;
       var text = (p.shortForecast || '').toLowerCase();
       var wetText = /rain|shower|drizzle|thunder|storm|sleet|freezing|snow|flurr|blizzard/.test(text);
       var iceText = /ice|icy|freezing rain|sleet/.test(text);
@@ -4601,7 +4651,7 @@
       var groundOk = P.ground >= 2 || groundNow < (P.ground === 0 ? 0.15 : 0.45);
       var hz = hazardType(p, true, true);
       var ok = daylight && !hz && mph < P.wind && (P.pop >= 100 || pop < P.pop) && !icyOrSnowy &&
-        temp >= P.tmin && temp <= P.tmax && (aqi === null || aqi <= P.aqi) && groundOk;
+        temp >= P.tmin && temp <= P.tmax && (aqi === null || aqi <= P.aqi) && (hum === null || hum <= P.hum) && groundOk;
       var why = [];
       if(!daylight) why.push('it\u2019s dark out');
       if(hz) why.push(hz.toLowerCase());
@@ -4611,6 +4661,7 @@
       if(temp < P.tmin) why.push('cold at ' + fmtTemp(temp));
       if(temp > P.tmax) why.push('hot at ' + fmtTemp(temp));
       if(aqi !== null && aqi > P.aqi) why.push('poor air quality (AQI ' + Math.round(aqi) + ')');
+      if(hum !== null && hum > P.hum) why.push('high humidity');
       if(!groundOk && !icyOrSnowy) why.push('wet ground');
 
       var dry = 1 - Math.min(1, groundNow + pop / 100 * 0.5);
@@ -4623,7 +4674,7 @@
       wet = Math.min(1, wet * wetDecay(temp) + intensity * 0.6);
       frozen = Math.min(1, frozen * wetDecay(temp) + (frozenText ? intensity * 0.6 : 0));
 
-      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, dir: p.windDirection || '', pop: pop, wet: groundNow, aqi: aqi, ok: ok, score: score, why: why, fc: p.shortForecast || ''};
+      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, dir: p.windDirection || '', pop: pop, hum: hum, wet: groundNow, aqi: aqi, ok: ok, score: score, why: why, fc: p.shortForecast || ''};
     });
   }
 
@@ -4885,23 +4936,32 @@
     '</svg>';
   }
 
-  // One Best Times card's data rows, in the same layout as Current Conditions: an icon, then a bold value, then a plain-words hint.
-  function btRow(icon, html){
-    return '<div class="bt-stat" role="listitem"><span class="bt-ico">' + icon + '</span><span class="bt-txt">' + html + '</span></div>';
-  }
-  function bestStatsHtml(o){
-    var band = bandFor(o.mph), rows = [];
-    var windIcon = '<svg width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><g transform="scale(2)" stroke="' + band.css + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></g></svg>';
-    rows.push(btRow(windIcon, '<b>' + fmtWind(o.mph) + '</b> · ' + band.label +
-      (o.dir ? ' ' + windArrowSvg(o.dir, band.css, 18, -3, true) + srDir(o.dir) : '')));
-    rows.push(btRow(weatherIcon(o.sky, true, 28), '<b>' + o.temp + '</b>' + (o.sky ? ' · ' + ampText(o.sky) : '')));
-    var gKey = o.wetMax < 0.15 ? 'dry' : 'wet';
-    rows.push(btRow(groundIcon(gKey, 28), '<b>' + groundWord(o.wetMax) + ' ground</b> · ' + o.precip));
-    if(o.aqi !== null){
-      var cat = aqiCatName(o.aqi);
-      rows.push(btRow(airNowIcon(AQI_CLOUD[cat]), '<b>AQI ' + Math.round(o.aqi) + '</b> · ' + AQI_ROW_WORDS[cat]));
-    }
-    return rows.join('');
+  // Everything we know about one window, for the View more dialog: window-level figures, then every hour in it
+  function bestDetail(h, o){
+    var rows = [];
+    var skies = [];
+    h.forEach(function(x){ var t = ampText(x.fc || ''); if(t && skies.indexOf(t) < 0) skies.push(t); });
+    var temps = h.map(function(x){ return x.temp; });
+    var winds = h.map(function(x){ return x.mph; });
+    var band = bandFor(o.mph);
+    rows.push(['Temperature', o.temp + (h.length > 1 ? ' across the window' : '')]);
+    rows.push(['Sky', skies.join(', ') || 'NA']);
+    var wLo = Math.round(Math.min.apply(null, winds)), wHi = Math.round(Math.max.apply(null, winds));
+    rows.push(['Wind', (wLo === wHi ? fmtWind(wHi) : windNum(wLo) + '–' + fmtWind(wHi)) + ' · ' + band.label + (o.dir && dirWord(o.dir) ? ', from the ' + dirWord(o.dir) : '')]);
+    rows.push(['Chance of precipitation', 'Up to ' + Math.round(o.popMax) + '%']);
+    rows.push(['Ground', groundWord(o.wetMax)]);
+    if(o.humVals.length){
+      var hLo = Math.round(Math.min.apply(null, o.humVals)), hHi = Math.round(Math.max.apply(null, o.humVals));
+      rows.push(['Humidity', (hLo === hHi ? hHi + '%' : hLo + '–' + hHi + '%') + ', average ' + o.humAvg + '%']);
+    }else{ rows.push(['Humidity', 'NA']); }
+    if(o.aqiMax !== null){ var cat = aqiCatName(o.aqiMax); rows.push(['Air quality', 'AQI up to ' + Math.round(o.aqiMax) + ' · ' + AQI_ROW_WORDS[cat]]); }
+    else{ rows.push(['Air quality', 'NA']); }
+    var hours = h.map(function(x){
+      var t = fmtH12(x.hour);
+      return [t.n + ' ' + t.ap, fmtTemp(x.temp), ampText(x.fc || '') || 'NA', fmtWind(x.mph) + (x.dir ? ' ' + x.dir : ''),
+        Math.round(x.pop) + '%', x.hum !== null ? Math.round(x.hum) + '%' : 'NA', x.aqi !== null ? String(Math.round(x.aqi)) : 'NA', groundWord(x.wet)];
+    });
+    return {title: o.day + ' · ' + o.time, rows: rows, hours: hours, summary: vdGoodSentence(vdAgg(h))};
   }
 
   var lastBest = null;
@@ -4932,19 +4992,29 @@
       var tempText = (tempNum(tMinRaw) === tempNum(tMaxRaw) ? tempNum(tMaxRaw) : tempNum(tMinRaw) + '–' + tempNum(tMaxRaw)) + (useCelsius ? '°C' : '°F');
       var peak = h.reduce(function(a, x){ return x.mph > a.mph ? x : a; }, h[0]);
       var midHr = h[Math.floor(h.length / 2)];
-      var precipText = popMax < 5 ? 'No precipitation' : Math.round(popMax) + '% chance of precip';
+      var humVals = h.filter(function(x){ return x.hum !== null; }).map(function(x){ return x.hum; });
+      var humAvg = humVals.length ? Math.round(humVals.reduce(function(a, b){ return a + b; }, 0) / humVals.length) : null;
+      var meta = [fmtWind(mph) + ' wind'];
+      if(popMax >= 10) meta.push(Math.round(popMax) + '% chance of precipitation');
+      if(humAvg !== null) meta.push(humAvg + '% humidity');
+      if(aqiMax !== null) meta.push('AQI ' + Math.round(aqiMax));
       return {
         key: first.iso,
         medal: medalSvg(idx),
         day: day,
         time: when,
         when: day + ' ' + when,
-        stats: bestStatsHtml({mph: mph, dir: peak.dir, temp: tempText, sky: midHr.fc, wetMax: wetMax, precip: precipText, aqi: aqiMax}),
+        temp: tempText,
+        sky: midHr.fc || '',
+        skyIcon: weatherIcon(midHr.fc, true, 30),
+        summary: vdGoodSentence(vdAgg(h)),
+        meta: meta.join(' · '),
+        detail: bestDetail(h, {day: day, time: when, temp: tempText, mph: mph, dir: peak.dir, popMax: popMax, wetMax: wetMax, aqiMax: aqiMax, humVals: humVals, humAvg: humAvg}),
         plain: day + ', ' + when + ': ' + tempText + ', ' + fmtWind(mph) + ' wind, ' + (popMax < 5 ? 'no precipitation expected' : Math.round(popMax) + '% chance of precipitation')
       };
     });
 
-    var notes = ['Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window.'];
+    var notes = ['Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average.'];
     if(!inputs.aqi) notes.push('We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.');
     if(!inputs.past) notes.push('We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.');
 
@@ -5248,6 +5318,7 @@
       else if((m = /^hot at (\S+)/.exec(w))) phrases.push('it heats up to ' + m[1]);
       else if(/snowy or icy/.test(w)) phrases.push('the ground turns snowy or icy');
       else if((m = /AQI (\d+)/.exec(w))) phrases.push('air quality worsens (AQI ' + m[1] + ')');
+      else if(/humidity/.test(w)) phrases.push('it gets humid');
       else if(/wet ground/.test(w)) phrases.push('the ground gets wet');
     });
     // When darkness is the only thing changing, say what the night looks like instead of just "it gets dark"
@@ -5295,6 +5366,7 @@
     if((m = /^poor air quality (\(.+\))$/.exec(w))) return 'air quality is poor ' + m[1];
     if(w === 'snowy or icy ground') return 'the ground is snowy or icy';
     if(w === 'wet ground') return 'the ground is wet';
+    if(w === 'high humidity') return 'it’s humid';
     if(w === 'thunderstorms') return 'there are thunderstorms around';
     if(w === 'showers') return 'there are showers around';
     if(w === 'rain') return 'it’s raining';
@@ -5498,6 +5570,7 @@
     if(/^cold at/.test(w)) return 'Cold';
     if(/^hot at/.test(w)) return 'Hot';
     if(/air quality/.test(w)) return 'Poor air';
+    if(/humidity/.test(w)) return 'Humid';
     if(/wet ground/.test(w)) return 'Wet ground';
     return vdCap(w);
   }
