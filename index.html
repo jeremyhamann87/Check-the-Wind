@@ -2104,9 +2104,9 @@
   .bt-skel-line{display:block; height:.875rem; width:80%}
   .bt-when .bt-skel-line:first-child{width:5rem}
   .hero-wrap .hero-top > #bestSection{ margin-top:0 }  /* on phones it sits in the hero, spaced by the hero's own 16px gap */
-  /* Phones: all text is 14px, except the hero headline. Form fields stay 16px so iOS doesn't zoom in on focus. */
+  /* Phones: all text is 14px, including the search and Customize fields, except the hero headline. */
   @media (max-width:31.1875em){
-    body :not(svg):not(svg *):not(input):not(textarea):not(select):not(.vd-head):not(.vd-head *){ font-size:14px !important }
+    body :not(svg):not(svg *):not(.vd-head):not(.vd-head *){ font-size:14px !important }
     .hero-wrap .hero-now .hero-reading .val{ line-height:1.3 !important }
     .db-layout > .hero-wrap .hero-head .m-loc-name{ font-size:14px !important }  /* beats the place name's own !important 1rem */
   }

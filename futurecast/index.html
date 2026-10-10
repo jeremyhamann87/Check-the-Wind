@@ -254,6 +254,10 @@
     .timeline-tick::before{top:-3px; height:2px}
     .timeline-tick.now::before{top:-4px; height:4px}
   }
+  /* Phones: all text is 14px, to match the main page */
+  @media (max-width:31.1875em){
+    body, body :not(svg):not(svg *){ font-size:14px !important }
+  }
 </style>
 </head>
 <body>
