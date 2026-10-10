@@ -2140,6 +2140,11 @@
   /* The go/stay tag is 14px at every size and in every place it appears (its weight is the original 700) */
   .vd-tag{ font-size:14px !important }
 
+  /* Phones: the bar already carries the town name and tag (and the windmill), so the row under it is not repeated */
+  @media (max-width:31.1875em){
+    .hero-head{ display:none }
+  }
+
   /* Short "copied" confirmation for the Share button */
   .ctw-toast{
     position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); z-index:70; max-width:calc(100vw - 32px);
@@ -5915,12 +5920,14 @@
   })();
   // Phones: once the place name has scrolled up under the sticky bar, the bar shows the place name in place of "Check the Wind"
   // (the windmill stays). The original title text remains in the page for screen readers.
+  var barLocAlwaysMq = window.matchMedia('(max-width:31.1875em)');   // phones: the town name and tag are in the bar from the start
+  barLocAlwaysMq.addEventListener('change', function(){ syncBarTitle(); });
   function syncBarTitle(){
     var bar = document.querySelector('header.top'), nm = document.getElementById('mLocName');
     if(!bar || !nm) return;
     var show = false;
     if(phoneBarMq.matches && (nm.textContent || '').trim()){
-      show = nm.getBoundingClientRect().bottom <= bar.getBoundingClientRect().bottom;
+      show = barLocAlwaysMq.matches || nm.getBoundingClientRect().bottom <= bar.getBoundingClientRect().bottom;
     }
     bar.classList.toggle('show-loc', show);
   }
