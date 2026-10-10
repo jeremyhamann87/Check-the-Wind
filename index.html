@@ -2076,7 +2076,6 @@
   .bt-sky{display:flex; flex:0 0 auto}
   .bt-sky svg{display:block; width:30px; height:30px}
   .bt-sum{margin:0; font-size:14px; line-height:1.35; color:var(--text)}
-  .bt-meta{margin:0; font-size:14px; line-height:1.35; color:var(--text-muted)}
   /* The whole card is the tap target: the header button's ::after stretches over the card */
   .bt-card{position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent}
   .bt-open{
@@ -2381,7 +2380,6 @@
             <div class="bt-main">
               <div class="bt-tline"><span class="bt-temp" x-text="w.temp"></span><span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span></div>
               <p class="bt-sum" x-text="w.summary"></p>
-              <p class="bt-meta" x-text="w.meta"></p>
             </div>
           </article>
         </template>
@@ -5000,10 +4998,6 @@
       var midHr = h[Math.floor(h.length / 2)];
       var humVals = h.filter(function(x){ return x.hum !== null; }).map(function(x){ return x.hum; });
       var humAvg = humVals.length ? Math.round(humVals.reduce(function(a, b){ return a + b; }, 0) / humVals.length) : null;
-      var meta = [fmtWind(mph) + ' wind'];
-      if(popMax >= 10) meta.push(Math.round(popMax) + '% chance of precipitation');
-      if(humAvg !== null) meta.push(humAvg + '% humidity');
-      if(aqiMax !== null) meta.push('AQI ' + Math.round(aqiMax));
       return {
         key: first.iso,
         medal: medalSvg(idx),
@@ -5014,7 +5008,6 @@
         sky: midHr.fc || '',
         skyIcon: weatherIcon(midHr.fc, true, 30),
         summary: vdGoodSentence(vdAgg(h)),
-        meta: meta.join(' · '),
         detail: bestDetail(h, {day: day, time: when, temp: tempText, mph: mph, dir: peak.dir, popMax: popMax, wetMax: wetMax, aqiMax: aqiMax, humVals: humVals, humAvg: humAvg}),
         plain: day + ', ' + when + ': ' + tempText + ', ' + fmtWind(mph) + ' wind, ' + (popMax < 5 ? 'no precipitation expected' : Math.round(popMax) + '% chance of precipitation')
       };
