@@ -14,8 +14,8 @@ a(T,tw,'Get outside!','Verdict is Yes: the current hour passes every limit and s
 a(T,tw,'Okay for now','Verdict is Maybe and the window starts now: the current hour passes the limits but is not ideal.','Yellow')
 a(T,tw,'Wait a bit','Verdict is Maybe and a good window starts later today.','Yellow')
 a(T,tw,'Wait a bit','Verdict is No right now but it is passing weather: a good window opens within the next 12 hours (usually tomorrow morning).','Yellow (same tag as the later-today Maybe case)')
-a(T,tw,'Stay inside','Verdict is No right now and the next good window is more than 12 hours away (but within 5 days).','Orange')
-a(T,tw,'Stay in all day','Verdict is No and there is no good window in the next 5 days.','Red')
+a(T,tw,'Stay inside','Verdict is No right now and the next good window is more than 12 hours away (but within [3 / 5 / 7] days).','Orange')
+a(T,tw,'Stay in all day','Verdict is No and there is no good window in the next [3 / 5 / 7] days.','Red')
 a(T,tw,'Stay aware','It is fine to be out right now (verdict Yes, or Maybe with the window starting now), but rain, snow, storms, strong wind or a rising chance of precipitation arrives within the next 3 hours. No Severe/Extreme alert.','Blue; Use caution and Night time take priority over it')
 a(T,tw,'Use caution','A Severe or Extreme National Weather Service alert is active and the verdict is not No (a Yes is downgraded to Maybe).','Orange; takes priority over the other tags unless the verdict is No')
 a(T,tw,'Night time','Darkness is the ONLY reason the hour is ruled out, wind is under 16 mph, no Severe/Extreme alert, and the verdict is not Yes.','Purple with a moon')
@@ -29,8 +29,8 @@ a(S,sw,'Okay for now, but not ideal: [weak points].','Verdict is Maybe and the w
 a(S,sw,'Not right now — [reasons]. Later: [the Yes sentence, lowercased]','Verdict is Maybe with a window later today.','Up to 2 reasons (see Reasons a time is ruled out).')
 a(S,sw,'Better to skip it for now: [reasons].','Verdict is No.','Up to 2 reasons; a Severe/Extreme alert is listed first as "an active [alert]".')
 a(S,sw,'Conditions look fine, but there’s an active [alert]. Be careful.','Severe/Extreme alert and the verdict is Yes or Maybe.','Replaces the lines above')
-a(S,'Verdict card, below the sentence','Next best window to get outside: [range].','Verdict is No and a good window exists within 5 days.')
-a(S,'Verdict card, below the sentence','No good window in the next 5 days.','Verdict is No and no window exists.')
+a(S,'Verdict card, below the sentence','Next best window to get outside: [range].','Verdict is No and a good window exists within [3 / 5 / 7] days.')
+a(S,'Verdict card, below the sentence','No good window in the next [3 / 5 / 7] days.','Verdict is No and no window exists.')
 a(S,'Verdict card, bottom','Active alert: [event]. Check the details before heading out.','Any active alert that is NOT Severe/Extreme (e.g. an advisory).')
 
 W='Weak points'
@@ -85,8 +85,8 @@ for name,verb,short,cond in [
 P='Paragraph (hero / verdict card)'
 pw='Hero paragraph'
 a(P,pw,'Conditions look good [from now until 6 PM / today 2 to 6 PM], but there’s an active [alert] for your area. [After-window sentence] Please be careful, and check the alert above before heading outside.','Severe/Extreme alert and verdict is Yes/Maybe.','"Conditions are okay" instead of "look good" when the verdict is the Okay-for-Now kind; "Conditions should be good [day] [time]" when the window is later.')
-a(P,pw,'It’s best to stay inside for now: there is an active [alert] and [other reason]. Please stay safe, and check the alert above. Your next best window to get outside is [day time]. / There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a movie and a snack.','Severe/Extreme alert and the verdict is No.','Serious tone, no playful wording')
-a(P,pw,'It’s a cozy-inside kind of moment right now: [reasons]. Your next best window to get outside is [day time], so it’s worth the wait. / There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a movie and a snack.','Verdict is No, no alert.','')
+a(P,pw,'It’s best to stay inside for now: there is an active [alert] and [other reason]. Please stay safe, and check the alert above. Your next best window to get outside is [day time]. / There’s no good outdoor activity window in the next [3 / 5 / 7] days, so it’s a fine time for a movie and a snack.','Severe/Extreme alert and the verdict is No.','Serious tone, no playful wording')
+a(P,pw,'It’s a cozy-inside kind of moment right now: [reasons]. Your next best window to get outside is [day time], so it’s worth the wait. / There’s no good outdoor activity window in the next [3 / 5 / 7] days, so it’s a fine time for a movie and a snack.','Verdict is No, no alert.','')
 y1=['[Day] [time] is a lovely time to get outside.','Good news: [day] [time] is a great time to get outside.','Go on, get outside! [Day] [time] looks lovely.']
 for s in y1: a(P,pw,s,'Verdict is Yes and it is comfortable (average 50–86°F, ground not wet).','One of three, chosen by the date')
 for s in ['[Day] [time] is a good time to get outside.','Good news: [day] [time] works for getting outside.']: a(P,pw,s,'Verdict is Yes but not especially comfortable.','One of two, chosen by the date')
@@ -100,7 +100,8 @@ for ph,wh in [('it’s dark out','No daylight right now.'),('winds up to [N] mph
     a(P,pw,ph,wh + ' Used in the "so hang tight" line.','')
 
 AF='After-window sentence'
-a(AF,'End of the Yes / Maybe paragraph','After [time], [phrases].','A good window is followed by an hour that is ruled out. Shows up to 2 phrases.','')
+a(AF,'End of the Yes / Maybe paragraph','After [time], [phrases]. / After the sun sets at [exact sunset time, e.g. 6:29 PM], [phrases].','A good window is followed by an hour that is ruled out. Shows up to 2 phrases. The sunset version is used when the light fading comes first.','')
+a(AF,'End of the Yes / Maybe paragraph','The sun sets at [exact sunset time].','Added at the end when the text has not already said when the sun sets and the sun is still to set today (not at night, not under a severe alert).','')
 for ph,wh in [('the light fades','Next hour is dark (see the night variations below)'),('expect [thunderstorms/rain/showers/snow]','Precipitation arrives'),('winds pick up to [N] mph','Wind reaches the limit'),('the chance of [rain / snow / sleet / mixed precip / hail] rises to [N]%','Precip chance reaches the limit'),('it drops to [N]°F','Gets too cold'),('it heats up to [N]°F','Gets too hot'),('the ground turns snowy or icy','Ice/snow on the ground'),('air quality worsens (AQI [N])','AQI above the limit'),('it gets humid','Humidity above the limit'),('the ground gets wet','Wet ground'),('conditions turn less ideal','Fallback when none of the above applies')]:
     a(AF,'Phrase used in the After sentence',ph,wh)
 a(AF,'Phrase when darkness is the only change','the light fades but it stays [clear / mostly clear / partly cloudy] and [calm / breezy / windy]','Next hour is dark only, with clear or partly cloudy skies.','Calm under 8 mph, breezy under 16, otherwise windy')
@@ -133,21 +134,21 @@ for s in ['It’s [calm/breezy] out there, a good night for a late bite or a coz
 for s in ['Good news: the sun’s back soon, and [day] [time] looks lovely.','Hang in there, the sun will be back soon, and [day] [time] looks lovely.','Morning is on its way, and [day] [time] looks like a lovely time to head out.']:
     a(N,pw,s,'Night time and the verdict is Maybe (a window opens later today).','One of three')
 for s in ['Your next best window to get outside is [day] [time], so sweet dreams until then.','Your next best window to get outside is [day] [time], so rest up until then.','Things look good again [day] [time], so get some rest.']:
-    a(N,pw,s,'Night time, small town, verdict is No with a window within 5 days.','One of three')
+    a(N,pw,s,'Night time, small town, verdict is No with a window within [3 / 5 / 7] days.','One of three')
 for s in ['Your next best window to get outside is [day] [time], and the city will be right here waiting.','Your next best window to get outside is [day] [time], so enjoy the lights until then.','Things look good again [day] [time].']:
-    a(N,pw,s,'Night time, big city, verdict is No with a window within 5 days.','One of three')
+    a(N,pw,s,'Night time, big city, verdict is No with a window within [3 / 5 / 7] days.','One of three')
 
 B='Best Times (empty state)'
 bw='Best Times (no window)'
-a(B,bw,'You might want to stay inside because [rain / showers / snow / thunderstorms / heavy ...] [is / are] moving through.','No good window in 5 days and a precipitation type leads (whichever shows up the most hours).','Title; the fireplace scene shows the matching weather in the window')
+a(B,bw,'You might want to stay inside because [rain / showers / snow / thunderstorms / heavy ...] [is / are] moving through.','No good window in [3 / 5 / 7] days and a precipitation type leads (whichever shows up the most hours).','Title; the fireplace scene shows the matching weather in the window')
 a(B,bw,'You might want to stay inside because [Calm/Breezy/Windy/Blustery/Howling] wind is moving through.','No window, no precipitation, but wind reaches 25 mph or more.','Title')
 a(B,bw,'[Precip] is already in the forecast, / [Precip] moves in around [time],','Precipitation is first.','Followed by:')
-a(B,bw,'continuing through the next 5 days with no clear break in sight. / clearing up by [time].','Precipitation lasts the whole window / ends within it.')
+a(B,bw,'continuing through the next [3 / 5 / 7] days with no clear break in sight. / clearing up by [time].','Precipitation lasts the whole window / ends within it.')
 a(B,bw,'Wind picks up too, gusting to [N] mph ([Blustery/Howling/...]) around [time].','Added when there is both precipitation and wind of 25 mph or more.')
-a(B,bw,'[Band] wind is already blowing, gusting to [N] mph, / [Band] wind picks up around [time], gusting to [N] mph,','Wind-only case.','Followed by "staying gusty through the next 5 days." or "calming down by [time]."')
-a(B,bw,'Time to stay inside for a while. No good window in the next 5 days. Rain, wet ground, strong wind or poor air quality are in the way. This updates when the forecast does.','No window and no single clear cause (the fallback).')
+a(B,bw,'[Band] wind is already blowing, gusting to [N] mph, / [Band] wind picks up around [time], gusting to [N] mph,','Wind-only case.','Followed by "staying gusty through the next [3 / 5 / 7] days." or "calming down by [time]."')
+a(B,bw,'Time to stay inside for a while. No good window in the next [3 / 5 / 7] days. Rain, wet ground, strong wind or poor air quality are in the way. This updates when the forecast does.','No window and no single clear cause (the fallback).')
 a(B,bw,'Your custom Best Times settings may be ruling windows out; use Customize to loosen them or reset to the defaults.','Added when the person has changed the Best Times limits.')
-a(B,'Best Times: Customize dialog, How Best Times work','Next 5 days, daylight only. Up to 3 options across those days, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average.','Always shown at the bottom of the Customize dialog (there is no longer an info button on the card).')
+a(B,'Best Times: Customize dialog, How Best Times work','Next [3 / 5 / 7] days, daylight only. Up to 3 options across those days, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average.','Always shown at the bottom of the Customize dialog (there is no longer an info button on the card).')
 a(B,'Best Times: Customize dialog, How Best Times work','We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.','Air-quality data failed to load.')
 a(B,'Best Times: Customize dialog, How Best Times work','We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.','Past-rainfall data failed to load.')
 a(B,'Best Times cards','Card header: [medal] [Today / weekday name, e.g. Sunday] [time range, e.g. 7 AM–6 PM or Now–6 PM], above a divider','Every card.','Up to 3 cards, ranked 1 to 3 with gold, silver and bronze medals; on phones they scroll sideways')
@@ -157,6 +158,7 @@ a(B,'Best Times cards','(No visible label) Tapping or clicking a card opens its 
 a(B,'Best Times detail dialog','Title: [Day] · [time range]; the place name; the summary sentence','Card detail dialog.')
 a(B,'Best Times detail dialog','Temperature: [low–high] across the window | Sky: [forecasts in the window] | Wind: [low–high] · [Calm…Howling], from the [direction] | Chance of [rain / snow / sleet / mixed precip / hail]: Up to [N]% | Ground: [Dry/Damp/Wet] | Humidity: [low–high], average [N]% | Air quality: AQI up to [N] · [Good air…]','Card detail dialog, top list.','NA when a value is not available')
 a(B,'Best Times detail dialog','Hour by hour: Hour | Temp | Sky | Wind | Precip | Humidity | AQI | Ground','Card detail dialog, table with one row per hour in the window.','NA when a value is not available')
+a(B,'Best Times: Customize dialog','Time scale: 3 days / 5 days / 7 days (segmented control, first in the dialog; default 5 days). Highest temperature is the first slider, then Lowest temperature.','Always.','Sets how far ahead Best Times looks; the day counts in the explainer and the no-window messages follow it')
 a(B,'Best Times few windows','There is only 1 best time right now. Adjust settings to see more. / There are only 2 best times right now. Adjust settings to see more.','Under the cards when only 1 or 2 windows are found (light gray text).','Not shown with 3 windows or with none (the empty state takes over)')
 a(B,'Best Times share button','Share these best times (button name for screen readers; the button shows only a share icon)','Always, when there is at least one window.','Hidden when there is no best-time window')
 a(B,'Best Times share (phone and tablet)','Title: Best times to get outside in [place] | Text: Best times to get outside in [place]: / 1. [Day], [Mon D], [time range] / [temp], [sky], [N] mph wind, [N]% chance of [rain / snow / sleet / mixed precip / hail] / ... then a blank line and the link for that exact place (all one block of text; no separate link field)','Share button on a touch device, opens the phone’s share sheet. The same text is also copied to the clipboard.','One entry per Best Times card. "no precipitation expected" when the chance is under 5%; the type is the one at the hour the chance peaks. The link carries the place (?lat=&lon=&place=) so a friend opens the same location')
@@ -202,13 +204,13 @@ a('Units','Every temperature and wind speed shown','°C and km/h for visitors in
 HL='Headline (bold, top of the hero)'
 hw='Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.'
 for ph,wh,n in [
- ('Lovely until [time]. / Lovely [day] [time range].','Verdict Yes and comfortable (average 50–86°F, ground not wet).','Canadian: "Beauty day, eh? Nice out until [time]." / "Give’r! Lovely until [time]."'),
- ('Nice out until [time]. / Nice out [day] [time range].','Verdict Yes, not especially comfortable.','Canadian: "Not bad, eh. Nice out until [time]."'),
+ ('Lovely through the evening. / Lovely until [rain arrives / storms arrive / the wind picks up / ...] around [time]. / Lovely [day] [time range].','Verdict Yes and comfortable (average 50–86°F, ground not wet). "Through the evening" when only the sun going down ends the window; the weather wording when something else does.','Canadian: "Beauty day, eh? Nice out until [time]." / "Give’r! Lovely until [time]."'),
+ ('Nice out through the evening. / Nice out until [weather] around [time]. / Nice out [day] [time range].','Verdict Yes, not especially comfortable. Same "through the evening" and weather rules as above.','Canadian: "Not bad, eh. Nice out until [time]."'),
  ('Nice out until [time], then [rain / snow / storms / wind / ice].','Stay aware: weather arrives within 3 hours.',''),
  ('Doable, not ideal: [first weak point]. / Doable now, but [weather] by [time].','Verdict Maybe and the window starts now.',''),
  ('[Why short] now. Lovely [day] [time range].','Verdict Maybe with a window later today (why: Dark out, Storms, Rain, Snow, Showers, Windy, Rain likely, Icy ground, Cold, Hot, Poor air, Humid, Wet ground).','Canadian: "Lovely, eh: …"'),
- ('[Why short]. Next best window to get outside: [day] [time range].','Verdict No (no alert), a good window within 5 days.',''),
- ('[Why short]. No good window for 5 days.','Verdict No, no window in 5 days.',''),
+ ('[Why short]. Next best window to get outside: [day] [time range].','Verdict No (no alert), a good window within [3 / 5 / 7] days.',''),
+ ('[Why short]. No good window for [3 / 5 / 7] days.','Verdict No, no window in [3 / 5 / 7] days.',''),
  ('Dark out. Next best window to get outside: [day] [time range]. / Dark out. Not a night for outdoor plans.','Night time tag.','Canadian: "Dark out, eh."'),
  ('Fine out, but there’s an active [alert].','Severe/Extreme alert and the verdict is Yes or Maybe.',''),
  ('[Alert] in effect.','Severe/Extreme alert and the verdict is No (e.g. "Hurricane warning in effect.").','')]:
@@ -234,7 +236,7 @@ for name,verb,short,cond in [
     a(BC,'Chip / paragraph (big cities use this list instead of the general Activities list)',f'{name}  |  short: {short}  |  verb: "{verb}"',bc_cond + ' ' + cond,'')
 a(BC,'Activities line','Better saved for museums, shows and a good restaurant.','Big city and the verdict is No.','Other places say "Better saved for indoor plans."')
 a(BC,'Verdict details','A good time for a museum, a show or a long dinner.','Big city and the verdict is No.','Other places say "A good time for indoor plans."')
-a(BC,bcw,'There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a museum, a show or a long dinner out.','Big city, verdict No, no window in 5 days, no alert.','')
+a(BC,bcw,'There’s no good outdoor activity window in the next [3 / 5 / 7] days, so it’s a fine time for a museum, a show or a long dinner out.','Big city, verdict No, no window in [3 / 5 / 7] days, no alert.','')
 
 for city,tr in [('New York','the subway'),('Los Angeles','the Metro'),('Chicago','the L'),('Houston','the light rail'),('Phoenix','the light rail'),('Philadelphia','the subway'),('San Diego','the trolley'),('Dallas','the light rail'),('San Jose','the light rail'),('Charlotte','the light rail'),('San Francisco','BART or Muni'),('Seattle','the light rail (Link; Seattle has no subway)'),('Denver','the light rail'),('Washington, DC','the Metro'),('Boston','the T'),('Baltimore','the Metro'),('Tucson','the streetcar'),('Sacramento','the light rail'),('Atlanta','MARTA'),('Kansas City','the streetcar'),('Miami','Metrorail'),('Oakland','BART'),('Minneapolis','the light rail'),('Cleveland','the rapid transit'),('New Orleans','the streetcar'),('Pittsburgh','the light rail'),('Cincinnati','the streetcar'),('St. Louis','the light rail'),('Salt Lake City','the light rail'),('Portland','the light rail'),('Norfolk','the light rail'),('Buffalo','the Metro Rail'),('Toronto','the subway'),('Montreal','the Metro'),('Vancouver','the SkyTrain'),('Calgary','the CTrain'),('Edmonton','the LRT'),('Ottawa','the O-Train')]:
     a('Big city transit','Used in the "or a cab beats a long walk" line',city + ': ' + tr,'Big city with rain, snow, bitter cold or strong wind.','Checked against Wikipedia lists of U.S. heavy rail and light rail systems')
@@ -290,7 +292,7 @@ for ph,wh,n in [
  ('Give’r!','Dry ground and almost no chance of rain.','One extra sentence, chosen by the date'),
  ('It’s a bit of a gong show out there right now: [reasons] / Bit of a gong show outside right now: [reasons]','Verdict is No with two or more reasons, or wind of 25 mph (40 km/h) or more.',''),
  ('There’s a bit of a weather kerfuffle going on right now: [reasons] / Even the Mounties would sit this one out: [reasons] / It’s a cozy-inside kind of moment right now: [reasons]','Verdict is No (milder reasons).',''),
- ('There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a movie and a double-double from Tim Hortons. / ... and pancakes with real maple syrup.','Verdict is No with no window in 5 days.',''),
+ ('There’s no good outdoor activity window in the next [3 / 5 / 7] days, so it’s a fine time for a movie and a double-double from Tim Hortons. / ... and pancakes with real maple syrup.','Verdict is No with no window in [3 / 5 / 7] days.',''),
  ('It’s night time and dark out, eh, so most outdoor activities will be a challenge unless you’ve got a good headlamp.','Night time tag, small town.','Replaces one of the six standard openers'),
  ('Stargazing is free, so save your loonies and toonies for tomorrow’s coffee. It’s [calm/breezy] and [clear/partly cloudy] out there.','Night time, small town, clear or partly cloudy sky.','Replaces one of the three standard star lines'),
  ('Bring your toque if you do step out.','Night time and under 10°C (50°F).','Extra sentence')]:

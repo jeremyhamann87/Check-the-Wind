@@ -392,6 +392,10 @@
   /* each setting is its own card on a tinted body */
   .disclaimers-modal-panel.bp-panel .bp-body{background:color-mix(in srgb, var(--text) 5%, var(--surface))}
   #bpFields{display:grid; gap:12px}
+  .bp-seg{display:flex; border:1px solid var(--border); border-radius:6px; overflow:hidden; margin-top:6px}
+  .bp-seg-btn{flex:1 1 0; min-height:40px; padding:0 8px; border:0; border-right:1px solid var(--border); background:var(--surface); color:var(--text); font:inherit; font-size:14px; font-weight:500; cursor:pointer}
+  .bp-seg-btn:last-child{border-right:0}
+  .bp-seg-btn[aria-checked="true"]{background:var(--text); color:var(--surface)}
   .bp-how{margin:0 0 12px; padding:0 4px 12px; border-bottom:1px solid var(--table-border)}
   .disclaimers-modal-body .bp-how-h{margin:0 0 4px; font-size:1rem; font-weight:600; color:var(--text-muted)}
   .disclaimers-modal-body .bp-how-p{margin:0; font-size:1rem; line-height:1.5; color:var(--text-muted); font-weight:400}
@@ -4134,12 +4138,14 @@
      The website's standards, plus the user's own limits (saved in this browser). A window is skipped when any limit is
      broken; everything that passes is still ranked by the same temperature / wind / dryness / air-quality score. */
   var BP_KEY = 'checkTheWind.bestPrefs';
-  var BP_STD = {tmin:25, tmax:100, wind:25, pop:40, hum:100, ground:2, aqi:150};
+  var BP_STD = {days:5, tmin:25, tmax:100, wind:25, pop:40, hum:100, ground:2, aqi:150};
   var BP_FIELDS = [
-    {k:'tmin',   label:'Lowest temperature',        min:0,  max:70,  step:1, fmt:function(v){ return fmtTemp(v); },
-      help:'Colder windows are skipped.'},
+    {k:'days',   label:'Time scale',                min:3,  max:7,   step:1, seg:[3, 5, 7], fmt:function(v){ return v + ' days'; },
+      help:'How many days ahead Best Times looks.'},
     {k:'tmax',   label:'Highest temperature',       min:70, max:120, step:1, fmt:function(v){ return fmtTemp(v); },
       help:'Hotter windows are skipped.'},
+    {k:'tmin',   label:'Lowest temperature',        min:0,  max:70,  step:1, fmt:function(v){ return fmtTemp(v); },
+      help:'Colder windows are skipped.'},
     {k:'wind',   label:'Wind stays under',          min:5,  max:40,  step:1, fmt:function(v){ return fmtWind(v); },
       help:'Wind at or above this is skipped.'},
     {k:'pop',    label:'Chance of precipitation',   min:10, max:100, step:5, fmt:function(v){ return v >= 100 ? 'Any' : 'Under ' + v + '%'; },
@@ -4158,6 +4164,7 @@
       var v = (rv === null || rv === undefined || rv === '') ? NaN : +rv;
       if(!isFinite(v)) v = BP_STD[f.k];
       v = Math.min(f.max, Math.max(f.min, Math.round(v / f.step) * f.step));
+      if(f.seg) v = v < 4 ? 3 : v < 6 ? 5 : 7;
       out[f.k] = v;
     });
     return out;
@@ -4174,6 +4181,28 @@
   function bpBuild(){
     if(bpFieldsEl.firstChild) return;
     BP_FIELDS.forEach(function(f){
+      if(f.seg){
+        var srow = document.createElement('div'); srow.className = 'bp-row bp-row--seg';
+        var stop = document.createElement('div'); stop.className = 'bp-top';
+        var slab = document.createElement('span'); slab.className = 'bp-label'; slab.id = 'bpLab-' + f.k; slab.textContent = f.label;
+        stop.appendChild(slab);
+        var group = document.createElement('div'); group.className = 'bp-seg'; group.setAttribute('role', 'radiogroup'); group.setAttribute('aria-labelledby', 'bpLab-' + f.k);
+        var hidden = document.createElement('input'); hidden.type = 'hidden'; hidden.id = 'bp-' + f.k;
+        var btns = f.seg.map(function(n){
+          var b = document.createElement('button'); b.type = 'button'; b.className = 'bp-seg-btn'; b.setAttribute('role', 'radio'); b.dataset.val = String(n);
+          b.textContent = n + ' days';
+          b.addEventListener('click', function(){ hidden.value = String(n); bpShowVal(f); bpStatus.textContent = ''; });
+          group.appendChild(b); return b;
+        });
+        var shelp = document.createElement('p'); shelp.className = 'bp-help';
+        var sh1 = document.createElement('span'); sh1.textContent = f.help;
+        var sh2 = document.createElement('span'); sh2.className = 'bp-std'; sh2.textContent = 'Default: ' + f.fmt(BP_STD[f.k]);
+        shelp.appendChild(sh1); shelp.appendChild(sh2);
+        srow.appendChild(stop); srow.appendChild(group); srow.appendChild(shelp); srow.appendChild(hidden);
+        bpFieldsEl.appendChild(srow);
+        bpInputs[f.k] = {inp: hidden, out: {textContent: ''}, btns: btns};
+        return;
+      }
       var row = document.createElement('div'); row.className = 'bp-row';
       var top = document.createElement('div'); top.className = 'bp-top';
       var lab = document.createElement('label'); lab.className = 'bp-label'; lab.htmlFor = 'bp-' + f.k; lab.textContent = f.label;
@@ -4194,6 +4223,10 @@
   }
   function bpShowVal(f){
     var o = bpInputs[f.k], v = +o.inp.value;
+    if(f.seg){
+      o.btns.forEach(function(b){ var on = +b.dataset.val === v; b.setAttribute('aria-checked', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
+      return;
+    }
     o.out.textContent = f.fmt(v);
     o.inp.setAttribute('aria-valuetext', f.fmt(v));
     o.inp.style.setProperty('--pct', ((v - f.min) / (f.max - f.min) * 100) + '%');
@@ -4208,7 +4241,7 @@
     showModal(bpModal);
     setBackgroundInert(true, bpModal);
     lockPage('customize');
-    bpInputs[BP_FIELDS[0].k].inp.focus();
+    var first = bpInputs[BP_FIELDS[0].k]; (first.btns ? first.btns.filter(function(b){ return b.tabIndex === 0; })[0] || first.btns[0] : first.inp).focus();
   }
   function closeBp(){
     if(bpModal.hidden) return;
@@ -4226,7 +4259,7 @@
     if(lastBest){ when = renderBest(lastBest.hourly, lastBest.inputs); }
     closeBp();
     announce('Best Times updated' + (bpIsCustom(bestPrefs) ? ' with your settings' : ' to the defaults') + '. ' +
-      (lastBest ? (when ? 'Best window outside: ' + when + '.' : 'No good window outside in the next 5 days.') : ''));
+      (lastBest ? (when ? 'Best window outside: ' + when + '.' : 'No good window outside in the next ' + bestPrefs.days + ' days.') : ''));
   }
   document.getElementById('bestCustomBtn').addEventListener('click', function(e){ openBp(e.currentTarget); });
   document.getElementById('bestPrefsClose').addEventListener('click', closeBp);
@@ -4410,7 +4443,7 @@
 
   /* ---------- Best windows outside ---------- */
   pendingStores.best = {state:'idle', windows:[], how:'', few:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear')};
-  var BEST_HORIZON_HOURS = 120;   // five days of hourly forecast
+  function bestHorizonHours(){ return bestPrefs.days * 24; }   // 3, 5 or 7 days of hourly forecast
   var BEST_MAX_WINDOWS = 3;
 
   function renderBestSkeleton(){
@@ -4441,7 +4474,7 @@
   async function fetchBestInputs(lat, lon){
     var q = 'latitude=' + lat.toFixed(4) + '&longitude=' + lon.toFixed(4) + '&timezone=auto';
     var r = await Promise.all([
-      fetchOptionalJson('https://air-quality-api.open-meteo.com/v1/air-quality?' + q + '&hourly=us_aqi&forecast_days=5'),
+      fetchOptionalJson('https://air-quality-api.open-meteo.com/v1/air-quality?' + q + '&hourly=us_aqi&forecast_days=7'),
       fetchOptionalJson('https://api.open-meteo.com/v1/forecast?' + q + '&hourly=precipitation&past_days=2&forecast_days=1')
     ]);
     function toMap(data, field){
@@ -4760,7 +4793,7 @@
       });
     }
     var sun = daylightIntervals();
-    return hourly.slice(0, BEST_HORIZON_HOURS).map(function(p, i){
+    return hourly.slice(0, bestHorizonHours()).map(function(p, i){
       var temp = p.temperature;
       var mph = parseWind(p.windSpeed).high;
       var pop = (p.probabilityOfPrecipitation && typeof p.probabilityOfPrecipitation.value === 'number') ? p.probabilityOfPrecipitation.value : 0;
@@ -4903,12 +4936,12 @@
   function buildEmptyBestNote(hourly){
     var fallback = {
       title: 'Time to stay inside for a while.',
-      sub: 'No good window in the next 5 days. Rain, wet ground, strong wind or poor air quality are in the way. This updates when the forecast does.',
+      sub: 'No good window in the next ' + bestPrefs.days + ' days. Rain, wet ground, strong wind or poor air quality are in the way. This updates when the forecast does.',
       kind: 'clear'
     };
     if(!hourly || !hourly.length) return fallback;
 
-    var n = Math.min(BEST_HORIZON_HOURS, hourly.length);
+    var n = Math.min(bestHorizonHours(), hourly.length);
     var todayStr = localDate(hourly[0].startTime);
     var tomorrowStr = nextDateStr(todayStr);
 
@@ -4941,7 +4974,7 @@
         : label + ' moves in around ' + describeHazardTime(first.p.startTime, todayStr, tomorrowStr);
 
       lead += last.i >= n - 1
-        ? ', continuing through the next 5 days with no clear break in sight.'
+        ? ', continuing through the next ' + bestPrefs.days + ' days with no clear break in sight.'
         : ', clearing up by ' + describeHazardTime(last.p.startTime, todayStr, tomorrowStr) + '.';
 
       sentences.push(lead);
@@ -4964,7 +4997,7 @@
           ? band + ' wind is already blowing, gusting to ' + fmtWind(peak.mph)
           : band + ' wind picks up around ' + describeHazardTime(wFirst.p.startTime, todayStr, tomorrowStr) + ', gusting to ' + fmtWind(peak.mph);
         wLead += wLast.i >= n - 1
-          ? ', staying gusty through the next 5 days.'
+          ? ', staying gusty through the next ' + bestPrefs.days + ' days.'
           : ', calming down by ' + describeHazardTime(wLast.p.startTime, todayStr, tomorrowStr) + '.';
         sentences.push(wLead);
         title = stayInsideTitle(band + ' wind');
@@ -5147,7 +5180,7 @@
       };
     });
 
-    var notes = ['Next 5 days, daylight only. Up to 3 options across those days, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average.'];
+    var notes = ['Next ' + bestPrefs.days + ' days, daylight only. Up to 3 options across those days, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average.'];
     if(!inputs.aqi) notes.push('We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.');
     if(!inputs.past) notes.push('We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.');
 
@@ -5431,7 +5464,7 @@
     res.hs = hrs.slice(0, 3);
     res.sentence = 'Better to skip it for now' + (res.why.length ? ': ' + vdList(res.why.slice(0, 2)) : '') + '.';
     if(nextRun){ res.next = 'Next best window to get outside: ' + vdRange(nextRun, c) + '.'; res.nextHs = nextRun; }
-    else res.next = 'No good window in the next 5 days.';
+    else res.next = 'No good window in the next ' + bestPrefs.days + ' days.';
     return finish(res, vdAgg(res.hs));
 
     // A Severe/Extreme NWS alert never makes the weather itself look better or worse: the forecast verdict stands, but a
@@ -5462,6 +5495,31 @@
     return {day: day, phrase: f.i === 0 ? 'from now until ' + to : 'from ' + from + (f.i === 0 ? '' : ' to ') + to};
   }
   function vdLc(t){ return t.charAt(0).toLowerCase() + t.slice(1); }
+  // Exact sunset time (in the place's own time zone) for the sunset nearest a moment, or the next one today
+  function vdSunLabel(date){
+    var o = {hour:'numeric', minute:'2-digit'};
+    if(locationTZ) o.timeZone = locationTZ;
+    return date.toLocaleTimeString('en-US', o);
+  }
+  function vdSunsetNear(ms){
+    var best = null;
+    sunEvents.forEach(function(e){
+      if(e.type !== 'sunset') return;
+      var d = Math.abs(e.time.getTime() - ms);
+      if(d <= 5400000 && (!best || d < best.d)) best = {d: d, e: e};
+    });
+    return best ? vdSunLabel(best.e.time) : '';
+  }
+  // "The sun sets at 6:29 PM." when the text hasn't already said so and the sun is still to set today
+  function vdSunNote(c, txt){
+    if(/sun sets/.test(txt)) return '';
+    var now = c.hrs && c.hrs[0] ? new Date(c.hrs[0].iso).getTime() : Date.now(), ev = null;
+    sunEvents.forEach(function(e){
+      if(e.type === 'sunset' && e.time.getTime() > now && (!ev || e.time < ev.time)) ev = e;
+    });
+    if(!ev || ev.time.getTime() - now > 20 * 3600000) return '';
+    return 'The sun sets at ' + vdSunLabel(ev.time) + '.';
+  }
   // What the weather turns into once the good window ends: the first hour after it, described by whatever rules that hour out
   function vdAfter(r, c){
     if(!r.hs || !r.hs.length) return '';
@@ -5496,6 +5554,10 @@
       }
     }
     if(!phrases.length) phrases.push('conditions turn less ideal');
+    if(/^the light fades/.test(phrases[0])){
+      var sunAt = vdSunsetNear(new Date(last.iso).getTime() + 3600000);
+      if(sunAt) return 'After the sun sets at ' + sunAt + ', ' + vdList(phrases.slice(0, 2)) + '.';
+    }
     return 'After ' + clock + ', ' + vdList(phrases.slice(0, 2)) + '.';
   }
   // Large U.S. and Canadian cities (lat, lon): within ~30 km of one of these the night is bright and people are out late
@@ -5666,8 +5728,8 @@
           : 'It’s a cozy-inside kind of moment right now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
       }
       if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next best window to get outside is ' + sp3.day + ' ' + sp3.phrase + (r.alert ? '.' : ', so it’s worth the wait.')); }
-      else if(vdBigCity() && !r.alert) out.push('There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a museum, a show or a long dinner out.');
-      else out.push(caVoice && !r.alert ? vdPick(['There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a movie and a double-double from Tim Hortons.', 'There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a movie and pancakes with real maple syrup.'], seed, 6) : 'There’s no good outdoor activity window in the next 5 days, so it’s a fine time for a movie and a snack.');
+      else if(vdBigCity() && !r.alert) out.push('There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a museum, a show or a long dinner out.');
+      else out.push(caVoice && !r.alert ? vdPick(['There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a movie and a double-double from Tim Hortons.', 'There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a movie and pancakes with real maple syrup.'], seed, 6) : 'There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a movie and a snack.');
     }
     return out;
   }
@@ -5741,6 +5803,29 @@
   function vdNbTimes(t){
     return String(t).replace(/\b(from |until |by )?(\d{1,2}(?::\d\d)?)( to |[–-])?(\d{1,2}(?::\d\d)?)? ?(AM|PM)\b/g, function(m){ return m.replace(/ /g, '\u00A0'); });
   }
+  // Why the good window ends: just the sun going down ('dark'), or weather that is on its way ('weather', with what and when)
+  function vdEnding(r, c){
+    var last = r.hs[r.hs.length - 1], next = c.hrs[last.i + 1];
+    if(!next) return null;
+    var other = (next.why || []).filter(function(w){ return !/dark out/.test(w); });
+    if(!other.length) return (next.why || []).length ? {kind: 'dark'} : null;
+    return {kind: 'weather', why: other[0], clock: vdClock(next)};
+  }
+  function vdArrives(w){
+    var m;
+    if(/^thunderstorms$/.test(w)) return 'storms arrive';
+    if(/^(rain|snow)$/.test(w)) return w + ' arrives';
+    if(/^showers$/.test(w)) return 'showers arrive';
+    if((m = /chance of (rain|snow|sleet|mixed precip|hail|precipitation)/.exec(w))) return (m[1] === 'precipitation' ? 'rain' : m[1]) + ' moves in';
+    if(/^wind up to/.test(w)) return 'the wind picks up';
+    if(/snowy or icy/.test(w)) return 'ice arrives';
+    if(/^cold at/.test(w)) return 'it turns cold';
+    if(/^hot at/.test(w)) return 'it turns hot';
+    if(/air quality/.test(w)) return 'the air quality drops';
+    if(/humidity/.test(w)) return 'it turns humid';
+    if(/wet ground/.test(w)) return 'the ground gets wet';
+    return 'conditions change';
+  }
   function vdHeadline(r, c){
     var seed = vdSeed(c), ca = caVoice;
     function endAt(hs){ var t = fmtH12(hs[hs.length - 1].hour + 1); return t.n + ' ' + t.ap; }
@@ -5754,7 +5839,11 @@
     if(r.state === 'yes'){
       var comfy = r.agg.tAvg >= 50 && r.agg.tAvg <= 86 && r.agg.wet < 0.45;
       if(r.incoming) return 'Nice out until ' + vdClock(c.hrs[r.incoming.i]) + ', then ' + vdWxWord(r.incoming.why[0]) + '.';
-      var when = r.hs[0].i === 0 ? 'until ' + endAt(r.hs) : vdRange(r.hs, c);
+      var when;
+      if(r.hs[0].i === 0){
+        var en = vdEnding(r, c);
+        when = !en ? 'until ' + endAt(r.hs) : en.kind === 'dark' ? 'through the evening' : 'until ' + vdArrives(en.why) + ' around ' + en.clock;
+      }else when = vdRange(r.hs, c);
       if(ca) return comfy ? vdPick(['Beauty day, eh? Nice out ' + when + '.', 'Give’r! Lovely ' + when + '.'], seed, 1) : 'Not bad, eh. Nice out ' + when + '.';
       return comfy ? 'Lovely ' + when + '.' : 'Nice out ' + when + '.';
     }
@@ -5769,13 +5858,14 @@
     }
     var why = r.why && r.why.length ? vdWhyShort(r.why[0]) + '. ' : '';
     if(r.nextHs) return why + 'Next best window to get outside: ' + vdRange(r.nextHs, c) + '.';
-    return (why || '') + 'No good window for 5 days.';
+    return (why || '') + 'No good window for ' + bestPrefs.days + ' days.';
   }
   // The gray text under the headline: the earlier paragraph's wording (minus what the headline already says) plus clothing and pet advice
   function vdSubLines(r, c, actList){
     var sents = vdProseCore(r, c, actList), g = vdGear(c), planning = (r.state === 'yes' || r.state === 'maybe') && !r.alert;
     var keep = (r.night || (r.state === 'no' && !r.alert)) ? sents.slice(0, -1) : (r.state === 'no' ? sents : sents.slice(1));  // a severe-alert No keeps its safety sentence
     var lines = [];
+    if(planning && !r.night){ var sn = vdSunNote(c, keep.join(' ')); if(sn) keep.push(sn); }
     if(keep.length) lines.push({label: planning ? 'Do' : '', text: keep.join(' ')});
     if(!r.alert) lines.push({label: 'Wear', text: g.wear + (g.pet ? ' ' + g.pet : '')});   // severe alert: safety only, no clothing or pet tips
     return lines;
@@ -6380,7 +6470,7 @@
     announce('Forecast updated for ' + hdrLoc.textContent + '. Wind now ' + windNum(nowW.high) + (useKmh ? ' kilometres per hour' : ' miles per hour') +
       (dirWord(hourly[0].windDirection) ? ' from the ' + dirWord(hourly[0].windDirection) : '') + ', ' + nowBand.label.toLowerCase() + '. ' +
       ampText(hourly[0].shortForecast) + ', ' + tempNum(hourly[0].temperature) + (useCelsius ? ' degrees Celsius. ' : ' degrees. ') +
-      (bestWhen ? 'Best window outside: ' + bestWhen + '.' : 'No good window outside in the next 5 days.'));
+      (bestWhen ? 'Best window outside: ' + bestWhen + '.' : 'No good window outside in the next ' + bestPrefs.days + ' days.'));
     window.dispatchEvent(new Event('resize'));
   }
 
