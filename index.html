@@ -951,7 +951,13 @@
   @media (min-width:64em){ .footer-contact:hover{color:var(--text-muted)} }
   .footer-contact:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:2px}
   /* Phones: stack the footer links in one column; tablet and desktop keep them in a row */
-  @media (max-width:31.1875em){ .footer-bar{flex-direction:column; align-items:flex-start; gap:0} }
+  @media (max-width:31.1875em){
+    .footer-bar{flex-direction:column; align-items:flex-start; gap:0}
+    /* tighter on phones: shorter rows, less space above, nothing extra below */
+    footer{margin-top:8px; padding-top:0}
+    .disclaimers-link, .footer-contact{min-height:34px; padding:6px 0}
+    .data-asof{padding:6px 0 0; line-height:1.3}
+  }
   /* Tablet: tighter gaps so all four items fit on one line at 768px */
   @media (min-width:31.25em) and (max-width:63.99em){ .footer-bar{column-gap:8px} }
   /* Desktop: links on one row with the contact link on the right edge, "Data as of" on its own line below */
