@@ -2109,6 +2109,7 @@
   .bt-card--skel{min-height:7rem; min-width:15rem}
   .bt-skel-medal{width:22px; height:22px; border-radius:50%; flex:0 0 auto}
   .bt-skel-big{display:block; height:1.75rem; width:55%}
+  .bt-few{margin:10px 4px 0; font-size:14px; line-height:1.4; font-weight:300; color:var(--text-muted)}
   .bt-skel-line{display:block; height:.875rem; width:80%}
   .bt-when .bt-skel-line:first-child{width:5rem}
   .hero-wrap .hero-top > #bestSection{ margin-top:0 }  /* on phones it sits in the hero, spaced by the hero's own 16px gap */
@@ -2441,6 +2442,7 @@
         </div>
       </div>
       </div>
+      <p class="bt-few" x-show="$store.best.few" x-text="$store.best.few"></p>
       <template x-if="$store.best.state === 'empty'">
         <div class="bw-empty">
           <div><span class="bw-empty-title" x-text="$store.best.emptyTitle"></span><span class="bw-empty-sub" x-text="$store.best.emptySub"></span></div>
@@ -4394,7 +4396,7 @@
   }
 
   /* ---------- Best windows outside ---------- */
-  pendingStores.best = {state:'idle', windows:[], how:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear')};
+  pendingStores.best = {state:'idle', windows:[], how:'', few:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear')};
   var BEST_HORIZON_HOURS = 120;   // five days of hourly forecast
   var BEST_MAX_WINDOWS = 3;
 
@@ -4404,6 +4406,7 @@
     var b = store('best');
     b.windows = [];
     b.how = '';
+    b.few = '';
     b.state = 'loading';
   }
 
@@ -5139,6 +5142,8 @@
     var b = store('best');
     b.windows = windows;
     b.how = notes.join(' ');
+    b.few = (windows.length >= 1 && windows.length <= 2)
+      ? 'There ' + (windows.length === 1 ? 'is only 1 best time' : 'are only 2 best times') + ' right now. Adjust settings to see more.' : '';
     if(!windows.length){
       var empty = buildEmptyBestNote(hourly);
       b.emptyTitle = empty.title;
