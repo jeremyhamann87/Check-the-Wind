@@ -31,7 +31,6 @@ Reasons a time is ruled out,Inside the No/Maybe text,snowy or icy ground,Ice/sno
 Reasons a time is ruled out,Inside the No/Maybe text,cold at [N]°F,Below the minimum temperature.,Default 25°F
 Reasons a time is ruled out,Inside the No/Maybe text,hot at [N]°F,Above the maximum temperature.,Default 100°F
 Reasons a time is ruled out,Inside the No/Maybe text,poor air quality (AQI [N]),AQI above the limit.,Default limit 150
-Reasons a time is ruled out,Inside the No/Maybe text,high humidity,Humidity above the limit.,Default 100% (effectively off)
 Reasons a time is ruled out,Inside the No/Maybe text,wet ground,Ground wetness above the limit (only if the ground setting is on).,Off by default
 Reasons a time is ruled out,Inside the No/Maybe text,an active [alert],Severe/Extreme alert is active.,Added to the front of the list
 Activities line,Verdict card under the sentence,"Good for [activity, activity or activity].","Yes or Maybe, with at least one activity that fits.",First 3 matching activities (short names)
@@ -85,7 +84,6 @@ Paragraph (hero / verdict card),Hero paragraph,the ground is snowy or icy,"Ice o
 Paragraph (hero / verdict card),Hero paragraph,the ground is wet,"Wet ground (when that setting is on). Used in the ""so hang tight"" line.",
 Paragraph (hero / verdict card),Hero paragraph,it’s cold at [temp] / it’s hot at [temp],"Outside the temperature limits. Used in the ""so hang tight"" line.",
 Paragraph (hero / verdict card),Hero paragraph,air quality is poor (AQI [N]),"AQI above the limit. Used in the ""so hang tight"" line.",
-Paragraph (hero / verdict card),Hero paragraph,it’s humid,"Humidity above the limit. Used in the ""so hang tight"" line.",
 After-window sentence,End of the Yes / Maybe paragraph,"After [time], [phrases].",A good window is followed by an hour that is ruled out. Shows up to 2 phrases.,
 After-window sentence,Phrase used in the After sentence,the light fades,Next hour is dark (see the night variations below),
 After-window sentence,Phrase used in the After sentence,expect [thunderstorms/rain/showers/snow],Precipitation arrives,
@@ -95,7 +93,6 @@ After-window sentence,Phrase used in the After sentence,it drops to [N]°F,Gets 
 After-window sentence,Phrase used in the After sentence,it heats up to [N]°F,Gets too hot,
 After-window sentence,Phrase used in the After sentence,the ground turns snowy or icy,Ice/snow on the ground,
 After-window sentence,Phrase used in the After sentence,air quality worsens (AQI [N]),AQI above the limit,
-After-window sentence,Phrase used in the After sentence,it gets humid,Humidity above the limit,
 After-window sentence,Phrase used in the After sentence,the ground gets wet,Wet ground,
 After-window sentence,Phrase used in the After sentence,conditions turn less ideal,Fallback when none of the above applies,
 After-window sentence,Phrase when darkness is the only change,the light fades but it stays [clear / mostly clear / partly cloudy] and [calm / breezy / windy],"Next hour is dark only, with clear or partly cloudy skies.","Calm under 8 mph, breezy under 16, otherwise windy"
@@ -139,16 +136,15 @@ Best Times (empty state),Best Times (no window),"Wind picks up too, gusting to [
 Best Times (empty state),Best Times (no window),"[Band] wind is already blowing, gusting to [N] mph, / [Band] wind picks up around [time], gusting to [N] mph,",Wind-only case.,"Followed by ""staying gusty through the next 48 hours."" or ""calming down by [time]."""
 Best Times (empty state),Best Times (no window),"Time to stay inside for a while. No good window in the next 48 hours. Rain, wet ground, strong wind or poor air quality are in the way. This updates when the forecast does.",No window and no single clear cause (the fallback).,
 Best Times (empty state),Best Times (no window),Your custom Best Times settings may be ruling windows out; use Customize to loosen them or reset to the defaults.,Added when the person has changed the Best Times limits.,
-Best Times (empty state),Best Times notes,"Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average & doesn’t affect the ranking.",Always shown with the list.,
+Best Times (empty state),Best Times notes,"Next 48 hours, daylight only. A maximum of 3 options, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window.",Always shown with the list.,
 Best Times (empty state),Best Times notes,"We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.",Air-quality data failed to load.,
 Best Times (empty state),Best Times notes,"We couldn’t get recent rainfall data, so ground dryness is estimated from the forecast alone. Pull down to refresh and try again.",Past-rainfall data failed to load.,
 Best Times (empty state),Best Times notes,You are using custom Best Times settings: [list]. Use Customize to change them or reset to the defaults.,Limits differ from the defaults.,
 Best Times (empty state),Best Times cards,"Card heading: Today / Tomorrow / [Weekday Month/Day], then the time range (e.g. 7 AM–6 PM, or Now–6 PM)",Every card.,"Up to 3 cards, ranked 1 to 3 with gold, silver and bronze medals; on phones they scroll sideways"
 Best Times (empty state),Best Times cards,[N] mph · [Calm / Breezy / Windy / Blustery / Howling] [wind direction arrow],"Every card (wind row, top wind in the window).","Same icon, bold value and hint layout as Current Conditions; km/h in metric places"
 Best Times (empty state),Best Times cards,"[low–high]°F · [sky, e.g. Mostly Cloudy]",Every card (temperature row).,Sky is the forecast for the middle hour of the window
-Best Times (empty state),Best Times cards,[Dry / Damp / Wet] ground · No precipitation expected / [N]% chance of precipitation,Every card (ground row).,"Ground by wetness: under 0.15 dry, under 0.45 damp, else wet. ""No precipitation expected"" when the highest chance in the window is under 5%"
+Best Times (empty state),Best Times cards,[Dry / Damp / Wet] ground · No precipitation / [N]% chance of precip,Every card (ground row).,"Ground by wetness: under 0.15 dry, under 0.45 damp, else wet. ""No precipitation"" when the highest chance in the window is under 5%"
 Best Times (empty state),Best Times cards,AQI [N] · [Good air / Moderate air / Unhealthy for sensitive groups / Unhealthy air / Very unhealthy air / Hazardous air],Every card with an air-quality reading (air row).,Row is left out when there is no air-quality data
-Best Times (empty state),Best Times cards,[N]% · Humidity,Every card with a humidity forecast (humidity row).,Average over the window; does not affect the ranking
 Best Times (empty state),Best Times share button,Share these best times (button name for screen readers; the button shows only a share icon),"Always, when there is at least one window.",Hidden when there is no best-time window
 Best Times (empty state),Best Times share (phone and tablet),"Title: Best times to be outside in [place] | Text: Best times to be outside in [place]: / 1. [Day], [time]: [temp], [wind] wind, [N]% chance of precipitation / ... / From Check the Wind. | Link: the page for that exact place","Share button on a touch device, opens the phone’s share sheet.",The link carries the place (?lat=&lon=&place=) so a friend opens the same location
 Best Times (empty state),Best Times share (desktop),Link and summary copied. Paste it to a friend.,Share button on a computer: the same text and link are copied to the clipboard.,"If copying is blocked the browser shows the link in a prompt: ""Copy this link to share:"""
@@ -197,7 +193,7 @@ Units,Every temperature and wind speed shown,°C and km/h for visitors in Canada
 "Headline (bold, top of the hero)",Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.,Nice out until [time]. / Nice out [day] [time range].,"Verdict Yes, not especially comfortable.","Canadian: ""Not bad, eh. Nice out until [time]."""
 "Headline (bold, top of the hero)",Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.,"Nice out until [time], then [rain / snow / storms / wind / ice].",Stay aware: weather arrives within 3 hours.,
 "Headline (bold, top of the hero)",Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.,"Doable, not ideal: [first weak point]. / Doable now, but [weather] by [time].",Verdict Maybe and the window starts now.,
-"Headline (bold, top of the hero)",Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.,[Why short] now. Lovely [day] [time range].,"Verdict Maybe with a window later today (why: Dark out, Storms, Rain, Snow, Showers, Windy, Rain likely, Icy ground, Cold, Hot, Poor air, Humid, Wet ground).","Canadian: ""Lovely, eh: …"""
+"Headline (bold, top of the hero)",Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.,[Why short] now. Lovely [day] [time range].,"Verdict Maybe with a window later today (why: Dark out, Storms, Rain, Snow, Showers, Windy, Rain likely, Icy ground, Cold, Hot, Poor air, Wet ground).","Canadian: ""Lovely, eh: …"""
 "Headline (bold, top of the hero)",Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.,[Why short]. Next best window to get outside: [day] [time range].,"Verdict No (no alert), a good window within 48 hours.",
 "Headline (bold, top of the hero)",Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.,[Why short]. No good window for 48 hours.,"Verdict No, no window in 48 hours.",
 "Headline (bold, top of the hero)",Bold headline under the city name; the tag sits beside the city. Each sentence is on its own line.,Dark out. Next best window to get outside: [day] [time range]. / Dark out. Not a night for outdoor plans.,Night time tag.,"Canadian: ""Dark out, eh."""
