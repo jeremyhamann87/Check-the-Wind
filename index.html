@@ -2854,6 +2854,20 @@
     return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">'+body+'</svg>';
   }
 
+  // The kind of precipitation an hour is carrying: rain, snow, sleet, mixed precip or hail. The forecast wording decides; when it only
+  // gives a chance without a type, the temperature does (32°F or colder snow, up to 36°F mixed, otherwise rain).
+  function precipType(text, temp){
+    var t = String(text || '').toLowerCase();
+    if(/hail/.test(t)) return 'hail';
+    if(/wintry mix|mixed|rain and snow|snow and rain|rain\/snow|snow\/rain|rain or snow|snow or rain/.test(t)) return 'mixed precip';
+    if(/sleet|freezing rain|freezing drizzle|ice pellets|\bice\b/.test(t)) return 'sleet';
+    if(/snow|flurr|blizzard/.test(t)) return /rain|shower|drizzle/.test(t) ? 'mixed precip' : 'snow';
+    if(/rain|shower|drizzle|thunder|storm/.test(t)) return 'rain';
+    if(typeof temp === 'number'){ if(temp <= 32) return 'snow'; if(temp <= 36) return 'mixed precip'; }
+    return 'rain';
+  }
+  function aOrAn(n){ n = Math.round(n); return (n === 8 || n === 11 || n === 18 || (n >= 80 && n <= 89)) ? 'an' : 'a'; }
+
   function groundCondition(current, todayDaily){
     var temp = current.temperature;
     var freezing = typeof temp === 'number' && temp <= 32;
@@ -2865,13 +2879,13 @@
     var hasRain = /rain|shower|drizzle|thunderstorm/.test(text);
 
     if(hasIce || (freezing && hasRain)){
-      return {key:'icy', label:'Icy', hint:'Freezing temps with precipitation'};
+      return {key:'icy', label:'Icy', hint:'Freezing temps with ' + (hasIce && !hasRain ? 'sleet' : hasIce ? 'mixed precip' : 'rain')};
     }
     if(hasSnow && freezing){
       return {key:'snowy', label:'Snowy', hint:'Snow accumulating or expected'};
     }
     if(hasSnow || hasRain){
-      return {key:'wet', label:'Wet', hint:'Recent or expected precipitation'};
+      return {key:'wet', label:'Wet', hint:'Recent or expected ' + (hasSnow && hasRain ? 'mixed precip' : hasSnow ? 'snow' : 'rain')};
     }
     return {key:'dry', label:'Dry', hint:'No precipitation expected'};
   }
@@ -4729,7 +4743,8 @@
       if(!daylight) why.push('it\u2019s dark out');
       if(hz) why.push(hz.toLowerCase());
       if(mph >= P.wind) why.push('wind up to ' + fmtWind(mph));
-      if(P.pop < 100 && pop >= P.pop) why.push(Math.round(pop) + '% chance of precipitation');
+      var ptype = precipType(p.shortForecast, temp);
+      if(P.pop < 100 && pop >= P.pop) why.push(Math.round(pop) + '% chance of ' + ptype);
       if(icyOrSnowy) why.push('snowy or icy ground');
       if(temp < P.tmin) why.push('cold at ' + fmtTemp(temp));
       if(temp > P.tmax) why.push('hot at ' + fmtTemp(temp));
@@ -4747,7 +4762,7 @@
       wet = Math.min(1, wet * wetDecay(temp) + intensity * 0.6);
       frozen = Math.min(1, frozen * wetDecay(temp) + (frozenText ? intensity * 0.6 : 0));
 
-      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, dir: p.windDirection || '', pop: pop, hum: hum, wet: groundNow, aqi: aqi, ok: ok, score: score, why: why, fc: p.shortForecast || ''};
+      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, dir: p.windDirection || '', pop: pop, ptype: ptype, hum: hum, wet: groundNow, aqi: aqi, ok: ok, score: score, why: why, fc: p.shortForecast || ''};
     });
   }
 
@@ -5021,7 +5036,7 @@
     rows.push(['Sky', skies.join(', ') || 'NA']);
     var wLo = Math.round(Math.min.apply(null, winds)), wHi = Math.round(Math.max.apply(null, winds));
     rows.push(['Wind', (wLo === wHi ? fmtWind(wHi) : windNum(wLo) + '–' + fmtWind(wHi)) + ' · ' + band.label + (o.dir && dirWord(o.dir) ? ', from the ' + dirWord(o.dir) : '')]);
-    rows.push(['Chance of precipitation', 'Up to ' + Math.round(o.popMax) + '%']);
+    rows.push(['Chance of ' + (o.popMax >= 5 && o.ptype ? o.ptype : 'precipitation'), 'Up to ' + Math.round(o.popMax) + '%']);
     rows.push(['Ground', groundWord(o.wetMax)]);
     if(o.humVals.length){
       var hLo = Math.round(Math.min.apply(null, o.humVals)), hHi = Math.round(Math.max.apply(null, o.humVals));
@@ -5065,6 +5080,7 @@
       var tempText = (tempNum(tMinRaw) === tempNum(tMaxRaw) ? tempNum(tMaxRaw) : tempNum(tMinRaw) + '–' + tempNum(tMaxRaw)) + (useCelsius ? '°C' : '°F');
       var peak = h.reduce(function(a, x){ return x.mph > a.mph ? x : a; }, h[0]);
       var midHr = h[Math.floor(h.length / 2)];
+      var peakPop = h.reduce(function(a, x){ return x.pop > a.pop ? x : a; }, h[0]);
       var humVals = h.filter(function(x){ return x.hum !== null; }).map(function(x){ return x.hum; });
       var humAvg = humVals.length ? Math.round(humVals.reduce(function(a, b){ return a + b; }, 0) / humVals.length) : null;
       return {
@@ -5077,10 +5093,10 @@
         sky: midHr.fc || '',
         skyIcon: weatherIcon(midHr.fc, true, 30),
         summary: vdGoodSentence(vdAgg(h)),
-        detail: bestDetail(h, {day: day, time: when, temp: tempText, mph: mph, dir: peak.dir, popMax: popMax, wetMax: wetMax, aqiMax: aqiMax, humVals: humVals, humAvg: humAvg}),
+        detail: bestDetail(h, {day: day, time: when, temp: tempText, mph: mph, dir: peak.dir, popMax: popMax, ptype: peakPop.ptype, wetMax: wetMax, aqiMax: aqiMax, humVals: humVals, humAvg: humAvg}),
         shareHead: day + ', ' + new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) + ', ' + when,
         shareConds: [tempText, ampText(midHr.fc || '').toLowerCase(), fmtWind(mph) + ' wind',
-          popMax < 5 ? 'no precipitation expected' : Math.round(popMax) + '% chance of precipitation'].filter(Boolean).join(', ')
+          popMax < 5 ? 'no precipitation expected' : Math.round(popMax) + '% chance of ' + peakPop.ptype].filter(Boolean).join(', ')
       };
     });
 
@@ -5257,6 +5273,11 @@
         var t = fmtH12(pk.hour);
         return t.n + ' ' + t.ap;
       })(),
+      popType: (function(){
+        var pk = hs[0];
+        hs.forEach(function(h){ if(h.pop > pk.pop) pk = h; });
+        return pk.ptype || 'rain';
+      })(),
       wet: Math.max.apply(null, hs.map(function(h){ return h.wet; })),
       aqi: aq.length ? Math.round(Math.max.apply(null, aq)) : null
     };
@@ -5286,16 +5307,15 @@
     if(a.wet < 0.15 && a.pop < 10){
       return vdCap(vdFeel(a.tAvg)) + ', ' + wind + ' and dry' + (air ? ', with ' + air : '') + '.';
     }
-    var an = a.pop === 8 || a.pop === 11 || a.pop === 18 || (a.pop >= 80 && a.pop <= 89);   // "an 8% chance", "a 30% chance"
-    var precip = a.pop >= 5 ? (an ? 'an ' : 'a ') + a.pop + '% chance of precipitation around ' + a.popAt : 'no precipitation expected';
+    var precip = a.pop >= 5 ? aOrAn(a.pop) + ' ' + a.pop + '% chance of ' + a.popType + ' around ' + a.popAt : 'no precipitation expected';
     return vdCap(vdFeel(a.tAvg)) + ' and ' + wind + ', with ' + precip + (air ? ' and ' + air : '') + '.';
   }
   function vdWeakPoints(a){
     var w = [];
     if(a.wMax >= 16) w.push('wind up to ' + fmtWind(a.wMax));
     if(a.tAvg < 40) w.push('chilly at ' + fmtTemp(a.tAvg)); else if(a.tAvg > 88) w.push('hot at ' + fmtTemp(a.tAvg));
-    if(a.pop >= 30) w.push(a.pop + '% chance of precipitation around ' + a.popAt);
-    else if(a.wet >= 0.15) w.push(a.pop >= 5 ? a.pop + '% chance of precipitation around ' + a.popAt : 'damp ground');
+    if(a.pop >= 30) w.push(a.pop + '% chance of ' + a.popType + ' around ' + a.popAt);
+    else if(a.wet >= 0.15) w.push(a.pop >= 5 ? a.pop + '% chance of ' + a.popType + ' around ' + a.popAt : 'damp ground');
     if(a.aqi !== null && a.aqi > 50) w.push('moderate air quality');
     return w;
   }
@@ -5375,7 +5395,7 @@
       // Stay Aware: it's fine to be out right now, but weather (rain, snow, wind, storms) arrives within the next 3 hours
       if(!severe && !r.night && (r.state === 'yes' || (r.state === 'maybe' && r.hs && r.hs[0].i === 0))){
         for(var k = 1; k <= 3 && k < hrs.length; k++){
-          var wx = hrs[k].why.filter(function(w){ return /^(thunderstorms|rain|showers|snow)$|chance of precipitation|^wind up to|snowy or icy/.test(w); });
+          var wx = hrs[k].why.filter(function(w){ return /^(thunderstorms|rain|showers|snow)$|chance of (?:rain|snow|sleet|mixed precip|hail|precipitation)|^wind up to|snowy or icy/.test(w); });
           if(wx.length){ r.incoming = {i: k, why: wx}; break; }
         }
       }
@@ -5405,7 +5425,7 @@
       if(/dark out/.test(w)) phrases.push('the light fades');
       else if(/^(thunderstorms|rain|showers|snow)$/.test(w)) phrases.push('expect ' + w);
       else if((m = /^wind up to (\d+) (mph|km\/h)/.exec(w))) phrases.push('winds pick up to ' + m[1] + ' ' + m[2]);
-      else if((m = /^(\d+)% chance of precipitation/.exec(w))) phrases.push('the chance of precipitation rises to ' + m[1] + '%');
+      else if((m = /^(\d+)% chance of (rain|snow|sleet|mixed precip|hail|precipitation)/.exec(w))) phrases.push('the chance of ' + m[2] + ' rises to ' + m[1] + '%');
       else if((m = /^cold at (\S+)/.exec(w))) phrases.push('it drops to ' + m[1]);
       else if((m = /^hot at (\S+)/.exec(w))) phrases.push('it heats up to ' + m[1]);
       else if(/snowy or icy/.test(w)) phrases.push('the ground turns snowy or icy');
@@ -5452,7 +5472,7 @@
   function vdNowClause(w){
     var m;
     if((m = /^wind up to (.+)$/.exec(w))) return 'winds up to ' + m[1];
-    if((m = /^(\d+% chance of precipitation)$/.exec(w))) return 'a ' + m[1];
+    if((m = /^(\d+)(% chance of (?:rain|snow|sleet|mixed precip|hail|precipitation))$/.exec(w))) return aOrAn(+m[1]) + ' ' + m[1] + m[2];
     if((m = /^cold at (.+)$/.exec(w))) return 'it’s cold at ' + m[1];
     if((m = /^hot at (.+)$/.exec(w))) return 'it’s hot at ' + m[1];
     if((m = /^poor air quality (\(.+\))$/.exec(w))) return 'air quality is poor ' + m[1];
@@ -5645,19 +5665,21 @@
   /* Option 3: a bold headline and one gray detail line. Activities, the after-window note and the rest live with each Best Times window. */
   function vdClock(h){ var t = fmtH12(h.hour); return t.n + ' ' + t.ap; }
   function vdWxWord(w){
+    var m;
     if(/^thunderstorms$/.test(w)) return 'storms';
     if(/^(rain|showers|snow)$/.test(w)) return w;
-    if(/chance of precipitation/.test(w)) return 'rain';
+    if((m = /chance of (rain|snow|sleet|mixed precip|hail|precipitation)/.exec(w))) return m[1] === 'precipitation' ? 'rain' : m[1];
     if(/^wind up to/.test(w)) return 'wind';
     if(/snowy or icy/.test(w)) return 'ice';
     return 'rough weather';
   }
   function vdWhyShort(w){
+    var m;
     if(/dark out/.test(w)) return 'Dark out';
     if(/^thunderstorms$/.test(w)) return 'Storms';
     if(/^(rain|showers|snow)$/.test(w)) return vdCap(w);
     if(/^wind up to/.test(w)) return 'Windy';
-    if(/chance of precipitation/.test(w)) return 'Rain likely';
+    if((m = /chance of (rain|snow|sleet|mixed precip|hail|precipitation)/.exec(w))) return (m[1] === 'precipitation' ? 'Rain' : vdCap(m[1])) + ' likely';
     if(/snowy or icy/.test(w)) return 'Icy ground';
     if(/^cold at/.test(w)) return 'Cold';
     if(/^hot at/.test(w)) return 'Hot';

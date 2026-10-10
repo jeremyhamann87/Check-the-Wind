@@ -10,7 +10,7 @@ Verdict tag,Tag pill,Use caution,A Severe or Extreme National Weather Service al
 Verdict tag,Tag pill,Night time,"Darkness is the ONLY reason the hour is ruled out, wind is under 16 mph, no Severe/Extreme alert, and the verdict is not Yes.",Purple with a moon
 Verdict word,Verdict card (details),Yes / Maybe / No,Matches the verdict state above.,"Also shows the time range (e.g. ""from now until 6 PM""); ""Right now"" when No"
 One-line summary,"Verdict card, first sentence","[Freezing/Cold/Cool/Mild/Warm/Hot], [calm/breezy/windy/blustery/howling] and dry, with [good/moderate] air quality.","Verdict is Yes (no alert), the ground is dry (wetness under 0.15) and the chance of precipitation in the window is under 10%.","Feel from average temp: under 32 freezing, under 45 cold, under 58 cool, under 72 mild, under 85 warm, otherwise hot. Wind from the top wind in the window (see Wind categories). Air: AQI 50 or less is ""good air quality"", higher is ""moderate air quality""; left out if AQI is unknown."
-One-line summary,"Verdict card, first sentence","[Feel] and [wind], with a [N]% chance of precipitation around [time] and [good/moderate] air quality. / ... with no precipitation expected and ...","Same cases as above, when the ground is damp or wet (0.15 or more) or the chance of precipitation in the window is 10% or more.","Chance is the highest in the window; the time is the hour that chance peaks. ""No precipitation expected"" when the chance is under 5%. Replaces the old ""damp"" / ""wet"" wording."
+One-line summary,"Verdict card, first sentence","[Feel] and [wind], with a [N]% chance of [rain / snow / sleet / mixed precip / hail] around [time] and [good/moderate] air quality. / ... with no precipitation expected and ...","Same cases as above, when the ground is damp or wet (0.15 or more) or the chance of precipitation in the window is 10% or more.","Chance is the highest in the window; the time is the hour that chance peaks. ""No precipitation expected"" when the chance is under 5%. Replaces the old ""damp"" / ""wet"" wording."
 One-line summary,"Verdict card, first sentence","Okay for now, but not ideal: [weak points].",Verdict is Maybe and the window starts now.,Up to 2 weak points (see Weak points).
 One-line summary,"Verdict card, first sentence","Not right now — [reasons]. Later: [the Yes sentence, lowercased]",Verdict is Maybe with a window later today.,Up to 2 reasons (see Reasons a time is ruled out).
 One-line summary,"Verdict card, first sentence",Better to skip it for now: [reasons].,Verdict is No.,"Up to 2 reasons; a Severe/Extreme alert is listed first as ""an active [alert]""."
@@ -21,13 +21,13 @@ One-line summary,"Verdict card, bottom",Active alert: [event]. Check the details
 Weak points,Okay for now text,wind up to [N] mph,Top wind in the window is 16 mph or more.,
 Weak points,Okay for now text,chilly at [N]°F,Average temp under 40°F.,
 Weak points,Okay for now text,hot at [N]°F,Average temp over 88°F.,
-Weak points,Okay for now text,[N]% chance of precipitation around [time],"Chance of precipitation is 30% or more; also used instead of ""damp ground"" when the ground is damp and the chance is 5% or more.",
+Weak points,Okay for now text,[N]% chance of [rain / snow / sleet / mixed precip / hail] around [time],"Chance of precipitation is 30% or more; also used instead of ""damp ground"" when the ground is damp and the chance is 5% or more.",
 Weak points,Okay for now text,damp ground,Ground wetness is 0.15 or more and the chance of precipitation is under 5%.,
 Weak points,Okay for now text,moderate air quality,AQI is above 50.,
 Reasons a time is ruled out,Inside the No/Maybe text,it’s dark out,No daylight at that hour (uses real sunrise/sunset).,
 Reasons a time is ruled out,Inside the No/Maybe text,thunderstorms / snow / showers / rain,"Forecast shows that precipitation type (not just a ""chance of"").",
 Reasons a time is ruled out,Inside the No/Maybe text,wind up to [N] mph,Wind at or above the Best Times wind limit.,Default limit 25 mph
-Reasons a time is ruled out,Inside the No/Maybe text,[N]% chance of precipitation,Chance at or above the limit.,Default limit 40%
+Reasons a time is ruled out,Inside the No/Maybe text,[N]% chance of [rain / snow / sleet / mixed precip / hail],Chance at or above the limit.,"Default limit 40%. The type comes from the forecast wording for that hour (hail, mixed / wintry mix, sleet or freezing rain, snow, rain or showers), or from the temperature when the wording only gives a chance: 32°F or colder snow, up to 36°F mixed precip, otherwise rain"
 Reasons a time is ruled out,Inside the No/Maybe text,snowy or icy ground,Ice/snow in the forecast or on the ground.,
 Reasons a time is ruled out,Inside the No/Maybe text,cold at [N]°F,Below the minimum temperature.,Default 25°F
 Reasons a time is ruled out,Inside the No/Maybe text,hot at [N]°F,Above the maximum temperature.,Default 100°F
@@ -80,7 +80,7 @@ Paragraph (hero / verdict card),Hero paragraph,"You can head out right now, thou
 Paragraph (hero / verdict card),Hero paragraph,"[Why it is not good right now], so hang tight: [day] [time] looks like a lovely time to get outside. Then it will be [summary]. [Activities sentence] [After-window sentence]",Verdict is Maybe with a window later today.,"Up to two reasons, e.g. ""Winds up to 33 mph right now, so hang tight: today from 5 to 7 PM looks like a lovely time…"""
 Paragraph (hero / verdict card),Hero paragraph,it’s dark out,"No daylight right now. Used in the ""so hang tight"" line.",
 Paragraph (hero / verdict card),Hero paragraph,winds up to [N] mph,"Wind at or above the limit. Used in the ""so hang tight"" line.",
-Paragraph (hero / verdict card),Hero paragraph,a [N]% chance of precipitation,"Chance of precipitation at or above the limit. Used in the ""so hang tight"" line.",
+Paragraph (hero / verdict card),Hero paragraph,a [N]% chance of [rain / snow / sleet / mixed precip / hail],"Chance of precipitation at or above the limit. Used in the ""so hang tight"" line.",
 Paragraph (hero / verdict card),Hero paragraph,it’s raining / it’s snowing / there are showers around / there are thunderstorms around,"Precipitation in the forecast right now. Used in the ""so hang tight"" line.",
 Paragraph (hero / verdict card),Hero paragraph,the ground is snowy or icy,"Ice or snow on the ground. Used in the ""so hang tight"" line.",
 Paragraph (hero / verdict card),Hero paragraph,the ground is wet,"Wet ground (when that setting is on). Used in the ""so hang tight"" line.",
@@ -91,7 +91,7 @@ After-window sentence,End of the Yes / Maybe paragraph,"After [time], [phrases].
 After-window sentence,Phrase used in the After sentence,the light fades,Next hour is dark (see the night variations below),
 After-window sentence,Phrase used in the After sentence,expect [thunderstorms/rain/showers/snow],Precipitation arrives,
 After-window sentence,Phrase used in the After sentence,winds pick up to [N] mph,Wind reaches the limit,
-After-window sentence,Phrase used in the After sentence,the chance of precipitation rises to [N]%,Precip chance reaches the limit,
+After-window sentence,Phrase used in the After sentence,the chance of [rain / snow / sleet / mixed precip / hail] rises to [N]%,Precip chance reaches the limit,
 After-window sentence,Phrase used in the After sentence,it drops to [N]°F,Gets too cold,
 After-window sentence,Phrase used in the After sentence,it heats up to [N]°F,Gets too hot,
 After-window sentence,Phrase used in the After sentence,the ground turns snowy or icy,Ice/snow on the ground,
@@ -149,21 +149,21 @@ Best Times (empty state),Best Times cards,[low–high]°F (large) with the sky i
 Best Times (empty state),Best Times cards,"Same sentence as the verdict card’s Yes line, built from the window: [Feel], [wind] and dry, with [air quality] / [Feel] and [wind], with a [N]% chance of precipitation around [time] and [air quality]",Every card.,See the One-line summary rows for the thresholds
 Best Times (empty state),Best Times cards,"(No visible label) Tapping or clicking a card opens its detail dialog; screen readers hear “[Day] [time], show details”",Every card.,A small arrow at the right of the card header hints that the card opens
 Best Times (empty state),Best Times detail dialog,Title: [Day] · [time range]; the place name; the summary sentence,Card detail dialog.,
-Best Times (empty state),Best Times detail dialog,"Temperature: [low–high] across the window | Sky: [forecasts in the window] | Wind: [low–high] · [Calm…Howling], from the [direction] | Chance of precipitation: Up to [N]% | Ground: [Dry/Damp/Wet] | Humidity: [low–high], average [N]% | Air quality: AQI up to [N] · [Good air…]","Card detail dialog, top list.",NA when a value is not available
+Best Times (empty state),Best Times detail dialog,"Temperature: [low–high] across the window | Sky: [forecasts in the window] | Wind: [low–high] · [Calm…Howling], from the [direction] | Chance of [rain / snow / sleet / mixed precip / hail]: Up to [N]% | Ground: [Dry/Damp/Wet] | Humidity: [low–high], average [N]% | Air quality: AQI up to [N] · [Good air…]","Card detail dialog, top list.",NA when a value is not available
 Best Times (empty state),Best Times detail dialog,Hour by hour: Hour | Temp | Sky | Wind | Precip | Humidity | AQI | Ground,"Card detail dialog, table with one row per hour in the window.",NA when a value is not available
 Best Times (empty state),Best Times share button,Share these best times (button name for screen readers; the button shows only a share icon),"Always, when there is at least one window.",Hidden when there is no best-time window
-Best Times (empty state),Best Times share (phone and tablet),"Title: Best times to get outside in [place] | Text: Best times to get outside in [place]: / 1. [Day], [Mon D], [time range] / [temp], [sky], [N] mph wind, [N]% chance of precipitation / ... | Link: the page for that exact place","Share button on a touch device, opens the phone’s share sheet.","One entry per Best Times card. ""no precipitation expected"" when the chance is under 5%. The link carries the place (?lat=&lon=&place=) so a friend opens the same location"
+Best Times (empty state),Best Times share (phone and tablet),"Title: Best times to get outside in [place] | Text: Best times to get outside in [place]: / 1. [Day], [Mon D], [time range] / [temp], [sky], [N] mph wind, [N]% chance of [rain / snow / sleet / mixed precip / hail] / ... | Link: the page for that exact place","Share button on a touch device, opens the phone’s share sheet.","One entry per Best Times card. ""no precipitation expected"" when the chance is under 5%; the type is the one at the hour the chance peaks. The link carries the place (?lat=&lon=&place=) so a friend opens the same location"
 Best Times (empty state),Best Times share (desktop),"The same text, then a blank line and the link, copied to the clipboard; a short message says: Link and summary copied. Paste it to a friend.",Share button on a computer.,"If copying is blocked the browser shows the link in a prompt: ""Copy this link to share:"""
-Best Times (empty state),Link preview image,"Check the Wind logo windmill with ""Check the Wind"", ""Live wind, weather and air quality, plus the best times to get outside."" and checkthewind.com (og-image.png, 1200 x 630)","When the site link is shared in Messages, WhatsApp, Slack, Facebook, X and similar.",Same image for every place; the page title and description come from the meta tags
+Best Times (empty state),Link preview image,"Check the Wind logo windmill with ""Check the Wind"", ""The friendly outdoor planner: wind, weather and the best times to get outside"" and checkthewind.com (og-image.png, 1200 x 630)","When the site link is shared in Messages, WhatsApp, Slack, Facebook, X and similar.",Same image for every place; the page title and description come from the meta tags
 Wind categories,"Wind tag in Current Conditions, Wind Today, 7-day outlook, Best Times",Calm,under 8 mph,
 Wind categories,"Wind tag in Current Conditions, Wind Today, 7-day outlook, Best Times",Breezy,8–15 mph,
 Wind categories,"Wind tag in Current Conditions, Wind Today, 7-day outlook, Best Times",Windy,16–24 mph,
 Wind categories,"Wind tag in Current Conditions, Wind Today, 7-day outlook, Best Times",Blustery,25–33 mph,
 Wind categories,"Wind tag in Current Conditions, Wind Today, 7-day outlook, Best Times",Howling,34 mph and up,
 Wind categories,Wind sentences (older phrasing),calm winds / a steady breeze / windy conditions / blustery winds / howling winds,Words for the same five bands where a noun phrase is needed.,
-Ground conditions,Current Conditions row,Icy — Freezing temps with precipitation,"Forecast mentions ice/sleet/freezing rain, or it is 32°F or colder with rain.",
+Ground conditions,Current Conditions row,Icy — Freezing temps with [rain / sleet / mixed precip],"Forecast mentions ice/sleet/freezing rain, or it is 32°F or colder with rain.",
 Ground conditions,Current Conditions row,Snowy — Snow accumulating or expected,Snow in the forecast and 32°F or colder.,
-Ground conditions,Current Conditions row,Wet — Recent or expected precipitation,Rain/showers/drizzle/thunderstorms or snow above freezing.,
+Ground conditions,Current Conditions row,Wet — Recent or expected [rain / snow / mixed precip],Rain/showers/drizzle/thunderstorms or snow above freezing.,
 Ground conditions,Current Conditions row,Dry — No precipitation expected,None of the above.,
 Ground conditions,Hero rain/storm outlook,[Rain / Snow] ends in ~[time]  |  [Showers / Thunderstorms / High winds] end in ~[time]  |  [type] [possible] in ~[time],Precipitation or high wind is active / about to start within 6 hours.,"Time rounded to 5 minutes, then hours"
 Air quality and pollen,AQI line + gauge,Good,AQI 0–50,
