@@ -2168,6 +2168,13 @@
     .hero-head{ display:none }
   }
 
+  /* Current Conditions wind direction: the large compass (with the N) on tablet and desktop; on phones the standard list icon (no N), 22px like Wind Today */
+  .hero-reading .unit-wrap > svg.wd-small{ display:none }
+  @media (max-width:31.1875em){
+    .hero-reading .unit-wrap > svg.wd-big{ display:none !important }
+    .hero-reading .unit-wrap > svg.wd-small{ display:block !important; flex:0 0 22px !important; width:22px !important; height:22px !important }
+  }
+
   /* Short "copied" confirmation for the Share button */
   .ctw-toast{
     position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); z-index:70; max-width:calc(100vw - 32px);
@@ -3727,7 +3734,7 @@
                   '</button>' +
                 '</span>' +
               '</span>' +
-              (current.windDirection ? windArrowSvg(current.windDirection, band.css, 42, 0, true) + srDir(current.windDirection) : '') +
+              (current.windDirection ? windArrowSvg(current.windDirection, band.css, 42, 0, true).replace('<svg ', '<svg class="wd-big" ') + windArrowSvg(current.windDirection, band.css, 22, 0, true).replace('<svg ', '<svg class="wd-small" ') + srDir(current.windDirection) : '') +
             '</span>' +
           '</div>' +
           '<div class="weather-now">' +
