@@ -6964,8 +6964,17 @@
     mainRefreshBtn.setAttribute('aria-busy', 'false');
   });
 
+  var placeLoadedOnce = false;
   async function loadForLocation(lat, lon, label, opts){
-    if(!(opts && opts.quiet)) closeSearchDrawer();
+    if(!(opts && opts.quiet)){
+      closeSearchDrawer();
+      // A newly chosen place starts at the top of the page (not on the very first load, and never for background refreshes)
+      if(placeLoadedOnce){
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+        try{ window.scrollTo({top: 0, left: 0, behavior: reduce ? 'auto' : 'smooth'}); }catch(e){ window.scrollTo(0, 0); }
+      }
+      placeLoadedOnce = true;
+    }
     try{
       return await loadForLocationCore(lat, lon, label, opts);
     }catch(err){
