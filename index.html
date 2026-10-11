@@ -2125,7 +2125,6 @@
   .bt-few{margin:10px 4px 0; font-size:14px; line-height:1.4; font-weight:300; color:var(--text-muted)}
   .bt-skel-line{display:block; height:.875rem; width:80%}
   .bt-when .bt-skel-line:first-child{width:5rem}
-  .hero-wrap .hero-top > #bestSection{ margin-top:0 }  /* on phones it sits in the hero, spaced by the hero's own 16px gap */
   /* Phones and touch tablets: buttons never show a hover, press or selected outline or highlight (keyboards on desktop keep their focus ring) */
   @media (max-width:31.1875em), (hover:none) and (pointer:coarse){
     button, .bt-open, .bt-card{ -webkit-tap-highlight-color:transparent }
@@ -2180,25 +2179,6 @@
   @media (max-width:31.1875em){
     .hero-reading .unit-wrap > svg.wd-big{ display:none !important }
     .hero-reading .unit-wrap > svg.wd-small{ display:block !important; flex:0 0 22px !important; width:22px !important; height:22px !important }
-  }
-
-  /* A tornado, hurricane or flash flood warning is in effect: the radar sits directly under the hero text */
-  @media (max-width:63.99em){
-    .hero-top.warning-scenario > #verdictSection{ order:-2 }
-    .hero-top.warning-scenario > .radar{ order:-1 }
-    .hero-top.warning-scenario > #bestSection{ order:1 }   /* Current Conditions (order 0) comes before Best Times */
-  }
-  /* Tablet: the radar spans the width; Current Conditions and Best Times sit side by side at the same width */
-  @media (min-width:31.25em) and (max-width:63.99em){
-    .hero-wrap .hero-top.warning-scenario{ grid-template-columns:minmax(0, 1fr) minmax(0, 1fr) }
-    .hero-wrap .hero-top.warning-scenario > .radar{ grid-column:1 / -1; height:340px; min-height:340px; aspect-ratio:auto }
-    .hero-wrap .hero-top.warning-scenario > .hero-now{ align-self:stretch }
-    .hero-wrap .hero-top.warning-scenario > #bestSection{ order:1; align-self:stretch }
-  }
-  /* Narrow tablet: stacked, with Current Conditions stretched to the full width */
-  @media (min-width:31.25em) and (max-width:47.99em){
-    .hero-wrap .hero-top.warning-scenario{ grid-template-columns:minmax(0, 1fr) }
-    .hero-wrap .hero-top.warning-scenario > .hero-now, .hero-wrap .hero-top.warning-scenario > #bestSection{ grid-column:1 / -1; width:100% }
   }
 
   /* Short "copied" confirmation for the Share button */
@@ -3543,15 +3523,8 @@
     return pr;
   }
 
-  // The hero markup is rebuilt below; on phones Best Times lives inside it, so it goes back to its place in the page first
-  function restoreBest(){
-    var b = document.getElementById('bestSection');
-    if(b && typeof bestHome !== 'undefined' && bestHome && bestHome.parentNode && b.nextSibling !== bestHome) bestHome.before(b);
-  }
-
   function renderHeroSkeleton(){
     stopRadarLoop();
-    restoreBest();
     heroEl.className = 'hero skel-hero';
     heroEl.setAttribute('aria-hidden', 'true');
     heroEl.innerHTML =
@@ -3913,7 +3886,6 @@
     var ground = groundCondition(current, todayDaily);
     var outlook = hazardOutlook(hourly);
 
-    restoreBest();
     heroEl.innerHTML =
       '<div class="hero-top">' +
         '<div class="hero-now">' +
@@ -3957,7 +3929,6 @@
         '</div>' +
       '</div>';
     placeVerdict();
-    syncWarningScenario();
     applyHeroAir();
     syncWindTag();
   }
@@ -5781,6 +5752,11 @@
     });
     return ev ? 'The sun rises at ' + vdSunLabel(ev.time) + '.' : '';
   }
+  // After midnight and before sunrise: the night is for sleeping, so the text is about being snuggled up and safe at home
+  function vdPredawn(c){
+    var h = c.hrs && c.hrs[0];
+    return !!(h && vdIsDark(c) && h.hour >= 0 && h.hour < 12);
+  }
   // It is dark right now (night or before sunrise): no sun advice
   function vdIsDark(c){
     var h = c.hrs && c.hrs[0];
@@ -5870,6 +5846,22 @@
   }
   function vdProseCore(r, c, actList){
     var out = [], seed = vdSeed(c);
+    if((r.night || r.state === 'no') && !r.alert && vdPredawn(c)){
+      var nwin = r.state === 'maybe' ? r.hs : r.nextHs;
+      var nxt = nwin ? 'Your next best window to get outside is ' + vdSpan(nwin, c).day + ' ' + vdSpan(nwin, c).phrase + '.' : '';
+      if(r.night){
+        out.push(vdPick(['It’s the quiet middle of the night, so it’s the perfect time to stay snuggled up in bed.',
+          'Everything is still and dark outside, so stay cozy under the covers.',
+          'The whole town is asleep, so stay tucked in, warm and snug.'], seed, 8));
+        out.push(vdPick(['Rest up and stay safe at home until the sun comes up.', 'Sleep tight, and keep the adventures for the morning.', 'Stay cozy and safe at home until daylight.'], seed, 9));
+      }else{
+        var wx = (r.why || []).filter(function(w){ return !/dark out/.test(w); }).slice(0, 2).map(vdNowClause);
+        out.push(vdCap(wx.length ? vdList(wx) : 'it’s a rough night out there') + ', so stay snuggled up in bed.');
+        out.push(vdPick(['Stay safe and warm at home until it passes.', 'Be safe at home, and let the night pass by.'], seed, 9));
+      }
+      out.push(nxt || 'Better to stay snug at home.');   // the last sentence is the headline’s job and is left out of the gray text
+      return out;
+    }
     if(r.tornado){
       return ['Take shelter now: get to the lowest level of the building you’re in, and into the innermost room, away from windows.',
         'Tune in to your local weather for the most up-to-date information.'];
@@ -6105,6 +6097,10 @@
     if(r.flood) return vdCap(r.flood) + ' in effect: turn around, don’t drown.';
     if(r.alert && r.state !== 'no') return 'Fine out, but there’s an active ' + r.alert + '.';
     if(r.state === 'no' && r.alert) return vdCap(r.alert) + ' in effect.';
+    if(r.night && vdPredawn(c)){
+      var nwp = r.state === 'maybe' ? r.hs : r.nextHs;
+      return 'Time to sleep. ' + (nwp ? 'Your next best window to get outside is ' + vdRange(nwp, c) + '.' : 'Better to stay snug at home.');
+    }
     if(r.night){
       var nw = r.state === 'maybe' ? r.hs : r.nextHs;
       return (ca ? 'Dark out, eh. ' : 'Dark out. ') + (nw ? 'Next best window to get outside: ' + vdRange(nw, c) + '.' : 'Not a night for outdoor plans.');
@@ -6142,7 +6138,7 @@
     if(planning && !r.night){ var sn = vdSunNote(c, keep.join(' ')); if(sn) keep.push(sn); }
     if(!r.tornado){ var sr = vdSunriseNote(); if(sr && keep.join(' ').indexOf('sun rises') < 0) keep.push(sr); }
     if(keep.length) lines.push({label: planning ? 'Do' : '', text: keep.join(' ')});
-    if(!r.alert) lines.push({label: 'Wear', text: g.wear + (g.pet ? ' ' + g.pet : '')});   // severe alert: safety only, no clothing or pet tips
+    if(!r.alert && !(r.night && vdPredawn(c))) lines.push({label: 'Wear', text: g.wear + (g.pet ? ' ' + g.pet : '')});   // severe alert: safety only; the small hours of a calm night: nothing to wear
     return lines;
   }
   // One gray line: what to wear (and how to get around in a city, and pet safety in the cold)
@@ -6287,43 +6283,18 @@
   var verdictHeroMq = window.matchMedia('(max-width:63.99em)');
   // Phones (design C): the plain-language summary leads the hero, ahead of the Current Conditions card and the radar. Tablets (<64em): it leads the page, inside the hero block.
   // Two-column layout: it heads the right column, above Best Times.
-  // Phones (under 500px): Best Times sits directly under the summary, ahead of the Current Conditions card. It lives inside the hero markup
-  // there, which is rebuilt on each load, so this runs after every render; everywhere else it goes back to its place in the page.
-  var bestPhoneMq = window.matchMedia('(max-width:31.1875em)');
-  var bestTabletMq = window.matchMedia('(min-width:31.25em) and (max-width:63.99em)');
-  var bestHome = null;
-  function placeBest(){
-    var best = document.getElementById('bestSection');
-    if(!best) return;
-    if(!bestHome && best.parentNode){ bestHome = document.createComment('best-times-home'); best.after(bestHome); }
-    var now = document.querySelector('#hero .hero-top > .hero-now');
-    var warnTablet = bestTabletMq.matches && !!document.querySelector('#hero .hero-top.warning-scenario');   // warning in effect on a tablet: beside Current Conditions
-    if((bestPhoneMq.matches || warnTablet) && now){
-      var v = vdEl;
-      if(v && v.parentNode === now.parentNode){ if(v.nextElementSibling !== best) v.after(best); }
-      else if(now.previousElementSibling !== best){ now.before(best); }
-    }else if(bestHome && bestHome.parentNode && best.nextSibling !== bestHome){
-      bestHome.before(best);
-    }
-  }
-  bestPhoneMq.addEventListener('change', placeAlerts);
-  bestTabletMq.addEventListener('change', placeAlerts);
+  // Phones and tablets: hero text, then Current Conditions, then the radar, then Best Times (Best Times stays in the page flow below the hero).
   function placeVerdict(){
-    placeBest();
     var v = vdEl, heroSec = document.getElementById('heroSection'), best = document.getElementById('bestSection');
     if(!v || !heroSec || !best) return;
     if(phoneBarMq.matches){
       // ahead of the conditions card (the hero markup is rebuilt on each load, so this re-runs after it)
       var now = heroSec.querySelector('.hero-now');
-      if(now){
-        var prev = now.previousElementSibling;
-        if(prev !== v && !(prev === best && best.previousElementSibling === v)) now.before(v);
-      }
+      if(now){ if(now.previousElementSibling !== v) now.before(v); }
       else if(heroSec.nextElementSibling !== v) heroSec.after(v);
     }
     else if(verdictHeroMq.matches){ if(v.nextElementSibling !== heroSec) heroSec.before(v); }  // tablet: plain text above the current conditions
     else if(v.nextElementSibling !== best){ best.before(v); }  // desktop: a module above Best Times
-    placeBest();
   }
   function placeAlerts(){
     placeVerdict();
@@ -6540,30 +6511,8 @@
     setTimeout(function(){ alertsLiveEl.textContent = msg; }, 400);
   }
 
-  // WARNING SCENARIO: a tornado, hurricane, flash flood or severe thunderstorm warning, or a severe thunderstorm watch for the area, is in effect. The radar moves up to sit directly under the hero text
-  // (phones and tablets; desktop keeps it in place), Current Conditions comes up with it, and everything goes back to the usual
-  // order once the warning has ended.
-  function warningScenarioActive(){
-    var now = Date.now();
-    return (lastAlerts || []).some(function(a){
-      if(!/^((tornado|hurricane|flash flood) (warning|emergency)|severe thunderstorm (warning|watch))/i.test(String(a.event || ''))) return false;
-      var end = Date.parse(a.ends || a.expires);
-      return !isFinite(end) || end > now;
-    });
-  }
-  function syncWarningScenario(){
-    var top = document.querySelector('#hero .hero-top');
-    if(!top) return;
-    var on = warningScenarioActive();
-    if(top.classList.contains('warning-scenario') === on) return;
-    top.classList.toggle('warning-scenario', on);
-    placeBest();   // Best Times joins or leaves the hero grid with the radar
-    if(radarLoop && radarLoop.map){ setTimeout(function(){ try{ radarLoop.map.invalidateSize(); }catch(e){} }, 60); }
-  }
-  setInterval(syncWarningScenario, 60000);   // a warning that runs out moves the radar back even before the next refresh
   function renderAlerts(list){
     lastAlerts = list || [];
-    syncWarningScenario();
     // under a hurricane or tropical storm warning the Current Conditions icon is the spinning hurricane
     if((list || []).some(function(a){ return /^(hurricane|tropical storm) warning/i.test(a.event); })){
       var wiHz = document.querySelector('.weather-now .wicon');
