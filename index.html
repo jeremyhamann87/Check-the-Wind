@@ -5771,6 +5771,21 @@
     if(!ev || ev.time.getTime() - now > 20 * 3600000) return '';
     return 'The sun sets at ' + vdSunLabel(ev.time) + '.';
   }
+  // "The sun rises at 6:51 AM." in the 90 minutes before sunrise
+  function vdSunriseNote(){
+    var now = Date.now(), ev = null;
+    sunEvents.forEach(function(e){
+      if(e.type !== 'sunrise') return;
+      var d = e.time.getTime() - now;
+      if(d > 0 && d <= 90 * 60000 && (!ev || e.time < ev.time)) ev = e;
+    });
+    return ev ? 'The sun rises at ' + vdSunLabel(ev.time) + '.' : '';
+  }
+  // It is dark right now (night or before sunrise): no sun advice
+  function vdIsDark(c){
+    var h = c.hrs && c.hrs[0];
+    return !!(h && h.why && h.why.some(function(w){ return /dark out/.test(w); }));
+  }
   // What the weather turns into once the good window ends: the first hour after it, described by whatever rules that hour out
   function vdAfter(r, c){
     if(!r.hs || !r.hs.length) return '';
@@ -6001,14 +6016,14 @@
     var rainAt = first(function(h){ return (/rain|shower|drizzle|thunder/i.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40)) || (h.pop >= 60 && !/snow|flurr|blizzard/i.test(h.fc)); });
     var snowAt = first(function(h){ return /snow|flurr|sleet|blizzard/i.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40); });
     var iceAt = first(function(h){ return /freezing|ice|icy|sleet/i.test(h.fc) || h.why.some(function(w){ return /snowy or icy/.test(w); }); });
-    var hat = ca ? 'a toque' : 'a warm hat', gloves = ca ? 'mitts' : 'gloves';
+    var hat = ca ? 'a toque' : 'a warm hat', gloves = ca ? 'mitts' : 'gloves', dark = vdIsDark(c);
     var base;
     if(minT < 15) base = 'It’s bitter out, so wear a heavy coat, ' + hat + ', insulated ' + gloves + ', a scarf and warm waterproof boots.';
     else if(minT < 32) base = 'Bundle up with a warm coat, ' + hat + ', ' + gloves + ' and a scarf, and wear warm boots.';
     else if(minT < 45) base = 'Wear a warm coat with ' + hat + ' and ' + gloves + ', and layer up underneath.';
     else if(minT < 58) base = maxT >= 68 ? 'Dress in layers: a jacket or sweater now, and it warms up later.' : 'Bring a jacket or a warm sweater.';
-    else if(maxT >= 85) base = rainAt >= 0 ? 'Dress light in quick-drying clothes, and bring water.' : 'Dress light in breathable clothes, wear sunscreen and a hat, and bring water.';
-    else if(maxT >= 72) base = rainAt >= 0 ? 'Light, quick-drying clothes will feel best.' : 'Light, breathable clothes will feel best, and sunscreen is a good idea.';
+    else if(maxT >= 85) base = rainAt >= 0 ? 'Dress light in quick-drying clothes, and bring water.' : dark ? 'Dress light in breathable clothes, and bring water.' : 'Dress light in breathable clothes, wear sunscreen and a hat, and bring water.';
+    else if(maxT >= 72) base = rainAt >= 0 ? 'Light, quick-drying clothes will feel best.' : dark ? 'Light, breathable clothes will feel best.' : 'Light, breathable clothes will feel best, and sunscreen is a good idea.';
     else base = 'Light layers will do.';
     var mods = [];
     function when(i, now, later){ return i === 0 ? now : later; }
@@ -6125,6 +6140,7 @@
     var lines = [];
     if(r.flood && !r.tornado) keep.unshift('Never drive through flooded roadways or around barricades. Turn around, don’t drown.');
     if(planning && !r.night){ var sn = vdSunNote(c, keep.join(' ')); if(sn) keep.push(sn); }
+    if(!r.tornado){ var sr = vdSunriseNote(); if(sr && keep.join(' ').indexOf('sun rises') < 0) keep.push(sr); }
     if(keep.length) lines.push({label: planning ? 'Do' : '', text: keep.join(' ')});
     if(!r.alert) lines.push({label: 'Wear', text: g.wear + (g.pet ? ' ' + g.pet : '')});   // severe alert: safety only, no clothing or pet tips
     return lines;
@@ -6148,8 +6164,8 @@
     else if(minT < 32) items = ['warm coat', hat, gloves, 'scarf'];
     else if(minT < 45) items = ['warm coat', hat, gloves];
     else if(minT < 58) items = maxT >= 68 ? ['jacket', 'layers'] : ['jacket'];
-    else if(maxT >= 85) items = rain ? ['light clothes'] : ['light clothes', 'sunscreen', 'hat'];
-    else if(maxT >= 72) items = rain ? ['light clothes'] : ['light clothes', 'sunscreen'];
+    else if(maxT >= 85) items = (rain || vdIsDark(c)) ? ['light clothes'] : ['light clothes', 'sunscreen', 'hat'];
+    else if(maxT >= 72) items = (rain || vdIsDark(c)) ? ['light clothes'] : ['light clothes', 'sunscreen'];
     else items = ['light layers'];
     if(snow) items.push('waterproof boots'); else if(ice && minT <= 34) items.push('boots with grip'); else if(minT < 32) items.push('warm boots');
     if(rain) items.push('umbrella', 'rain coat');
