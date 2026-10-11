@@ -5752,6 +5752,16 @@
     });
     return ev ? 'The sun rises at ' + vdSunLabel(ev.time) + '.' : '';
   }
+  // Within an hour of sunrise: the town is waking up
+  function vdDawnMinutes(){
+    var now = Date.now(), best = null;
+    sunEvents.forEach(function(e){
+      if(e.type !== 'sunrise') return;
+      var d = e.time.getTime() - now;
+      if(d > 0 && d <= 60 * 60000 && (best === null || d < best)) best = d;
+    });
+    return best === null ? null : Math.round(best / 60000);
+  }
   // After midnight and before sunrise: the night is for sleeping, so the text is about being snuggled up and safe at home
   function vdPredawn(c){
     var h = c.hrs && c.hrs[0];
@@ -5849,7 +5859,12 @@
     if((r.night || r.state === 'no') && !r.alert && vdPredawn(c)){
       var nwin = r.state === 'maybe' ? r.hs : r.nextHs;
       var nxt = nwin ? 'Your next best window to get outside is ' + vdSpan(nwin, c).day + ' ' + vdSpan(nwin, c).phrase + '.' : '';
-      if(r.night){
+      if(r.night && vdDawnMinutes() !== null){
+        out.push(vdPick(['The town is waking up: birds are chirping, people are getting ready, and coffee is brewing.',
+          'Dawn is close: birds are chirping, the town is stirring, and coffee is brewing in kitchens everywhere.',
+          'The town is slowly waking up, with birds chirping, people getting ready and coffee brewing.'], seed, 10));
+        out.push('Stay cozy and safe at home just a little longer.');
+      }else if(r.night){
         out.push(vdPick(['It’s the quiet middle of the night, so it’s the perfect time to stay snuggled up in bed.',
           'Everything is still and dark outside, so stay cozy under the covers.',
           'The whole town is asleep, so stay tucked in, warm and snug.'], seed, 8));
@@ -5857,7 +5872,7 @@
       }else{
         var wx = (r.why || []).filter(function(w){ return !/dark out/.test(w); }).slice(0, 2).map(vdNowClause);
         out.push(vdCap(wx.length ? vdList(wx) : 'it’s a rough night out there') + ', so stay snuggled up in bed.');
-        out.push(vdPick(['Stay safe and warm at home until it passes.', 'Be safe at home, and let the night pass by.'], seed, 9));
+        out.push(vdDawnMinutes() !== null ? 'The town is waking up and people are getting ready, so stay safe at home until it passes.' : vdPick(['Stay safe and warm at home until it passes.', 'Be safe at home, and let the night pass by.'], seed, 9));
       }
       out.push(nxt || 'Better to stay snug at home.');   // the last sentence is the headline’s job and is left out of the gray text
       return out;
@@ -6099,7 +6114,7 @@
     if(r.state === 'no' && r.alert) return vdCap(r.alert) + ' in effect.';
     if(r.night && vdPredawn(c)){
       var nwp = r.state === 'maybe' ? r.hs : r.nextHs;
-      return 'Time to sleep. ' + (nwp ? 'Your next best window to get outside is ' + vdRange(nwp, c) + '.' : 'Better to stay snug at home.');
+      return (vdDawnMinutes() !== null ? 'Good morning. ' : 'Time to sleep. ') + (nwp ? 'Your next best window to get outside is ' + vdRange(nwp, c) + '.' : 'Better to stay snug at home.');
     }
     if(r.night){
       var nw = r.state === 'maybe' ? r.hs : r.nextHs;
@@ -6136,6 +6151,7 @@
     var lines = [];
     if(r.flood && !r.tornado) keep.unshift('Never drive through flooded roadways or around barricades. Turn around, don’t drown.');
     if(planning && !r.night){ var sn = vdSunNote(c, keep.join(' ')); if(sn) keep.push(sn); }
+    if(!r.tornado && !r.alert && !(r.night && vdPredawn(c)) && vdDawnMinutes() !== null && keep.join(' ').indexOf('waking up') < 0) keep.push('The town is waking up, with birds chirping, people getting ready and coffee brewing.');
     if(!r.tornado){ var sr = vdSunriseNote(); if(sr && keep.join(' ').indexOf('sun rises') < 0) keep.push(sr); }
     if(keep.length) lines.push({label: planning ? 'Do' : '', text: keep.join(' ')});
     if(!r.alert && !(r.night && vdPredawn(c))) lines.push({label: 'Wear', text: g.wear + (g.pet ? ' ' + g.pet : '')});   // severe alert: safety only; the small hours of a calm night: nothing to wear
