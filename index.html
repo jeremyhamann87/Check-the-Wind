@@ -1287,7 +1287,7 @@
     #weekSection .daylist{ gap:16px }
     #weekSection .dayrow{ border:0; border-top:8px solid var(--card-band, var(--table-border)) }
     .db-content .today-card, #weekSection .dayrow, .db-content .alert{ box-shadow:var(--shadow) }
-    .db-content .alerts:not([hidden]) + #bestSection{ margin-top:40px }
+    .db-content .alerts:not([hidden]) + #bestSection{ margin-top:24px }
 
     /* Pull-to-refresh: #ptr normally grows in document flow, pushing
        .wrap down as you pull. At desktop that growth also grows
@@ -1691,7 +1691,7 @@
   .vd-skel-c{height:44px; margin-top:16px}
   html.load-failed #verdictSection{display:none}
   .db-content #verdictSection{margin-top:0}
-  .db-content .alerts:not([hidden]) + #verdictSection{margin-top:40px}
+  .db-content .alerts:not([hidden]) + #verdictSection{margin-top:24px}   /* same 24px as every other module on the right */
   .db-content #verdictSection:not([hidden]) + #bestSection{margin-top:32px}
   .hero-wrap #verdictSection{margin:8px 0 16px; flex:0 0 auto}
   @media (max-width:63.99em){
