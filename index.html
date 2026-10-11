@@ -5657,7 +5657,8 @@
       res.sentence = 'Okay for now, but not ideal' + (weak.length ? ': ' + vdList(weak.slice(0, 2)) : '') + '.';
       return finish(res, ao);
     }else{
-      res.why = now.why.slice();
+      // weather first, darkness last: "Storms." not "Dark out." when it is both stormy and night
+      res.why = now.why.slice().sort(function(x, y){ return (/dark out/.test(x) ? 1 : 0) - (/dark out/.test(y) ? 1 : 0); });
     }
 
     if(laterToday){
