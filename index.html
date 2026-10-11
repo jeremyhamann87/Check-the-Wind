@@ -4348,7 +4348,7 @@
   var BP_KEY = 'checkTheWind.bestPrefs';
   var BP_STD = {days:5, tmin:25, tmax:100, wind:25, pop:40, hum:100, ground:2, aqi:150};
   var BP_FIELDS = [
-    {k:'days',   label:'Time scale',                min:3,  max:7,   step:1, seg:[3, 5, 7], fmt:function(v){ return v + ' days'; },
+    {k:'days',   label:'Time frame',                min:3,  max:7,   step:1, seg:[3, 5, 7], fmt:function(v){ return v + ' days'; },
       help:'How many days ahead Best Times looks.'},
     {k:'tmax',   label:'Highest temperature',       min:70, max:120, step:1, fmt:function(v){ return fmtTemp(v); },
       help:'Hotter windows are skipped.'},
