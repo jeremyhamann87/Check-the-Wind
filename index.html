@@ -1849,7 +1849,7 @@
   .ag-wrap::after{right:0; background:linear-gradient(to right, transparent, var(--surface))}
   .ag-wrap::before{left:0; background:linear-gradient(to left, transparent, var(--surface))}
   .ag-wrap.can-scroll-right::after, .ag-wrap.can-scroll-left::before{opacity:1}
-  .ag-grid{display:flex; gap:12px; overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x proximity; padding:2px 16px 14px; scroll-padding-inline:16px; scrollbar-width:thin; -webkit-overflow-scrolling:touch}
+  .ag-grid{display:flex; gap:12px; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; scroll-snap-type:x proximity; padding:2px 16px 14px; scroll-padding-inline:16px; scrollbar-width:thin; -webkit-overflow-scrolling:touch}
   .ag-grid:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
   .ag{flex:0 0 150px; scroll-snap-align:start; display:flex; flex-direction:column; align-items:center; min-width:0}
   .ag-title{font-size:.8125rem; font-weight:600; color:var(--text); text-align:center; margin-bottom:4px}
