@@ -477,7 +477,8 @@
   .alerts:not([hidden]) + #bestSection{margin-top:40px}
   .alert{--alert-bg:#4A6A98; --alert-ink:#fff; border:1px solid var(--alert-bg); border-radius:4px; overflow:hidden; background:var(--surface)}
   .alert--warning{--alert-bg:#A8433D; --alert-ink:#fff}
-  .alert--watch{--alert-bg:#CBAA45; --alert-ink:#2B2300}
+  .alert--watch{--alert-bg:#1F6FD0; --alert-ink:#fff}   /* every watch is blue */
+  .alert--svrwarning{--alert-bg:#F2C500; --alert-ink:#2B2300}   /* severe thunderstorm warning: yellow */
   .alert--advisory{--alert-bg:#4A6A98; --alert-ink:#fff}
   .alert--flashflood{--alert-bg:#32CD32; --alert-ink:#0A2A0A}
   .alert-head{
@@ -6355,6 +6356,7 @@
   }
   function alertKind(ev){
     if(/flash flood (warning|emergency)$/i.test(ev)) return 'flashflood';   // lime green everywhere a flash flood warning shows
+    if(/severe thunderstorm warning$/i.test(ev)) return 'svrwarning';       // yellow
     if(/warning$/i.test(ev)) return 'warning';
     if(/watch$/i.test(ev)) return 'watch';
     if(/advisory$/i.test(ev)) return 'advisory';
