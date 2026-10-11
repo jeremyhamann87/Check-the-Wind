@@ -85,15 +85,6 @@
     white-space:nowrap; /* the widest line in the card — everything else hugs to its width */
   }
   .precip-legend-body{display:flex; gap:12px; height:9.5rem}
-  /* Warning outlines: a switch and the kinds that are active right now */
-  .warn-key{margin-top:10px; padding-top:8px; border-top:1px solid var(--border)}
-  .warn-key[hidden]{display:none}
-  .warn-toggle{display:block; width:100%; margin:0 0 6px; padding:4px 0; border:0; background:none; font:inherit; font-size:1rem; font-weight:700; letter-spacing:.01em; color:var(--text); text-align:left; cursor:pointer}
-  .warn-toggle[aria-pressed="false"]::after{content:" off"; font-weight:400; color:var(--text-muted)}
-  .warn-list{list-style:none; margin:0; padding:0; display:grid; gap:4px}
-  .warn-list li{display:flex; align-items:center; gap:8px; font-size:.875rem; color:var(--text-muted); white-space:nowrap}
-  .warn-list .sw{width:14px; height:10px; border-radius:2px; border:2px solid; background:transparent; flex:0 0 auto}
-  .warn-key.is-off .warn-list{display:none}
   .precip-gradient{
     flex:0 0 auto; width:10px; border-radius:4px; border:1px solid var(--border);
     background:linear-gradient(to bottom,
@@ -304,10 +295,6 @@
         <span style="top:87.5%">Light</span>
       </div>
     </div>
-    <div class="warn-key" id="warnKey" hidden>
-      <button type="button" class="warn-toggle" id="warnToggle" aria-pressed="true">Warnings</button>
-      <ul class="warn-list" id="warnList"></ul>
-    </div>
   </div>
 
   <div class="controls" id="controls" hidden>
@@ -455,7 +442,7 @@
 
   /* ---------- Warning polygons ----------
      Active storm-based warnings from the Iowa Environmental Mesonet's live copy of the National Weather Service polygons
-     (U.S. only). Tap an outline for the warning, who issued it and when it ends. */
+     (U.S. only). Tap an outline for the warning, who issued it and when it ends. There is no key or switch for them. */
   (function(){
     var URL_W = 'https://mesonet.agron.iastate.edu/geojson/sbw.geojson';
     var KINDS = {
@@ -466,9 +453,7 @@
       'FA.W': {c: '#1B8F4B', n: 'Flood'},
       'MA.W': {c: '#FF8C00', n: 'Special marine'}
     };
-    var KEY = 'checkTheWind.warnings', layer = null, casing = null, feats = [], on = true;
-    try{ on = localStorage.getItem(KEY) !== '0'; }catch(e){}
-    var keyEl = document.getElementById('warnKey'), listEl = document.getElementById('warnList'), toggle = document.getElementById('warnToggle');
+    var layer = null, casing = null, feats = [];
 
     function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]; }); }
     function kindOf(p){ return KINDS[p.phenomena + '.' + p.significance] || null; }
@@ -488,9 +473,7 @@
     function paint(){
       if(layer){ map.removeLayer(layer); layer = null; }
       if(casing){ map.removeLayer(casing); casing = null; }
-      keyEl.classList.toggle('is-off', !on);
-      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
-      if(!on || !feats.length) return;
+      if(!feats.length) return;
       var fc = {type: 'FeatureCollection', features: feats};
       // a very thin black edge under the colored outline so it stands out against the radar
       casing = L.geoJSON(fc, {interactive: false, style: function(){ return {color: '#000', weight: 5, opacity: 1, fill: false}; }}).addTo(map);
@@ -499,26 +482,13 @@
         onEachFeature: function(f, l){ l.bindPopup(popup(f.properties)); }
       }).addTo(map);
     }
-    function legend(){
-      var seen = {};
-      feats.forEach(function(f){ var k = kindOf(f.properties); seen[k.n] = k.c; });
-      listEl.innerHTML = Object.keys(seen).map(function(n){
-        return '<li><span class="sw" style="border-color:' + seen[n] + '"></span>' + esc(n) + '</li>';
-      }).join('');
-      keyEl.hidden = !feats.length;
-    }
     function load(){
       fetch(URL_W).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
-        // only the kinds with a color and a place in the key (anything else, e.g. an unlisted warning type, is left off the map)
+        // only the kinds that have a color (anything else, e.g. an unlisted warning type, is left off the map)
         feats = ((d && d.features) || []).filter(function(f){ return f.properties && f.geometry && kindOf(f.properties); });
-        legend(); paint();
+        paint();
       }).catch(function(){});
     }
-    toggle.addEventListener('click', function(){
-      on = !on;
-      try{ localStorage.setItem(KEY, on ? '1' : '0'); }catch(e){}
-      paint();
-    });
     load();
     setInterval(load, 180000);
   })();
