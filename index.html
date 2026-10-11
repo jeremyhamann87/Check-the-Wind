@@ -5752,6 +5752,42 @@
     });
     return ev ? 'The sun rises at ' + vdSunLabel(ev.time) + '.' : '';
   }
+  // Advisories, watches and lesser warnings in effect (or coming) for the area, in plain words, so the hero text matches the alert banner
+  function vdLocalWhen(ms, c){
+    var o = {hour: 'numeric', minute: '2-digit'}, d = {year: 'numeric', month: '2-digit', day: '2-digit'};
+    if(locationTZ){ o.timeZone = locationTZ; d.timeZone = locationTZ; }
+    var clock = new Date(ms).toLocaleTimeString('en-US', o).replace(':00', '');
+    var p = {}; new Intl.DateTimeFormat('en-CA', d).formatToParts(new Date(ms)).forEach(function(x){ p[x.type] = x.value; });
+    var date = p.year + '-' + p.month + '-' + p.day;
+    var day = date === c.todayStr ? '' : date === c.tomorrowStr ? ' tomorrow' : ' ' + fmtDow(date);
+    return clock + day;
+  }
+  function vdAlertLines(c, r){
+    var now = Date.now(), out = [], skipped = {};
+    if(r.alert) skipped[r.alert] = 1;
+    if(r.flood) skipped[r.flood] = 1;
+    var list = (lastAlerts || []).filter(function(a){
+      var ev = String(a.event || '').toLowerCase();
+      return ev && !skipped[ev] && !/^tornado (warning|emergency)/.test(ev);
+    });
+    list.slice(0, 2).forEach(function(a){
+      var ev = String(a.event).toLowerCase(), art = /^[aeiou]/.test(ev) ? 'An ' : 'A ';
+      var end = Date.parse(a.ends || a.expires), onset = a.onset ? Date.parse(a.onset) : NaN;
+      var s;
+      if(!isNaN(onset) && onset > now + 60000){
+        s = art + ev + ' takes effect at ' + vdLocalWhen(onset, c) + (isNaN(end) ? '.' : ' and runs until ' + vdLocalWhen(end, c) + '.');
+      }else{
+        s = art + ev + ' is in effect' + (isNaN(end) ? '.' : ' until ' + vdLocalWhen(end, c) + '.');
+      }
+      if(/wind/.test(ev)){
+        var top = Math.max.apply(null, c.hrs.slice(0, 12).map(function(h){ return h.mph; }));
+        if(top >= 15) s += ' Winds could reach ' + fmtWind(top) + '.';
+      }
+      out.push(s);
+    });
+    if(list.length > 2) out.push('Plus ' + (list.length - 2) + ' more alert' + (list.length - 2 === 1 ? '' : 's') + ', listed above.');
+    return out;
+  }
   // Within an hour of sunrise: the town is waking up
   function vdDawnMinutes(){
     var now = Date.now(), best = null;
@@ -6149,6 +6185,7 @@
     var sents = vdProseCore(r, c, actList), g = vdGear(c), planning = (r.state === 'yes' || r.state === 'maybe') && !r.alert;
     var keep = (r.night || (r.state === 'no' && !r.alert)) ? sents.slice(0, -1) : (r.state === 'no' ? sents : sents.slice(1));  // a severe-alert No keeps its safety sentence
     var lines = [];
+    if(!r.tornado){ var al = vdAlertLines(c, r); if(al.length) keep.unshift.apply(keep, al); }   // the banner's alerts, in the text too
     if(r.flood && !r.tornado) keep.unshift('Never drive through flooded roadways or around barricades. Turn around, don’t drown.');
     if(planning && !r.night){ var sn = vdSunNote(c, keep.join(' ')); if(sn) keep.push(sn); }
     if(!r.tornado && !r.alert && !(r.night && vdPredawn(c)) && vdDawnMinutes() !== null && keep.join(' ').indexOf('waking up') < 0) keep.push('The town is waking up, with birds chirping, people getting ready and coffee brewing.');
