@@ -2626,7 +2626,10 @@
       </p>
       <p>
         <strong>Places, maps &amp; sun times.</strong> Place search covers the U.S. and Canada and uses Open-Meteo's geocoding service (GeoNames data,
-        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>); place names for
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>). A street address you search for
+        (for example &ldquo;123 Main St, Denver, CO&rdquo;) is sent, when you press Enter, to OpenStreetMap&rsquo;s Nominatim service
+        (<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">&copy; OpenStreetMap contributors</a>) to find its
+        coordinates; Check the Wind does not store it beyond your own recent places in this browser. Place names for
         &ldquo;Use my location&rdquo; come from the National Weather Service or, in Canada, Environment Canada. Map tiles are &copy;
         <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, shown with
         <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>.
@@ -3305,9 +3308,37 @@
     return out;
   }
 
+  /* Street addresses: "123 Main St, Denver, CO" is looked up on submit with OpenStreetMap's Nominatim (U.S. and Canada), so the
+     weather is for that address's own coordinates. Not used while typing (its policy rules out search-as-you-type). */
+  function looksLikeAddress(q){
+    var t = String(q || '').trim();
+    return t.length >= 6 && /^\d{1,6}[A-Za-z]?\s+\S+/.test(t) && /[A-Za-z]{2}/.test(t) && !/^\d{5}(-\d{4})?$/.test(t);
+  }
+  var addrCache = {};
+  async function geocodeAddress(query){
+    var key = query.trim().toLowerCase();
+    if(addrCache[key] !== undefined) return addrCache[key];
+    var res = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=us,ca&q=' + encodeURIComponent(query), {headers: {'Accept': 'application/json'}});
+    if(!res.ok) return null;
+    var list = await res.json();
+    var pick = (list || []).filter(function(r){ return r.address && r.address.house_number && r.address.road; })[0] ||
+               (list || []).filter(function(r){ return r.address && r.address.road; })[0] || null;
+    var out = null;
+    if(pick){
+      var a = pick.address, street = [a.house_number, a.road].filter(Boolean).join(' ');
+      var town = a.city || a.town || a.village || a.hamlet || a.suburb || a.county || '';
+      out = {lat: +pick.lat, lon: +pick.lon, display: [street, town, a.state].filter(Boolean).join(', ')};
+      if(!isFinite(out.lat) || !isFinite(out.lon)) out = null;
+    }
+    addrCache[key] = out;
+    return out;
+  }
   async function geocode(query){
+    if(looksLikeAddress(query)){
+      try{ var addr = await geocodeAddress(query); if(addr) return addr; }catch(e){ /* fall back to the place search */ }
+    }
     var found = await geocodeSearch(query, 1);
-    if(!found.length) throw appError('We couldn’t find “' + query + '” in the U.S. or Canada. Try a city & state or province, like “Denver, CO” or “Toronto, ON”, or a ZIP code.', true);
+    if(!found.length) throw appError('We couldn’t find “' + query + '” in the U.S. or Canada. Try a street address, a city & state or province, like “Denver, CO” or “Toronto, ON”, or a ZIP code.', true);
     return found[0];
   }
 
@@ -3748,7 +3779,7 @@
   function sampleRadarLevel(lat, lon){
     return new Promise(function(resolve){
       try{
-        var z = 7, n = Math.pow(2, z), rad = lat * Math.PI / 180;
+        var z = 9, n = Math.pow(2, z), rad = lat * Math.PI / 180;   // zoom 9: about 250 m per pixel, so the 5 x 5 window below is about 1 km across
         var xf = (lon + 180) / 360 * n, yf = (1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2 * n;
         var tx = Math.floor(xf), ty = Math.floor(yf), px = Math.floor((xf - tx) * 256), py = Math.floor((yf - ty) * 256);
         var img = new Image();

@@ -44,7 +44,7 @@ One-time setup:
 ## Data sources
 
 National Weather Service (U.S. weather, alerts, place names), Environment and Climate Change Canada (Canadian weather, alerts and radar), NOAA MRMS / HRRR and NEXRAD via Iowa Environmental Mesonet (radar),
-AirNow / EPA and Open-Meteo (air quality, recent rainfall, place search), OpenStreetMap (map tiles),
+AirNow / EPA and Open-Meteo (air quality, recent rainfall, place search), OpenStreetMap (map tiles and Nominatim street-address search),
 SUNRISE-SUNSET.ORG (sun times). Credits and terms are in the site's "Disclaimers & Data Sources" panel.
 
 ## Contact
