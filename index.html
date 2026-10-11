@@ -6492,13 +6492,13 @@
     setTimeout(function(){ alertsLiveEl.textContent = msg; }, 400);
   }
 
-  // WARNING SCENARIO: a tornado, hurricane or flash flood warning, or a severe thunderstorm watch for the area, is in effect. The radar moves up to sit directly under the hero text
+  // WARNING SCENARIO: a tornado, hurricane, flash flood or severe thunderstorm warning, or a severe thunderstorm watch for the area, is in effect. The radar moves up to sit directly under the hero text
   // (phones and tablets; desktop keeps it in place), Current Conditions comes up with it, and everything goes back to the usual
   // order once the warning has ended.
   function warningScenarioActive(){
     var now = Date.now();
     return (lastAlerts || []).some(function(a){
-      if(!/^((tornado|hurricane|flash flood) (warning|emergency)|severe thunderstorm watch)/i.test(String(a.event || ''))) return false;
+      if(!/^((tornado|hurricane|flash flood) (warning|emergency)|severe thunderstorm (warning|watch))/i.test(String(a.event || ''))) return false;
       var end = Date.parse(a.ends || a.expires);
       return !isFinite(end) || end > now;
     });
