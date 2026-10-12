@@ -2093,6 +2093,8 @@
   .bt-cards{overflow-x:auto; padding:0 12px 2px; scroll-padding-inline:12px; scroll-snap-type:x proximity; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin}
   @media (max-width:63.99em){ .bt-cards{scrollbar-width:none} .bt-cards::-webkit-scrollbar{display:none} }  /* touch screens swipe; desktop keeps a thin scrollbar so the hidden cards are discoverable */
   .bt-track{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:10px; width:max-content}
+  /* Phones: every Best Times card is the same width in both views (7-Day and Top 3), whatever the day or time says */
+  @media (max-width:31.1875em){ .bt-track{grid-auto-columns:236px} }
   .bt-card{
     display:flex; flex-direction:column; min-width:0; overflow:hidden; scroll-snap-align:start;
     background:var(--surface); border:1px solid var(--table-border); border-radius:4px;
