@@ -264,9 +264,7 @@
   .brand h1{font-size:2.5rem;margin:0;color:var(--text)}
   .brand h1.logo{display:flex; align-items:center; gap:10px}
   .brand h1.logo svg{flex-shrink:0; color:var(--logo); width:1.25em; height:1.25em}
-  .wm-wheel{transform-origin:11px 6.6px; transform-box:view-box; animation:wmspin 5s linear infinite}
-  @keyframes wmspin{to{transform:rotate(360deg)}}
-  @media (prefers-reduced-motion: reduce){ .wm-wheel{animation:none} }
+  .wm-wheel{transform-origin:11px 6.6px; transform-box:view-box}   /* turned from script: its speed follows the wind (see windmill below) */
   .brand .tag{font-size:1rem;color:var(--text-muted);font-family:'Nunito',monospace;letter-spacing:.04em;text-transform:uppercase}
 
   form.search{display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end}
@@ -864,6 +862,9 @@
   .dayrow .temps .temp-icon{display:none}
   .dayrow .temps .hi{color:var(--text); font-weight:600}
   .dayrow .temps .lo{color:var(--text-muted)}
+  .dval .wunit{font-weight:700}
+  /* Phones and tablets: like Current Conditions, the number is bold in the band color and the unit is regular weight in the muted text color */
+  @media (max-width:63.99em){ .dval .wunit{ font-weight:400; color:var(--text-muted) !important } }
   .gustbadge{
     display:block; width:fit-content; margin-top:.25rem;
     font-size:1rem; font-weight:600;
@@ -955,10 +956,10 @@
   .footer-contact{font-size:1rem; color:var(--text-faint); text-decoration:underline; text-underline-offset:2px; padding:12px 0; min-height:44px; display:inline-flex; align-items:center}
   @media (min-width:64em){ .footer-contact:hover{color:var(--text-muted)} }
   .footer-contact:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:2px}
-  /* Phones: stack the footer links in one column; tablet and desktop keep them in a row */
-  @media (max-width:31.1875em){
+  /* Phones and tablets: stack the footer links in one column; desktop keeps them in a row */
+  @media (max-width:63.99em){
     .footer-bar{flex-direction:column; align-items:flex-start; gap:0}
-    /* tighter on phones: shorter rows, less space above, nothing extra below */
+    /* tighter: shorter rows, less space above, nothing extra below */
     footer{margin-top:8px; padding-top:0}
     .disclaimers-link, .footer-contact{min-height:34px; padding:6px 0}
     .data-asof{padding:6px 0 0; line-height:1.3}
@@ -966,13 +967,9 @@
   }
   /* Phones and tablets: the windmill sits at the right edge of the footer, level with the last line */
   @media (max-width:63.99em){
-    .footer-bar{position:relative; min-height:98px}
-    /* narrow tablets: the links row runs under where the windmill stands, so the footer is tall enough to put it below them */
-    @media (min-width:31.25em) and (max-width:35.1em){ .footer-bar{min-height:150px} }
-    .footer-mill{display:block; position:absolute; right:0; bottom:2px; width:96px; height:96px; color:var(--logo)}  /* 200% larger than its first 32px; same colour as the header windmill */
+    .footer-bar{position:relative; min-height:122px}
+    .footer-mill{display:block; position:absolute; right:0; bottom:2px; width:120px; height:120px; color:var(--logo)}  /* 96px + 25%; same colour as the header windmill */
   }
-  /* Tablet: tighter gaps so all four items fit on one line at 768px */
-  @media (min-width:31.25em) and (max-width:63.99em){ .footer-bar{column-gap:8px} }
   /* Desktop: links on one row with the contact link on the right edge, "Data as of" on its own line below */
   @media (min-width:64em){ .footer-contact{margin-left:auto} .data-asof{flex-basis:100%} }
   .disclaimers-modal-panel{
@@ -2227,7 +2224,7 @@
   <div class="hdr-in">
     <div class="brand">
       <h1 class="logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.84" stroke-linecap="round" stroke-linejoin="round" width="1em" height="1em" aria-hidden="true"><path d="M10.10 9.8L6.71 22.6M11.90 9.8L15.29 22.6M8.83 14.6H13.17M7.77 18.6H14.23"/><path d="M11 6.6H19"/><rect x="17.6" y="5.3" width="3" height="2.6" rx=".3"/><g class="wm-wheel"><circle cx="11" cy="6.6" r="5.3"/><path d="M11 6.6L16.10 6.60M11 6.6L15.42 9.15M11 6.6L13.55 11.02M11 6.6L11.00 11.70M11 6.6L8.45 11.02M11 6.6L6.58 9.15M11 6.6L5.90 6.60M11 6.6L6.58 4.05M11 6.6L8.45 2.18M11 6.6L11.00 1.50M11 6.6L13.55 2.18M11 6.6L15.42 4.05"/></g><circle cx="11" cy="6.6" r="1.1" fill="currentColor"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.84" stroke-linecap="round" stroke-linejoin="round" width="1em" height="1em" aria-hidden="true"><path d="M11 6.6L6.71 22.6M11 6.6L15.29 22.6M8.83 14.6H13.17M7.77 18.6H14.23"/><path d="M11 6.6H19"/><rect x="17.6" y="5.3" width="3" height="2.6" rx=".3"/><g class="wm-wheel"><circle cx="11" cy="6.6" r="5.3"/><path d="M11 6.6L16.10 6.60M11 6.6L15.42 9.15M11 6.6L13.55 11.02M11 6.6L11.00 11.70M11 6.6L8.45 11.02M11 6.6L6.58 9.15M11 6.6L5.90 6.60M11 6.6L6.58 4.05M11 6.6L8.45 2.18M11 6.6L11.00 1.50M11 6.6L13.55 2.18M11 6.6L15.42 4.05"/></g><circle cx="11" cy="6.6" r="1.1" fill="currentColor"/></svg>
         <span class="logo-swap"><span class="logo-text">Check the Wind</span><span class="logo-loc" id="logoLoc" aria-hidden="true"></span></span>
       </h1>
     </div>
@@ -2581,7 +2578,7 @@
       <a class="footer-contact" href="mailto:contact@checkthewind.com">contact@checkthewind.com</a>
       <span class="data-asof">Data as of <span id="dataAsOf">—</span></span>
       <span class="footer-copy">Copyright &copy; 2027 Check The Wind</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.23" stroke-linecap="round" stroke-linejoin="round" class="footer-mill" focusable="false" aria-hidden="true"><path d="M10.10 9.8L6.71 22.6M11.90 9.8L15.29 22.6M8.83 14.6H13.17M7.77 18.6H14.23"/><path d="M11 6.6H19"/><rect x="17.6" y="5.3" width="3" height="2.6" rx=".3"/><g class="wm-wheel"><circle cx="11" cy="6.6" r="5.3"/><path d="M11 6.6L16.10 6.60M11 6.6L15.42 9.15M11 6.6L13.55 11.02M11 6.6L11.00 11.70M11 6.6L8.45 11.02M11 6.6L6.58 9.15M11 6.6L5.90 6.60M11 6.6L6.58 4.05M11 6.6L8.45 2.18M11 6.6L11.00 1.50M11 6.6L13.55 2.18M11 6.6L15.42 4.05"/></g><circle cx="11" cy="6.6" r="1.1" fill="currentColor"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.184" stroke-linecap="round" stroke-linejoin="round" class="footer-mill" focusable="false" aria-hidden="true"><path d="M11 6.6L6.71 22.6M11 6.6L15.29 22.6M8.83 14.6H13.17M7.77 18.6H14.23"/><path d="M11 6.6H19"/><rect x="17.6" y="5.3" width="3" height="2.6" rx=".3"/><g class="wm-wheel"><circle cx="11" cy="6.6" r="5.3"/><path d="M11 6.6L16.10 6.60M11 6.6L15.42 9.15M11 6.6L13.55 11.02M11 6.6L11.00 11.70M11 6.6L8.45 11.02M11 6.6L6.58 9.15M11 6.6L5.90 6.60M11 6.6L6.58 4.05M11 6.6L8.45 2.18M11 6.6L11.00 1.50M11 6.6L13.55 2.18M11 6.6L15.42 4.05"/></g><circle cx="11" cy="6.6" r="1.1" fill="currentColor"/></svg>
     </div>
   </footer>
 </div>
@@ -3643,6 +3640,43 @@
      scale with the current mph, and the color is the current wind band's. Only runs at the desktop
      sidebar breakpoint, pauses while the tab is hidden, and draws one still frame when the visitor
      prefers reduced motion. */
+  /* The windmills (header and footer) turn with the wind: calm is a slow turn, a gale is a fast one. The speed eases toward each new
+     reading, never stops completely, and stands still under reduced motion or when animations are paused. */
+  var windmill = (function(){
+    var wheels = [].slice.call(document.querySelectorAll('.wm-wheel'));
+    if(!wheels.length) return {setWind: function(){}};
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    // mph -> degrees per second (12 s a turn when calm, 5 s at a breeze of about 11 mph, 1.2 s in a gale)
+    var CURVE = [[0, 30], [7, 45], [12, 72], [20, 120], [30, 200], [40, 300]];
+    function degPerSec(mph){
+      if(!(mph > 0)) return CURVE[0][1];
+      for(var i = 1; i < CURVE.length; i++){
+        if(mph <= CURVE[i][0]){
+          var a = CURVE[i - 1], b = CURVE[i], t = (mph - a[0]) / (b[0] - a[0]);
+          return a[1] + (b[1] - a[1]) * t;
+        }
+      }
+      return CURVE[CURVE.length - 1][1];
+    }
+    var angle = 0, speed = 72, target = 72, raf = 0, last = 0;
+    function frame(t){
+      raf = requestAnimationFrame(frame);
+      var dt = Math.min(1, (t - last) / 1000 || 0.016);   // real elapsed time, so a slow frame never slows the wheel
+      last = t;
+      speed += (target - speed) * Math.min(1, dt * 1.2);   // eases over a second or two
+      var stopped = reduce.matches || document.documentElement.classList.contains('anim-paused');
+      if(stopped) return;
+      angle = (angle + speed * dt) % 360;
+      var v = 'rotate(' + angle.toFixed(1) + 'deg)';
+      for(var i = 0; i < wheels.length; i++) wheels[i].style.transform = v;
+    }
+    function start(){ if(!raf){ last = performance.now(); raf = requestAnimationFrame(frame); } }
+    function stop(){ if(raf){ cancelAnimationFrame(raf); raf = 0; } }
+    document.addEventListener('visibilitychange', function(){ if(document.hidden) stop(); else start(); });
+    start();
+    return {setWind: function(mph){ target = degPerSec(+mph); }};
+  })();
+
   var windField = (function(){
     var wrap = document.getElementById('windField');
     var canvas = document.getElementById('windCanvas');
@@ -3787,6 +3821,7 @@
         // Compass degrees are where the wind comes FROM; streaks travel toward the opposite side.
         var to = ((deg + 180) % 360) * Math.PI / 180;
         target.mph = mph; target.ux = Math.sin(to); target.uy = -Math.cos(to);
+        windmill.setWind(mph);
         if(!cur.ready){ cur.mph = mph; cur.ux = target.ux; cur.uy = target.uy; cur.ready = true; }
         readColor();
         if(W && !streaks.length) resize();
@@ -4721,7 +4756,7 @@
         key: dateStr,
         label: i === 0 ? 'Today' : fmtDow(dateStr),
         date: fmtMD(dateStr),
-        windHtml: '<b style="color:' + band.css + '">' + fmtWind(wd.high) + '</b>' +
+        windHtml: '<b style="color:' + band.css + '">' + windNum(wd.high) + '</b> <span class="wunit" style="color:' + band.css + '">' + windUnit + '</span>' +
           windArrowSvg(p.windDirection, band.css, 22) + srDir(p.windDirection),
         bandLabel: band.label,
         bandPill: band.pill,
