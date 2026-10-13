@@ -371,7 +371,8 @@
   /* The Customize button is icon-only at every width (its accessible name is still "Customize") */
   .bw-card .card-head{flex-wrap:nowrap}
   .bw-custom-btn{padding:0; width:44px; justify-content:center; flex:0 0 auto}
-  .bw-actions{display:flex; align-items:center; flex:0 0 auto; margin-right:-12px}  /* the last 20px icon sits flush with the header's right margin */
+  #bestCustomBtn[hidden]{display:none}   /* Customize is hidden for now while it finds a new home */
+  .bw-actions{display:flex; align-items:center; flex:0 0 auto}
   .bw-custom-btn[hidden]{display:none}
   .bw-custom-lab{position:absolute!important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
   @media (max-width:63.99em){
@@ -2128,12 +2129,16 @@
   .bt-card--skel{min-height:7rem; min-width:15rem}
   .bt-skel-medal{width:22px; height:22px; border-radius:50%; flex:0 0 auto}
   .bt-skel-big{display:block; height:1.75rem; width:55%}
-  /* 7-Day / Top 3: a light segmented control in the module header, left of Customize: plain labels, and the chosen one wears a thin rounded outline */
-  .bt-seg{display:inline-flex; align-items:center; flex:0 0 auto; gap:2px; margin-right:4px}
-  .bt-seg-btn{min-height:24px; padding:0 7px; border:1px solid transparent; border-radius:8px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:400; line-height:1; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent}  /* the same colour as the header text beside it */
-  .bt-seg-btn[aria-checked="true"]{border-color:var(--text-muted); font-weight:500}
+  /* 7-Day / Top 3: a low-profile switch in the module header: plain labels, a thin vertical line between them, and bold for the chosen one.
+     Each label reserves its bold width, so switching never shifts the layout. */
+  .bt-seg{display:inline-flex; align-items:center; flex:0 0 auto}
+  .bt-seg-btn{display:inline-grid; min-height:24px; padding:0 10px; border:0; border-radius:4px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:400; line-height:1; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent}  /* the same colour as the header text beside it */
+  .bt-seg-btn::after{content:attr(data-label); grid-area:1 / 1; height:0; overflow:hidden; visibility:hidden; font-weight:700}
+  .bt-seg-btn:last-child{padding-right:0}
+  .bt-seg-btn + .bt-seg-btn{border-left:1px solid color-mix(in srgb, var(--text-muted) 55%, transparent); border-radius:0 4px 4px 0}
+  .bt-seg-btn[aria-checked="true"]{font-weight:700}
   .bt-seg-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:1px}
-  @media (min-width:64em){ .bt-seg-btn[aria-checked="false"]:hover{background:color-mix(in srgb, var(--text) 6%, transparent)} }
+  @media (min-width:64em){ .bt-seg-btn[aria-checked="false"]:hover{color:var(--text)} }
   .bt-card--none{cursor:default}
   .bt-card--none .bt-sum{color:var(--text-muted)}
   .bt-static{flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:8px}
@@ -2447,10 +2452,10 @@
     <div class="card-head"><h2>Best Times to Get Outside</h2>
       <div class="bw-actions">
         <div class="bt-seg" role="radiogroup" aria-label="Best Times view">
-          <button type="button" class="bt-seg-btn" role="radio" data-mode="7day" :aria-checked="$store.best.mode === '7day' ? 'true' : 'false'" :tabindex="$store.best.mode === '7day' ? 0 : -1">7-Day</button>
-          <button type="button" class="bt-seg-btn" role="radio" data-mode="top3" :aria-checked="$store.best.mode === 'top3' ? 'true' : 'false'" :tabindex="$store.best.mode === 'top3' ? 0 : -1">Top 3</button>
+          <button type="button" class="bt-seg-btn" role="radio" data-mode="7day" data-label="7-Day" :aria-checked="$store.best.mode === '7day' ? 'true' : 'false'" :tabindex="$store.best.mode === '7day' ? 0 : -1">7-Day</button>
+          <button type="button" class="bt-seg-btn" role="radio" data-mode="top3" data-label="Top 3" :aria-checked="$store.best.mode === 'top3' ? 'true' : 'false'" :tabindex="$store.best.mode === 'top3' ? 0 : -1">Top 3</button>
         </div>
-        <button type="button" class="bw-custom-btn" id="bestCustomBtn" aria-haspopup="dialog">
+        <button type="button" class="bw-custom-btn" id="bestCustomBtn" aria-haspopup="dialog" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2" fill="var(--surface)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2" fill="var(--surface)"/></svg>
           <span class="bw-custom-lab">Customize</span>
         </button>
@@ -5949,6 +5954,11 @@
       }
     }
     if(!phrases.length) phrases.push('conditions turn less ideal');
+    // next to another phrase, "expect showers" reads as "showers move in" ("the light fades and showers move in")
+    if(phrases.length > 1) phrases = phrases.map(function(ph){
+      var m = /^expect (thunderstorms|showers|rain|snow)$/.exec(ph);
+      return m ? m[1] + (/s$/.test(m[1]) ? ' move in' : ' moves in') : ph;
+    });
     if(/^the light fades/.test(phrases[0])){
       var sunAt = vdSunsetNear(new Date(last.iso).getTime() + 3600000);
       if(sunAt) return 'After the sun sets at ' + sunAt + ', ' + vdList(phrases.slice(0, 2)) + '.';
@@ -6073,35 +6083,46 @@
   // The part of the work day that matters next: the morning commute (and school drop-off) before 9 AM; from mid-morning on the
   // drive home, with school pick-up in the early afternoon (school months), then what to do after work. Returns '' when there is
   // nothing useful to say.
-  function vdWorkSentence(c, seed, troubleOnly){
+  function vdWorkSentence(c, seed, troubleOnly, basePop){
     var h0 = c.hrs[0] ? c.hrs[0].hour : 12, mon = +String(c.todayStr || '').slice(5, 7);
     var school = mon >= 9 || mon <= 5;
     var today = c.hrs.filter(function(h){ return localDate(h.iso) === c.todayStr; });
     function windowOf(from, to){ return today.filter(function(h){ return h.hour >= from && h.hour <= to; }); }
+    // each cause is a short clause that follows the semicolon: "Allow extra time for the commute home; rain chances increase to 72% at 6 PM."
     function troubleIn(win){
       var a = vdAgg(win), issues = [];
-      if(a.pop >= 40) issues.push(aOrAn(a.pop) + ' ' + a.pop + '% chance of ' + a.popType + ' around ' + a.popAt);
-      if(win.some(function(h){ return /freezing|ice|icy|sleet/i.test(h.fc) || (h.why || []).some(function(w){ return /snowy or icy/.test(w); }); })) issues.push('icy patches on the roads');
-      if(win.some(function(h){ return /fog/i.test(h.fc); })) issues.push('fog');
-      if(a.wMax >= 22) issues.push('gusty winds up to ' + fmtWind(a.wMax));
-      if(a.tMax > 92) issues.push('heat up to ' + fmtTemp(a.tMax)); else if(a.tMin < 28) issues.push('freezing temperatures near ' + fmtTemp(a.tMin));
+      if(a.pop >= 40){
+        var pc = basePop == null ? 'there is ' + aOrAn(a.pop) + ' ' + a.pop + '% chance of ' + a.popType + ' around ' + a.popAt
+          : a.pop > basePop ? a.popType + ' chances increase to ' + a.pop + '% at ' + a.popAt
+          : a.popType + ' chances stay near ' + a.pop + '% at ' + a.popAt;
+        issues.push(pc);
+        issues.pc = {pop: a.pop, text: pc};
+      }
+      if(win.some(function(h){ return /freezing|ice|icy|sleet/i.test(h.fc) || (h.why || []).some(function(w){ return /snowy or icy/.test(w); }); })) issues.push('roads may be icy');
+      if(win.some(function(h){ return /fog/i.test(h.fc); })) issues.push('fog is likely');
+      if(a.wMax >= 22) issues.push('gusts reach ' + fmtWind(a.wMax));
+      if(a.tMax > 92) issues.push('it reaches ' + fmtTemp(a.tMax)); else if(a.tMin < 28) issues.push('it drops to ' + fmtTemp(a.tMin));
       return issues;
     }
     var segs = [], morning = false, evening = false;
     if(h0 < 9){ morning = true; segs.push({label: school ? 'the morning commute and school drop-off' : 'the morning commute', win: windowOf(Math.max(h0, 6), 9)}); }
     else if(h0 < 18){
       if(school && h0 >= 12 && h0 < 16) segs.push({label: 'school pick-up', win: windowOf(Math.max(h0, 14), 16)});
-      segs.push({label: 'the drive home', win: h0 < 15 ? windowOf(16, 18) : windowOf(h0, h0 + 2)});
+      segs.push({label: 'the commute home', win: h0 < 15 ? windowOf(16, 18) : windowOf(h0, h0 + 2)});
     }else{ evening = true; segs.push({label: 'the evening', win: windowOf(h0, h0 + 2)}); }
     segs = segs.filter(function(sg){ return sg.win.length; });
     if(!segs.length) return '';
     var bad = segs.filter(function(sg){ sg.issues = troubleIn(sg.win); return sg.issues.length; });
     if(bad.length){
-      var issues = [];
-      bad.forEach(function(sg){ sg.issues.forEach(function(x){ if(issues.indexOf(x) < 0) issues.push(x); }); });
-      var names = vdList(bad.map(function(sg){ return sg.label; }));
-      return vdPick(['Give yourself a little extra time for ' + names + ': expect ' + vdList(issues.slice(0, 2)) + '.',
-        'Plan on a slower run for ' + names + ', with ' + vdList(issues.slice(0, 2)) + '.'], seed, 11);
+      var issues = [], top = null;
+      bad.forEach(function(sg){
+        var pc = sg.issues.pc;
+        if(pc && (!top || pc.pop > top.pop)) top = pc;
+        sg.issues.forEach(function(x){ if((!pc || x !== pc.text) && issues.indexOf(x) < 0) issues.push(x); });
+      });
+      if(top) issues.unshift(top.text);   // one precipitation clause: the strongest chance
+      var names = vdList(bad.map(function(sg){ return sg.label; })), cause = vdList(issues.slice(0, 2));
+      return 'Allow extra time for ' + names + '; ' + cause + '.';
     }
     if(troubleOnly) return '';
     var all = []; segs.forEach(function(sg){ all = all.concat(sg.win); });
@@ -6122,8 +6143,8 @@
       out.push(vdCap(names2) + ' look easy, with ' + roads + ' and ' + breeze + '.');
     }else{
       var t = fmtH12(segs[0].win[Math.floor(segs[0].win.length / 2)].hour), clock = t.n + ' ' + t.ap;
-      out.push(vdPick(['The drive home looks easy, with ' + roads + ' and ' + breeze + ' around ' + clock + '.',
-        'Expect ' + roads + ' and ' + breeze + ' for the drive home around ' + clock + '.'], seed, 13));
+      out.push(vdPick(['The commute home looks easy, with ' + roads + ' and ' + breeze + ' around ' + clock + '.',
+        'Expect ' + roads + ' and ' + breeze + ' for the commute home around ' + clock + '.'], seed, 13));
     }
     // After work: what the 5 to 8 PM daylight hours suit
     var aw = today.filter(function(h){ return h.hour >= Math.max(17, h0) && h.hour <= 20 && !(h.why || []).some(function(w){ return /dark out/.test(w); }); });
@@ -6154,6 +6175,37 @@
     var h = c.hrs[0] ? c.hrs[0].hour : 12;
     if(r && r.state === 'yes' && r.hs && r.hs.length && r.hs[0].i === 0 && h >= 5 && h < 12 && r.hs[r.hs.length - 1].hour + 1 >= 17) return 'Today';
     return h >= 5 && h < 12 ? 'This morning' : h >= 12 && h < 17 ? 'This afternoon' : h >= 17 && h < 21 ? 'This evening' : 'Tonight';
+  }
+  // The conditions sentence for the hero text. With a chance of precipitation the sentence is only the feel, wind and air quality,
+  // and the chance gets a sentence of its own (see vdPrecipSentence)
+  function vdHeroConditions(a){
+    var split = a.pop >= 5 && !(a.wet < 0.15 && a.pop < 20);
+    if(!split) return {main: vdGoodSentence(a.wet < 0.15 && a.pop < 20 ? Object.assign({}, a, {pop: 0}) : a), split: false};
+    var k = bandFor(a.wMax).key;
+    var wind = k === 'calm' ? 'calm' : k === 'breezy' ? 'breezy' : k === 'windy' ? 'windy' : k === 'verywindy' ? 'blustery' : 'howling';
+    var air = a.aqi !== null ? (a.aqi <= 50 ? 'good air quality' : 'moderate air quality') : '';
+    return {main: vdCap(vdFeel(a.tAvg)) + ' and ' + wind + (air ? ' with ' + air : '') + '.', split: true};
+  }
+  // "There is a 28% chance of rain starting around 3 PM and continuing through the evening."
+  function vdPrecipSentence(c, r){
+    var a = r.agg, T = 15, i0 = r.hs && r.hs.length ? r.hs[0].i : 0, nowI = c.hrs[0] ? c.hrs[0].i : 0;
+    var day = c.hrs.filter(function(h){ return localDate(h.iso) === c.todayStr && h.i >= i0; });
+    var lead = 'There is ' + aOrAn(a.pop) + ' ' + a.pop + '% chance of ' + a.popType;
+    var j = -1;
+    for(var k = 0; k < day.length; k++){ if(day[k].pop >= T){ j = k; break; } }
+    if(j < 0) return lead + ' around ' + a.popAt + '.';
+    var end = j;
+    while(end + 1 < day.length && day[end + 1].pop >= T) end++;
+    var st = fmtH12(day[j].hour), startsLater = day[j].i > nowI, endHour = day[end].hour, cont = '';
+    if(end > j){
+      var en = fmtH12(endHour + 1);
+      cont = endHour >= 22 ? 'continuing into the night' : endHour >= 18 ? 'continuing through the evening' : 'continuing until about ' + en.n + ' ' + en.ap;
+    }
+    var start = startsLater ? 'starting around ' + st.n + ' ' + st.ap : '';
+    if(start && cont) return lead + ' ' + start + ' and ' + cont + '.';
+    if(cont) return lead + ', ' + cont + '.';
+    if(start) return lead + ' around ' + st.n + ' ' + st.ap + '.';
+    return lead + '.';
   }
   function vdProseCore(r, c, actList){
     var out = [], seed = vdSeed(c), tw = vdTimeWord(c, r);
@@ -6186,7 +6238,7 @@
       ? vdPick(caVoice ? ['This is great weather to ', 'It’s a beauty of a day to ', 'You could ', 'Time to '] : ['This is great weather to ', 'It’s a lovely time to ', 'You could ', 'Perfect conditions to '], seed, 3) + vdListOr(acts) + '.'
       : 'Even a short outing should feel nice.';
     // Monday to Friday: commute, school drop-off and after-work conditions in place of the weekend activity ideas
-    var wkDay = vdIsWeekday(c) && !vdHolidayToday(c), workSentence = wkDay ? vdWorkSentence(c, seed, false) : '';
+    var wkDay = vdIsWeekday(c) && !vdHolidayToday(c), workSentence = wkDay ? vdWorkSentence(c, seed, false, r.agg && r.hs && r.hs.length ? r.agg.pop : null) : '';
     if(workSentence) actsSentence = workSentence;
     // Warnings stay serious, just kind
     if(r.alert && r.state !== 'no'){
@@ -6278,7 +6330,9 @@
         vdCap(sp.day) + ' ' + sp.phrase + ' is a good time to get outside.',
         'Good news: ' + sp.day + ' ' + sp.phrase + ' works for getting outside.'
       ], seed, 1));
-      out.push(vdPick([tw + ' will be ', 'Expect '], seed, 2) + vdLc(vdGoodSentence(r.agg)));
+      var hcY = vdHeroConditions(r.agg);
+      out.push(vdPick([tw + ' will be ', 'Expect '], seed, 2) + vdLc(hcY.main));
+      if(hcY.split){ var psY = vdPrecipSentence(c, r); if(psY) out.push(psY); }
       out.push(actsSentence);
       if(caVoice){ var cx1 = caExtra(r, c, seed); if(cx1) out.push(cx1); }
       var aft = vdAfter(r, c); if(aft) out.push(r.incoming ? 'Stay aware: ' + vdLc(aft) : aft);
@@ -6293,7 +6347,9 @@
       var sp2 = vdSpan(r.hs, c);
       var nowWhy = r.why && r.why.length ? tw + ', ' + vdList(r.why.slice(0, 2).map(vdNowClause)) + ', so hang tight' : 'Hang tight';
       out.push(nowWhy + (caVoice ? ', eh: ' : ': ') + sp2.day + ' ' + sp2.phrase + ' looks like a lovely time to get outside.');
-      out.push('Then it will be ' + vdLc(vdGoodSentence(r.agg)));
+      var hcM = vdHeroConditions(r.agg);
+      out.push('Then it will be ' + vdLc(hcM.main));
+      if(hcM.split){ var psM = vdPrecipSentence(c, r); if(psM) out.push(psM); }
       out.push(actsSentence);
       if(caVoice){ var cx3 = caExtra(r, c, seed); if(cx3) out.push(cx3); }
       var aft3 = vdAfter(r, c); if(aft3) out.push(aft3);
@@ -6307,7 +6363,7 @@
           ? vdPick(gong ? [tw + ' is a bit of a gong show out there', 'Bit of a gong show outside right now'] : ['There’s a bit of a weather kerfuffle going on right now', 'Even the Mounties would sit this one out', tw + ' is a cozy-inside kind of moment'], seed, 1) + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.'
           : tw + ' is a cozy-inside kind of moment' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
       }
-      if(wkDay && !r.alert){ var ws3 = vdWorkSentence(c, seed, true); if(ws3) out.push(ws3); }
+      if(wkDay && !r.alert){ var ws3 = vdWorkSentence(c, seed, true, null); if(ws3) out.push(ws3); }
       if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next best window to get outside is ' + sp3.day + ' ' + sp3.phrase + (r.alert ? '.' : ', so it’s worth the wait.')); }
       else if(vdBigCity() && !r.alert) out.push('There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a museum, a show or a long dinner out.');
       else out.push(caVoice && !r.alert ? vdPick(['There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a movie and a double-double from Tim Hortons.', 'There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a movie and pancakes with real maple syrup.'], seed, 6) : 'There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a movie and a snack.');
@@ -6328,19 +6384,23 @@
     var snowAt = first(function(h){ return /snow|flurr|sleet|blizzard/i.test(h.fc) && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40); });
     var iceAt = first(function(h){ return /freezing|ice|icy|sleet/i.test(h.fc) || h.why.some(function(w){ return /snowy or icy/.test(w); }); });
     var hat = ca ? 'a toque' : 'a warm hat', gloves = ca ? 'mitts' : 'gloves', dark = vdIsDark(c);
+    // When rain is expected, the umbrella and rain coat share the clothing sentence instead of getting one of their own
+    var rainy = rainAt >= 0, umb = 'an umbrella and a rain coat';
+    function withUmb(sentence){ return sentence.replace(/\.$/, '') + ', and pack ' + umb + '.'; }
     var base;
     if(minT < 15) base = 'It’s bitter out, so wear a heavy coat, ' + hat + ', insulated ' + gloves + ', a scarf and warm waterproof boots.';
     else if(minT < 32) base = 'Bundle up with a warm coat, ' + hat + ', ' + gloves + ' and a scarf, and wear warm boots.';
     else if(minT < 45) base = 'Wear a warm coat with ' + hat + ' and ' + gloves + ', and layer up underneath.';
-    else if(minT < 58) base = maxT >= 68 ? 'Dress in layers: a jacket or sweater now, and it warms up later.' : 'Bring a jacket or a warm sweater.';
-    else if(maxT >= 85) base = rainAt >= 0 ? 'Dress light in quick-drying clothes, and bring water.' : dark ? 'Dress light in breathable clothes, and bring water.' : 'Dress light in breathable clothes, wear sunscreen and a hat, and bring water.';
-    else if(maxT >= 72) base = rainAt >= 0 ? 'Light, quick-drying clothes will feel best.' : dark ? 'Light, breathable clothes will feel best.' : 'Light, breathable clothes will feel best, and sunscreen is a good idea.';
-    else base = 'Light layers will do.';
+    else if(minT < 58) base = maxT >= 68 ? (rainy ? 'Dress in layers, with a jacket or sweater now, and pack ' + umb + '.' : 'Dress in layers: a jacket or sweater now, and it warms up later.')
+      : (rainy ? 'Bring a jacket or a warm sweater, plus ' + umb + '.' : 'Bring a jacket or a warm sweater.');
+    else if(maxT >= 85) base = rainy ? 'Dress light in quick-drying clothes, bring water, and pack ' + umb + '.' : dark ? 'Dress light in breathable clothes, and bring water.' : 'Dress light in breathable clothes, wear sunscreen and a hat, and bring water.';
+    else if(maxT >= 72) base = rainy ? 'Wear light, quick-drying clothes, and pack ' + umb + '.' : dark ? 'Light, breathable clothes will feel best.' : 'Light, breathable clothes will feel best, and sunscreen is a good idea.';
+    else base = rainy ? 'Wear light layers, and pack ' + umb + '.' : 'Light layers will do.';
+    if(rainy && minT < 45) base = withUmb(base);
     var mods = [];
     function when(i, now, later){ return i === 0 ? now : later; }
     if(snowAt >= 0) mods.push(when(snowAt, 'Wear waterproof boots with good grip for the snow.', 'Snow is on the way, so wear waterproof boots with good grip.'));
     else if(iceAt >= 0 && minT <= 34) mods.push('Watch for ice: wear boots with good grip and take small steps.');
-    if(rainAt >= 0) mods.unshift(when(rainAt, 'Pack an umbrella and a rain coat if you’re headed out.', 'Rain is on the way, so pack an umbrella and a rain coat if you’re headed out.'));
     if(maxW >= 16 && !(minT < 32)) mods.push('A windproof layer will help with the wind.');
     if(city){
       if(rainAt >= 0 || snowAt >= 0 || minT < 25 || maxW >= 25) mods.push(vdCap(vdBigCityInfo().transit) + ' or a cab beats a long walk.');
