@@ -371,7 +371,6 @@
   /* The Customize button is icon-only at every width (its accessible name is still "Customize") */
   .bw-card .card-head{flex-wrap:nowrap}
   .bw-custom-btn{padding:0; width:44px; justify-content:center; flex:0 0 auto}
-  #bestCustomBtn[hidden]{display:none}   /* Customize is hidden for now while it finds a new home */
   .bw-actions{display:flex; align-items:center; flex:0 0 auto}
   .bw-custom-btn[hidden]{display:none}
   .bw-custom-lab{position:absolute!important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
@@ -1086,26 +1085,6 @@
     #heroSection .section-head{flex-direction:column; align-items:flex-start; gap:4px}
     #heroSection .locbar{text-align:left; white-space:normal}
   }
-  /* Phone only: Wind Today is a vertical list (tablet keeps the desktop hourly chart) */
-  @media (max-width:31.1875em){
-    .today-inner{overflow:visible}
-    .trend-line{display:none}
-    .hscroll{flex-direction:column; width:auto; min-width:0; gap:14px}
-    .htile{
-      flex:0 0 auto; flex-direction:row; align-items:center; justify-content:flex-start;
-      width:100%; padding:0; gap:10px;
-    }
-    .htile .hr{flex:0 0 2.6rem; text-align:left}
-    .htile .hwx, .htile .hwx svg{width:24px; height:24px}
-    .htile .barwrap{flex:1 1 auto; min-width:0; height:auto; align-items:center}
-    .htile .bar{width:var(--pct); height:10px; min-width:6px; min-height:0; border-radius:3px 4px 4px 3px}
-    .htile .spwrap{flex:0 0 auto}
-    .htile .sp-row{display:contents}
-    .htile .spunit{order:2}
-    .htile .hdir{order:3; align-self:center; margin-left:8px}
-    .htile .hdir svg{width:22px; height:22px}
-  }
-
   @media (max-width:26.25em){
     .hero-reading .val{font-size:5.25rem}
   }
@@ -2000,7 +1979,7 @@
   @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --night-ink:#C3B2F6 } }
   :root[data-theme="dark"]{ --night-ink:#C3B2F6 }
   .vd-tag--night{ --tg:var(--night-ink) }
-  .vd-tag--aware{ --tg:var(--icon-blue) }  /* Stay Aware: fine now, weather on the way */
+  .vd-tag--aware{ --tg:var(--icon-blue) }  /* Heads Up: fine now, weather on the way */
   .hero-head .vd-tag--night::before, .m-actions .vd-tag--night::before, .vd-card .vd-tag--night::before{
     width:12px; height:12px; margin-right:5px; border-radius:0; background:var(--tg);
     -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
@@ -2129,16 +2108,25 @@
   .bt-card--skel{min-height:7rem; min-width:15rem}
   .bt-skel-medal{width:22px; height:22px; border-radius:50%; flex:0 0 auto}
   .bt-skel-big{display:block; height:1.75rem; width:55%}
-  /* 7-Day / Top 3: a low-profile switch in the module header: plain labels, a thin vertical line between them, and bold for the chosen one.
+  /* 7-Day / Top 3: two selection pills above the cards; the chosen one is bold and filled with no outline, the other is outlined in the fill colour.
      Each label reserves its bold width, so switching never shifts the layout. */
-  .bt-seg{display:inline-flex; align-items:center; flex:0 0 auto}
-  .bt-seg-btn{display:inline-grid; min-height:24px; padding:0 10px; border:0; border-radius:4px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:400; line-height:1; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent}  /* the same colour as the header text beside it */
-  .bt-seg-btn::after{content:attr(data-label); grid-area:1 / 1; height:0; overflow:hidden; visibility:hidden; font-weight:700}
-  .bt-seg-btn:last-child{padding-right:0}
-  .bt-seg-btn + .bt-seg-btn{border-left:1px solid color-mix(in srgb, var(--text-muted) 55%, transparent); border-radius:0 4px 4px 0}
-  .bt-seg-btn[aria-checked="true"]{font-weight:700}
-  .bt-seg-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:1px}
-  @media (min-width:64em){ .bt-seg-btn[aria-checked="false"]:hover{color:var(--text)} }
+  .bt-pills{display:flex; flex-wrap:wrap; gap:8px; --pill-fill:color-mix(in srgb, var(--text-muted) 12%, var(--surface))}
+  .bt-pill{display:inline-grid; min-height:32px; padding:0 14px; border:1px solid var(--pill-fill); border-radius:16px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:400; line-height:1; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; align-items:center; justify-items:center; text-align:center}
+  .bt-pill > span, .bt-pill::after{grid-area:1 / 1}   /* the label and its hidden bold twin share one cell, so the text sits dead centre */
+  .bt-pill::after{content:attr(data-label); height:0; overflow:hidden; visibility:hidden; font-weight:700}
+  .bt-pill[aria-checked="true"]{font-weight:700; background:var(--pill-fill)}   /* filled, no visible outline; the unselected pill is outlined in this same colour */
+  .bt-pill:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
+  @media (min-width:64em){ .bt-pill[aria-checked="false"]:hover{color:var(--text)} }
+  .bt-foot{display:flex; align-items:center; margin:0 0 10px}
+  .bt-foot[hidden]{display:none}
+  /* Customize: a tertiary button at the top right of the module header: icon and label only, no fill, no outline */
+  .bt-customize{display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:0 8px 0 0; border:0; border-radius:4px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:500; line-height:1; cursor:pointer; text-decoration:none; -webkit-tap-highlight-color:transparent}
+  .bt-customize svg{width:24px; height:24px; flex:0 0 auto}
+  .bt-customize:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
+  @media (min-width:64em){ .bt-customize:hover{color:var(--text)} }
+  .bw-actions .bt-customize{position:relative; min-height:28px; padding-right:0}   /* keeps the header at the standard height; the tap area is still 44px tall */
+  .bw-actions .bt-customize::after{content:""; position:absolute; inset:-8px -8px -8px -4px}
+  .bw-actions{margin-right:0}
   .bt-card--none{cursor:default}
   .bt-card--none .bt-sum{color:var(--text-muted)}
   .bt-static{flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:8px}
@@ -2216,6 +2204,56 @@
     .clear-loc-btn svg{ width:24px !important; height:24px !important }
     .search-icon{ width:24px !important; height:24px !important }
   }
+
+  /* ---------- Hourly Forecast: seven days of hours, one chart that scrolls sideways at every width ----------
+     Each hour is a column: the time at the top, then a bar that grows from the bottom with its weather icon sitting right on top of
+     it, then the wind speed and direction. A tag at the left names the day in view. */
+  #todaySection .today-card{ min-height:0 }
+  #todaySection .card-body{ position:relative; display:block; padding:0 }
+  #todaySection .today-inner{ display:block; overflow-x:auto; overflow-y:hidden; padding:16px 0 }   /* 16px above and below the chart, at every width */
+  #todaySection .hscroll{ display:flex; flex-direction:row; width:max-content; min-width:0; gap:0; height:206px; padding:0 12px 0 12px; position:relative }
+  #todaySection .htile{ flex:0 0 52px; width:52px; min-width:0; display:flex; flex-direction:column; align-items:center; gap:6px; padding:0 }
+  /* touch screens (phones and tablets) swipe the chart, so it shows no scrollbar */
+  @media (max-width:63.99em){
+    #todaySection .today-inner{ scrollbar-width:none }
+    #todaySection .today-inner::-webkit-scrollbar{ display:none }
+  }
+  /* phones: a shorter chart (the 16px above and below it stay) */
+  @media (max-width:31.1875em){
+    #todaySection .hscroll{ height:146px }
+  }
+  #todaySection .htile.day-start{ border-left:1px solid color-mix(in srgb, var(--table-border) 70%, transparent) }
+  #todaySection .htile .hr{ flex:0 0 auto; font-size:.875rem; letter-spacing:0 }
+  #todaySection .htile .barwrap{ flex:1 1 auto; min-height:0; width:100%; height:auto; position:relative; display:block }
+  #todaySection .htile .bar{
+    position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:14px; min-height:0;
+    height:max(6px, calc((100% - 36px) * var(--k, .2)));   /* the top 36px of the column is left for the icon */
+  }
+  #todaySection .htile .hwx{
+    position:absolute; left:50%; transform:translateX(-50%); width:auto; height:auto; display:flex;
+    bottom:calc(max(6px, (100% - 36px) * var(--k, .2)) + 4px);   /* sits right on top of the bar */
+  }
+  #todaySection .htile .spwrap{ flex:0 0 auto; flex-direction:column; align-items:center; gap:0; line-height:1.25 }
+  #todaySection .htile .sp-row{ flex-direction:column; align-items:center; gap:2px }
+  #todaySection .htile .sp{ font-size:.9375rem }
+  #todaySection .skel-htile .barwrap{ display:flex; align-items:flex-end; justify-content:center }
+  /* the day tag: horizontal, at the right of the module header; it names the day of the hours now in view */
+  #todaySection .card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px }
+  .day-tag{ flex:0 0 auto; padding:2px 8px; border-radius:4px; white-space:nowrap;
+    background:color-mix(in srgb, var(--text-muted) 12%, var(--surface)); color:var(--text-muted); font-size:14px; font-weight:500; line-height:1.4 }
+  .day-tag:empty{ display:none }
+  /* at each new day's line: the date again, light and vertical, with no tag behind it */
+  #todaySection .htile{ position:relative }
+  .day-line-label{ position:absolute; left:3px; top:28px; writing-mode:vertical-rl; transform:rotate(180deg); white-space:nowrap;
+    font-size:14px; font-weight:300; line-height:1; color:color-mix(in srgb, var(--text-muted) 60%, var(--surface)); pointer-events:none }
+  /* edge fades, like Best Times and Air Quality: each side shows only while there is more to scroll to on that side */
+  #todaySection .today-card--scrollable{ position:relative; overflow:hidden }
+  #todaySection .today-card--scrollable::before, #todaySection .today-card--scrollable::after{
+    content:""; position:absolute; top:0; bottom:0; width:56px; z-index:3; pointer-events:none; opacity:0; transition:opacity .15s
+  }
+  #todaySection .today-card--scrollable::after{ right:0; background:linear-gradient(to right, transparent, var(--surface)) }
+  #todaySection .today-card--scrollable::before{ left:0; background:linear-gradient(to left, transparent, var(--surface)) }
+  #todaySection .today-card--scrollable.can-scroll-right::after, #todaySection .today-card--scrollable.can-scroll-left::before{ opacity:1 }
 </style>
 </head>
 <body>
@@ -2451,16 +2489,18 @@
     <div class="bw-card">
     <div class="card-head"><h2>Best Times to Get Outside</h2>
       <div class="bw-actions">
-        <div class="bt-seg" role="radiogroup" aria-label="Best Times view">
-          <button type="button" class="bt-seg-btn" role="radio" data-mode="7day" data-label="7-Day" :aria-checked="$store.best.mode === '7day' ? 'true' : 'false'" :tabindex="$store.best.mode === '7day' ? 0 : -1">7-Day</button>
-          <button type="button" class="bt-seg-btn" role="radio" data-mode="top3" data-label="Top 3" :aria-checked="$store.best.mode === 'top3' ? 'true' : 'false'" :tabindex="$store.best.mode === 'top3' ? 0 : -1">Top 3</button>
-        </div>
-        <button type="button" class="bw-custom-btn" id="bestCustomBtn" aria-haspopup="dialog" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2" fill="var(--surface)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2" fill="var(--surface)"/></svg>
-          <span class="bw-custom-lab">Customize</span>
+        <button type="button" class="bt-customize" id="bestCustomBtn" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2" fill="var(--surface)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2" fill="var(--surface)"/></svg>
+          <span>Customize</span>
         </button>
       </div></div>
     <div class="bt-body" id="bestList">
+      <div class="bt-foot" :hidden="$store.best.state === 'loading'">
+        <div class="bt-pills" role="radiogroup" aria-label="Best Times view">
+          <button type="button" class="bt-pill" role="radio" data-mode="7day" data-label="7-Day" :aria-checked="$store.best.mode === '7day' ? 'true' : 'false'" :tabindex="$store.best.mode === '7day' ? 0 : -1"><span>7-Day</span></button>
+          <button type="button" class="bt-pill" role="radio" data-mode="top3" data-label="Top 3" :aria-checked="$store.best.mode === 'top3' ? 'true' : 'false'" :tabindex="$store.best.mode === 'top3' ? 0 : -1"><span>Top 3</span></button>
+        </div>
+      </div>
       <div class="bt-wrap" :hidden="$store.best.state === 'empty'">
       <div class="bt-cards">
         <div class="bt-track" role="list" :aria-label="$store.best.mode === 'top3' ? 'Best times to get outside, ranked' : 'Best time to get outside on each of the next seven days'">
@@ -2487,8 +2527,8 @@
               </template>
             </div>
             <div class="bt-main">
-              <div class="bt-tline" x-show="!w.none"><span class="bt-temp" x-text="w.temp"></span>
-                <span class="bt-right"><span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span><span class="hero-band-pill bt-wtag" :style="'background:' + w.windPill + '; color:' + w.windInk" x-text="w.windLabel"></span></span>
+              <div class="bt-tline"><span class="bt-temp" x-text="w.temp"></span>
+                <span class="bt-right"><span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span><span class="hero-band-pill bt-wtag" x-show="!w.none" :style="'background:' + w.windPill + '; color:' + w.windInk" x-text="w.windLabel"></span></span>
               </div>
               <p class="bt-sum" x-text="w.summary"></p>
             </div>
@@ -2511,9 +2551,9 @@
   <div class="wind-row">
   <section id="todaySection" hidden>
     <div class="today-card">
-      <div class="card-head"><h2>Wind Today</h2></div>
+      <div class="card-head"><h2>Hourly Forecast</h2><span class="day-tag" id="dayTag" aria-hidden="true"></span></div>
       <div class="card-body today-card--scrollable">
-      <div class="today-inner" id="todayInner" tabindex="0" role="region" aria-label="Hourly wind for the next 10 hours, scrollable">
+      <div class="today-inner" id="todayInner" tabindex="0" role="region" aria-label="Hourly forecast for the next 7 days, scrollable">
         <div class="hscroll" id="hourlyStrip" role="list"></div>
       </div>
       </div>
@@ -3441,7 +3481,7 @@
     return best.f;
   }
   // ECCC's own GEM model run, relayed by Open-Meteo: it also gives the place's time zone, fills the hours after the city page's
-  // 24 and the wind on days the city-page forecast says nothing about it (ECCC only mentions wind of 20 km/h or more)
+  // 24 (up to seven days) and the wind on days the city-page forecast says nothing about it (ECCC only mentions wind of 20 km/h or more)
   async function eccGem(lat, lon){
     return fetchOptionalJson('https://api.open-meteo.com/v1/forecast?latitude=' + lat.toFixed(3) + '&longitude=' + lon.toFixed(3) +
       '&timezone=auto&models=gem_seamless&wind_speed_unit=kmh&forecast_days=7' +
@@ -3499,7 +3539,7 @@
       });
       var lastMs = hourly.length ? Date.parse(hourly[hourly.length - 1].startTime) : 0;
       gemHrs.forEach(function(g){
-        if(g.ms <= lastMs || g.ms < hrNow || g.ms > now + 48 * 3600000) return;
+        if(g.ms <= lastMs || g.ms < hrNow || g.ms > now + 168 * 3600000) return;   // a full week, so the 7-Day Best Times has seven days
         hourly.push({startTime: eccLocalIso(g.ms, tz), temperature: cToF(g.temp), temperatureUnit: 'F', windSpeed: g.mph + ' km/h', windDirection: g.dir,
           shortForecast: WMO_TEXT[g.code] || '', probabilityOfPrecipitation: {value: typeof g.pop === 'number' ? g.pop : 0},
           relativeHumidity: {value: typeof g.hum === 'number' ? g.hum : null}, isDaytime: isDay(g.ms)});
@@ -4578,14 +4618,14 @@
   document.getElementById('bestCustomBtn').addEventListener('click', function(e){ openBp(e.currentTarget); });
   // 7-Day / Top 3 (in the module header): arrow keys move between the two
   document.getElementById('bestSection').addEventListener('keydown', function(e){
-    var tab = e.target.closest && e.target.closest('.bt-seg-btn');
+    var tab = e.target.closest && e.target.closest('.bt-pill');
     if(!tab || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
-    var tabs = [].slice.call(document.querySelectorAll('.bt-seg-btn')), next = tabs[(tabs.indexOf(tab) + 1) % tabs.length];
+    var tabs = [].slice.call(document.querySelectorAll('.bt-pill')), next = tabs[(tabs.indexOf(tab) + 1) % tabs.length];
     e.preventDefault(); next.click(); next.focus();
   });
   // 7-Day / Top 3: remembered on this device
   document.getElementById('bestSection').addEventListener('click', function(e){
-    var btn = e.target.closest('.bt-seg-btn');
+    var btn = e.target.closest('.bt-pill');
     if(!btn) return;
     var m = btn.getAttribute('data-mode') === 'top3' ? 'top3' : '7day';
     if(m === bestMode) return;
@@ -4593,7 +4633,12 @@
     try{ localStorage.setItem(BEST_MODE_KEY, m); }catch(err){}
     var b = store('best'); if(b) b.mode = m;
     if(lastBest) renderBest(lastBest.hourly, lastBest.inputs);
-    var sc = document.querySelector('.bt-cards'); if(sc) sc.scrollLeft = 0;
+    // the cards start again from the left: once now, and again after the new cards are in the page
+    var sc = document.querySelector('.bt-cards');
+    function toStart(){ if(sc){ sc.scrollLeft = 0; sc.dispatchEvent(new Event('scroll')); } }
+    toStart();
+    if(window.Alpine && Alpine.nextTick) Alpine.nextTick(toStart);
+    requestAnimationFrame(function(){ toStart(); setTimeout(toStart, 60); });
     announce(m === 'top3' ? 'Showing the top 3 best times.' : 'Showing the best time for each of the next 7 days.');
   });
   document.getElementById('bestPrefsClose').addEventListener('click', closeBp);
@@ -4616,11 +4661,17 @@
   });
 
   function renderHourly(periods){
-    var next10 = periods.slice(0, 10);
+    var next10 = periods.slice(0, 168);   // seven days of hours; the chart scrolls sideways
     if(!next10.length){ todaySection.hidden = true; return; }
     todaySection.hidden = false;
 
     var maxV = Math.max.apply(null, next10.map(function(p){ return parseWind(p.windSpeed).high; }).concat([10]));
+    var firstDay = localDate(next10[0].startTime), prevDay = null;
+    // "Today, Oct 13" / "Wed, Oct 14": what the day tag at the left of the chart says for each date
+    function dayLabel(dateStr){
+      var md = new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+      return (dateStr === firstDay ? 'Today' : fmtDow(dateStr)) + ', ' + md;
+    }
 
     // Sunrise / sunset become their own tile between the two hours they fall in. It reuses the wind of the hour that
     // contains it, so the bar, speed and direction are treated exactly like any other tile.
@@ -4635,10 +4686,15 @@
       var band = bandFor(w.high);
       var h = Math.max(8, Math.round((w.high / maxV) * 46));
       var pct = Math.max(4, Math.round((w.high / maxV) * 100));
-      return '<div class="htile" role="listitem">' +
+      var dateStr = localDate(p.startTime), starts = prevDay !== null && dateStr !== prevDay;
+      prevDay = dateStr;
+      return '<div class="htile' + (starts ? ' day-start' : '') + '" role="listitem" data-day="' + dateStr + '" data-daylabel="' + dayLabel(dateStr) + '">' +
+        (starts ? '<span class="day-line-label" aria-hidden="true">' + dayLabel(dateStr) + '</span>' : '') +
         '<div class="hr">' + labelText + '</div>' +
-        '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
-        '<div class="barwrap"><div class="bar" style="--h:' + h + 'px; --pct:' + pct + '%; background:' + band.pill + '"></div></div>' +
+        '<div class="barwrap" style="--k:' + (pct / 100).toFixed(3) + '">' +
+          '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
+          '<div class="bar" style="--h:' + h + 'px; --pct:' + pct + '%; background:' + band.pill + '"></div>' +
+        '</div>' +
         '<div class="spwrap">' +
           '<span class="sp-row">' +
             '<span class="sp" style="color:' + band.css + '">' + windNum(w.high) + '</span>' +
@@ -4663,10 +4719,25 @@
       });
     });
     hourlyStrip.innerHTML = tiles.join('');
+    todayInner.scrollLeft = 0;
 
     lastHourly = next10;
     drawTrendLine();
     updateScrollFade();
+    updateDayTag();
+  }
+
+  // The day tag at the left of the chart names the day of the hours now in view (the first tile past the tag)
+  var dayTagEl = document.getElementById('dayTag'), dayTagLast = '';
+  function updateDayTag(){
+    if(!dayTagEl) return;
+    var tiles = hourlyStrip.querySelectorAll('.htile[data-daylabel]');
+    if(!tiles.length) return;
+    var edge = todayInner.scrollLeft + 12, label = tiles[0].getAttribute('data-daylabel');
+    for(var i = 0; i < tiles.length; i++){
+      if(tiles[i].offsetLeft + tiles[i].offsetWidth > edge){ label = tiles[i].getAttribute('data-daylabel'); break; }
+    }
+    if(label !== dayTagLast){ dayTagLast = label; dayTagEl.textContent = label; }
   }
 
   // Edge-fade gradients on the hourly strip only show in the direction
@@ -4678,24 +4749,8 @@
     card.classList.toggle('can-scroll-left', todayInner.scrollLeft > 1);
     card.classList.toggle('can-scroll-right', todayInner.scrollLeft < max - 1);
   }
-  todayInner.addEventListener('scroll', updateScrollFade, {passive: true});
-
-  var todayMobileMQ = window.matchMedia('(max-width:31.1875em)');
-  function updateTodayA11y(){
-    hourlyStrip.setAttribute('aria-label', 'Hourly wind for the next 10 hours');
-    if(todayMobileMQ.matches){
-      // the strip itself is the list on phones; a list role on this wrapper would wrap it in another list
-      todayInner.removeAttribute('tabindex');
-      todayInner.removeAttribute('role');
-      todayInner.removeAttribute('aria-label');
-    } else {
-      todayInner.setAttribute('tabindex', '0');
-      todayInner.setAttribute('role', 'region');
-      todayInner.setAttribute('aria-label', 'Hourly wind for the next 10 hours, scrollable');
-    }
-  }
-  updateTodayA11y();
-  todayMobileMQ.addEventListener('change', updateTodayA11y);
+  todayInner.addEventListener('scroll', function(){ updateScrollFade(); updateDayTag(); }, {passive: true});
+  hourlyStrip.setAttribute('aria-label', 'Hourly forecast for the next 7 days');
 
   var relayoutFrame = null;
   function relayoutHourly(){
@@ -4704,6 +4759,7 @@
     relayoutFrame = requestAnimationFrame(function(){
       drawTrendLine();
       updateScrollFade();
+      updateDayTag();
     });
   }
   window.addEventListener('resize', relayoutHourly);
@@ -4748,7 +4804,7 @@
     return d;
   }
 
-  function renderWeek(periods){
+  function renderWeek(periods, todayStr){
     var days = periods.filter(function(p){ return p.isDaytime; }).slice(0, 7);
     var w = store('week');
     if(!days.length){ w.days = []; w.state = 'idle'; return; }
@@ -4759,7 +4815,7 @@
       var dateStr = localDate(p.startTime);
       return {
         key: dateStr,
-        label: i === 0 ? 'Today' : fmtDow(dateStr),
+        label: (todayStr ? dateStr === todayStr : i === 0) ? 'Today' : fmtDow(dateStr),   // in the evening today's daytime has passed, so the first row is tomorrow
         date: fmtMD(dateStr),
         windHtml: '<b style="color:' + band.css + '">' + windNum(wd.high) + '</b> <span class="wunit" style="color:' + band.css + '">' + windUnit + '</span>' +
           windArrowSvg(p.windDirection, band.css, 22) + srDir(p.windDirection),
@@ -5527,6 +5583,28 @@
       };
     }
     // 7-Day: the best window of each of the next seven days, or the reason a day has none
+    // The hour that best stands for why a day is skipped: the likeliest precipitation, else the strongest wind, else the extreme temperature
+    function dayWeather(dh){
+      var light = dh.filter(function(x){ return !x.why.some(function(t){ return /dark out/.test(t); }); });
+      if(!light.length) light = dh;
+      var wet = light.reduce(function(a, x){ return x.pop > a.pop ? x : a; }, light[0]);
+      // among the hours with that chance, the one whose forecast actually names the precipitation (so the icon shows the rain, snow or storm)
+      var wetHrs = light.filter(function(x){ return x.pop === wet.pop && /thunder|rain|shower|drizzle|snow|flurr|sleet|wintry|mix/i.test(x.fc || ''); });
+      if(wetHrs.length) wet = wetHrs[0];
+      var windy = light.reduce(function(a, x){ return x.mph > a.mph ? x : a; }, light[0]);
+      var cold = light.reduce(function(a, x){ return x.temp < a.temp ? x : a; }, light[0]);
+      var hot = light.reduce(function(a, x){ return x.temp > a.temp ? x : a; }, light[0]);
+      var P = bestPrefs, h, text;
+      if(wet.pop >= 20 && (wet.pop >= P.pop || windy.mph < P.wind)){ h = wet; text = Math.round(wet.pop) + '% chance of ' + wet.ptype; }
+      else if(windy.mph >= P.wind){ h = windy; text = 'Wind up to ' + fmtWind(windy.mph); }
+      else if(light.some(function(x){ return x.why.some(function(t){ return /snowy or icy/.test(t); }); })){
+        h = light.filter(function(x){ return x.why.some(function(t){ return /snowy or icy/.test(t); }); })[0]; text = 'Snowy or icy ground';
+      }
+      else if(cold.temp < P.tmin){ h = cold; text = 'Cold, ' + fmtTemp(cold.temp); }
+      else if(hot.temp > P.tmax){ h = hot; text = 'Hot, ' + fmtTemp(hot.temp); }
+      else{ h = wet; text = wet.pop >= 5 ? Math.round(wet.pop) + '% chance of ' + wet.ptype : ampText(wet.fc || '') || 'Unsettled'; }
+      return {text: text, sky: h.fc || '', icon: weatherIcon(h.fc, true, 30)};
+    }
     function dayReason(dh){
       var counts = {}, order = [], light = dh.filter(function(x){ return !x.why.some(function(t){ return /dark out/.test(t); }); });
       light.forEach(function(x){
@@ -5553,9 +5631,9 @@
         if(!dh.some(function(x){ return !x.why.some(function(t){ return /dark out/.test(t); }); })) return;   // nothing but darkness left today
         var dw = findBestWindows(dh);
         if(dw.length){ windows.push(windowCard(dw[0], windows.length)); return; }
-        var dayName = d === todayStr ? 'Today' : fmtDowLong(d);
+        var dayName = d === todayStr ? 'Today' : fmtDowLong(d), dayWx = dayWeather(dh);
         windows.push({key: d + '-none', cls: 'bt-card--none', tone: '', none: true, medal: '', windLabel: '', windPill: '', windInk: '', day: dayName, time: 'No good window',
-          when: dayName + ' no good window', temp: '', sky: '', skyIcon: '', summary: dayReason(dh), detail: null, shareHead: '', shareConds: ''});
+          when: dayName + ' no good window', temp: dayWx.text, sky: dayWx.sky, skyIcon: dayWx.icon, summary: dayReason(dh), detail: null, shareHead: '', shareConds: ''});
       });
     }
     var anyWindow = windows.some(function(w){ return !w.none; });
@@ -5808,7 +5886,7 @@
       }
       // night time: darkness is the only thing ruling the hour out, and the weather itself is calm
       r.night = !!(!severe && r.state !== 'yes' && now.why.length === 1 && /dark out/.test(now.why[0]) && now.mph < 16);
-      // Stay Aware: it's fine to be out right now, but weather (rain, snow, wind, storms) arrives within the next 3 hours
+      // Heads Up: it's fine to be out right now, but weather (rain, snow, wind, storms) arrives within the next 3 hours
       if(!severe && !r.night && (r.state === 'yes' || (r.state === 'maybe' && r.hs && r.hs[0].i === 0))){
         for(var k = 1; k <= 3 && k < hrs.length; k++){
           var wx = hrs[k].why.filter(function(w){ return /^(thunderstorms|rain|showers|snow)$|chance of (?:rain|snow|sleet|mixed precip|hail|precipitation)|^wind up to|snowy or icy/.test(w); });
@@ -6335,14 +6413,14 @@
       if(hcY.split){ var psY = vdPrecipSentence(c, r); if(psY) out.push(psY); }
       out.push(actsSentence);
       if(caVoice){ var cx1 = caExtra(r, c, seed); if(cx1) out.push(cx1); }
-      var aft = vdAfter(r, c); if(aft) out.push(r.incoming ? 'Stay aware: ' + vdLc(aft) : aft);
+      var aft = vdAfter(r, c); if(aft) out.push(r.incoming ? 'Heads up: ' + vdLc(aft) : aft);
     }else if(r.state === 'maybe' && r.hs[0].i === 0){
       out.push(caVoice ? 'You can head out right now, though conditions aren’t the dreamiest, eh.' : 'You can head out right now, though conditions aren’t the dreamiest.');
       var weak = vdWeakPoints(vdAgg([c.hrs[0]]));
       if(weak.length) out.push('Keep an eye out for ' + vdList(weak.slice(0, 2)) + '.');
       out.push(actsSentence);
       if(caVoice && r.agg.tAvg < 45) out.push('Keep your toque handy.');
-      var aft2 = vdAfter(r, c); if(aft2) out.push(r.incoming ? 'Stay aware: ' + vdLc(aft2) : aft2);
+      var aft2 = vdAfter(r, c); if(aft2) out.push(r.incoming ? 'Heads up: ' + vdLc(aft2) : aft2);
     }else if(r.state === 'maybe'){
       var sp2 = vdSpan(r.hs, c);
       var nowWhy = r.why && r.why.length ? tw + ', ' + vdList(r.why.slice(0, 2).map(vdNowClause)) + ', so hang tight' : 'Hang tight';
@@ -6386,7 +6464,11 @@
     var hat = ca ? 'a toque' : 'a warm hat', gloves = ca ? 'mitts' : 'gloves', dark = vdIsDark(c);
     // When rain is expected, the umbrella and rain coat share the clothing sentence instead of getting one of their own
     var rainy = rainAt >= 0, umb = 'an umbrella and a rain coat';
-    function withUmb(sentence){ return sentence.replace(/\.$/, '') + ', and pack ' + umb + '.'; }
+    function withUmb(sentence){
+      var base = sentence.replace(/\.$/, ''), k = base.lastIndexOf(', and ');
+      if(k >= 0) base = base.slice(0, k) + ', ' + base.slice(k + 6);   // one "and" per sentence: "..., layer up underneath, and pack an umbrella and a rain coat."
+      return base + ', and pack ' + umb + '.';
+    }
     var base;
     if(minT < 15) base = 'It’s bitter out, so wear a heavy coat, ' + hat + ', insulated ' + gloves + ', a scarf and warm waterproof boots.';
     else if(minT < 32) base = 'Bundle up with a warm coat, ' + hat + ', ' + gloves + ' and a scarf, and wear warm boots.';
@@ -6468,21 +6550,73 @@
     if(/wet ground/.test(w)) return 'the ground gets wet';
     return 'conditions change';
   }
+  // "Better by 5 PM." / "Better tomorrow around 7 AM." / "Better Saturday around 4 PM.": when conditions improve (the start of the next good window)
+  function vdBetter(h, c){
+    var d = vdDay(h.iso, c), t = fmtH12(h.hour), clock = t.n + ' ' + t.ap;
+    if(d === 'today') return 'Better by ' + clock + '.';
+    if(d === 'tomorrow') return 'Better tomorrow around ' + clock + '.';
+    return 'Better ' + fmtDowLong(localDate(h.iso)) + ' around ' + clock + '.';
+  }
+  // What is holding things back right now and what it turns into: {now: 'Rain', then: 'moving on'}
+  function vdNowThen(w){
+    var m;
+    if(/thunder/i.test(w)) return {now: 'Storms', then: 'moving on'};
+    if(/^(rain|showers)$/.test(w)) return {now: vdCap(w), then: 'moving on'};
+    if(/^snow$/.test(w)) return {now: 'Snow', then: 'tapering off'};
+    if(/blizzard/i.test(w)) return {now: 'Blizzard', then: 'easing'};
+    if((m = /chance of (rain|snow|sleet|mixed precip|hail|precipitation)/.exec(w))) return {now: (m[1] === 'precipitation' ? 'Rain' : vdCap(m[1])) + ' likely', then: 'clearing'};
+    if(/sleet|freezing rain|mixed|wintry/i.test(w)) return {now: 'Wintry mix', then: 'moving on'};
+    if(/hail/i.test(w)) return {now: 'Hail', then: 'moving on'};
+    if(/fog/i.test(w)) return {now: 'Fog', then: 'lifting'};
+    if(/^wind/.test(w)) return {now: 'Windy', then: 'easing'};
+    if(/snowy or icy/.test(w)) return {now: 'Icy ground', then: 'thawing'};
+    if(/^cold/.test(w)) return {now: 'Cold', then: 'warming up'};
+    if(/^hot/.test(w)) return {now: 'Hot', then: 'cooling off'};
+    if(/air quality/.test(w)) return {now: 'Poor air', then: 'clearing'};
+    if(/humid/.test(w)) return {now: 'Humid', then: 'easing'};
+    if(/wet ground/.test(w)) return {now: 'Wet ground', then: 'drying out'};
+    return {now: vdWhyShort(w), then: 'improving'};
+  }
+  // "by 5 PM" / "tomorrow around 11 AM" / "Saturday around 4 PM"
+  function vdWhenPhrase(h, c){
+    var d = vdDay(h.iso, c), t = fmtH12(h.hour), clock = t.n + ' ' + t.ap;
+    if(d === 'today') return 'by ' + clock;
+    if(d === 'tomorrow') return 'tomorrow around ' + clock;
+    return fmtDowLong(localDate(h.iso)) + ' around ' + clock;
+  }
+  // "Rain now, moving on by 5 PM." / "Windy now, easing tomorrow around 7 AM." / "Rain now, with no break for 7 days."
+  function vdChange(r, c, h){
+    var reasons = (r.why || []).filter(function(w){ return !/dark out/.test(w); });
+    if(!reasons.length){
+      var sr = vdNextSunrise();
+      return h ? 'Dark out until ' + (sr ? 'sunrise at ' + sr : vdWhenPhrase(h, c)) + '.' : 'Dark out.';
+    }
+    var nt = vdNowThen(reasons[0]);
+    return nt.now + ' now, ' + (h ? nt.then + ' ' + vdWhenPhrase(h, c) : 'with no break for ' + bestDays() + ' days') + '.';
+  }
+  // The next sunrise, as a clock time at the place ("6:24 AM"), or '' when unknown
+  function vdNextSunrise(){
+    var now = Date.now(), ev = null;
+    sunEvents.forEach(function(e){ if(e.type === 'sunrise' && e.time.getTime() > now && (!ev || e.time < ev.time)) ev = e; });
+    return ev ? vdSunLabel(ev.time) : '';
+  }
   function vdHeadline(r, c){
     var seed = vdSeed(c), ca = caVoice;
     function endAt(hs){ var t = fmtH12(hs[hs.length - 1].hour + 1); return t.n + ' ' + t.ap; }
-    // (none of these repeat the wording of the tag beside them: Go Outside!, Okay for Now, Wait a Bit, Stay Aware, Stay Inside, Stay In All Day, Use Caution, Night Time)
+    // (none of these repeat the wording of the tag beside them: Go Outside!, Okay for Now, Wait a Bit, Heads Up, Stay Inside, Stay In All Day, Use Caution, Night Time)
     if(r.tornado) return vdCap(r.alert) + ' in effect: take shelter now.';
     if(r.flood) return vdCap(r.flood) + ' in effect: turn around, don’t drown.';
     if(r.alert && r.state !== 'no') return 'Fine out, but there’s an active ' + r.alert + '.';
     if(r.state === 'no' && r.alert) return vdCap(r.alert) + ' in effect.';
     if(r.night && vdPredawn(c)){
       var nwp = r.state === 'maybe' ? r.hs : r.nextHs;
-      return (vdDawnMinutes() !== null ? 'Good morning. ' : 'Time to sleep. ') + (nwp ? 'Your next best window to get outside is ' + vdRange(nwp, c) + '.' : 'Better to stay snug at home.');
+      var srP = nwp ? vdNextSunrise() : '';
+      return (vdDawnMinutes() !== null ? 'Good morning. ' : 'Time to sleep. ') + (nwp ? (srP ? 'Sunrise at ' + srP + '.' : vdBetter(nwp[0], c)) : 'Better to stay snug at home.');
     }
     if(r.night){
       var nw = r.state === 'maybe' ? r.hs : r.nextHs;
-      return (ca ? 'Dark out, eh. ' : 'Dark out. ') + (nw ? 'Next best window to get outside: ' + vdRange(nw, c) + '.' : 'Not a night for outdoor plans.');
+      var srN = nw ? vdNextSunrise() : '';
+      return (ca ? 'Dark out, eh. ' : 'Dark out. ') + (nw ? (srN ? 'Sunrise at ' + srN + '.' : vdBetter(nw[0], c)) : 'Not a night for outdoor plans.');
     }
     if(r.state === 'yes'){
       var comfy = r.agg.tAvg >= 50 && r.agg.tAvg <= 86 && r.agg.wet < 0.45;
@@ -6501,12 +6635,16 @@
       return 'Doable, not ideal' + (weak.length ? ': ' + weak[0] : '') + '.';
     }
     if(r.state === 'maybe'){
-      var sp = vdSpan(r.hs, c);
-      return (r.why && r.why.length ? vdWhyShort(r.why[0]) + ' now. ' : '') + (ca ? 'Lovely, eh: ' : 'Lovely ') + sp.day + ' ' + sp.phrase + '.';
+      var bt = vdChange(r, c, r.hs[0]);
+      return ca ? bt.replace(/\.$/, ', eh.') : bt;
     }
-    var why = r.why && r.why.length ? vdWhyShort(r.why[0]) + '. ' : '';
-    if(r.nextHs) return why + 'Next best window to get outside: ' + vdRange(r.nextHs, c) + '.';
-    return (why || '') + 'No good window for ' + bestPrefs.days + ' days.';
+    return vdChange(r, c, r.nextHs ? r.nextHs[0] : null);
+  }
+  // Thunderstorms in the next 12 hours (now or on the way): lightning is possible
+  function vdLightning(c){
+    var hs = (c.hrs || []).slice(0, 12);
+    var thunder = hs.some(function(h){ return /thunder/i.test(h.fc || '') || (h.why || []).some(function(w){ return /^thunderstorms?$/.test(w); }); });
+    return thunder ? 'Lightning is possible with the thunderstorms, so head indoors at the first rumble of thunder.' : '';
   }
   // The gray text under the headline: the earlier paragraph's wording (minus what the headline already says) plus clothing and pet advice
   function vdSubLines(r, c, actList){
@@ -6516,6 +6654,7 @@
     if(!r.tornado){ var al = vdAlertLines(c, r); if(al.length) keep.unshift.apply(keep, al); }   // the banner's alerts, in the text too
     var hol = vdHolidayLines(c, r); if(hol.length) keep.unshift.apply(keep, hol);   // US federal holiday greeting first
     if(r.flood && !r.tornado) keep.unshift('Never drive through flooded roadways or around barricades. Turn around, don’t drown.');
+    if(!r.tornado){ var lt = vdLightning(c); if(lt && !/lightning/i.test(keep.join(' '))) keep.push(lt); }   // thunder in the forecast: say lightning is possible
     if(planning && !r.night){ var sn = vdSunNote(c, keep.join(' ')); if(sn) keep.push(sn); }
     if(!r.tornado && !r.alert && !(r.night && vdPredawn(c)) && vdDawnMinutes() !== null && keep.join(' ').indexOf('waking up') < 0) keep.push('The town is waking up, with birds chirping, people getting ready and coffee brewing.');
     if(!r.tornado){ var sr = vdSunriseNote(); if(sr && keep.join(' ').indexOf('sun rises') < 0) keep.push(sr); }
@@ -6634,7 +6773,7 @@
     if(r.tornado) return {t:'Take shelter', k:'red'};
     if(r.alert && r.state !== 'no') return {t:'Use caution', k:'orange'};
     if(r.night) return {t:'Night time', k:'night'};
-    if(r.incoming) return {t:'Stay aware', k:'aware'};
+    if(r.incoming) return {t:'Heads up', k:'aware'};
     if(r.state === 'yes') return {t:'Get outside!', k:'green'};
     if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for now', k:'yellow'} : {t:'Wait a bit', k:'yellow'};
     // a good window within 12 hours means it's passing weather: wait it out. Further away, stay inside. None in 5 days: all day.
@@ -7091,7 +7230,7 @@
 
     todaySection.removeAttribute('aria-hidden');
     renderHourly(hourly);
-    renderWeek(daily);
+    renderWeek(daily, todayStr);
     var bestInputs = await bestInputsPromise;
     var bestWhen = renderBest(hourly, bestInputs);
     var airNowRes = await airNowPromise;
