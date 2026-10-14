@@ -754,10 +754,10 @@
       pointer-events:none; opacity:0; transition:opacity .15s;
     }
     .today-card--scrollable::after{
-      right:0; background:linear-gradient(to right, transparent, var(--surface));
+      right:0; background:linear-gradient(to right, transparent, var(--module-bg));
     }
     .today-card--scrollable::before{
-      left:0; background:linear-gradient(to left, transparent, var(--surface));
+      left:0; background:linear-gradient(to left, transparent, var(--module-bg));
     }
     .today-card--scrollable.can-scroll-right::after{ opacity:1 }
     .today-card--scrollable.can-scroll-left::before{ opacity:1 }
@@ -1839,8 +1839,8 @@
   /* Air Quality & Pollen: half-circle gauges (the Air Quality Index large across the top, the other four in a grid under it) */
   .ag-wrap{position:relative; margin:0 -16px; overflow:hidden}
   .ag-wrap::before, .ag-wrap::after{content:""; position:absolute; top:0; bottom:0; width:56px; pointer-events:none; opacity:0; transition:opacity .15s}
-  .ag-wrap::after{right:0; background:linear-gradient(to right, transparent, var(--surface))}
-  .ag-wrap::before{left:0; background:linear-gradient(to left, transparent, var(--surface))}
+  .ag-wrap::after{right:0; background:linear-gradient(to right, transparent, var(--module-bg))}
+  .ag-wrap::before{left:0; background:linear-gradient(to left, transparent, var(--module-bg))}
   .ag-wrap.can-scroll-right::after, .ag-wrap.can-scroll-left::before{opacity:1}
   .ag-grid{display:flex; gap:12px; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; scroll-snap-type:x proximity; padding:2px 16px 14px; scroll-padding-inline:16px; scrollbar-width:thin; -webkit-overflow-scrolling:touch}
   .ag-grid:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
@@ -1933,8 +1933,8 @@
     #todaySection .htile .sp, #todaySection .htile .spunit{ font-size:.9375rem }
     .today-card--scrollable{ position:relative; overflow:hidden }
     .today-card--scrollable::after, .today-card--scrollable::before{ content:""; position:absolute; top:0; bottom:0; width:56px; pointer-events:none; opacity:0; transition:opacity .15s }
-    .today-card--scrollable::after{ right:0; background:linear-gradient(to right, transparent, var(--surface)) }
-    .today-card--scrollable::before{ left:0; background:linear-gradient(to left, transparent, var(--surface)) }
+    .today-card--scrollable::after{ right:0; background:linear-gradient(to right, transparent, var(--module-bg)) }
+    .today-card--scrollable::before{ left:0; background:linear-gradient(to left, transparent, var(--module-bg)) }
     .today-card--scrollable.can-scroll-right::after{ opacity:1 }
     .today-card--scrollable.can-scroll-left::before{ opacity:1 }
     #airCard{ flex:1 1 auto; display:flex; flex-direction:column }
@@ -2298,8 +2298,8 @@
   #todaySection .today-card--scrollable::before, #todaySection .today-card--scrollable::after{
     content:""; position:absolute; top:0; bottom:0; width:56px; z-index:3; pointer-events:none; opacity:0; transition:opacity .15s
   }
-  #todaySection .today-card--scrollable::after{ right:0; background:linear-gradient(to right, transparent, var(--surface)) }
-  #todaySection .today-card--scrollable::before{ left:0; background:linear-gradient(to left, transparent, var(--surface)) }
+  #todaySection .today-card--scrollable::after{ right:0; background:linear-gradient(to right, transparent, var(--module-bg)) }
+  #todaySection .today-card--scrollable::before{ left:0; background:linear-gradient(to left, transparent, var(--module-bg)) }
   #todaySection .today-card--scrollable.can-scroll-right::after, #todaySection .today-card--scrollable.can-scroll-left::before{ opacity:1 }
 
   /* ============ Design scale (unifies what the sections above set one by one) ============
@@ -2360,6 +2360,15 @@
 
   /* every up / down caret is one size and one glyph: 20px, halfway between the Best Times chevron (16) and the alert caret (24) */
   .bt-chev, .alert-toggle svg, .vd-toggle svg{ width:20px !important; height:20px !important }
+
+  /* Modules: white at 80% opacity (the page's pale background and wind streaks show faintly through).
+     In dark mode the same idea: the dark surface at 80%. */
+  :root{ --module-bg:rgba(255,255,255,.8) }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --module-bg:color-mix(in srgb, var(--surface) 80%, transparent) } }
+  :root[data-theme="dark"]{ --module-bg:color-mix(in srgb, var(--surface) 80%, transparent) }
+  .bw-card, .today-card, .week-card, .hero-wrap .hero-now, #airCard, .air-card{ background:var(--module-bg) !important }
+  .vd-card{ background:transparent !important }   /* the hero text sits straight on the page, with no white card behind it */
+  .bt-wrap{ background:transparent }
 
   /* Footer, quieter: a lighter and smaller windmill, tighter link rows and fainter dotted underlines */
   footer .disclaimers-link, footer .footer-contact{ text-decoration-color:color-mix(in srgb, currentColor 45%, transparent) }
@@ -3158,7 +3167,7 @@
     var body = '';
     switch(kind){
       case 'clear':
-        body = isDaytime ? sunMarkup(24,24,9) : moonMarkup(22,22,10);
+        body = isDaytime ? sunMarkup(24,24,9) : moonMarkup(27.12,24,13);   // the clear-night moon: 30% larger (radius 10 to 13), and shifted so the crescent itself, not its circle, sits in the middle of the 48px frame
         break;
       case 'partly':
         body = (isDaytime ? sunMarkup(30,16,6) : moonMarkup(37,10.5,8.125)) + cloudMarkup(20);
