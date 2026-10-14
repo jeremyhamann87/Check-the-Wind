@@ -2078,16 +2078,17 @@
   }
   /* ---------- Best Times: one row per window. Closed: when, the written weather, its icon and (7-Day) a star or a crossed circle.
      Open: temperature, wind and a link to the hour-by-hour details ---------- */
-  .bt-body{padding:12px}
+  .bt-body{padding:16px 16px 12px}   /* 16px sides, like the module header; the rows run edge to edge and keep that 16px inside */
   .bt-body .bw-empty{padding:0}
-  .bt-wrap{border:1px solid var(--table-border); border-radius:4px; overflow:hidden; background:var(--surface)}   /* never scrolls sideways */
+  .bt-wrap{margin-inline:-16px; overflow:hidden; background:var(--surface)}   /* no outer border: only the lines between rows; never scrolls sideways */
   .bt-wrap[hidden]{display:none}
   .bt-list{list-style:none; margin:0; padding:0}
-  .bt-item + .bt-item{border-top:1px solid var(--table-border)}
+  /* the lines between rows sit inside the module's 16px margin; the rows and the open wash still run edge to edge */
+  .bt-item + .bt-item::before{content:""; position:absolute; top:0; left:16px; right:16px; height:1px; background:var(--table-border)}
   .bt-item{position:relative; --bt-open-bg:color-mix(in srgb, var(--table-border) 18%, var(--surface))}
   .bt-row{
     display:grid; grid-template-columns:22px 5.5rem minmax(0,1fr) 16px; grid-template-areas:"mark when wx end"; align-items:center; column-gap:12px;
-    width:100%; min-height:56px; box-sizing:border-box; padding:10px 12px; margin:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent;
+    width:100%; min-height:56px; box-sizing:border-box; padding:10px 16px; margin:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent;
   }
   .bt-row[aria-expanded="true"]{background:var(--bt-open-bg)}   /* an open row and its details share one background */
   .bt-row:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px; border-radius:4px}
@@ -2113,7 +2114,8 @@
   .bt-row[aria-expanded="true"] .bt-chev{transform:rotate(180deg)}
   @media (prefers-reduced-motion:reduce){ .bt-chev{transition:none} }
   /* The open part of a row: a small table of the data left out of the closed row */
-  .bt-panel{padding:0 12px; border-top:1px dashed var(--table-border); background:var(--bt-open-bg)}
+  .bt-panel{position:relative; padding:0 16px; background:var(--bt-open-bg)}
+  .bt-panel::before{content:""; position:absolute; top:0; left:16px; right:16px; border-top:1px dashed var(--table-border)}
   .bt-panel[hidden]{display:none}
   .bt-dl{margin:0}
   .bt-r{display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; box-sizing:border-box; height:44px; border-bottom:1px solid var(--table-border); font-size:14px; line-height:1.35}   /* every row 44px, its text centered */
@@ -2126,15 +2128,15 @@
   .bt-wtag{padding:1px 8px; font-size:14px; font-weight:500; line-height:1.35}   /* the same band tag the 7-Day Outlook uses */
   .bt-skel-medal{width:22px; height:22px; border-radius:50%; flex:0 0 auto}
   .bt-skel-big{display:block; height:1.75rem; width:55%}
-  .bt-skelrow{padding:14px 12px}
+  .bt-skelrow{padding:14px 16px}
   @media (max-width:23.75em){   /* very narrow phones: the written weather sits under the day, with the full row to wrap in */
     .bt-row{grid-template-columns:22px minmax(0,1fr) 16px; grid-template-areas:"mark when end" ". wx wx"; row-gap:6px}
   }
   /* 7-Day / Top 3: two selection pills above the cards; the chosen one is bold and filled with no outline, the other is outlined in the fill colour.
      Each label reserves its bold width, so switching never shifts the layout. */
   .bt-pills{display:flex; flex-wrap:wrap; gap:8px; --pill-fill:color-mix(in srgb, var(--text-muted) 12%, var(--surface))}
-  .bt-pill::before{content:""; position:absolute; inset:-6px -4px}   /* a 44px-tall tap area */
-  .bt-pill{position:relative; display:inline-grid; min-height:32px; padding:0 14px; border:1px solid var(--pill-fill); border-radius:16px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:400; line-height:1; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; align-items:center; justify-items:center; text-align:center}
+  .bt-pill::before{content:""; position:absolute; inset:-9.2px -4px}   /* still a 44px-tall tap area */
+  .bt-pill{position:relative; display:inline-grid; min-height:25.6px; padding:0 14px; border:1px solid var(--pill-fill); border-radius:13px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:400; line-height:1; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; align-items:center; justify-items:center; text-align:center}
   .bt-pill > span, .bt-pill::after{grid-area:1 / 1}   /* the label and its hidden bold twin share one cell, so the text sits dead centre */
   .bt-pill::after{content:attr(data-label); height:0; overflow:hidden; visibility:hidden; font-weight:700}
   .bt-pill[aria-checked="true"]{font-weight:700; background:var(--pill-fill); color:color-mix(in srgb, var(--text-muted) 45%, var(--text))}   /* filled, no visible outline; the unselected pill is outlined in this same colour */
