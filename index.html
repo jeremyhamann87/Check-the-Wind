@@ -182,7 +182,7 @@
       transform:translateY(100%); transition:transform .3s cubic-bezier(.2,.8,.2,1);
     }
     .search-drawer.open .sd-sheet{transform:none}
-    .sd-head{display:flex; align-items:center; justify-content:space-between; padding:12px 12px 12px 16px; background:var(--surface); border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)); flex:0 0 auto}
+    .sd-head{display:flex; align-items:center; justify-content:space-between; padding:12px 12px 12px 16px; background:var(--surface); border-bottom:1px solid var(--line); flex:0 0 auto}
     .sd-head h2{margin:0; font-size:1.125rem; font-weight:500; color:var(--text-muted)}
     .sd-close{display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--text-muted); cursor:pointer}
     @media (min-width:64em){ .sd-close:hover{background:var(--hover-bg)} }
@@ -208,7 +208,7 @@
     .sd-clear{min-height:32px; padding:0 4px; border:0; background:transparent; color:var(--text-muted); font:inherit; font-size:1rem; text-decoration:underline; cursor:pointer}
     .sd-clear[hidden]{display:none}
     .sd-list{list-style:none; margin:0; padding:0}
-    .sd-row{display:flex; align-items:center; gap:4px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
+    .sd-row{display:flex; align-items:center; gap:4px; border-top:1px solid var(--line)}
     .sd-row:first-child{border-top:0}
     .sd-item{flex:1 1 auto; min-width:0; min-height:48px; padding:0 4px; border:0; background:transparent; color:var(--text); font:inherit; font-size:1rem; text-align:left; cursor:pointer}
     @media (min-width:64em){ .sd-item:hover{background:var(--hover-bg)} }
@@ -237,7 +237,7 @@
   main:focus{outline:none}
   .sr-only{position:absolute!important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0}
   :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-  :root{ --page-bg: var(--bg); }
+  :root{ --page-bg: var(--bg); --line: color-mix(in srgb, var(--table-border) 50%, var(--surface)); }   /* the standard border color: module headers, row separators, card edges */
   body{
     background: var(--page-bg);
     color:var(--text);
@@ -319,7 +319,7 @@
     .lp-card:last-child{margin-bottom:0}
     .lp-card .card-head{display:flex; align-items:center; justify-content:space-between; min-height:44px; padding:0 12px 0 16px}
     .lp-card .card-body{padding:4px 8px 4px 16px}
-    .lp-row{display:flex; align-items:center; gap:4px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
+    .lp-row{display:flex; align-items:center; gap:4px; border-top:1px solid var(--line)}
     .lp-row:first-child{border-top:0}
     .lp-list{list-style:none; margin:0; padding:0}
     form.search .loc-places .lp-item{flex:1 1 auto; min-width:0; min-height:44px; padding:0 4px; border:0; border-radius:4px; background:transparent; color:var(--text); font:inherit; font-size:1rem; text-align:left; cursor:pointer}
@@ -391,10 +391,10 @@
   .bp-seg-btn:last-child{border-right:0}
   .bp-row--seg .bp-help{margin-top:8px}   /* 8px between the segmented control and its Default text */
   .bp-seg-btn[aria-checked="true"]{background:var(--text); color:var(--surface)}
-  .bp-how{margin:0 0 12px; padding:0 4px 12px; border-bottom:1px solid var(--table-border)}
+  .bp-how{margin:0 0 12px; padding:0 4px 12px; border-bottom:1px solid var(--line)}
   .disclaimers-modal-body .bp-how-h{margin:0 0 4px; font-size:1rem; font-weight:600; color:var(--text-muted)}
   .disclaimers-modal-body .bp-how-p{margin:0; font-size:1rem; line-height:1.5; color:var(--text-muted); font-weight:400}
-  .bp-row{padding:8px 16px; background:var(--surface); border:1px solid var(--table-border); border-radius:4px}
+  .bp-row{padding:8px 16px; background:var(--surface); border:1px solid var(--line); border-radius:4px}
   .bp-top{display:flex; align-items:baseline; justify-content:space-between; gap:12px}
   .bp-label{font-size:1rem; font-weight:500; color:var(--text)}
   .bp-val{font-size:1rem; font-weight:700; color:var(--icon-blue); font-variant-numeric:tabular-nums; white-space:nowrap}
@@ -418,7 +418,7 @@
   .bp-std{white-space:nowrap}
   .bp-foot{
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0 16px; flex:0 0 auto;
-    padding:12px 24px; border-top:1px solid var(--table-border); background:var(--surface);
+    padding:12px 24px; border-top:1px solid var(--line); background:var(--surface);
   }
   .bp-preview{margin:0 0 8px; flex:1 1 100%; font-size:1rem; font-weight:400; color:var(--text)}
   .bp-preview:empty{display:none}
@@ -507,7 +507,7 @@
   .alert-side{flex:0 0 auto; display:flex; align-items:center; gap:12px}
   .alert-more{flex:0 0 auto; display:inline-flex; align-items:center; padding:2px 10px; border-radius:4px; background:rgba(255,255,255,.94); color:#2B2B2B; font-size:1rem; font-weight:700; white-space:nowrap}
   .alert-body--list{padding:0}
-  .alert-item{border-top:1px solid var(--table-border)}
+  .alert-item{border-top:1px solid var(--line)}
   .alert-item:first-child{border-top:0}
   .alert-item-head{
     display:flex; align-items:center; gap:12px; width:100%; padding:8px 16px; border:0; cursor:pointer;
@@ -657,7 +657,7 @@
     .radar-modal-panel{width:100%; height:100%; max-height:100%; border-radius:0}
   }
   .today-card{
-    background:var(--surface); border-radius:4px; border:1px solid var(--table-border);
+    background:var(--surface); border-radius:4px; border:1px solid var(--line);
     padding:16px;
   }
   /* scrollbar thumb at half its default opacity (default ~50% black -> 25%), theme-aware */
@@ -694,14 +694,14 @@
     .skel-htile .hdir{display:none}
   }
 
-  /* Air Quality & Pollen: five gauges (Air Quality Index + Pollutants/PM2.5,
-     both real via AirNow/EPA; Tree/Grass/Weed pollen estimated — see
+  /* Air Quality & Pollen: six gauges (Air quality + PM2.5 + Ozone,
+     all real via AirNow/EPA; Tree/Grass/Weed pollen estimated — see
      pollenEstimate(), since there's no free, CORS-enabled, keyless pollen
      API with real US coverage). */
   /* Air Quality & Pollen and Wind Today: the title lives inside the card, above a divider line */
   .air-card, #todaySection .today-card{padding:0}
   #airCard.air-card, #todaySection .today-card{border-radius:4px}
-  .card-head{padding:12px 24px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
+  .card-head{padding:12px 24px; border-bottom:1px solid var(--line)}
   .card-head h2, .card-head h3{font-size:1.125rem; font-weight:500; margin:0; color:var(--text-muted); display:inline-flex; align-items:center; gap:6px}
   .card-body{padding:24px}
   /* Best Times and 7-Day Outlook use the same title-in-card style: the card owns the surface, radius and shadow */
@@ -828,16 +828,16 @@
   .daylist{
     display:flex; flex-direction:column;
     background:var(--surface); border-radius:4px; overflow:hidden;
-    border:1px solid var(--table-border);
+    border:1px solid var(--line);
   }
   .dayrow, .dayrow-head{display:flex; align-items:center; gap:16px}
   .dayrow{
     padding:24px;
-    border-bottom:.5px solid var(--table-border);
+    border-bottom:.5px solid var(--line);
   }
   .dayrow:last-of-type{border-bottom:none}
   .dayrow-head{
-    padding:16px 24px 12px; border-bottom:.5px solid var(--table-border);
+    padding:16px 24px 12px; border-bottom:.5px solid var(--line);
     font-size:1rem; font-weight:400; color:var(--text-muted);
   }
   .dayrow .dnames, .dayrow-head .dnames{width:5.5rem; flex-shrink:0}
@@ -963,7 +963,7 @@
   @media (max-width:63.99em){
     .footer-bar{flex-direction:column; align-items:flex-start; gap:0}
     /* tighter: shorter rows, less space above, nothing extra below */
-    footer{margin-top:8px; padding-top:0}
+    footer{margin-top:16px; padding-top:0}   /* 16px between the last module and the footer text */
     .disclaimers-link, .footer-contact{min-height:34px; padding:6px 0}
     .data-asof{padding:6px 0 0; line-height:1.3}
     .footer-copy{padding:6px 0 0; line-height:1.3}
@@ -984,7 +984,7 @@
   }
   .disclaimers-modal-head{
     display:flex; align-items:center; justify-content:space-between;
-    padding:20px 24px; border-bottom:1px solid var(--table-border); flex:0 0 auto;
+    padding:20px 24px; border-bottom:1px solid var(--line); flex:0 0 auto;
   }
   .disclaimers-modal-head h2{font-size:1.125rem; font-weight:500; margin:0; color:var(--text-muted)}
   .disclaimers-modal-close{
@@ -1011,10 +1011,10 @@
   .wd-list dt{color:var(--text-muted); font-size:1rem}
   .wd-list dd{margin:0; color:var(--text); font-size:1rem}
   .wd-h{margin:0 0 6px; font-size:1rem; font-weight:600; color:var(--text-muted)}
-  .wd-scroll{overflow-x:auto; border:1px solid var(--table-border); border-radius:4px}
+  .wd-scroll{overflow-x:auto; border:1px solid var(--line); border-radius:4px}
   .wd-table{width:100%; border-collapse:collapse; font-size:.9375rem; font-variant-numeric:tabular-nums}
-  .wd-table th{padding:8px 10px; text-align:left; font-weight:500; color:var(--text-muted); white-space:nowrap; background:color-mix(in srgb, var(--text) 5%, var(--surface)); border-bottom:1px solid var(--table-border)}
-  .wd-table td{padding:8px 10px; color:var(--text); border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)); white-space:nowrap}
+  .wd-table th{padding:8px 10px; text-align:left; font-weight:500; color:var(--text-muted); white-space:nowrap; background:color-mix(in srgb, var(--text) 5%, var(--surface)); border-bottom:1px solid var(--line)}
+  .wd-table td{padding:8px 10px; color:var(--text); border-bottom:1px solid var(--line); white-space:nowrap}
   .wd-table tr:last-child td{border-bottom:0}
   .wd-table td:first-child{font-weight:600}
   @media (max-width:31.1875em){ .wd-list{grid-template-columns:1fr; gap:0} .wd-list dd{margin-bottom:10px} }
@@ -1058,13 +1058,13 @@
     .daylist{background:transparent; box-shadow:none; border-radius:0; overflow:visible; gap:16px}
     .dayrow{
       display:flex; flex-direction:column; padding:0;
-      border-radius:4px; background:var(--surface); border:1px solid var(--table-border); overflow:hidden;
+      border-radius:4px; background:var(--surface); border:1px solid var(--line); overflow:hidden;
     }
     .dayrow .drest{display:contents}
     .dayrow .dnames, .dayrow .dwind, .dayrow .dshort, .dayrow .temps{
       display:flex; flex-direction:row; align-items:center; justify-content:space-between;
       gap:12px; width:100%; min-width:0; min-height:40px; font-size:1rem;
-      padding:8px 16px; border-bottom:.5px solid var(--table-border);
+      padding:8px 16px; border-bottom:.5px solid var(--line);
     }
     .dayrow .temps{border-bottom:none}
     .dayrow .dnames .dlabel{
@@ -1177,8 +1177,8 @@
     #weekSection .dayrow{
       display:flex; flex-direction:column; align-items:stretch; gap:8px;
       padding:16px 14px;
-      border-radius:4px; background:var(--surface); border:1px solid var(--table-border);
-      border-top:4px solid var(--card-band, var(--table-border));
+      border-radius:4px; background:var(--surface); border:1px solid var(--line);
+      border-top:4px solid var(--card-band, var(--line));
     }
     #weekSection .dayrow .drest{ display:contents }
     #weekSection .dayrow .dnames,
@@ -1275,7 +1275,7 @@
     /* Modules sit on the page background without outlines (inner row dividers stay); a soft shadow lifts them instead. */
     .db-content .today-card{ border:0 }
     #weekSection .daylist{ gap:16px }
-    #weekSection .dayrow{ border:0; border-top:8px solid var(--card-band, var(--table-border)) }
+    #weekSection .dayrow{ border:0; border-top:8px solid var(--card-band, var(--line)) }
     .db-content .today-card, #weekSection .dayrow, .db-content .alert{ box-shadow:var(--shadow) }
     .db-content .alerts:not([hidden]) + #bestSection{ margin-top:24px }
 
@@ -1351,7 +1351,7 @@
     .db-content .wrap{ max-width:none; padding-inline:32px }
     .db-content section{ margin-top:32px }
     .db-content .today-card{ border:0; box-shadow:var(--shadow) }
-    #weekSection .dayrow{ border:0; border-top:8px solid var(--card-band, var(--table-border)); box-shadow:var(--shadow) }
+    #weekSection .dayrow{ border:0; border-top:8px solid var(--card-band, var(--line)); box-shadow:var(--shadow) }
   }
   @media (min-width:64em) and (max-width:63.99em){
     .hero-wrap .radar{ aspect-ratio:16 / 9 }
@@ -1385,7 +1385,7 @@
     #weekSection .dayrow{
       display:flex; flex-direction:column; align-items:stretch; gap:8px; overflow:visible;
       padding:16px 14px; border-radius:4px; background:var(--surface);
-      border:0; border-top:8px solid var(--card-band, var(--table-border)); box-shadow:var(--shadow);
+      border:0; border-top:8px solid var(--card-band, var(--line)); box-shadow:var(--shadow);
     }
     #weekSection .dayrow:nth-child(even):last-child{ grid-column:1 / -1 }
     #weekSection .dayrow .drest{ display:contents }
@@ -1442,7 +1442,7 @@
   #airCard .pollen-row-label{ font-weight:300; color:var(--text-muted) }
   /* 7-Day cards sit inside the module card: no individual shadow, a 2px wind-range stroke all around (the 8px top bar stays) */
   @media (min-width:64em){
-    #weekSection .dayrow{ box-shadow:none; border:2px solid var(--card-band, var(--table-border)); border-top-width:8px }
+    #weekSection .dayrow{ box-shadow:none; border:2px solid var(--card-band, var(--line)); border-top-width:8px }
   }
   /* Tablet & wide desktop 7-Day cards: day & date sit in a header in the wind range's light shade that fills the top of the card;
      the text is the standard dark text color in both themes */
@@ -1509,7 +1509,7 @@
   }
   /* 7-Day cards: the 2px wind-range stroke is drawn as inset lines so that, where it runs up through the pastel header, it turns white (a white divider between the headers) */
   @media (min-width:64em) and (max-width:63.99em), (min-width:78em){
-    #weekSection .dayrow{ border:0; box-shadow:inset 1px 0 0 var(--table-border), inset -1px 0 0 var(--table-border), inset 0 -1px 0 var(--table-border) }  /* normal gray border (was the 2px wind-range color) */
+    #weekSection .dayrow{ border:0; box-shadow:inset 1px 0 0 var(--line), inset -1px 0 0 var(--line), inset 0 -1px 0 var(--line) }  /* normal gray border (was the 2px wind-range color) */
     /* white dividers only BETWEEN headers: the far-left and far-right headers run colored to the card's outer edge */
     #weekSection .dayrow .dnames{ box-shadow:inset -1px 0 0 #fff }
     #weekSection .dayrow ~ .dayrow .dnames{ box-shadow:inset 1px 0 0 #fff, inset -1px 0 0 #fff }
@@ -1564,7 +1564,7 @@
     .week-card .card-body{ padding:0 }
     #weekSection .daylist{ gap:0; border-radius:0; overflow:hidden; background:transparent; box-shadow:none }
     #weekSection .dayrow, #weekSection .dayrow:first-of-type, #weekSection .dayrow:last-of-type{
-      border-radius:0; box-shadow:none; border:0; border-top:8px solid var(--card-band, var(--table-border));
+      border-radius:0; box-shadow:none; border:0; border-top:8px solid var(--card-band, var(--line));
     }
   }
   /* Phone: the alert banner sits above the place name in the current-conditions header (the name moves down a row when it shows) */
@@ -1627,7 +1627,7 @@
   }
   /* Phone 7-Day Wind Outlook: a small wind-category tag beside each speed; no colored top bars; rows stay ~47px tall (25% shorter than before) and are separated by the same line as the card header's border */
   @media (max-width:77.9375em){
-    #weekSection .dayrow, #weekSection .dayrow ~ .dayrow{ padding-block:11.5px; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }  /* same line as the card header's border */
+    #weekSection .dayrow, #weekSection .dayrow ~ .dayrow{ padding-block:11.5px; border-top:1px solid var(--line) }  /* same line as the card header's border */
     #weekSection .dayrow-head + template + .dayrow, #weekSection .daylist > .dayrow:nth-of-type(2){ border-top-color:transparent }
     /* small wind-category tag to the right of the wind speed */
     #weekSection .dayrow .dwind .dval-group{ display:grid; grid-template-columns:5.4rem 3.8rem; align-items:center; column-gap:14px }  /* speed and tag are separate columns */
@@ -1658,7 +1658,7 @@
   }
   .vd-range{font-size:1.375rem; font-weight:700; color:var(--text)}
   .vd-sentence{margin:12px 0 0; font-size:1.0625rem; line-height:1.45; color:var(--text)}
-  .vd-stats{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px 16px; margin:16px 0 0; padding:12px 0 0; border-top:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface))}
+  .vd-stats{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px 16px; margin:16px 0 0; padding:12px 0 0; border-top:1px solid var(--line)}
   .vd-stat{min-width:0}
   .vd-stat dt{font-size:.8125rem; font-weight:500; color:var(--text-muted)}
   .vd-stat dd{margin:2px 0 0; font-size:1.0625rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums}
@@ -1789,7 +1789,7 @@
      small muted title, 6px / 16px padding and the same 40px minimum height */
   @media (max-width:63.99em){
     .db-content .card-head, .hero-wrap .hn-head, .hero-wrap #bestSection .card-head{ display:flex; align-items:center; min-height:40px; padding:6px 16px }
-    .hero-wrap .hn-head{ margin:0 -16px; border-bottom:1px solid color-mix(in srgb, var(--table-border) 50%, var(--surface)) }
+    .hero-wrap .hn-head{ margin:0 -16px; border-bottom:1px solid var(--line) }
     .db-content .card-head h2, .db-content .card-head h3, .hero-wrap .hn-head h2, .hero-wrap #bestSection .card-head h2{ font-size:.8125rem; font-weight:500; letter-spacing:0; color:var(--text-muted) }
   }
 
@@ -2002,7 +2002,22 @@
   :root[data-theme="dark"]{ --night-ink:#C3B2F6 }
   .vd-tag--night{ --tg:var(--night-ink) }
   .vd-tag--aware{ --tg:var(--icon-blue) }  /* Heads Up: fine now, weather on the way */
-  .hero-head .vd-tag--night::before, .m-actions .vd-tag--night::before, .vd-card .vd-tag--night::before{
+  :root{ --cozy-ink:#4D6F94 }   /* Get cozy: a cool, calm blue-gray, a gentler stay-inside */
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --cozy-ink:#8FB4DA } }
+  :root[data-theme="dark"]{ --cozy-ink:#8FB4DA }
+  .vd-tag--cozy{ --tg:var(--cozy-ink) }
+  /* the tag guide in the explainer dialog: each tag drawn as it looks on the page */
+  .td-list{ display:block; margin:8px 0 0 }
+  .td-row{ display:grid; grid-template-columns:132px minmax(0, 1fr); gap:0 12px; align-items:start; padding:12px 0 }   /* every row the same: the tag at the left, top aligned with its meaning */
+  .td-row + .td-row{ border-top:1px solid var(--line) }
+  .td-list dt, .td-list dd{ margin:0 }
+  .td-list dd{ padding-top:3px; line-height:1.4; color:var(--text) }
+  .td-chip{ display:inline-flex; align-items:center; padding:3px 10px; border-radius:4px; font-size:14px; font-weight:500; line-height:1.3; white-space:nowrap;
+    color:color-mix(in srgb, var(--tg) 78%, var(--text)); background:color-mix(in srgb, var(--tg) 15%, var(--surface)) }
+  .td-chip::before{ content:""; flex:0 0 auto; width:9px; height:9px; margin-right:6px; border-radius:50%; background:var(--tg) }
+  .td-now{ display:block; margin-top:2px; font-size:14px; font-weight:500; color:var(--text) }
+  .td-row--now .td-chip{ box-shadow:0 0 0 2px var(--surface), 0 0 0 3.5px var(--tg) }
+  .hero-head .vd-tag--night::before, .m-actions .vd-tag--night::before, .vd-card .vd-tag--night::before, .td-chip.vd-tag--night::before{
     width:12px; height:12px; margin-right:5px; border-radius:0; background:var(--tg);
     -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
   }
@@ -2018,7 +2033,7 @@
 
   /* Desktop 7-Day Wind Outlook: light gray dividers between the days */
   @media (min-width:78em){
-    #weekSection .dayrow ~ .dayrow{ box-shadow:-1px 0 0 var(--table-border) }  /* drawn outside each column, so no column gets narrower */
+    #weekSection .dayrow ~ .dayrow{ box-shadow:-1px 0 0 var(--line) }  /* drawn outside each column, so no column gets narrower */
     #weekSection .dayrow .dwind .dval{ flex-wrap:nowrap; column-gap:4px }  /* a two-digit speed and its arrow stay on one line, even in the last column */
     #weekSection .dayrow .dwind .dval b{ white-space:nowrap }
   }
@@ -2040,7 +2055,7 @@
 
   /* Analytics consent banner: a full-width bar along the bottom of the page with a drop shadow; text left and buttons right on wider screens */
   .consent{ position:fixed; z-index:70; left:0; right:0; bottom:0; padding:16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
-    background:var(--surface); color:var(--text); border-top:1px solid var(--table-border); box-shadow:0 -6px 20px rgba(16,28,38,.16), 0 -1px 3px rgba(16,28,38,.10) }
+    background:var(--surface); color:var(--text); border-top:1px solid var(--line); box-shadow:0 -6px 20px rgba(16,28,38,.16), 0 -1px 3px rgba(16,28,38,.10) }
   .consent[hidden]{ display:none }
   .consent-inner{ display:flex; align-items:center; gap:16px 32px; flex-wrap:wrap; max-width:1200px; margin:0 auto }
   .consent-copy{ flex:1 1 22rem; min-width:0 }
@@ -2078,17 +2093,17 @@
   }
   /* ---------- Best Times: one row per window. Closed: when, the written weather, its icon and (7-Day) a star or a crossed circle.
      Open: temperature, wind and a link to the hour-by-hour details ---------- */
-  .bt-body{padding:16px 16px 12px}   /* 16px sides, like the module header; the rows run edge to edge and keep that 16px inside */
+  .bt-body{padding:16px}   /* 16px sides, like the module header; the rows run edge to edge and keep that 16px inside */
   .bt-body .bw-empty{padding:0}
   .bt-wrap{margin-inline:-16px; overflow:hidden; background:var(--surface)}   /* no outer border: only the lines between rows; never scrolls sideways */
   .bt-wrap[hidden]{display:none}
   .bt-list{list-style:none; margin:0; padding:0}
   /* the lines between rows sit inside the module's 16px margin; the rows and the open wash still run edge to edge */
-  .bt-item + .bt-item::before{content:""; position:absolute; top:0; left:16px; right:16px; height:1px; background:var(--table-border)}
+  .bt-item + .bt-item::before{content:""; position:absolute; top:0; left:16px; right:16px; height:1px; background:var(--line)}
   .bt-item{position:relative; --bt-open-bg:color-mix(in srgb, var(--table-border) 18%, var(--surface))}
   .bt-row{
-    display:grid; grid-template-columns:22px 5.5rem minmax(0,1fr) 16px; grid-template-areas:"mark when wx end"; align-items:center; column-gap:12px;
-    width:100%; min-height:56px; box-sizing:border-box; padding:10px 16px; margin:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent;
+    display:grid; grid-template-columns:22px 5.5rem minmax(0,1fr) 20px; grid-template-areas:"mark when wx end"; align-items:center; column-gap:12px;
+    width:100%; height:var(--row-h); box-sizing:border-box; padding:8px 16px; margin:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent;
   }
   .bt-row[aria-expanded="true"]{background:var(--bt-open-bg)}   /* an open row and its details share one background */
   .bt-row:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px; border-radius:4px}
@@ -2110,15 +2125,15 @@
   .bt-mark{display:block; width:22px; height:22px; flex:0 0 auto}
   /* a quiet gray for both marks (the star is filled, the crossed circle is an outline, so the shape carries the meaning); kept at 3:1 or better against the surface in both themes */
   .bt-mark--good, .bt-mark--skip{color:color-mix(in srgb, var(--text-muted) 76%, var(--surface))}
-  .bt-chev{display:block; width:16px; height:16px; color:var(--text-muted); transition:transform .15s}
+  .bt-chev{display:block; width:20px; height:20px; color:var(--text-muted); transition:transform .15s}
   .bt-row[aria-expanded="true"] .bt-chev{transform:rotate(180deg)}
   @media (prefers-reduced-motion:reduce){ .bt-chev{transition:none} }
   /* The open part of a row: a small table of the data left out of the closed row */
   .bt-panel{position:relative; padding:0 16px; background:var(--bt-open-bg)}
-  .bt-panel::before{content:""; position:absolute; top:0; left:16px; right:16px; border-top:1px dashed var(--table-border)}
+  .bt-panel::before{content:""; position:absolute; top:0; left:16px; right:16px; border-top:1px dashed var(--line)}
   .bt-panel[hidden]{display:none}
   .bt-dl{margin:0}
-  .bt-r{display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; box-sizing:border-box; height:44px; border-bottom:1px solid var(--table-border); font-size:14px; line-height:1.35}   /* every row 44px, its text centered */
+  .bt-r{display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; box-sizing:border-box; height:var(--row-h); border-bottom:1px solid var(--line); font-size:14px; line-height:1.35}   /* closed rows and open rows share one height, the text centered */
   .bt-r:last-of-type{border-bottom:0}
   .bt-r dt{margin:0; color:var(--text-muted)}
   .bt-r dd{margin:0; display:flex; align-items:center; justify-content:flex-end; gap:8px; text-align:right; color:var(--text); font-weight:600; font-variant-numeric:tabular-nums}
@@ -2129,8 +2144,8 @@
   .bt-skel-medal{width:22px; height:22px; border-radius:50%; flex:0 0 auto}
   .bt-skel-big{display:block; height:1.75rem; width:55%}
   .bt-skelrow{padding:14px 16px}
-  @media (max-width:23.75em){   /* very narrow phones: the written weather sits under the day, with the full row to wrap in */
-    .bt-row{grid-template-columns:22px minmax(0,1fr) 16px; grid-template-areas:"mark when end" ". wx wx"; row-gap:6px}
+  @media (max-width:21.25em){   /* very narrow phones (340px and under): the written weather sits under the day, with the full row to wrap in */
+    .bt-row{height:auto; min-height:var(--row-h); grid-template-columns:22px minmax(0,1fr) 20px; grid-template-areas:"mark when end" ". wx wx"; row-gap:8px}
   }
   /* 7-Day / Top 3: two selection pills above the cards; the chosen one is bold and filled with no outline, the other is outlined in the fill colour.
      Each label reserves its bold width, so switching never shifts the layout. */
@@ -2142,7 +2157,7 @@
   .bt-pill[aria-checked="true"]{font-weight:700; background:var(--pill-fill); color:color-mix(in srgb, var(--text-muted) 45%, var(--text))}   /* filled, no visible outline; the unselected pill is outlined in this same colour */
   .bt-pill:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
   @media (min-width:64em){ .bt-pill[aria-checked="false"]:hover{color:var(--text)} }
-  .bt-foot{display:flex; align-items:center; margin:0 0 10px}
+  .bt-foot{display:flex; align-items:center; margin:0 0 12px}
   .bt-foot[hidden]{display:none}
   .bt-foot{flex-wrap:wrap; gap:4px 12px}
   .bt-using{display:inline-flex; align-items:center; gap:2px; margin-left:auto; font-size:14px; color:var(--text-muted)}
@@ -2252,7 +2267,7 @@
   @media (max-width:31.1875em){
     #todaySection .hscroll{ height:146px }
   }
-  #todaySection .htile.day-start{ border-left:1px solid color-mix(in srgb, var(--table-border) 70%, transparent) }
+  #todaySection .htile.day-start{ border-left:1px solid var(--line) }
   #todaySection .htile .hr{ flex:0 0 auto; font-size:.875rem; letter-spacing:0 }
   #todaySection .htile .barwrap{ flex:1 1 auto; min-height:0; width:100%; height:auto; position:relative; display:block }
   #todaySection .htile .bar{
@@ -2286,6 +2301,134 @@
   #todaySection .today-card--scrollable::after{ right:0; background:linear-gradient(to right, transparent, var(--surface)) }
   #todaySection .today-card--scrollable::before{ left:0; background:linear-gradient(to left, transparent, var(--surface)) }
   #todaySection .today-card--scrollable.can-scroll-right::after, #todaySection .today-card--scrollable.can-scroll-left::before{ opacity:1 }
+
+  /* ============ Design scale (unifies what the sections above set one by one) ============
+     Type weights: 400 text, 500 labels, values, tags, pills and links, 700 only for the headline, place name and alerts.
+     Chips (filter pills, the go/stay tag, wind tags): 4px corners like the cards, 14px / 500.
+     Icons: gray for plain interface icons; color only where it carries meaning (weather, wind range, air, ground).
+     Spacing: 4 / 8 / 12 / 16 / 24.  Rows: one height (--row-h) for Best Times rows, closed or open. */
+  :root{ --row-h:56px; --chip-r:4px; --chip-h:26px }
+
+  .bt-day, .bt-r dd, .bt-details, .bt-pill, .bt-pill[aria-checked="true"], .bt-pill::after, .vd-tag, button.vd-tag,
+  .bp-val, .bp-preview.is-warn, .bp-how-h, .vd-more, .vd-range, .vd-stat dd, .vd-chips li, .vd-wear strong, .vd-line b,
+  .ag-title, .ag-num, .weather-now .wtext b, .ground-now .gtext b, .htile .sp, .htile .spunit, .pollen-row-label, .pollen-row-val,
+  .dayrow .dname, .dayrow .dwind b, .dayrow .dshort .dval, .dayrow .temps .hi, .dval .wunit, .wk-table th, .wk-range,
+  .wd-h, .wd-table td:first-child, .disclaimers-modal-body strong, .hero-wrap .hero-now .hero-reading .val{ font-weight:500 !important }
+  .bt-pill::after{ font-weight:500 !important }
+
+  /* chips: one corner radius and height */
+  .bt-pill{ border-radius:var(--chip-r); min-height:var(--chip-h); padding:0 10px }   /* the same 10px side padding as the tags */
+  .bt-pill::before{ inset:-9px -4px }
+  .vd-tag, button.vd-tag{ border-radius:var(--chip-r); min-height:var(--chip-h); box-sizing:border-box }
+  .hero-band-pill{ border-radius:var(--chip-r) }
+
+  /* Current Conditions on desktop too: the weather, ground, rain-timing and air lines and the wind tag are 14px, like phones
+     (the big wind number and its unit stay the display size) */
+  @media (min-width:64em){
+    html body .hero-wrap .hero-now .weather-now, html body .hero-wrap .hero-now .weather-now *,
+    html body .hero-wrap .hero-now .ground-now, html body .hero-wrap .hero-now .ground-now *,
+    html body .hero-wrap .hero-now .air-now, html body .hero-wrap .hero-now .air-now *,
+    html body .hero-wrap .hero-now .hero-reading .hero-band-pill{ font-size:14px !important }
+  }
+  /* the day in Best Times is one step up (16px); everything in Current Conditions is 14px */
+  @media (max-width:63.99em){
+    html body #bestSection .bt-day{ font-size:1rem !important }
+  }
+
+
+  /* Air Quality & Pollen: six gauges in two columns of three rows at every size (nothing scrolls) */
+  #airCard .ag-wrap{ margin:0; overflow:visible }
+  #airCard .ag-wrap::before, #airCard .ag-wrap::after{ display:none }
+  #airCard .ag-grid{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px 12px; overflow:visible; padding:0; scroll-snap-type:none }
+  #airCard .ag{ flex:none; min-width:0 }
+  #airCard .ag-dial{ width:100%; max-width:240px }
+  #airCard .card-body{ padding:16px }
+
+  /* Desktop: all six gauges in one row, small and with a thick ring; the number sits in the hole and the word underneath */
+  .ag-w-s{ display:none }
+  @media (min-width:64em){
+    #airCard .ag-grid{ grid-template-columns:repeat(6, minmax(0, 1fr)); gap:0 4px; align-items:start }
+    #airCard .ag-dial{ max-width:none; margin-inline:auto }   /* each dial fills its column */
+    #airCard .card-body{ padding:16px 12px }
+    html body #airCard .ag-title{ font-size:12px !important; line-height:1.2; min-height:2.4em; display:flex; align-items:flex-end; justify-content:center; text-align:center }
+    #airCard .ag-dial{ margin-bottom:32px }   /* room for the word underneath, up to two lines */
+    #airCard .ag-center{ position:absolute; left:0; right:0; top:0; bottom:auto; width:auto; transform:none; aspect-ratio:2 / 1; display:block }
+    html body #airCard .ag-num{ position:absolute; left:50%; bottom:2%; transform:translateX(-50%); font-size:15px !important; line-height:1 }
+    html body #airCard .ag-word, html body #airCard .ag-word *{ font-size:12px !important; line-height:1.2 }
+    html body #airCard .ag-word{ position:absolute; top:100%; left:-2px; right:-2px; margin-top:6px; text-align:center }
+  }
+
+  /* every up / down caret is one size and one glyph: 20px, halfway between the Best Times chevron (16) and the alert caret (24) */
+  .bt-chev, .alert-toggle svg, .vd-toggle svg{ width:20px !important; height:20px !important }
+
+  /* text links: a dotted underline (More / Less, Reset, the report links, the footer links, links in the dialogs, Clear, the consent link) */
+  .vd-more, .bt-using button, .bt-details, .rp-link, .disclaimers-link, .footer-contact, .disclaimers-modal-body a, .sd-clear, .consent-text button{
+    text-decoration-line:underline; text-decoration-style:dotted; text-decoration-thickness:1.5px; text-underline-offset:3px }
+
+  /* the Customize sliders icon is 20% smaller (24px to 19.2px) */
+  .bw-actions .bt-customize svg, .bt-customize svg{ width:19.2px !important; height:19.2px !important }
+
+  /* Current Conditions on phones and tablets: every line is a 40px row (was 32px), its content centered, 16px from the card edges */
+  @media (max-width:63.99em){
+    .hero-wrap .hero-now .hero-reading, .hero-wrap .hero-now .weather-now, .hero-wrap .hero-now .ground-now, .hero-wrap .hero-now .air-now:not([hidden]){ min-height:40px; margin-top:0; align-items:center }
+    .hero-wrap .hero-now .hero-reading{ margin-top:8px }
+    .hero-wrap .hero-now{ padding-bottom:8px }
+  }
+
+
+  /* Local Weather Reports: pills like Best Times, then the report text from the local National Weather Service office */
+  #reportsSection .bt-body{ padding:16px }
+  .rp-source{ margin:0; font-size:14px; line-height:1.4; color:var(--text-muted) }
+  .rp-source:empty{ display:none }
+  .rp-panel{ margin:12px 0 0 }
+  .rp-item{ margin:0; padding:12px 0; font-size:14px; line-height:1.5; color:var(--text) }
+  .rp-item + .rp-item{ border-top:1px solid var(--line) }
+  .rp-item:first-child{ padding-top:0 }
+  .rp-list{ margin:0; padding:0; list-style:none }
+  .rp-h{ margin:12px 0 4px; font-size:14px; font-weight:500; color:var(--text-muted) }
+  .rp-h:first-child{ margin-top:0 }
+  .rp-p{ margin:0 0 8px; font-size:14px; line-height:1.5; color:var(--text) }
+  .rp-p:last-child{ margin-bottom:0 }
+  .rp-empty{ margin:0; font-size:14px; line-height:1.5; color:var(--text-muted) }
+  .rp-meta{ display:block; margin-top:2px; font-size:14px; color:var(--text-muted) }
+  .rp-link{ display:inline-block; margin-top:12px; font-size:14px; font-weight:500; color:var(--text); text-decoration:underline; text-underline-offset:3px }
+  .rp-link:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:2px }
+  .rp-link{ text-decoration-line:underline; text-decoration-style:dotted; text-decoration-thickness:1.5px; text-underline-offset:3px }
+  .rp-img{ display:block; width:100%; height:auto; border-radius:4px; background:var(--skel-a) }
+  .rp-skel{ display:block; height:.875rem; width:90%; margin:0 0 10px }
+  .rp-pills{ gap:6px }
+  .rp-pills .bt-pill{ padding:0 8px }   /* five pills share one row at 390px */
+  .rp-picbtn{ display:block; width:100%; padding:0; margin:0; border:0; background:none; cursor:zoom-in; border-radius:4px }
+  .rp-picbtn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+  .rp-img--big{ width:100%; height:auto }
+  .rp-cap{ margin:8px 0 0; color:var(--text-muted) }
+  .rp-sub{ margin:0 0 12px }
+  .rp-item--ic{ display:flex; gap:12px; align-items:flex-start }
+  .rp-item--ic .rp-ic{ flex:0 0 22px; margin-top:1px; color:var(--text-muted) }
+  .rp-item--num{ display:flex; gap:12px; align-items:flex-start }
+  .rp-num{ flex:0 0 24px; width:24px; height:24px; border-radius:50%; background:var(--text); color:var(--surface); font-size:13px; font-weight:500; line-height:24px; text-align:center }
+  .rp-map{ height:200px; margin:0 0 12px; border-radius:4px; overflow:hidden; background:#0a0a0a; position:relative; z-index:0 }
+  .rp-pin{ background:none; border:0 }
+  .rp-pin span{ display:block; width:24px; height:24px; border-radius:50%; background:#1F4E9C; border:2px solid #fff; box-sizing:border-box; color:#fff; font:500 12px/20px 'Nunito', sans-serif; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.35) }
+  .rp-ladder{ display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:4px; margin:0 0 8px; padding:0; list-style:none }
+  .rp-step{ position:relative; display:block; padding-bottom:22px }
+  .rp-bar{ display:block; height:8px; border-radius:4px; background:color-mix(in srgb, var(--rc) 28%, var(--surface)) }
+  .rp-lab{ display:none; position:absolute; top:20px; left:50%; transform:translateX(-50%); white-space:nowrap; font-size:12px; line-height:1.2; font-weight:500; color:var(--text) }
+  .rp-step.is-on .rp-bar{ height:14px; background:var(--rc); margin-top:-3px }
+  .rp-step.is-on .rp-lab{ display:block }
+  .rp-step:first-child .rp-lab{ left:0; transform:none }
+  .rp-step:last-child .rp-lab{ left:auto; right:0; transform:none }
+  .rp-strip{ display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:4px; margin:0 0 4px; padding:0; list-style:none }
+  .rp-day{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 0; border-radius:4px; background:color-mix(in srgb, var(--line) 35%, var(--surface)) }
+  .rp-day.has{ background:color-mix(in srgb, var(--cozy-ink) 14%, var(--surface)) }
+  .rp-dow{ font-size:12px; font-weight:500; color:var(--text-muted) }
+  .rp-dic{ display:flex; flex-wrap:wrap; justify-content:center; gap:2px; min-height:20px; color:var(--text) }
+  .rp-none{ color:var(--text-muted) }
+  @media (max-width:31.1875em){ #reportsSection{ order:5 } }
+
+  /* the map is a card like the others: no outline, a lighter timestamp */
+  .radar{ border:0 }
+  .radar .radar-tag{ letter-spacing:0; font-weight:500 }
 </style>
 </head>
 <body>
@@ -2547,7 +2690,7 @@
                 :aria-label="(w.dayLong || w.day) + (w.time ? ' ' + w.time : '') + '. ' + (w.none ? w.temp + '. Skipped' : w.summary) + '. ' + (open ? 'Hide' : 'Show') + ' details'">
                 <span class="bt-markbox">
                   <span class="bt-medal" x-show="w.medal" x-html="w.medal"></span>
-                  <svg class="bt-mark bt-mark--good" x-show="w.mark === 'good'" viewBox="0 0 24 24" role="img" aria-label="Good day"><path fill="currentColor" d="M12 2.8l2.75 5.78 6.3.84-4.6 4.35 1.15 6.26L12 17.1l-5.6 2.93 1.15-6.26-4.6-4.35 6.3-.84z"/></svg>
+                  <svg class="bt-mark bt-mark--good" x-show="w.mark === 'good'" viewBox="0 0 24 24" fill="none" role="img" aria-label="Good day"><circle cx="12" cy="12" r="9.5" fill="currentColor"/><polyline points="7.9,12.4 10.8,15.3 16.2,9.1" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   <svg class="bt-mark bt-mark--skip" x-show="w.mark === 'skip'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" role="img" aria-label="Skipped"><circle cx="12" cy="12" r="8.5"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
                 </span>
                 <span class="bt-whenbox">
@@ -2558,7 +2701,7 @@
                   <span class="bt-brief" x-text="w.none ? w.temp : (w.brief || w.summary)"></span>
                 </span>
                 <span class="bt-end">
-                  <svg class="bt-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg>
+                  <svg class="bt-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9"/></svg>
                 </span>
               </button>
               <div class="bt-panel" :id="'btp-' + w.key" :hidden="!open">
@@ -2650,6 +2793,25 @@
     </div>
   </section>
 
+  <section id="reportsSection" hidden aria-labelledby="rpTitle">
+    <div class="bw-card" id="reportsCard">
+      <div class="card-head"><h2 id="rpTitle">Local Weather Reports</h2></div>
+      <div class="bt-body rp-body">
+        <div class="bt-foot">
+          <div class="bt-pills rp-pills" id="rpPills" role="radiogroup" aria-label="Report">
+            <button type="button" class="bt-pill" role="radio" data-rp="notes" data-label="Notes" aria-checked="true" tabindex="0"><span>Notes</span></button>
+            <button type="button" class="bt-pill" role="radio" data-rp="outlook" data-label="Outlook" aria-checked="false" tabindex="-1"><span>Outlook</span></button>
+            <button type="button" class="bt-pill" role="radio" data-rp="nearby" data-label="Nearby" aria-checked="false" tabindex="-1"><span>Nearby</span></button>
+            <button type="button" class="bt-pill" role="radio" data-rp="story" data-label="Story" aria-checked="false" tabindex="-1"><span>Story</span></button>
+            <button type="button" class="bt-pill" role="radio" data-rp="maps" data-label="Maps" aria-checked="false" tabindex="-1"><span>Maps</span></button>
+          </div>
+        </div>
+        <p class="rp-source" id="rpSource"></p>
+        <div class="rp-panel" id="rpPanel" role="region" aria-live="polite" aria-label="Report text"></div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
   <footer>
@@ -2712,11 +2874,17 @@
         expanded or forecast radar there yet.
       </p>
       <p>
-        <strong>Air quality &amp; pollen.</strong> The Air Quality Index &amp; Fine particles (PM2.5) are sourced live from AirNow
+        <strong>Air quality &amp; pollen.</strong> The Air Quality Index, Fine particles (PM2.5) and Ozone are sourced live from AirNow
         (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>), EPA — coverage depends on the nearest
-        reporting monitor. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Pollutants gauge says Unavailable. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
+        reporting monitor. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Fine particles and Ozone gauges say no nearby data. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
         <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Pollen isn't available from any free public
         U.S. source, so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement.
+      </p>
+      <p id="discLocalReports" hidden>
+        <strong>Local weather reports.</strong> The Notes, Outlook, Nearby and Story tabs show text and pictures published by
+        your local <a href="https://www.weather.gov" target="_blank" rel="noopener">National Weather Service</a> forecast office
+        (forecast discussion, hazardous weather outlook, local storm reports and weather story), shown as published. Offices do
+        not post every product at every moment, so a tab may say nothing is available. These reports are not available in Canada.
       </p>
       <p>
         <strong>Places, maps &amp; sun times.</strong> Place search covers the U.S. and Canada and uses Open-Meteo's geocoding service (GeoNames data,
@@ -4093,7 +4261,7 @@
             '<div class="wtext"><b>' + fmtTemp(current.temperature) + '</b> · ' + ampText(current.shortForecast) +
               (outlook ? ' <span class="hazard-eta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' + outlook + '</span>' : '') + '</div>' +
           '</div>' +
-          (outlook ? '<div class="ground-now upcoming-now"><div class="gicon"><svg width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="16" fill="var(--cloud)"/><circle cx="24" cy="24" r="16" stroke="var(--cloud-2)" stroke-width="2.4"/><path d="M24 14v10.5l6.5 4" stroke="var(--icon-blue)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+          (outlook ? '<div class="ground-now upcoming-now"><div class="gicon"><svg width="24" height="24" viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="16" fill="var(--cloud)"/><circle cx="24" cy="24" r="16" stroke="var(--cloud-2)" stroke-width="2.4"/><path d="M24 14v10.5l6.5 4" stroke="var(--text-muted)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
             '<div class="gtext">' + outlook.replace(/^(\S+)/, '<b>$1</b>') + '</div></div>' : '') +
           '<div class="ground-now">' +
             '<div class="gicon">' + groundIcon(ground.key, 36) + '</div>' +
@@ -4427,16 +4595,18 @@
   ]; }
   var winDetail = null;
   function mk(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+  // ordered from the easiest day to the most serious
   var VD_TAG_MEANINGS = [
-    ['Get outside!', 'Conditions are good right now.'],
-    ['Okay for now', 'Conditions are fair right now, though not ideal.'],
-    ['Wait a bit', 'Conditions are rough right now, and a good window comes within about 12 hours.'],
-    ['Heads up', 'Fine right now, with weather on the way.'],
-    ['Stay inside', 'The next good window is more than 12 hours away.'],
-    ['Stay in all day', 'No good window in the days ahead.'],
-    ['Night time', 'It is dark out.'],
-    ['Use caution', 'There is an active weather alert for your area.'],
-    ['Take shelter', 'A tornado warning is in effect.']
+    ['Get outside!', 'green', 'Conditions are good right now.'],
+    ['Okay for now', 'yellow', 'Conditions are fair right now, though not ideal.'],
+    ['Night time', 'night', 'It is dark out.'],
+    ['Heads up', 'aware', 'Fine right now, with weather on the way.'],
+    ['Wait a bit', 'yellow', 'Conditions are rough right now, and a good window comes within about 12 hours.'],
+    ['Get cozy', 'cozy', 'A cool, wet or wintry stretch. Nothing urgent, just a better day to be indoors.'],
+    ['Stay inside', 'orange', 'The next good window is more than 12 hours away.'],
+    ['Use caution', 'orange', 'There is an active weather alert for your area.'],
+    ['Stay in all day', 'red', 'No good window in the days ahead.'],
+    ['Take shelter', 'red', 'A tornado warning is in effect.']
   ];
   var vdTagNow = '';
   function fillInfoModal(kind){
@@ -4459,14 +4629,22 @@
       var tb = mk('tbody');
       winDetail.hours.forEach(function(row){ var tr = mk('tr'); row.forEach(function(c){ tr.appendChild(mk('td', null, c)); }); tb.appendChild(tr); });
       table.appendChild(tb); wrap.appendChild(table); body.appendChild(wrap);
+    }else if(kind === 'image' && rpModalImg){
+      title.textContent = rpModalImg.title;
+      var big = document.createElement('img');
+      big.className = 'rp-img rp-img--big'; big.src = rpModalImg.src; big.alt = rpModalImg.alt;
+      body.appendChild(big);
     }else if(kind === 'tag'){
       title.textContent = 'What the tag means';
-      body.appendChild(mk('p', 'wk-intro', 'The tag is a quick read of whether now is a good time to head out. Here is what each one means.'));
-      var tdl = mk('dl', 'wd-list');
+      body.appendChild(mk('p', 'wk-intro', 'The tag is a quick read of whether now is a good time to head out. Here is what each one means, from the easiest days to the most serious.'));
+      var tdl = mk('dl', 'td-list');
       VD_TAG_MEANINGS.forEach(function(m){
-        var isNow = m[0] === vdTagNow;
-        tdl.appendChild(mk('dt', null, m[0] + (isNow ? ' (right now)' : '')));
-        tdl.appendChild(mk('dd', null, m[1]));
+        var row = mk('div', 'td-row' + (m[0] === vdTagNow ? ' td-row--now' : ''));
+        var dt = mk('dt'), chip = mk('span', 'td-chip vd-tag--' + m[1], m[0]);
+        dt.appendChild(chip);
+        var dd = mk('dd', null, m[2]);
+        if(m[0] === vdTagNow){ dd.appendChild(mk('span', 'td-now', 'Showing now')); }
+        row.appendChild(dt); row.appendChild(dd); tdl.appendChild(row);
       });
       body.appendChild(tdl);
     }else if(kind === 'wind'){
@@ -4703,7 +4881,7 @@
   document.getElementById('bestSection').addEventListener('keydown', function(e){
     var tab = e.target.closest && e.target.closest('.bt-pill');
     if(!tab || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
-    var tabs = [].slice.call(document.querySelectorAll('.bt-pill')), next = tabs[(tabs.indexOf(tab) + 1) % tabs.length];
+    var tabs = [].slice.call(document.querySelectorAll('#bestSection .bt-pill')), next = tabs[(tabs.indexOf(tab) + 1) % tabs.length];
     e.preventDefault(); next.click(); next.focus();
   });
   // 7-Day / Top 3: remembered on this device
@@ -5036,10 +5214,13 @@
     function toEntry(o){ return {aqi: aqiOf(o), catName: o.aqiCategoryName}; }
     var pm25Raw = data.filter(function(o){ return o.parameterName === 'PM2.5'; })
       .sort(function(a, b){ return aqiOf(b) - aqiOf(a); })[0];
+    var ozoneRaw = data.filter(function(o){ return /^(ozone|o3)$/i.test(o.parameterName); })
+      .sort(function(a, b){ return aqiOf(b) - aqiOf(a); })[0];
     var overallRaw = data.reduce(function(best, o){ return (!best || aqiOf(o) > aqiOf(best)) ? o : best; }, null);
     return {
       overall: overallRaw ? toEntry(overallRaw) : null,
-      pm25: pm25Raw ? toEntry(pm25Raw) : null
+      pm25: pm25Raw ? toEntry(pm25Raw) : null,
+      ozone: ozoneRaw ? toEntry(ozoneRaw) : null
     };
   }
 
@@ -5248,8 +5429,10 @@
   var AG_POLLEN_BANDS = [[0,20,'var(--aqi-good)'],[20,45,'var(--aqi-moderate)'],[45,70,'var(--aqi-usg)'],[70,100,'var(--aqi-unhealthy)']];
   var agUid = 0;
   function agPt(r, phi){ return (100 - r * Math.cos(phi)).toFixed(2) + ',' + (100 - r * Math.sin(phi)).toFixed(2); }
+  var agDesktopMq = window.matchMedia('(min-width:64em)'), agLastArgs = null;
+  if(agDesktopMq.addEventListener) agDesktopMq.addEventListener('change', function(){ if(agLastArgs) renderAirPollen.apply(null, agLastArgs); });   // the ring thickness depends on the layout
   function arcGauge(title, value, max, bands, word, ink, cls){
-    var Ro = 92, Ri = 66, has = typeof value === 'number' && !isNaN(value);
+    var Ro = 92, Ri = agDesktopMq.matches ? 60 : 76, has = typeof value === 'number' && !isNaN(value);   // phones: a thin ring with the word inside; desktop: smaller, thicker dials with the word below
     function band(a, b, color, op){
       var p1 = a / max * Math.PI, p2 = Math.min(b / max, 0.9995) * Math.PI;
       return '<path d="M' + agPt(Ro, p1) + ' A' + Ro + ' ' + Ro + ' 0 0 1 ' + agPt(Ro, p2) + ' L' + agPt(Ri, p2) + ' A' + Ri + ' ' + Ri + ' 0 0 0 ' + agPt(Ri, p1) +
@@ -5283,29 +5466,39 @@
     upd();
   }
 
+  // The Air Quality Index word: the two long EPA names have a shorter form for the small dials in the desktop row
+  function aqiWordHtml(label){
+    var short = {'Unhealthy for Sensitive Groups': ['Sensitive groups', 'Sensitive'], 'Very Unhealthy': ['Very Unhealthy', 'Very bad']}[label];
+    return short ? '<span class="ag-w-l">' + short[0] + '</span><span class="ag-w-s">' + short[1] + '</span>' : label;
+  }
+
   function renderAirPollen(lat, dateStr, airNow){
+    agLastArgs = [lat, dateStr, airNow];
     var pollen = pollenEstimate(lat, dateStr);
     var overallLv = categorySeverity(airNow && airNow.overall);
     var pm25Lv = categorySeverity(airNow && airNow.pm25);
-    // Pollutants (PM2.5) use their own wording, starting at Low, instead of the EPA category names
+    var ozoneLv = categorySeverity(airNow && airNow.ozone);
+    // The pollutant gauges (PM2.5, Ozone) use their own wording, starting at Low, instead of the EPA category names
     var PM25_WORDS = {'Good':'Low', 'Moderate':'Moderate', 'Unhealthy for Sensitive Groups':'High', 'Unhealthy':'Very High', 'Very Unhealthy':'Severe', 'Hazardous':'Extreme'};
     if(PM25_WORDS[pm25Lv.label]) pm25Lv.label = PM25_WORDS[pm25Lv.label];
+    if(PM25_WORDS[ozoneLv.label]) ozoneLv.label = PM25_WORDS[ozoneLv.label];
     var treeLv = pollenLevel(pollen.tree);
     var grassLv = pollenLevel(pollen.grass);
     var weedLv = pollenLevel(pollen.weed);
 
     var aqiG = airNow && airNow.overall ? {v: airNow.overall.aqi, lv: overallLv} : null;
     var pmG = airNow && airNow.pm25 ? {v: airNow.pm25.aqi, lv: pm25Lv} : null;
+    var ozG = airNow && airNow.ozone ? {v: airNow.ozone.aqi, lv: ozoneLv} : null;
     airCard.innerHTML =
       '<div class="card-head"><h2>Air Quality &amp; Pollen</h2></div>' +
-      '<div class="card-body"><div class="ag-wrap"><div class="ag-grid" tabindex="0" role="group" aria-label="Air quality and pollen gauges, scrolls sideways">' +
-        arcGauge('Air Quality Index', aqiG && aqiG.v, 300, AG_AQI_BANDS, aqiG ? aqiG.lv.label : 'Unavailable', aqiG ? aqiG.lv.ink : null, 'ag-main') +
-        arcGauge('Fine particles (PM2.5)', pmG && pmG.v, 300, AG_AQI_BANDS, pmG ? pmG.lv.label : 'Unavailable', pmG ? pmG.lv.ink : null) +
+      '<div class="card-body"><div class="ag-wrap"><div class="ag-grid" role="group" aria-label="Air quality and pollen gauges">' +
+        arcGauge('Air Quality Index', aqiG && aqiG.v, 300, AG_AQI_BANDS, aqiG ? aqiWordHtml(aqiG.lv.label) : 'Unavailable', aqiG ? aqiG.lv.ink : null, 'ag-main') +
+        arcGauge('Fine particles', pmG && pmG.v, 300, AG_AQI_BANDS, pmG ? pmG.lv.label : 'Unavailable', pmG ? pmG.lv.ink : null) +
+        arcGauge('Ozone', ozG && ozG.v, 300, AG_AQI_BANDS, ozG ? ozG.lv.label : 'Unavailable', ozG ? ozG.lv.ink : null) +
         arcGauge('Weeds', pollen.weed, 100, AG_POLLEN_BANDS, weedLv.label, weedLv.ink) +
         arcGauge('Trees', pollen.tree, 100, AG_POLLEN_BANDS, treeLv.label, treeLv.ink) +
         arcGauge('Grasses', pollen.grass, 100, AG_POLLEN_BANDS, grassLv.label, grassLv.ink) +
       '</div></div></div>';
-    agWireFade();
     airSection.hidden = false;
   }
 
@@ -5832,6 +6025,362 @@
     }catch(e){ return null; }
   }
 
+
+  /* ---------- Local Weather Reports ----------
+     Free National Weather Service / NOAA products for the forecast office that covers the place (no key):
+       Notes    the Forecast Discussion's "Key Messages", with an icon on each
+       Outlook  the Severe Storm Risk at the place (Storm Prediction Center), a day-by-day hazard strip and the Hazardous Weather Outlook
+       Nearby   Local Storm Reports within 100 miles, listed and plotted on a small map
+       Story    the office's Weather Story picture
+       Maps     NOAA rainfall forecast maps (24 hours, 5 days)
+     Not every office posts every product at every moment, so each tab has a plain "nothing right now" state.
+     Canada has no matching service, so the module is hidden there. */
+  var rpSection = document.getElementById('reportsSection'), rpPanel = document.getElementById('rpPanel'), rpSource = document.getElementById('rpSource');
+  var rpPills = document.getElementById('rpPills');
+  var RP = {cwa: null, lat: 0, lon: 0, cache: {}, tab: 'notes', run: 0, map: null, rain: '24h'};
+  /* The module is built and kept, but switched off for now: set this to true to bring it back (it is hidden and fetches nothing while false). */
+  var LOCAL_REPORTS = false;
+  var rpModalImg = null;
+  var RP_API = 'https://api.weather.gov/products/types/';
+  var RP_RAIN = {'24h': {src: 'https://www.wpc.ncep.noaa.gov/qpf/fill_94qwbg.gif', label: 'Next 24 hours'},
+                 '5d':  {src: 'https://www.wpc.ncep.noaa.gov/qpf/p120i.gif', label: 'Next 5 days'}};
+  var RP_ICONS = {
+    snow: '<path d="M12 3v18M5.2 7.5l13.6 9M18.8 7.5l-13.6 9"/>',
+    rain: '<path d="M12 3.5s6 6.2 6 10.5a6 6 0 0 1-12 0c0-4.300 6-10.500 6-10.500z"/>',
+    storm: '<path d="M13 2.500L5.500 13.500h5.500l-1 8 8-11.500h-5.500z"/>',
+    wind: '<path d="M3 8.500h10.500a2.800 2.800 0 1 0-2.800-2.800M3 12.500h15a3 3 0 1 1-3 3M3 16.500h7"/>',
+    cold: '<path d="M10 14.500V5a2 2 0 0 1 4 0v9.500a4 4 0 1 1-4 0z"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.600 5.600L7 7M17 17l1.400 1.400M18.400 5.600L17 7M7 17l-1.400 1.400"/>',
+    fog: '<path d="M4 8.500h16M6 12.500h12M4 16.500h16"/>',
+    fire: '<path d="M12 3c.8 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3.500 2-4.500 0 2 1 3 2 3 0-3-1-5.500 1-8.500z"/>',
+    info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.800v.2"/>'
+  };
+  function rpIcon(kind, size){
+    return '<svg class="rp-ic" width="' + (size || 22) + '" height="' + (size || 22) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + RP_ICONS[kind] + '</svg>';
+  }
+  // Which picture goes with a sentence
+  function rpKind(t){
+    t = t.toLowerCase();
+    if(/thunder|storm|hail|tornado|lightning|severe/.test(t)) return 'storm';
+    if(/snow|flurr|blizzard|wintry|winter|\bice\b|icy|sleet/.test(t)) return 'snow';
+    if(/freez|frost|cold|chill|below zero/.test(t)) return 'cold';
+    if(/rain|shower|drizzl|flood|precip|wet/.test(t)) return 'rain';
+    if(/\bwind|gust|breez/.test(t)) return 'wind';
+    if(/fire|red flag|smoke/.test(t)) return 'fire';
+    if(/fog|haze/.test(t)) return 'fog';
+    if(/sunny|clear|dry|warm|mild|hot|heat|pleasant|fair/.test(t)) return 'sun';
+    return 'info';
+  }
+  function rpEsc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function rpWhen(iso){
+    try{
+      var o = {weekday: 'short', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'};
+      if(locationTZ) o.timeZone = locationTZ;
+      return new Date(iso).toLocaleString('en-US', o);
+    }catch(e){ return ''; }
+  }
+  function rpAgo(ms){
+    var m = Math.max(1, Math.round((Date.now() - ms) / 60000));
+    if(m < 60) return m + ' min ago';
+    var h = Math.round(m / 60);
+    return h < 24 ? h + (h === 1 ? ' hour ago' : ' hours ago') : Math.round(h / 24) + ' days ago';
+  }
+  async function rpLatest(type, count){
+    var list = await fetchOptionalJson(RP_API + type + '/locations/' + RP.cwa);
+    var items = list && list['@graph'] ? list['@graph'].slice(0, count || 1) : [];
+    var out = [];
+    for(var i = 0; i < items.length; i++){
+      var one = await fetchOptionalJson('https://api.weather.gov/products/' + items[i].id);
+      if(one && one.productText) out.push({time: one.issuanceTime, text: one.productText});
+    }
+    return out;
+  }
+  function rpOffice(text){
+    var m = /National Weather Service ([^\n]+)/.exec(text);
+    return m ? 'National Weather Service ' + m[1].trim() : 'National Weather Service';
+  }
+  // The text under a ".HEADER..." line, up to the next one: bullets ("- ") or paragraphs, with wrapped lines joined
+  function rpFindSection(text, names){
+    var lines = text.replace(/\r/g, '').split('\n'), start = -1, inline = '';
+    for(var i = 0; i < lines.length && start < 0; i++){
+      var m = /^\.([A-Z][A-Z0-9 \/&-]*?)\.\.\.(.*)$/.exec(lines[i]);
+      if(m && names.indexOf(m[1].trim()) >= 0){ start = i + 1; inline = m[2].trim(); }
+    }
+    if(start < 0) return null;
+    var out = [], cur = null;
+    if(inline) out.push(inline);
+    for(var j = start; j < lines.length; j++){
+      var l = lines[j];
+      if(/^\.[A-Z][A-Z0-9 \/&-]*\.\.\./.test(l) || /^&&/.test(l) || /^\$\$/.test(l)) break;
+      if(/^\s*-\s+/.test(l)){ out.push(l.replace(/^\s*-\s+/, '').trim()); cur = out.length - 1; }
+      else if(!l.trim()){ cur = null; }
+      else if(cur !== null){ out[cur] += ' ' + l.trim(); }
+      else{ out.push(l.trim()); cur = out.length - 1; }
+    }
+    return out.filter(Boolean);
+  }
+  // The product text drops the space where a line wrapped ("above9,000", "intoThursday"): put it back
+  function rpTidy(t){
+    return t.replace(/\s+/g, ' ').replace(/([a-z])(\d)/g, '$1 $2').replace(/([a-z])([A-Z][a-z])/g, '$1 $2').replace(/(\d)\s*(?:-|–)\s*(\d)/g, '$1–$2').trim();
+  }
+  function rpBullets(text){
+    var secs = ['KEY MESSAGES', 'SYNOPSIS', 'UPDATE', 'SHORT TERM'], k = 0, found = null;
+    for(; k < secs.length && !(found && found.length); k++) found = rpFindSection(text, [secs[k]]);
+    if(!found || !found.length) return [];
+    return found.map(function(t){ return rpTidy(t); }).slice(0, 6);
+  }
+  function rpLink(url, label){ return '<a class="rp-link" href="' + url + '" target="_blank" rel="noopener">' + label + '</a>'; }
+  function rpMsg(text){ return '<p class="rp-empty">' + rpEsc(text) + '</p>'; }
+  function rpSkeleton(){ rpPanel.innerHTML = '<span class="skel rp-skel"></span><span class="skel rp-skel"></span><span class="skel rp-skel" style="width:70%"></span>'; }
+  // A picture that opens larger in the dialog
+  function rpPic(src, alt, title){
+    return '<button type="button" class="rp-picbtn" data-rp-src="' + rpEsc(src) + '" data-rp-title="' + rpEsc(title) + '" data-rp-alt="' + rpEsc(alt) + '" aria-haspopup="dialog" aria-label="' + rpEsc(title) + ', open larger">' +
+      '<img class="rp-img" alt="' + rpEsc(alt) + '" src="' + rpEsc(src) + '"></button>';
+  }
+
+  // ---- Severe storm risk at the place (Storm Prediction Center, Day 1 categories) ----
+  var RP_RISK = [
+    {k: 'NONE', t: 'None', c: '#9AA7B0'},
+    {k: 'TSTM', t: 'Storms', c: '#4F9D69'},
+    {k: 'MRGL', t: 'Marginal', c: '#B9A21E'},
+    {k: 'SLGT', t: 'Slight', c: '#D88A1E'},
+    {k: 'ENH', t: 'Enhanced', c: '#D5542B'},
+    {k: 'MDT', t: 'Moderate', c: '#B3262F'},
+    {k: 'HIGH', t: 'High', c: '#8E2C9E'}
+  ];
+  function rpInRing(pt, ring){
+    var x = pt[0], y = pt[1], inside = false;
+    for(var i = 0, j = ring.length - 1; i < ring.length; j = i++){
+      var xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+      if(((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+    }
+    return inside;
+  }
+  function rpInPoly(pt, rings){
+    if(!rpInRing(pt, rings[0])) return false;
+    for(var h = 1; h < rings.length; h++) if(rpInRing(pt, rings[h])) return false;
+    return true;
+  }
+  async function rpRisk(lat, lon){
+    var d = await fetchOptionalJson('https://www.spc.noaa.gov/products/outlook/day1otlk_cat.nolyr.geojson');
+    if(!d || !Array.isArray(d.features)) return null;
+    var best = 0, pt = [lon, lat];
+    d.features.forEach(function(f){
+      var label = f.properties && f.properties.LABEL, idx = RP_RISK.findIndex(function(r){ return r.k === label; });
+      if(idx <= best || !f.geometry) return;
+      var polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : [];
+      if(polys.some(function(rings){ return rpInPoly(pt, rings); })) best = idx;
+    });
+    return best;
+  }
+  function rpRiskHtml(level){
+    if(level == null) return '';
+    var steps = RP_RISK.map(function(r, i){
+      var on = i === level;
+      return '<li class="rp-step' + (on ? ' is-on' : '') + '" style="--rc:' + r.c + '"' + (on ? ' aria-current="true"' : '') + '><span class="rp-bar"></span><span class="rp-lab">' + r.t + '</span></li>';
+    }).join('');
+    var words = ['No severe storm risk area covers your location today.', 'Ordinary thunderstorms are possible at your location today; severe storms are not expected.',
+      'A marginal risk of severe storms covers your location today.', 'A slight risk of severe storms covers your location today.',
+      'An enhanced risk of severe storms covers your location today.', 'A moderate risk of severe storms covers your location today.', 'A high risk of severe storms covers your location today.'];
+    return '<h3 class="rp-h">Severe storm risk today</h3><ol class="rp-ladder" aria-label="Severe storm risk levels, from none to high">' + steps + '</ol><p class="rp-p">' + words[level] + '</p>';
+  }
+
+  // ---- Hazards by day, read from the outlook text ----
+  var RP_DAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  function rpHazards(t){
+    t = t.toLowerCase(); var out = [];
+    if(/thunder|storm|hail|tornado|lightning|severe/.test(t)) out.push('storm');
+    if(/snow|flurr|blizzard|winter|\bice\b|icy|sleet/.test(t)) out.push('snow');
+    if(/freez|frost|hard freeze|cold|wind chill/.test(t)) out.push('cold');
+    if(/heavy rain|flood|rain|shower/.test(t)) out.push('rain');
+    if(/\bwind|gust/.test(t)) out.push('wind');
+    if(/fire|red flag/.test(t)) out.push('fire');
+    if(/fog/.test(t)) out.push('fog');
+    return out;
+  }
+  function rpStripHtml(text){
+    // today first, then six more days, in the place's own time zone
+    var days = [], now = Date.now(), fmt;
+    try{ fmt = new Intl.DateTimeFormat('en-US', {weekday: 'long', timeZone: locationTZ || undefined}); }catch(e){ fmt = new Intl.DateTimeFormat('en-US', {weekday: 'long'}); }
+    for(var i = 0; i < 7; i++) days.push(fmt.format(new Date(now + i * 86400000)).toLowerCase());
+    var by = days.map(function(){ return {}; });
+    var one = rpFindSection(text, ['DAY ONE']), more = rpFindSection(text, ['DAYS TWO THROUGH SEVEN']);
+    var oneTxt = (one || []).join(' ');
+    if(oneTxt && !/no hazardous weather/i.test(oneTxt)) rpHazards(oneTxt).forEach(function(h){ by[0][h] = 1; });
+    var moreTxt = rpTidy((more || []).join(' ')), sents = moreTxt.split(/(?<=[.!?])\s+/);
+    sents.forEach(function(sn){
+      var hz = rpHazards(sn); if(!hz.length) return;
+      var re = /(sunday|monday|tuesday|wednesday|thursday|friday|saturday)(?:\s+(?:through|to|and)\s+(sunday|monday|tuesday|wednesday|thursday|friday|saturday))?/gi, m, found = false;
+      while((m = re.exec(sn))){
+        var a = days.indexOf(m[1].toLowerCase()), z = m[2] ? days.indexOf(m[2].toLowerCase()) : a;
+        if(a < 0) continue; if(z < a) z = a;
+        for(var d = a; d <= z; d++) hz.forEach(function(h){ by[d][h] = 1; });
+        found = true;
+      }
+      if(!found && /tonight|today/i.test(sn)) hz.forEach(function(h){ by[0][h] = 1; });
+    });
+    var any = by.some(function(o){ return Object.keys(o).length; });
+    var cols = days.map(function(dn, i){
+      var hz = Object.keys(by[i]);
+      return '<li class="rp-day' + (hz.length ? ' has' : '') + '"><span class="rp-dow">' + (i === 0 ? 'Today' : dn.charAt(0).toUpperCase() + dn.slice(1, 3)) + '</span>' +
+        '<span class="rp-dic">' + (hz.length ? hz.map(function(h){ return rpIcon(h, 20); }).join('') : '<span class="rp-none" aria-hidden="true">–</span>') + '</span>' +
+        '<span class="sr-only">' + (hz.length ? hz.join(', ') : 'nothing flagged') + '</span></li>';
+    }).join('');
+    return '<h3 class="rp-h">Hazards the forecasters call out</h3><ul class="rp-strip" aria-label="Hazards by day">' + cols + '</ul>' +
+      (any ? '' : '<p class="rp-p">No hazards are called out for the next seven days.</p>');
+  }
+
+  async function rpRender(tab){
+    var run = ++RP.run;
+    RP.tab = tab;
+    if(RP.map){ try{ RP.map.remove(); }catch(e){} RP.map = null; }
+    [].forEach.call(rpPills.querySelectorAll('.bt-pill'), function(b){
+      var on = b.getAttribute('data-rp') === tab;
+      b.setAttribute('aria-checked', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1;
+    });
+    var office = RP.cwa, html = '';
+    if(RP.cache[tab] === undefined && tab !== 'story' && tab !== 'maps'){ rpSkeleton(); rpSource.textContent = ''; }
+    if(tab === 'story'){
+      var img = 'https://www.weather.gov/images/' + office.toLowerCase() + '/wxstory/Tab1FileL.png';
+      rpSource.textContent = 'The weather story from your local National Weather Service office, a picture summary of the days ahead.';
+      rpPanel.innerHTML = rpPic(img, 'Weather story from the National Weather Service office ' + office + ': a picture summary of the weather for the days ahead', 'Weather story') +
+        rpLink('https://www.weather.gov/' + office.toLowerCase() + '/weatherstory', 'Open the weather story on weather.gov');
+      rpPanel.querySelector('img').addEventListener('error', function(){ if(run === RP.run) rpPanel.innerHTML = rpMsg('Your local office has not posted a weather story right now.'); });
+      return;
+    }
+    if(tab === 'maps'){
+      var cur = RP_RAIN[RP.rain];
+      rpSource.textContent = 'NOAA Weather Prediction Center · rainfall forecast for the United States';
+      rpPanel.innerHTML = '<div class="bt-pills rp-sub" role="radiogroup" aria-label="Rainfall map period">' +
+        Object.keys(RP_RAIN).map(function(k){ var on = k === RP.rain; return '<button type="button" class="bt-pill" role="radio" data-rpsub="' + k + '" data-label="' + RP_RAIN[k].label + '" aria-checked="' + on + '"><span>' + RP_RAIN[k].label + '</span></button>'; }).join('') + '</div>' +
+        rpPic(cur.src, 'Map of the United States showing the rainfall expected in the ' + cur.label.toLowerCase() + ', in inches, from NOAA', 'Rainfall forecast, ' + cur.label.toLowerCase()) +
+        '<p class="rp-p rp-cap">A national map: the darker the color, the more rain is expected. Find your area on it.</p>' +
+        rpLink('https://www.wpc.ncep.noaa.gov/qpf/qpf2.shtml', 'See more rainfall maps on noaa.gov');
+      return;
+    }
+    var data = RP.cache[tab];
+    if(data === undefined){
+      if(tab === 'notes') data = await rpLatest('AFD', 1);
+      else if(tab === 'outlook'){ data = {hwo: await rpLatest('HWO', 1), risk: await rpRisk(RP.lat, RP.lon)}; }
+      else data = await rpLatest('LSR', 5);
+      if(RP.cwa !== office) return;
+      RP.cache[tab] = data;
+    }
+    if(run !== RP.run) return;
+    var empty = tab === 'outlook' ? (!data.hwo.length && data.risk == null) : !data.length;
+    if(empty){
+      rpSource.textContent = '';
+      rpPanel.innerHTML = rpMsg(tab === 'notes' ? 'Your local office has not posted a forecast discussion right now.'
+        : tab === 'outlook' ? 'Your local office has not posted a hazardous weather outlook right now.'
+        : 'No storm reports from your local office right now.');
+      return;
+    }
+    if(tab === 'notes'){
+      var d = data[0], bullets = rpBullets(d.text);
+      rpSource.textContent = rpOffice(d.text) + ' · issued ' + rpWhen(d.time);
+      html = bullets.length
+        ? '<ul class="rp-list">' + bullets.map(function(b){ return '<li class="rp-item rp-item--ic">' + rpIcon(rpKind(b), 22) + '<span>' + rpEsc(b) + '</span></li>'; }).join('') + '</ul>'
+        : rpMsg('The forecasters’ key messages are in the full discussion.');
+      rpPanel.innerHTML = html + rpLink('https://forecast.weather.gov/product.php?site=' + office + '&issuedby=' + office + '&product=AFD', 'Read the full discussion on weather.gov');
+    }else if(tab === 'outlook'){
+      var o = data.hwo[0], parts = rpRiskHtml(data.risk);
+      if(o){
+        var one = rpFindSection(o.text, ['DAY ONE']), more = rpFindSection(o.text, ['DAYS TWO THROUGH SEVEN']);
+        var heads = {one: /^\.DAY ONE\.\.\.(.*)$/m.exec(o.text), more: /^\.DAYS TWO THROUGH SEVEN\.\.\.(.*)$/m.exec(o.text)};
+        var lab = function(m, fb){ return m && m[1].trim() ? m[1].trim().replace(/\.$/, '') : fb; };
+        var body = function(arr){ return arr && arr.length ? arr.map(function(t){ return '<p class="rp-p">' + rpEsc(rpTidy(t)) + '</p>'; }).join('') : ''; };
+        // the heading line often carries the label ("Today and tonight."), and then it must not be repeated as text
+        var textOnly = function(arr, m){ var lbl = m && m[1].trim(); return arr ? arr.filter(function(t){ return t !== lbl; }) : arr; };
+        rpSource.textContent = rpOffice(o.text) + ' · issued ' + rpWhen(o.time);
+        parts += rpStripHtml(o.text);
+        if(one) parts += '<h3 class="rp-h">' + rpEsc(lab(heads.one, 'Today and tonight')) + '</h3>' + (body(textOnly(one, heads.one)) || rpMsg('Nothing to report.'));
+        if(more) parts += '<h3 class="rp-h">' + rpEsc(lab(heads.more, 'The days ahead')) + '</h3>' + (body(textOnly(more, heads.more)) || rpMsg('Nothing to report.'));
+        parts += rpLink('https://forecast.weather.gov/product.php?site=' + office + '&issuedby=' + office + '&product=HWO', 'Read the full outlook on weather.gov');
+      }else{
+        rpSource.textContent = 'NOAA Storm Prediction Center · today';
+        parts += rpMsg('Your local office has not posted a hazardous weather outlook right now.');
+      }
+      rpPanel.innerHTML = parts;
+    }else{
+      // Local Storm Reports: "0630 PM  Tstm Wnd Gst  7 W Oscuro  33.50N 106.18W" then "10/11/2026  M63 MPH  Lincoln  NM  Mesonet"
+      var reps = [];
+      data.forEach(function(prod){
+        var ls = prod.text.split('\n');
+        for(var i = 0; i < ls.length - 1; i++){
+          var a = /^(\d{3,4} [AP]M)\s+(.{1,16}?)\s{2,}(.+?)\s+(\d+\.\d+)N\s+(\d+\.\d+)W\s*$/.exec(ls[i]);
+          var b = a && /^(\d\d\/\d\d\/\d{4})\s+(.{0,18}?)\s{2,}(.+?)\s{2,}([A-Z]{2})\s+(.+?)\s*$/.exec(ls[i + 1]);
+          if(!a || !b) continue;
+          var rla = parseFloat(a[4]), rlo = -parseFloat(a[5]);
+          var rem = [];
+          for(var r = i + 2; r < ls.length && ls[r].trim() && !/^\d{3,4} [AP]M/.test(ls[r]) && !/^&&|^\$\$/.test(ls[r]); r++) rem.push(ls[r].trim());
+          reps.push({when: prod.time, lat: rla, lon: rlo, km: kmBetween(RP.lat, RP.lon, rla, rlo), event: a[2].trim(), place: a[3].trim(), mag: b[2].trim(), county: b[3].trim(), st: b[4], src: b[5].trim(), rem: rem.join(' ')});
+        }
+      });
+      var near = reps.filter(function(x){ return x.km / 1.609 <= 100 && Date.now() - new Date(x.when).getTime() < 48 * 3600000; })
+        .sort(function(x, y){ return x.km - y.km; }).slice(0, 6);
+      var all = 'https://forecast.weather.gov/product.php?site=' + office + '&issuedby=' + office + '&product=LSR';
+      rpSource.textContent = rpOffice(data[0].text) + ' · storm reports within 100 miles, last 2 days';
+      if(!near.length){
+        rpPanel.innerHTML = rpMsg('No storm reports near you in the last two days.') + rpLink(all, 'See all local storm reports on weather.gov');
+      }else{
+        rpPanel.innerHTML = '<div class="rp-map" id="rpMap" role="img" aria-label="Map of the storm reports below, numbered, with your location marked"></div>' +
+          '<ol class="rp-list rp-reps">' + near.map(function(x, ix){
+            var mi = Math.round(x.km / 1.609);
+            return '<li class="rp-item rp-item--num"><span class="rp-num" aria-hidden="true">' + (ix + 1) + '</span><span><strong>' + rpEsc(x.event) +
+              (x.mag ? ', ' + rpEsc(x.mag.replace(/^[MEU](?=\d)\s*/, '').toLowerCase()) : '') + '</strong>' +
+              '<span class="rp-meta">' + rpEsc(x.place + ', ' + x.county + ' ' + x.st) + ' · ' + (mi <= 2 ? 'very close' : mi + ' miles away') + ' · ' + rpAgo(new Date(x.when).getTime()) + (x.src ? ' · ' + rpEsc(x.src) : '') + '</span>' +
+              (x.rem ? '<span class="rp-meta">' + rpEsc(x.rem) + '</span>' : '') + '</span></li>';
+          }).join('') + '</ol>' + rpLink(all, 'See all local storm reports on weather.gov');
+        // the small map: your place and each report, numbered like the list
+        try{
+          var el = document.getElementById('rpMap');
+          var map = L.map(el, {zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false, touchZoom: false, tap: false, fadeAnimation: false});
+          L.tileLayer(BASEMAP_TILE_URL, {maxZoom: 12, minZoom: 3, referrerPolicy: 'strict-origin-when-cross-origin'}).addTo(map);
+          var pts = [[RP.lat, RP.lon]];
+          near.forEach(function(x, ix){
+            pts.push([x.lat, x.lon]);
+            L.marker([x.lat, x.lon], {icon: L.divIcon({className: 'rp-pin', html: '<span>' + (ix + 1) + '</span>', iconSize: [24, 24], iconAnchor: [12, 12]}), interactive: false, keyboard: false}).addTo(map);
+          });
+          L.circleMarker([RP.lat, RP.lon], {radius: 7, color: '#fff', weight: 2.5, fillColor: '#E8472B', fillOpacity: 1, interactive: false}).addTo(map);
+          map.fitBounds(L.latLngBounds(pts), {padding: [28, 28], maxZoom: 10});
+          RP.map = map;
+          setTimeout(function(){ if(RP.map === map) map.invalidateSize(); }, 60);
+        }catch(e){ var mm = document.getElementById('rpMap'); if(mm) mm.remove(); }
+      }
+    }
+  }
+  rpPills.addEventListener('click', function(e){
+    var b = e.target.closest('.bt-pill');
+    if(!b || !RP.cwa || b.getAttribute('data-rp') === RP.tab) return;
+    rpRender(b.getAttribute('data-rp'));
+  });
+  rpPills.addEventListener('keydown', function(e){
+    var b = e.target.closest && e.target.closest('.bt-pill');
+    if(!b || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    var all = [].slice.call(rpPills.querySelectorAll('.bt-pill')), n = all[(all.indexOf(b) + (e.key === 'ArrowRight' ? 1 : all.length - 1)) % all.length];
+    e.preventDefault(); n.click(); n.focus();
+  });
+  // inside a tab: the rainfall map period, and any picture opening larger
+  rpPanel.addEventListener('click', function(e){
+    var sub = e.target.closest('[data-rpsub]');
+    if(sub){ RP.rain = sub.getAttribute('data-rpsub'); rpRender('maps'); return; }
+    var pic = e.target.closest('.rp-picbtn');
+    if(pic){
+      rpModalImg = {src: pic.getAttribute('data-rp-src'), alt: pic.getAttribute('data-rp-alt'), title: pic.getAttribute('data-rp-title')};
+      openInfoModal('image', pic);
+    }
+  });
+  // Called after a place loads: cwa is the NWS forecast office code ("BOU"), or null where the NWS has no coverage (Canada)
+  function rpLoad(lat, lon, cwa){
+    var dl = document.getElementById('discLocalReports'); if(dl) dl.hidden = !LOCAL_REPORTS;
+    if(!LOCAL_REPORTS || !cwa){ rpSection.hidden = true; RP.cwa = null; return; }
+    var sameOffice = RP.cwa === cwa;
+    RP.lat = lat; RP.lon = lon;
+    if(!sameOffice){ RP.cwa = cwa; RP.cache = {}; RP.tab = 'notes'; }
+    else RP.cache = {};   // a refresh: fetch the newest text again
+    rpSection.hidden = false;
+    rpRender(RP.tab);
+  }
 
   /* ---------- "Is it a good time to go outside?" verdict card ---------- */
   var vdCtx = null, lastAlerts = [], vdOpen = false;
@@ -6739,8 +7288,8 @@
     var m;
     if(/thunder/i.test(w)) return {now: 'Storms', then: 'clearing up'};
     if(/^(rain|showers)$/.test(w)) return {now: vdCap(w), then: 'clearing up'};
-    if(/^snow$/.test(w)) return {now: 'Snow', then: 'tapering off'};
-    if(/blizzard/i.test(w)) return {now: 'Blizzard', then: 'easing'};
+    if(/^snow$/.test(w)) return {now: 'Snow', then: 'clearing up'};
+    if(/blizzard/i.test(w)) return {now: 'Blizzard', then: 'clearing up'};
     if((m = /chance of (rain|snow|sleet|mixed precip|hail|precipitation)/.exec(w))) return {now: (m[1] === 'precipitation' ? 'Rain' : vdCap(m[1])) + ' likely', then: 'clearing up'};
     if(/sleet|freezing rain|mixed|wintry/i.test(w)) return {now: 'Wintry mix', then: 'clearing up'};
     if(/hail/i.test(w)) return {now: 'Hail', then: 'clearing up'};
@@ -6989,9 +7538,25 @@
     if(r.incoming) return {t:'Heads up', k:'aware'};
     if(r.state === 'yes') return {t:'Get outside!', k:'green'};
     if(r.state === 'maybe') return r.hs[0].i === 0 ? {t:'Okay for now', k:'yellow'} : {t:'Wait a bit', k:'yellow'};
-    // a good window within 12 hours means it's passing weather: wait it out. Further away, stay inside. None in 5 days: all day.
-    if(r.nextHs) return r.nextHs[0].i <= 12 ? {t:'Wait a bit', k:'yellow'} : {t:'Stay inside', k:'orange'};
+    // a good window within 12 hours means it's passing weather: wait it out
+    if(r.nextHs && r.nextHs[0].i <= 12) return {t:'Wait a bit', k:'yellow'};
+    // Get cozy: a cool, wet or wintry stretch with nothing hazardous in it, a gentler version of Stay inside
+    if(vdCozy(r)) return {t:'Get cozy', k:'cozy'};
+    // further away, stay inside. None in 5 days: all day.
+    if(r.nextHs) return {t:'Stay inside', k:'orange'};
     return {t:'Stay in all day', k:'red'};
+  }
+  // Only rain, showers, snow, cold or wet or icy ground are ruling the time out: no storms, strong wind, heat or smoke, and
+  // no dangerous alert. Everyday cold-weather notices (a freeze watch, a frost or winter weather advisory) are fine.
+  var VD_COZY_ALERTS = /^(freeze (watch|warning)|hard freeze (watch|warning)|frost advisory|winter weather advisory|wind chill (watch|advisory)|cold weather advisory|extreme cold watch|winter storm watch)/;
+  function vdCozy(r){
+    if(r.state !== 'no' || r.tornado || r.night) return false;
+    if(r.alert && !VD_COZY_ALERTS.test(r.alert)) return false;
+    var why = (r.why || []).filter(function(w){ return !/dark out/.test(w) && !(r.alert && /^an active /.test(w)); });
+    if(!why.length) return false;
+    return why.every(function(w){
+      return /^(rain|showers|snow)$|chance of (rain|showers|snow|sleet|mixed precip|precipitation)|^cold|snowy or icy|wet ground/.test(w);
+    });
   }
 
   if(vdBody) vdBody.addEventListener('click', function(e){
@@ -7451,9 +8016,10 @@
     // (so it never says "Unavailable" while the Current Conditions show an AQI). PM2.5 stays Unavailable: there is no AQI for it.
     if(!(airNowRes && airNowRes.overall) && bestInputs && bestInputs.aqi && typeof bestInputs.aqi[hourly[0].startTime.slice(0, 13)] === 'number'){
       var omAqi = bestInputs.aqi[hourly[0].startTime.slice(0, 13)];
-      airNowRes = {overall: {aqi: Math.round(omAqi), catName: aqiCatName(omAqi)}, pm25: airNowRes && airNowRes.pm25 || null};
+      airNowRes = {overall: {aqi: Math.round(omAqi), catName: aqiCatName(omAqi)}, pm25: airNowRes && airNowRes.pm25 || null, ozone: airNowRes && airNowRes.ozone || null};
     }
     renderAirPollen(lat, todayStr, airNowRes);
+    rpLoad(lat, lon, ca ? null : (props.cwa || props.gridId || null));
     setHeroAir(airNowRes, bestInputs, hourly);
 
     setStatus('');
