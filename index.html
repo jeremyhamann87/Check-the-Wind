@@ -2361,6 +2361,15 @@
   /* every up / down caret is one size and one glyph: 20px, halfway between the Best Times chevron (16) and the alert caret (24) */
   .bt-chev, .alert-toggle svg, .vd-toggle svg{ width:20px !important; height:20px !important }
 
+  /* Footer, quieter: a lighter and smaller windmill, tighter link rows and fainter dotted underlines */
+  footer .disclaimers-link, footer .footer-contact{ text-decoration-color:color-mix(in srgb, currentColor 45%, transparent) }
+  @media (max-width:63.99em){
+    .footer-bar{ min-height:98px }
+    .footer-mill{ width:96px; height:96px; color:var(--text-faint); opacity:.5 }
+    .disclaimers-link, .footer-contact{ min-height:30px; padding:4px 0 }
+    .disclaimers-link::after, .footer-contact::after{ inset:-7px 0 }   /* the tap area stays 44px tall */
+  }
+
   /* text links: a dotted underline (More / Less, Reset, the report links, the footer links, links in the dialogs, Clear, the consent link) */
   .vd-more, .bt-using button, .bt-details, .rp-link, .disclaimers-link, .footer-contact, .disclaimers-modal-body a, .sd-clear, .consent-text button{
     text-decoration-line:underline; text-decoration-style:dotted; text-decoration-thickness:1.5px; text-underline-offset:3px }
