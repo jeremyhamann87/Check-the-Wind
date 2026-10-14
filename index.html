@@ -964,6 +964,8 @@
     .disclaimers-link, .footer-contact{min-height:34px; padding:6px 0}
     .data-asof{padding:6px 0 0; line-height:1.3}
     .footer-copy{padding:6px 0 0; line-height:1.3}
+    /* "Data as of" moves to the top of the stacked footer, above the links */
+    .data-asof{order:-1; padding:0 0 6px}
   }
   /* Phones and tablets: the windmill sits at the right edge of the footer, level with the last line */
   @media (max-width:63.99em){
@@ -2237,13 +2239,15 @@
   #todaySection .htile .sp-row{ flex-direction:column; align-items:center; gap:2px }
   #todaySection .htile .sp{ font-size:.9375rem }
   #todaySection .skel-htile .barwrap{ display:flex; align-items:flex-end; justify-content:center }
-  /* the day tag: horizontal, at the right of the module header; it names the day of the hours now in view */
+  /* the day label: horizontal, at the right of the module header; it names the day of the hours now in view */
   #todaySection .card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px }
-  .day-tag{ flex:0 0 auto; padding:2px 8px; border-radius:4px; white-space:nowrap;
-    background:color-mix(in srgb, var(--text-muted) 12%, var(--surface)); color:var(--text-muted); font-size:14px; font-weight:500; line-height:1.4 }
+  .day-tag{ flex:0 0 auto; padding:2px 0; white-space:nowrap;
+    color:var(--text-muted); font-size:14px; font-weight:500; line-height:1.4 }   /* plain text: no tag background */
   .day-tag:empty{ display:none }
   /* at each new day's line: the date again, light and vertical, with no tag behind it */
   #todaySection .htile{ position:relative }
+  .day-line-label .dl-short{ display:none }
+  @media (max-width:31.1875em){ .day-line-label .dl-full{ display:none } .day-line-label .dl-short{ display:inline } }   /* phones: just the day name, e.g. Wed */
   .day-line-label{ position:absolute; left:3px; top:28px; writing-mode:vertical-rl; transform:rotate(180deg); white-space:nowrap;
     font-size:14px; font-weight:300; line-height:1; color:color-mix(in srgb, var(--text-muted) 60%, var(--surface)); pointer-events:none }
   /* edge fades, like Best Times and Air Quality: each side shows only while there is more to scroll to on that side */
@@ -4660,6 +4664,39 @@
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   });
 
+  // Sunrise and sunset for any date, worked out locally (NOAA / Almanac-for-Computers method, good to about a minute), for the
+  // days after the two the sun-times service gives us. Returns {sunrise: Date, sunset: Date} (either may be null near the poles).
+  function solarEvents(lat, lon, dateStr){
+    var rad = Math.PI / 180, p = dateStr.split('-'), y = +p[0], m = +p[1], d = +p[2];
+    function sinD(x){ return Math.sin(x * rad); } function cosD(x){ return Math.cos(x * rad); } function tanD(x){ return Math.tan(x * rad); }
+    function mod(a, n){ return ((a % n) + n) % n; }
+    var N1 = Math.floor(275 * m / 9), N2 = Math.floor((m + 9) / 12), N3 = 1 + Math.floor((y - 4 * Math.floor(y / 4) + 2) / 3);
+    var N = N1 - N2 * N3 + d - 30, lngHour = lon / 15, localNoon = Date.UTC(y, m - 1, d, 12) - lngHour * 3600000;
+    function one(rising){
+      var t = N + ((rising ? 6 : 18) - lngHour) / 24;
+      var M = 0.9856 * t - 3.289;
+      var L = mod(M + 1.916 * sinD(M) + 0.020 * sinD(2 * M) + 282.634, 360);
+      var RA = mod(Math.atan(0.91764 * tanD(L)) / rad, 360);
+      RA += Math.floor(L / 90) * 90 - Math.floor(RA / 90) * 90;
+      RA /= 15;
+      var sinDec = 0.39782 * sinD(L), cosDec = Math.cos(Math.asin(sinDec));
+      var cosH = (cosD(90.833) - sinDec * sinD(lat)) / (cosDec * cosD(lat));
+      if(cosH > 1 || cosH < -1) return null;
+      var H = (rising ? 360 - Math.acos(cosH) / rad : Math.acos(cosH) / rad) / 15;
+      var T = H + RA - 0.06571 * t - 6.622;
+      var UT = mod(T - lngHour, 24), base = Date.UTC(y, m - 1, d), want = localNoon + (rising ? -6 : 6) * 3600000, best = null;
+      [-86400000, 0, 86400000].forEach(function(k){ var c = base + UT * 3600000 + k; if(best === null || Math.abs(c - want) < Math.abs(best - want)) best = c; });
+      return new Date(best);
+    }
+    return {sunrise: one(true), sunset: one(false)};
+  }
+  function dateInPlace(ms){
+    var o = {year: 'numeric', month: '2-digit', day: '2-digit'};
+    if(locationTZ) o.timeZone = locationTZ;
+    var q = {}; new Intl.DateTimeFormat('en-CA', o).formatToParts(new Date(ms)).forEach(function(x){ q[x.type] = x.value; });
+    return q.year + '-' + q.month + '-' + q.day;
+  }
+
   function renderHourly(periods){
     var next10 = periods.slice(0, 168);   // seven days of hours; the chart scrolls sideways
     if(!next10.length){ todaySection.hidden = true; return; }
@@ -4667,6 +4704,19 @@
 
     var maxV = Math.max.apply(null, next10.map(function(p){ return parseWind(p.windSpeed).high; }).concat([10]));
     var firstDay = localDate(next10[0].startTime), prevDay = null;
+    // Sunrise and sunset columns for every day in view: the service's times for the days it gave, computed ones for the rest
+    var stripSun = sunEvents.slice(), haveSun = {};
+    stripSun.forEach(function(e){ haveSun[dateInPlace(e.time.getTime()) + e.type] = 1; });
+    if(lastLoad && typeof lastLoad.lat === 'number'){
+      var seenDays = {};
+      next10.forEach(function(p){ seenDays[localDate(p.startTime)] = 1; });
+      Object.keys(seenDays).forEach(function(d){
+        if(haveSun[d + 'sunrise'] && haveSun[d + 'sunset']) return;
+        var ev = solarEvents(lastLoad.lat, lastLoad.lon, d);
+        if(ev.sunrise && !haveSun[d + 'sunrise']) stripSun.push({type: 'sunrise', time: ev.sunrise});
+        if(ev.sunset && !haveSun[d + 'sunset']) stripSun.push({type: 'sunset', time: ev.sunset});
+      });
+    }
     // "Today, Oct 13" / "Wed, Oct 14": what the day tag at the left of the chart says for each date
     function dayLabel(dateStr){
       var md = new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
@@ -4689,7 +4739,7 @@
       var dateStr = localDate(p.startTime), starts = prevDay !== null && dateStr !== prevDay;
       prevDay = dateStr;
       return '<div class="htile' + (starts ? ' day-start' : '') + '" role="listitem" data-day="' + dateStr + '" data-daylabel="' + dayLabel(dateStr) + '">' +
-        (starts ? '<span class="day-line-label" aria-hidden="true">' + dayLabel(dateStr) + '</span>' : '') +
+        (starts ? '<span class="day-line-label" aria-hidden="true"><span class="dl-full">' + dayLabel(dateStr) + '</span><span class="dl-short">' + fmtDow(dateStr) + '</span></span>' : '') +
         '<div class="hr">' + labelText + '</div>' +
         '<div class="barwrap" style="--k:' + (pct / 100).toFixed(3) + '">' +
           '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
@@ -4710,7 +4760,7 @@
     next10.forEach(function(p){
       tiles.push(tileHtml(p, fmtHour(p.startTime), weatherIcon(p.shortForecast, p.isDaytime, 28), p.shortForecast || 'Forecast unavailable'));
       var start = new Date(p.startTime).getTime();
-      sunEvents.forEach(function(evt){
+      stripSun.forEach(function(evt){
         var t = evt.time.getTime();
         if(t < start || t >= start + HOUR_MS) return;
         var label = sunTimeLabel(evt);
@@ -4781,11 +4831,13 @@
       pts.push([x, y]);
     });
     var pathD = smoothPath(pts);
+    // phones get a finer line and smaller dots
+    var phone = window.matchMedia('(max-width:31.1875em)').matches, lw = phone ? 1.2 : 2, dr = phone ? 1.6 : 2.5, dash = phone ? '4 4' : '5 4';
     var dots = pts.map(function(p){
-      return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="2.5" fill="var(--trend-line)"/>';
+      return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + dr + '" fill="var(--trend-line)"/>';
     }).join('');
     var svg = '<svg class="trend-line" width="' + totalW + '" height="' + totalH + '" viewBox="0 0 ' + totalW + ' ' + totalH + '">' +
-      '<path d="' + pathD + '" fill="none" stroke="var(--trend-line)" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<path d="' + pathD + '" fill="none" stroke="var(--trend-line)" stroke-width="' + lw + '" stroke-dasharray="' + dash + '" stroke-linejoin="round" stroke-linecap="round"/>' +
       dots +
     '</svg>';
     hourlyStrip.insertAdjacentHTML('beforeend', svg);
@@ -6170,11 +6222,12 @@
     function troubleIn(win){
       var a = vdAgg(win), issues = [];
       if(a.pop >= 40){
+        // a chance that was already stated (in the sentence before) is not stated again; only a higher one is news
         var pc = basePop == null ? 'there is ' + aOrAn(a.pop) + ' ' + a.pop + '% chance of ' + a.popType + ' around ' + a.popAt
           : a.pop > basePop ? a.popType + ' chances increase to ' + a.pop + '% at ' + a.popAt
-          : a.popType + ' chances stay near ' + a.pop + '% at ' + a.popAt;
-        issues.push(pc);
-        issues.pc = {pop: a.pop, text: pc};
+          : '';
+        if(pc){ issues.push(pc); issues.pc = {pop: a.pop, text: pc}; }
+        else issues.implicit = true;
       }
       if(win.some(function(h){ return /freezing|ice|icy|sleet/i.test(h.fc) || (h.why || []).some(function(w){ return /snowy or icy/.test(w); }); })) issues.push('roads may be icy');
       if(win.some(function(h){ return /fog/i.test(h.fc); })) issues.push('fog is likely');
@@ -6190,7 +6243,7 @@
     }else{ evening = true; segs.push({label: 'the evening', win: windowOf(h0, h0 + 2)}); }
     segs = segs.filter(function(sg){ return sg.win.length; });
     if(!segs.length) return '';
-    var bad = segs.filter(function(sg){ sg.issues = troubleIn(sg.win); return sg.issues.length; });
+    var bad = segs.filter(function(sg){ sg.issues = troubleIn(sg.win); return sg.issues.length || sg.issues.implicit; });
     if(bad.length){
       var issues = [], top = null;
       bad.forEach(function(sg){
@@ -6200,7 +6253,7 @@
       });
       if(top) issues.unshift(top.text);   // one precipitation clause: the strongest chance
       var names = vdList(bad.map(function(sg){ return sg.label; })), cause = vdList(issues.slice(0, 2));
-      return 'Allow extra time for ' + names + '; ' + cause + '.';
+      return 'Allow extra time for ' + names + (cause ? '; ' + cause : '') + '.';
     }
     if(troubleOnly) return '';
     var all = []; segs.forEach(function(sg){ all = all.concat(sg.win); });
@@ -6284,6 +6337,14 @@
     if(cont) return lead + ', ' + cont + '.';
     if(start) return lead + ' around ' + st.n + ' ' + st.ap + '.';
     return lead + '.';
+  }
+  // The reasons as the hero text lists them: a bare "rain" / "snow" is dropped when the same type is already there as "N% chance of rain"
+  function vdWhyClean(why){
+    var types = {};
+    (why || []).forEach(function(w){ var m = /chance of (rain|snow|sleet|mixed precip|hail)/.exec(w); if(m) types[m[1]] = 1; });
+    return (why || []).filter(function(w){
+      return !((w === 'rain' || w === 'showers') && types.rain) && !(w === 'snow' && types.snow);
+    });
   }
   function vdProseCore(r, c, actList){
     var out = [], seed = vdSeed(c), tw = vdTimeWord(c, r);
@@ -6423,7 +6484,7 @@
       var aft2 = vdAfter(r, c); if(aft2) out.push(r.incoming ? 'Heads up: ' + vdLc(aft2) : aft2);
     }else if(r.state === 'maybe'){
       var sp2 = vdSpan(r.hs, c);
-      var nowWhy = r.why && r.why.length ? tw + ', ' + vdList(r.why.slice(0, 2).map(vdNowClause)) + ', so hang tight' : 'Hang tight';
+      var nowWhy = r.why && r.why.length ? tw + ', ' + vdList(vdWhyClean(r.why).slice(0, 2).map(vdNowClause)) + ', so hang tight' : 'Hang tight';
       out.push(nowWhy + (caVoice ? ', eh: ' : ': ') + sp2.day + ' ' + sp2.phrase + ' looks like a lovely time to get outside.');
       var hcM = vdHeroConditions(r.agg);
       out.push('Then it will be ' + vdLc(hcM.main));
@@ -6439,9 +6500,12 @@
         var gong = r.why.length >= 2 || c.hrs[0].mph >= 25;
         out.push(caVoice
           ? vdPick(gong ? [tw + ' is a bit of a gong show out there', 'Bit of a gong show outside right now'] : ['There’s a bit of a weather kerfuffle going on right now', 'Even the Mounties would sit this one out', tw + ' is a cozy-inside kind of moment'], seed, 1) + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.'
-          : tw + ' is a cozy-inside kind of moment' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2)) : '') + '.');
+          : tw + ' is a cozy-inside kind of moment' + (r.why.length ? ': ' + vdList(vdWhyClean(r.why).slice(0, 2)) : '') + '.');
       }
-      if(wkDay && !r.alert){ var ws3 = vdWorkSentence(c, seed, true, null); if(ws3) out.push(ws3); }
+      if(wkDay && !r.alert){
+        var said = 0; (r.why || []).forEach(function(w){ var m = /(\d+)% chance/.exec(w); if(m) said = Math.max(said, +m[1]); });
+        var ws3 = vdWorkSentence(c, seed, true, said || null); if(ws3) out.push(ws3);
+      }
       if(r.nextHs){ var sp3 = vdSpan(r.nextHs, c); out.push('Your next best window to get outside is ' + sp3.day + ' ' + sp3.phrase + (r.alert ? '.' : ', so it’s worth the wait.')); }
       else if(vdBigCity() && !r.alert) out.push('There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a museum, a show or a long dinner out.');
       else out.push(caVoice && !r.alert ? vdPick(['There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a movie and a double-double from Tim Hortons.', 'There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a movie and pancakes with real maple syrup.'], seed, 6) : 'There’s no good outdoor activity window in the next ' + bestPrefs.days + ' days, so it’s a fine time for a movie and a snack.');
@@ -6557,22 +6621,22 @@
     if(d === 'tomorrow') return 'Better tomorrow around ' + clock + '.';
     return 'Better ' + fmtDowLong(localDate(h.iso)) + ' around ' + clock + '.';
   }
-  // What is holding things back right now and what it turns into: {now: 'Rain', then: 'moving on'}
+  // What is holding things back right now and what it turns into: {now: 'Rain', then: 'clearing up'}
   function vdNowThen(w){
     var m;
-    if(/thunder/i.test(w)) return {now: 'Storms', then: 'moving on'};
-    if(/^(rain|showers)$/.test(w)) return {now: vdCap(w), then: 'moving on'};
+    if(/thunder/i.test(w)) return {now: 'Storms', then: 'clearing up'};
+    if(/^(rain|showers)$/.test(w)) return {now: vdCap(w), then: 'clearing up'};
     if(/^snow$/.test(w)) return {now: 'Snow', then: 'tapering off'};
     if(/blizzard/i.test(w)) return {now: 'Blizzard', then: 'easing'};
-    if((m = /chance of (rain|snow|sleet|mixed precip|hail|precipitation)/.exec(w))) return {now: (m[1] === 'precipitation' ? 'Rain' : vdCap(m[1])) + ' likely', then: 'clearing'};
-    if(/sleet|freezing rain|mixed|wintry/i.test(w)) return {now: 'Wintry mix', then: 'moving on'};
-    if(/hail/i.test(w)) return {now: 'Hail', then: 'moving on'};
+    if((m = /chance of (rain|snow|sleet|mixed precip|hail|precipitation)/.exec(w))) return {now: (m[1] === 'precipitation' ? 'Rain' : vdCap(m[1])) + ' likely', then: 'clearing up'};
+    if(/sleet|freezing rain|mixed|wintry/i.test(w)) return {now: 'Wintry mix', then: 'clearing up'};
+    if(/hail/i.test(w)) return {now: 'Hail', then: 'clearing up'};
     if(/fog/i.test(w)) return {now: 'Fog', then: 'lifting'};
     if(/^wind/.test(w)) return {now: 'Windy', then: 'easing'};
     if(/snowy or icy/.test(w)) return {now: 'Icy ground', then: 'thawing'};
     if(/^cold/.test(w)) return {now: 'Cold', then: 'warming up'};
     if(/^hot/.test(w)) return {now: 'Hot', then: 'cooling off'};
-    if(/air quality/.test(w)) return {now: 'Poor air', then: 'clearing'};
+    if(/air quality/.test(w)) return {now: 'Poor air', then: 'clearing up'};
     if(/humid/.test(w)) return {now: 'Humid', then: 'easing'};
     if(/wet ground/.test(w)) return {now: 'Wet ground', then: 'drying out'};
     return {now: vdWhyShort(w), then: 'improving'};
@@ -6584,7 +6648,7 @@
     if(d === 'tomorrow') return 'tomorrow around ' + clock;
     return fmtDowLong(localDate(h.iso)) + ' around ' + clock;
   }
-  // "Rain now, moving on by 5 PM." / "Windy now, easing tomorrow around 7 AM." / "Rain now, with no break for 7 days."
+  // "Rain now, clearing up by 5 PM." / "Windy now, easing tomorrow around 7 AM." / "Rain now, with no break for 7 days."
   function vdChange(r, c, h){
     var reasons = (r.why || []).filter(function(w){ return !/dark out/.test(w); });
     if(!reasons.length){
