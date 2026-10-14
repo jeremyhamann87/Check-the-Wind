@@ -154,7 +154,7 @@
   }
 
   *{box-sizing:border-box}
-  /* ---- Mobile search: a search button + the location in the header; the search itself lives in a 3/4-screen drawer ---- */
+  /* ---- Mobile search: a search button + the location in the header; the search itself lives in a 90%-screen drawer ---- */
   .m-loc-row{display:none}
   .search-drawer, .sd-sheet, .sd-body{display:contents}
   .sd-backdrop, .sd-head, .sd-card{display:none}
@@ -177,7 +177,7 @@
     .sd-backdrop{display:block; position:absolute; inset:0; background:rgba(10,16,22,.6); opacity:0; transition:opacity .28s}
     .search-drawer.open .sd-backdrop{opacity:1}
     .sd-sheet{
-      display:flex; flex-direction:column; position:absolute; left:0; right:0; bottom:0; height:75vh; height:75dvh;
+      display:flex; flex-direction:column; position:absolute; left:0; right:0; bottom:0; height:90vh; height:90dvh;
       background:color-mix(in srgb, var(--text) 5%, var(--surface)); border-radius:12px 12px 0 0; box-shadow:0 -8px 32px rgba(10,16,22,.28); overflow:hidden;
       transform:translateY(100%); transition:transform .3s cubic-bezier(.2,.8,.2,1);
     }
@@ -420,6 +420,9 @@
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0 16px; flex:0 0 auto;
     padding:12px 24px; border-top:1px solid var(--table-border); background:var(--surface);
   }
+  .bp-preview{margin:0 0 8px; flex:1 1 100%; font-size:1rem; font-weight:400; color:var(--text)}
+  .bp-preview:empty{display:none}
+  .bp-preview.is-warn{font-weight:600}
   .bp-status{margin:0; font-size:1rem; font-weight:300; color:var(--text-muted); flex:1 1 12rem}
   .bp-status:not(:empty){margin-bottom:8px}
   .bp-actions{display:flex; gap:12px; flex-wrap:wrap; margin-left:auto}
@@ -589,7 +592,7 @@
   .hero-reading .unit-wrap{display:inline-flex; align-items:center; gap:10px; padding-bottom:10px}
   .hero-reading .unit-top{display:inline-flex; flex-direction:column; align-items:flex-start; gap:4px}
   .hero-reading .unit{font-size:1.3125rem; color:var(--text-muted)}
-  .hero-band-pill{display:inline-block; font-size:1rem; font-weight:600; padding:2px 10px; border-radius:4px; white-space:nowrap}
+  .hero-band-pill{display:inline-block; font-size:1rem; font-weight:500; padding:2px 10px; border-radius:4px; white-space:nowrap}
   .date-row-pill{display:none}
   .weather-now{margin-top:18px; display:flex; align-items:center; gap:12px}
   .weather-now .wicon{flex:0 0 2.5rem; width:2.5rem; display:flex; justify-content:flex-start}
@@ -966,6 +969,8 @@
     .footer-copy{padding:6px 0 0; line-height:1.3}
     /* "Data as of" moves to the top of the stacked footer, above the links */
     .data-asof{order:-1; padding:0 0 6px}
+    .disclaimers-link, .footer-contact{position:relative}
+    .disclaimers-link::after, .footer-contact::after{content:""; position:absolute; inset:-5px 0}   /* 44px-tall tap areas */
   }
   /* Phones and tablets: the windmill sits at the right edge of the footer, level with the last line */
   @media (max-width:63.99em){
@@ -1666,6 +1671,9 @@
   .vd-hl{display:block}
   .vd-head{display:block; font-size:1.1875rem; font-weight:700; line-height:1.3; color:var(--text)}
   .vd-detail{display:block; margin-top:6px; font-size:1rem; line-height:1.5; color:var(--text-muted)}
+  .vd-more{position:relative; display:inline; padding:0; border:0; background:transparent; color:var(--text); font:inherit; font-weight:600; text-decoration:underline; text-underline-offset:3px; cursor:pointer}
+  .vd-more::after{content:""; position:absolute; inset:-14px -10px}   /* a 44px tap area around the inline link */
+  .vd-more:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:4px}
   .vd-line{margin:8px 0 0}
   .vd-line:first-child{margin-top:0}
   .vd-line b{margin-right:6px; font-weight:700; color:var(--text)}
@@ -1968,6 +1976,18 @@
     #todaySection .hscroll{ padding-bottom:0 }  /* the chart fits, so no extra gap for a scrollbar */
   }
 
+  /* Phones: Hourly Forecast comes before Best Times. The Wind Today / Air Quality row dissolves into the page's column so the modules can be ordered */
+  @media (max-width:31.1875em){
+    #mainContent{ display:flex; flex-direction:column }
+    #mainContent > *{ min-width:0 }
+    .db-content .wind-row{ display:contents }
+    .db-content .wind-row > section{ margin-top:16px }
+    #todaySection{ order:1 }
+    #bestSection{ order:2 }
+    #airSection{ order:3 }
+    #weekSection{ order:4; display:none !important }   /* 7-Day Wind Outlook is hidden on phones for now (the markup stays; remove this line to bring it back) */
+  }
+
   /* Desktop: 24px between modules */
   @media (min-width:64em){
     .db-content section{ margin-top:24px }
@@ -2056,71 +2076,78 @@
   @media (min-width:64em){
     .hero-wrap .hero-now .air-now:not([hidden]){ display:flex }
   }
-  /* ---------- Best Times: ranked cards (a medal, the window, then the same icon + value rows as Current Conditions) ---------- */
-  .bw-card{contain:paint}  /* keeps the sideways-scrolling card row from widening the page on phones */
+  /* ---------- Best Times: one row per window. Closed: when, the written weather, its icon and (7-Day) a star or a crossed circle.
+     Open: temperature, wind and a link to the hour-by-hour details ---------- */
   .bt-body{padding:12px}
   .bt-body .bw-empty{padding:0}
-  /* The cards are as wide as the longest header needs (day and time never stack), and every card matches that width.
-     The row scrolls sideways when the cards don't all fit. */
-  .bt-wrap{position:relative; margin-inline:-12px; overflow:hidden}
+  .bt-wrap{border:1px solid var(--table-border); border-radius:4px; overflow:hidden; background:var(--surface)}   /* never scrolls sideways */
   .bt-wrap[hidden]{display:none}
-  /* Edge fades, like Wind Today and the air gauges: each shows only on a side that has more to scroll to */
-  .bt-wrap::before, .bt-wrap::after{content:""; position:absolute; top:0; bottom:0; width:56px; pointer-events:none; opacity:0; transition:opacity .15s; z-index:1}
-  .bt-wrap::after{right:0; background:linear-gradient(to right, transparent, var(--surface))}
-  .bt-wrap::before{left:0; background:linear-gradient(to left, transparent, var(--surface))}
-  .bt-wrap.can-scroll-right::after, .bt-wrap.can-scroll-left::before{opacity:1}
-  .bt-cards{overflow-x:auto; padding:0 12px 2px; scroll-padding-inline:12px; scroll-snap-type:x proximity; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin}
-  @media (max-width:63.99em){ .bt-cards{scrollbar-width:none} .bt-cards::-webkit-scrollbar{display:none} }  /* touch screens swipe; desktop keeps a thin scrollbar so the hidden cards are discoverable */
-  .bt-track{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:10px; width:max-content}
-  /* Phones: every Best Times card is the same width in both views (7-Day and Top 3), whatever the day or time says */
-  @media (max-width:31.1875em){ .bt-track{grid-auto-columns:236px} }
-  .bt-card{
-    display:flex; flex-direction:column; min-width:0; overflow:hidden; scroll-snap-align:start;
-    background:var(--surface); border:1px solid var(--table-border); border-radius:4px;
+  .bt-list{list-style:none; margin:0; padding:0}
+  .bt-item + .bt-item{border-top:1px solid var(--table-border)}
+  .bt-item{position:relative; --bt-open-bg:color-mix(in srgb, var(--table-border) 18%, var(--surface))}
+  .bt-row{
+    display:grid; grid-template-columns:22px 5.5rem minmax(0,1fr) 16px; grid-template-areas:"mark when wx end"; align-items:center; column-gap:12px;
+    width:100%; min-height:56px; box-sizing:border-box; padding:10px 12px; margin:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent;
   }
-  .bt-card--1{--bt-tone:var(--medal-gold)}
-  .bt-card--2{--bt-tone:var(--medal-silver)}
-  .bt-card--3{--bt-tone:var(--medal-bronze)}
-  .bt-head{display:flex; align-items:center; gap:10px; box-sizing:border-box; min-height:40px; padding:6px 12px; border-bottom:1px solid var(--table-border);
-    background:color-mix(in srgb, var(--bt-tone, var(--table-border)) 16%, var(--surface))}  /* 40px, like every module header; a light wash of the medal color */
+  .bt-row[aria-expanded="true"]{background:var(--bt-open-bg)}   /* an open row and its details share one background */
+  .bt-row:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px; border-radius:4px}
+  @media (min-width:64em){ .bt-row:hover{background:color-mix(in srgb, var(--text) 3%, var(--surface))} }
+  .bt-whenbox{grid-area:when; display:flex; align-items:center; min-width:0}
   .bt-medal{display:flex; flex:0 0 auto}
   .bt-medal svg{display:block; width:22px; height:22px}
-  .bt-when{display:flex; flex-flow:row nowrap; align-items:baseline; gap:0 8px; min-width:0; line-height:1.3; white-space:nowrap}
-  .bt-day{font-size:14px; font-weight:600; color:var(--text)}
-  .bt-time{font-size:14px; font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap}
-  .bt-main{display:flex; flex-direction:column; gap:4px; padding:10px 12px 12px; flex:1 1 auto; contain:inline-size}  /* the sentence wraps to the header's width instead of widening the card */
-  .bt-tline{display:flex; align-items:center; justify-content:space-between; gap:8px}
-  .bt-temp{font-size:14px; font-weight:600; line-height:1.3; color:var(--text); font-variant-numeric:tabular-nums}
-  .bt-right{display:flex; align-items:center; gap:8px; flex:0 0 auto}
-  .bt-wtag{padding:1px 8px; font-size:14px; font-weight:500; line-height:1.35}   /* the same band tag the 7-Day Outlook uses */
+  .bt-when{display:flex; flex-direction:column; align-items:flex-start; min-width:0; line-height:1.3}
+  .bt-day{font-size:14px; font-weight:600; color:var(--text); white-space:nowrap}
+  .bt-time{font-size:14px; font-weight:400; color:color-mix(in srgb, var(--text-muted) 55%, var(--text)); font-variant-numeric:tabular-nums}   /* “No good window” may wrap to two lines */
+  .bt-wx{grid-area:wx; display:flex; align-items:center; gap:8px; min-width:0}
+  .bt-markbox{grid-area:mark; display:flex; align-items:center; justify-content:center; width:22px}
   .bt-sky{display:flex; flex:0 0 auto}
   .bt-sky svg{display:block; width:30px; height:30px}
-  .bt-sum{margin:0; font-size:14px; line-height:1.35; color:var(--text)}
-  /* The whole card is the tap target: the header button's ::after stretches over the card */
-  .bt-card{position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent}
-  .bt-open{
-    flex:1 1 auto; min-width:0; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:0; margin:0;
-    border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer;
-  }
-  .bt-open::after{content:''; position:absolute; inset:0}
-  .bt-open:focus-visible{outline:none}
-  .bt-open:focus-visible::after{outline:2px solid var(--focus-ring); outline-offset:-2px; border-radius:4px}
-  .bt-open svg{width:16px; height:16px; flex:0 0 auto; color:var(--text-muted)}
-  @media (min-width:64em){ .bt-card:hover{background:color-mix(in srgb, var(--text) 3%, var(--surface))} }
-  .bt-card--skel{min-height:7rem; min-width:15rem}
+  .bt-brief{margin:0; font-size:14px; line-height:1.35; color:var(--text)}
+  .bt-item--none .bt-brief{color:var(--text-muted)}
+  .bt-row[aria-expanded="false"] .bt-brief{display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden}   /* closed: two lines at most; open: the whole sentence */
+  .bt-end{grid-area:end; display:flex; align-items:center; justify-content:flex-end}
+  .bt-mark{display:block; width:22px; height:22px; flex:0 0 auto}
+  /* a quiet gray for both marks (the star is filled, the crossed circle is an outline, so the shape carries the meaning); kept at 3:1 or better against the surface in both themes */
+  .bt-mark--good, .bt-mark--skip{color:color-mix(in srgb, var(--text-muted) 76%, var(--surface))}
+  .bt-chev{display:block; width:16px; height:16px; color:var(--text-muted); transition:transform .15s}
+  .bt-row[aria-expanded="true"] .bt-chev{transform:rotate(180deg)}
+  @media (prefers-reduced-motion:reduce){ .bt-chev{transition:none} }
+  /* The open part of a row: a small table of the data left out of the closed row */
+  .bt-panel{padding:0 12px; border-top:1px dashed var(--table-border); background:var(--bt-open-bg)}
+  .bt-panel[hidden]{display:none}
+  .bt-dl{margin:0}
+  .bt-r{display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; box-sizing:border-box; height:44px; border-bottom:1px solid var(--table-border); font-size:14px; line-height:1.35}   /* every row 44px, its text centered */
+  .bt-r:last-of-type{border-bottom:0}
+  .bt-r dt{margin:0; color:var(--text-muted)}
+  .bt-r dd{margin:0; display:flex; align-items:center; justify-content:flex-end; gap:8px; text-align:right; color:var(--text); font-weight:600; font-variant-numeric:tabular-nums}
+  .bt-r dd .bt-windtxt{font-weight:400; color:var(--text-muted)}
+  .bt-details{display:inline-flex; align-items:center; min-height:44px; padding:0; margin:0 0 4px; border:0; background:none; color:var(--text); font:inherit; font-size:14px; font-weight:600; text-decoration:underline; text-underline-offset:3px; cursor:pointer}
+  .bt-details:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:4px}
+  .bt-wtag{padding:1px 8px; font-size:14px; font-weight:500; line-height:1.35}   /* the same band tag the 7-Day Outlook uses */
   .bt-skel-medal{width:22px; height:22px; border-radius:50%; flex:0 0 auto}
   .bt-skel-big{display:block; height:1.75rem; width:55%}
+  .bt-skelrow{padding:14px 12px}
+  @media (max-width:23.75em){   /* very narrow phones: the written weather sits under the day, with the full row to wrap in */
+    .bt-row{grid-template-columns:22px minmax(0,1fr) 16px; grid-template-areas:"mark when end" ". wx wx"; row-gap:6px}
+  }
   /* 7-Day / Top 3: two selection pills above the cards; the chosen one is bold and filled with no outline, the other is outlined in the fill colour.
      Each label reserves its bold width, so switching never shifts the layout. */
   .bt-pills{display:flex; flex-wrap:wrap; gap:8px; --pill-fill:color-mix(in srgb, var(--text-muted) 12%, var(--surface))}
-  .bt-pill{display:inline-grid; min-height:32px; padding:0 14px; border:1px solid var(--pill-fill); border-radius:16px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:400; line-height:1; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; align-items:center; justify-items:center; text-align:center}
+  .bt-pill::before{content:""; position:absolute; inset:-6px -4px}   /* a 44px-tall tap area */
+  .bt-pill{position:relative; display:inline-grid; min-height:32px; padding:0 14px; border:1px solid var(--pill-fill); border-radius:16px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:400; line-height:1; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; align-items:center; justify-items:center; text-align:center}
   .bt-pill > span, .bt-pill::after{grid-area:1 / 1}   /* the label and its hidden bold twin share one cell, so the text sits dead centre */
   .bt-pill::after{content:attr(data-label); height:0; overflow:hidden; visibility:hidden; font-weight:700}
-  .bt-pill[aria-checked="true"]{font-weight:700; background:var(--pill-fill)}   /* filled, no visible outline; the unselected pill is outlined in this same colour */
+  .bt-pill[aria-checked="true"]{font-weight:700; background:var(--pill-fill); color:color-mix(in srgb, var(--text-muted) 45%, var(--text))}   /* filled, no visible outline; the unselected pill is outlined in this same colour */
   .bt-pill:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
   @media (min-width:64em){ .bt-pill[aria-checked="false"]:hover{color:var(--text)} }
   .bt-foot{display:flex; align-items:center; margin:0 0 10px}
   .bt-foot[hidden]{display:none}
+  .bt-foot{flex-wrap:wrap; gap:4px 12px}
+  .bt-using{display:inline-flex; align-items:center; gap:2px; margin-left:auto; font-size:14px; color:var(--text-muted)}
+  .bt-using[hidden]{display:none}
+  .bt-using button{position:relative; min-height:32px; padding:0 4px; border:0; background:transparent; color:var(--text); font:inherit; text-decoration:underline; text-underline-offset:2px; cursor:pointer}
+  .bt-using button::after{content:""; position:absolute; inset:-6px -4px}
+  .bt-using button:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:4px}
   /* Customize: a tertiary button at the top right of the module header: icon and label only, no fill, no outline */
   .bt-customize{display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:0 8px 0 0; border:0; border-radius:4px; background:transparent; color:var(--text-muted); font:inherit; font-size:14px; font-weight:500; line-height:1; cursor:pointer; text-decoration:none; -webkit-tap-highlight-color:transparent}
   .bt-customize svg{width:24px; height:24px; flex:0 0 auto}
@@ -2129,18 +2156,14 @@
   .bw-actions .bt-customize{position:relative; min-height:28px; padding-right:0}   /* keeps the header at the standard height; the tap area is still 44px tall */
   .bw-actions .bt-customize::after{content:""; position:absolute; inset:-8px -8px -8px -4px}
   .bw-actions{margin-right:0}
-  .bt-card--none{cursor:default}
-  .bt-card--none .bt-sum{color:var(--text-muted)}
-  .bt-static{flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:8px}
   .bt-few{margin:10px 4px 0; font-size:14px; line-height:1.4; font-weight:300; color:var(--text-muted)}
   .bt-skel-line{display:block; height:.875rem; width:80%}
   .bt-when .bt-skel-line:first-child{width:5rem}
   /* Phones and touch tablets: buttons never show a hover, press or selected outline or highlight (keyboards on desktop keep their focus ring) */
   @media (max-width:31.1875em), (hover:none) and (pointer:coarse){
-    button, .bt-open, .bt-card{ -webkit-tap-highlight-color:transparent }
+    button, .bt-row, .bt-item{ -webkit-tap-highlight-color:transparent }
     button:focus, button:focus-visible, button:active,
-    .bt-open:focus, .bt-open:focus-visible{ outline:none !important }
-    .bt-open:focus-visible::after, .bt-open:focus::after{ outline:none !important }
+    .bt-row:focus, .bt-row:focus-visible{ outline:none !important }
   }
 
   /* The page never zooms: no zoom when a field is focused, none on a double tap */
@@ -2156,12 +2179,12 @@
     .db-layout > .hero-wrap .hero-head .m-loc-name{ font-size:14px !important }  /* beats the place name's own !important 1rem */
   }
 
-  /* Phones: the dialogs (Disclaimers, Wind Key, Best Times info and details, Customize) are 3/4-height bottom drawers, like the search.
+  /* Phones: the dialogs (Disclaimers, Wind Key, Best Times info and details, Customize) are 90%-height bottom drawers, like the search.
      The expanded radar stays full screen. */
   @media (max-width:31.1875em){
     .modal-drawer{align-items:flex-end; padding:0}
     .modal-drawer .radar-modal-panel{
-      width:100%; height:75vh; height:75dvh; max-height:75dvh; border-radius:12px 12px 0 0; box-shadow:0 -8px 32px rgba(10,16,22,.28);
+      width:100%; height:90vh; height:90dvh; max-height:90dvh; border-radius:12px 12px 0 0; box-shadow:0 -8px 32px rgba(10,16,22,.28);
     }
     .modal-drawer .disclaimers-modal-body{flex:1 1 auto; min-height:0; overscroll-behavior:contain}
     .modal-drawer .bp-panel .bp-body{flex:1 1 auto; min-height:0; overflow-y:auto}
@@ -2178,6 +2201,9 @@
 
   /* The go/stay tag is 14px at every size and in every place it appears (its weight is the original 700) */
   .vd-tag{ font-size:14px !important }
+  button.vd-tag{ position:relative; border:0; font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent }
+  button.vd-tag::after{ content:""; position:absolute; inset:-8px -6px }   /* a 44px tap area around the small tag */
+  button.vd-tag:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
 
   /* Phones and tablets: the bar already carries the town name and tag (and the windmill), so the row under it is not repeated */
   @media (max-width:63.99em){
@@ -2196,7 +2222,7 @@
   @media (max-width:63.99em){
     .htile .hwx, .htile .hwx svg, .htile .hdir svg,
     .m-search-btn svg, .sd-close svg, .sd-save svg, .sd-star svg, form.search .loc-places .lp-star svg, .geo-btn svg,
-    .bw-actions svg, .bw-custom-btn svg, .radar-expand-btn svg, .bt-open svg, .bt-medal svg, .bt-sky svg,
+    .bw-actions svg, .bw-custom-btn svg, .radar-expand-btn svg, .bt-medal svg, .bt-sky svg,
     #weekSection .dayrow .dval svg, .alert-icon svg, .alert-toggle svg, .info-btn svg, .disclaimers-modal-close svg, .vd-toggle svg, .pk-dir svg, .pk-sky svg{
       width:24px !important; height:24px !important;
     }
@@ -2249,7 +2275,7 @@
   .day-line-label .dl-short{ display:none }
   @media (max-width:31.1875em){ .day-line-label .dl-full{ display:none } .day-line-label .dl-short{ display:inline } }   /* phones: just the day name, e.g. Wed */
   .day-line-label{ position:absolute; left:3px; top:28px; writing-mode:vertical-rl; transform:rotate(180deg); white-space:nowrap;
-    font-size:14px; font-weight:300; line-height:1; color:color-mix(in srgb, var(--text-muted) 60%, var(--surface)); pointer-events:none }
+    font-size:14px; font-weight:300; line-height:1; color:color-mix(in srgb, var(--text-muted) 88%, var(--surface)); pointer-events:none }
   /* edge fades, like Best Times and Air Quality: each side shows only while there is more to scroll to on that side */
   #todaySection .today-card--scrollable{ position:relative; overflow:hidden }
   #todaySection .today-card--scrollable::before, #todaySection .today-card--scrollable::after{
@@ -2279,7 +2305,7 @@
     <div class="m-loc-row">
       <span class="m-loc-name" id="mLocName"></span>
       <span class="m-actions">
-        <span class="vd-tag" id="vdTagBar" hidden></span>
+        <button type="button" class="vd-tag" id="vdTagBar" data-info="tag" hidden></button>
         <button type="button" class="m-search-btn anim-toggle m-pause" id="mPause" aria-label="Pause animations"></button>
         <button type="button" class="m-search-btn" id="mSearchBtn" aria-haspopup="dialog" aria-expanded="false" aria-label="Search for a location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></button>
       </span>
@@ -2382,7 +2408,7 @@
   </header>
 
 <div class="hero-wrap" role="region" aria-label="Current conditions">
-  <div class="hero-head" id="heroHead"><span class="vd-tag" id="vdTag" hidden></span></div>
+  <div class="hero-head" id="heroHead"><button type="button" class="vd-tag" id="vdTag" data-info="tag" hidden></button></div>
   <section id="heroSection">
     <div class="section-head">
       <h2>Current Conditions</h2>
@@ -2484,7 +2510,7 @@
 
   <section id="verdictSection" class="vd-section" hidden aria-labelledby="vdTitle">
     <div class="vd-card">
-      <div class="card-head"><h2 id="vdTitle">Is it a Good Time to Go Outside?</h2><span class="vd-tag" id="vdTagCard" hidden></span></div>
+      <div class="card-head"><h2 id="vdTitle">Is it a Good Time to Go Outside?</h2><button type="button" class="vd-tag" id="vdTagCard" data-info="tag" hidden></button></div>
       <div class="vd-body" id="vdBody"></div>
     </div>
   </section>
@@ -2503,43 +2529,47 @@
         <div class="bt-pills" role="radiogroup" aria-label="Best Times view">
           <button type="button" class="bt-pill" role="radio" data-mode="7day" data-label="7-Day" :aria-checked="$store.best.mode === '7day' ? 'true' : 'false'" :tabindex="$store.best.mode === '7day' ? 0 : -1"><span>7-Day</span></button>
           <button type="button" class="bt-pill" role="radio" data-mode="top3" data-label="Top 3" :aria-checked="$store.best.mode === 'top3' ? 'true' : 'false'" :tabindex="$store.best.mode === 'top3' ? 0 : -1"><span>Top 3</span></button>
+          <button type="button" class="bt-pill" role="radio" data-mode="weekend" data-label="Weekend" :aria-checked="$store.best.mode === 'weekend' ? 'true' : 'false'" :tabindex="$store.best.mode === 'weekend' ? 0 : -1"><span>Weekend</span></button>
+          <button type="button" class="bt-pill" role="radio" data-mode="skips" data-label="Skips" :aria-checked="$store.best.mode === 'skips' ? 'true' : 'false'" :tabindex="$store.best.mode === 'skips' ? 0 : -1"><span>Skips</span></button>
         </div>
+        <p class="bt-using" id="btUsing" hidden><span>Using your settings ·</span><button type="button" id="btUsingReset">Reset</button></p>
       </div>
-      <div class="bt-wrap" :hidden="$store.best.state === 'empty'">
-      <div class="bt-cards">
-        <div class="bt-track" role="list" :aria-label="$store.best.mode === 'top3' ? 'Best times to get outside, ranked' : 'Best time to get outside on each of the next seven days'">
-        <template x-for="n in ($store.best.state === 'loading' ? 3 : 0)" :key="n">
-          <div class="bt-card bt-card--skel" aria-hidden="true">
-            <div class="bt-head"><span class="skel bt-skel-medal"></span><span class="bt-when"><span class="skel bt-skel-line"></span><span class="skel bt-skel-line"></span></span></div>
-            <div class="bt-main"><span class="skel bt-skel-big"></span><span class="skel bt-skel-line"></span><span class="skel bt-skel-line"></span></div>
-          </div>
-        </template>
-        <template x-for="(w, idx) in $store.best.windows" :key="w.key">
-          <article class="bt-card" role="listitem" :class="w.cls" :data-when="w.when">
-            <div class="bt-head" :style="w.tone ? '--bt-tone:' + w.tone : ''">
-              <div class="bt-medal" x-show="w.medal" x-html="w.medal"></div>
-              <template x-if="!w.none">
-                <button type="button" class="bt-open" :data-win="idx" aria-haspopup="dialog" :aria-label="w.day + ' ' + w.time + ', show details'">
+      <div class="bt-wrap" :hidden="$store.best.state === 'empty' || ($store.best.state === 'ready' && !$store.best.windows.length)">
+        <ul class="bt-list" :aria-label="$store.best.mode === 'top3' ? 'Best times to get outside, ranked' : $store.best.mode === 'weekend' ? 'Best times to get outside this weekend' : $store.best.mode === 'skips' ? 'Days with no good window in the next seven days' : 'Best time to get outside on each of the next seven days'">
+          <template x-for="n in ($store.best.state === 'loading' ? 3 : 0)" :key="n">
+            <li class="bt-item" aria-hidden="true"><div class="bt-skelrow"><span class="skel bt-skel-big"></span></div></li>
+          </template>
+          <template x-for="(w, idx) in $store.best.windows" :key="w.key">
+            <li class="bt-item" :class="w.none ? 'bt-item--none' : ''" x-data="{open: false}" :data-when="w.when">
+              <button type="button" class="bt-row" :aria-expanded="open ? 'true' : 'false'" :aria-controls="'btp-' + w.key" @click="open = !open"
+                :aria-label="(w.dayLong || w.day) + (w.time ? ' ' + w.time : '') + '. ' + (w.none ? w.temp + '. Skipped' : w.summary) + '. ' + (open ? 'Hide' : 'Show') + ' details'">
+                <span class="bt-markbox">
+                  <span class="bt-medal" x-show="w.medal" x-html="w.medal"></span>
+                  <svg class="bt-mark bt-mark--good" x-show="w.mark === 'good'" viewBox="0 0 24 24" role="img" aria-label="Good day"><path fill="currentColor" d="M12 2.8l2.75 5.78 6.3.84-4.6 4.35 1.15 6.26L12 17.1l-5.6 2.93 1.15-6.26-4.6-4.35 6.3-.84z"/></svg>
+                  <svg class="bt-mark bt-mark--skip" x-show="w.mark === 'skip'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" role="img" aria-label="Skipped"><circle cx="12" cy="12" r="8.5"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+                </span>
+                <span class="bt-whenbox">
                   <span class="bt-when"><span class="bt-day" x-text="w.day"></span><span class="bt-time" x-text="w.time"></span></span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9,6 15,12 9,18"/></svg>
-                </button>
-              </template>
-              <template x-if="w.none">
-                <div class="bt-static">
-                  <span class="bt-when"><span class="bt-day" x-text="w.day"></span><span class="bt-time" x-text="w.time"></span></span>
-                </div>
-              </template>
-            </div>
-            <div class="bt-main">
-              <div class="bt-tline"><span class="bt-temp" x-text="w.temp"></span>
-                <span class="bt-right"><span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span><span class="hero-band-pill bt-wtag" x-show="!w.none" :style="'background:' + w.windPill + '; color:' + w.windInk" x-text="w.windLabel"></span></span>
+                </span>
+                <span class="bt-wx">
+                  <span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span>
+                  <span class="bt-brief" x-text="w.none ? w.temp : (w.brief || w.summary)"></span>
+                </span>
+                <span class="bt-end">
+                  <svg class="bt-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg>
+                </span>
+              </button>
+              <div class="bt-panel" :id="'btp-' + w.key" :hidden="!open">
+                <dl class="bt-dl">
+                  <template x-if="!w.none"><div class="bt-r"><dt>Temperature</dt><dd x-text="w.temp"></dd></div></template>
+                  <template x-if="!w.none"><div class="bt-r"><dt>Wind</dt><dd><span class="bt-windtxt" x-text="w.windText"></span><span class="hero-band-pill bt-wtag" :style="'background:' + w.windPill + '; color:' + w.windInk" x-text="w.windLabel"></span></dd></div></template>
+                  <template x-if="w.none"><div class="bt-r"><dt>Why skipped</dt><dd x-text="w.why"></dd></div></template>
+                </dl>
+                <button type="button" class="bt-details" x-show="!w.none && $store.best.details" :data-win="idx" aria-haspopup="dialog">Hour-by-hour details</button>
               </div>
-              <p class="bt-sum" x-text="w.summary"></p>
-            </div>
-          </article>
-        </template>
-        </div>
-      </div>
+            </li>
+          </template>
+        </ul>
       </div>
       <p class="bt-few" x-show="$store.best.few" x-text="$store.best.few"></p>
       <template x-if="$store.best.state === 'empty'">
@@ -2680,7 +2710,7 @@
         expanded or forecast radar there yet.
       </p>
       <p>
-        <strong>Air quality &amp; pollen.</strong> The Air Quality Index &amp; Pollutants (PM2.5) are sourced live from AirNow
+        <strong>Air quality &amp; pollen.</strong> The Air Quality Index &amp; Fine particles (PM2.5) are sourced live from AirNow
         (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>), EPA — coverage depends on the nearest
         reporting monitor. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Pollutants gauge says Unavailable. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
         <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Pollen isn't available from any free public
@@ -2763,6 +2793,7 @@
       <div id="bpFields"></div>
     </div>
     <div class="bp-foot">
+      <p class="bp-preview" id="bpPreview" role="status" aria-live="polite"></p>
       <p class="bp-status" id="bpStatus" role="status" aria-live="polite"></p>
       <div class="bp-actions">
         <button type="button" class="bp-btn" id="bpReset">Reset to Default</button>
@@ -4394,6 +4425,18 @@
   ]; }
   var winDetail = null;
   function mk(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+  var VD_TAG_MEANINGS = [
+    ['Get outside!', 'Conditions are good right now.'],
+    ['Okay for now', 'Conditions are fair right now, though not ideal.'],
+    ['Wait a bit', 'Conditions are rough right now, and a good window comes within about 12 hours.'],
+    ['Heads up', 'Fine right now, with weather on the way.'],
+    ['Stay inside', 'The next good window is more than 12 hours away.'],
+    ['Stay in all day', 'No good window in the days ahead.'],
+    ['Night time', 'It is dark out.'],
+    ['Use caution', 'There is an active weather alert for your area.'],
+    ['Take shelter', 'A tornado warning is in effect.']
+  ];
+  var vdTagNow = '';
   function fillInfoModal(kind){
     var title = document.getElementById('infoModalTitle');
     var body = document.getElementById('infoModalBody');
@@ -4414,6 +4457,16 @@
       var tb = mk('tbody');
       winDetail.hours.forEach(function(row){ var tr = mk('tr'); row.forEach(function(c){ tr.appendChild(mk('td', null, c)); }); tb.appendChild(tr); });
       table.appendChild(tb); wrap.appendChild(table); body.appendChild(wrap);
+    }else if(kind === 'tag'){
+      title.textContent = 'What the tag means';
+      body.appendChild(mk('p', 'wk-intro', 'The tag is a quick read of whether now is a good time to head out. Here is what each one means.'));
+      var tdl = mk('dl', 'wd-list');
+      VD_TAG_MEANINGS.forEach(function(m){
+        var isNow = m[0] === vdTagNow;
+        tdl.appendChild(mk('dt', null, m[0] + (isNow ? ' (right now)' : '')));
+        tdl.appendChild(mk('dd', null, m[1]));
+      });
+      body.appendChild(tdl);
     }else if(kind === 'wind'){
       title.textContent = 'Wind Key';
       var intro = document.createElement('p');
@@ -4498,8 +4551,6 @@
   var BP_KEY = 'checkTheWind.bestPrefs';
   var BP_STD = {days:5, tmin:25, tmax:100, wind:25, pop:40, hum:100, ground:2, aqi:150};
   var BP_FIELDS = [
-    {k:'days',   label:'Time frame',                min:3,  max:7,   step:1, seg:[3, 5, 7], fmt:function(v){ return v + ' days'; },
-      help:'How many days ahead Top 3 looks. The 7-Day view always covers seven.'},
     {k:'tmax',   label:'Highest temperature',       min:70, max:120, step:1, fmt:function(v){ return fmtTemp(v); },
       help:'Hotter windows are skipped.'},
     {k:'tmin',   label:'Lowest temperature',        min:0,  max:70,  step:1, fmt:function(v){ return fmtTemp(v); },
@@ -4516,7 +4567,7 @@
       help:'Worse air is skipped. 50 Good, 100 Moderate.'}
   ];
   function bpClean(raw){
-    var out = {};
+    var out = {days: BP_STD.days};   // how far ahead Top 3 looks is fixed now (the Time frame control was removed from the dialog)
     BP_FIELDS.forEach(function(f){
       var rv = raw && typeof raw === 'object' ? raw[f.k] : null;
       var v = (rv === null || rv === undefined || rv === '') ? NaN : +rv;
@@ -4549,7 +4600,7 @@
         var btns = f.seg.map(function(n){
           var b = document.createElement('button'); b.type = 'button'; b.className = 'bp-seg-btn'; b.setAttribute('role', 'radio'); b.dataset.val = String(n);
           b.textContent = n + ' days';
-          b.addEventListener('click', function(){ hidden.value = String(n); bpShowVal(f); bpStatus.textContent = ''; });
+          b.addEventListener('click', function(){ hidden.value = String(n); bpShowVal(f); bpStatus.textContent = ''; bpPreviewSoon(); });
           group.appendChild(b); return b;
         });
         var shelp = document.createElement('p'); shelp.className = 'bp-help';
@@ -4573,7 +4624,7 @@
       var hTxt = document.createElement('span'); hTxt.textContent = f.help;
       var hStd = document.createElement('span'); hStd.className = 'bp-std'; hStd.textContent = 'Default: ' + f.fmt(BP_STD[f.k]);
       help.appendChild(hTxt); help.appendChild(hStd);
-      inp.addEventListener('input', function(){ bpShowVal(f); bpStatus.textContent = ''; });
+      inp.addEventListener('input', function(){ bpShowVal(f); bpStatus.textContent = ''; bpPreviewSoon(); });
       row.appendChild(top); row.appendChild(inp); row.appendChild(help);
       bpFieldsEl.appendChild(row);
       bpInputs[f.k] = {inp: inp, out: out};
@@ -4591,7 +4642,32 @@
   }
   function bpFill(vals){
     BP_FIELDS.forEach(function(f){ bpInputs[f.k].inp.value = vals[f.k]; bpShowVal(f); });
+    bpPreviewNow();
   }
+  // live count of days that would have a good window with the sliders as they sit now
+  var bpPreviewEl = document.getElementById('bpPreview'), bpPreviewTimer = null;
+  function bpPreviewNow(){
+    if(!lastBest){ bpPreviewEl.textContent = ''; return; }
+    var vals = {}; BP_FIELDS.forEach(function(f){ vals[f.k] = +bpInputs[f.k].inp.value; });
+    var saved = bestPrefs, n = 0, total = 0;
+    try{
+      bestPrefs = bpClean(vals);
+      var all = scoreBestHours(lastBest.hourly, lastBest.inputs, 168), dates = [];
+      all.forEach(function(x){ var d = localDate(x.iso); if(dates.indexOf(d) < 0) dates.push(d); });
+      dates = dates.slice(0, 7); total = dates.length;
+      dates.forEach(function(d){
+        if(findBestWindows(all.filter(function(x){ return localDate(x.iso) === d; })).length) n++;
+      });
+    }catch(e){ total = 0; }
+    finally{ bestPrefs = saved; }
+    if(!total){ bpPreviewEl.textContent = ''; return; }
+    bpPreviewEl.classList.toggle('is-warn', n === 0);
+    bpPreviewEl.textContent = n === 0
+      ? 'With these limits, no day has a good window. Try loosening one.'
+      : 'With these limits, ' + n + ' of ' + total + ' days have a good window.';
+  }
+  function bpPreviewSoon(){ clearTimeout(bpPreviewTimer); bpPreviewTimer = setTimeout(bpPreviewNow, 250); }
+  function bpSyncUsing(){ var u = document.getElementById('btUsing'); if(u) u.hidden = !bpIsCustom(bestPrefs); }
   function openBp(trigger){
     bpLastFocus = trigger || document.activeElement;
     bpBuild(); bpFill(bestPrefs); bpStatus.textContent = '';
@@ -4615,6 +4691,7 @@
     try{ if(bpIsCustom(bestPrefs)) localStorage.setItem(BP_KEY, JSON.stringify(bestPrefs)); else localStorage.removeItem(BP_KEY); }catch(e){}
     var when = null;
     if(lastBest){ when = renderBest(lastBest.hourly, lastBest.inputs); }
+    bpSyncUsing();
     closeBp();
     announce('Best Times updated' + (bpIsCustom(bestPrefs) ? ' with your settings' : ' to the defaults') + '. ' +
       (lastBest ? (when ? 'Best window outside: ' + when + '.' : 'No good window outside in the next ' + bestPrefs.days + ' days.') : ''));
@@ -4631,23 +4708,25 @@
   document.getElementById('bestSection').addEventListener('click', function(e){
     var btn = e.target.closest('.bt-pill');
     if(!btn) return;
-    var m = btn.getAttribute('data-mode') === 'top3' ? 'top3' : '7day';
+    var m = btn.getAttribute('data-mode'); m = (m === 'top3' || m === 'skips' || m === 'weekend') ? m : '7day';
     if(m === bestMode) return;
     bestMode = m;
-    try{ localStorage.setItem(BEST_MODE_KEY, m); }catch(err){}
+    if(m !== 'skips' && m !== 'weekend'){ try{ localStorage.setItem(BEST_MODE_KEY, m); }catch(err){} }   // Skips and Weekend are looks, not defaults
     var b = store('best'); if(b) b.mode = m;
     if(lastBest) renderBest(lastBest.hourly, lastBest.inputs);
-    // the cards start again from the left: once now, and again after the new cards are in the page
-    var sc = document.querySelector('.bt-cards');
-    function toStart(){ if(sc){ sc.scrollLeft = 0; sc.dispatchEvent(new Event('scroll')); } }
-    toStart();
-    if(window.Alpine && Alpine.nextTick) Alpine.nextTick(toStart);
-    requestAnimationFrame(function(){ toStart(); setTimeout(toStart, 60); });
-    announce(m === 'top3' ? 'Showing the top 3 best times.' : 'Showing the best time for each of the next 7 days.');
+    announce(m === 'top3' ? 'Showing the top 3 best times.' : m === 'skips' ? 'Showing the days with no good window.' : m === 'weekend' ? 'Showing this weekend.' : 'Showing the best time for each of the next 7 days.');
   });
   document.getElementById('bestPrefsClose').addEventListener('click', closeBp);
   document.getElementById('bestPrefsBackdrop').addEventListener('click', closeBp);
   document.getElementById('bpSave').addEventListener('click', saveBp);
+  bpSyncUsing();
+  document.getElementById('btUsingReset').addEventListener('click', function(){
+    bestPrefs = bpClean(null);
+    try{ localStorage.removeItem(BP_KEY); }catch(e){}
+    var when = lastBest ? renderBest(lastBest.hourly, lastBest.inputs) : null;
+    bpSyncUsing();
+    announce('Best Times are back at the defaults.' + (lastBest ? (when ? ' Best window outside: ' + when + '.' : ' No good window outside in the next ' + bestPrefs.days + ' days.') : ''));
+  });
   document.getElementById('bpReset').addEventListener('click', function(){
     bpFill(BP_STD);
     bpStatus.textContent = 'Sliders are back at the defaults. Select Save to apply them.';
@@ -4757,8 +4836,8 @@
     }
 
     var tiles = [];
-    next10.forEach(function(p){
-      tiles.push(tileHtml(p, fmtHour(p.startTime), weatherIcon(p.shortForecast, p.isDaytime, 28), p.shortForecast || 'Forecast unavailable'));
+    next10.forEach(function(p, pi){
+      tiles.push(tileHtml(p, pi === 0 ? 'Now' : fmtHour(p.startTime), weatherIcon(p.shortForecast, p.isDaytime, 28), p.shortForecast || 'Forecast unavailable'));
       var start = new Date(p.startTime).getTime();
       stripSun.forEach(function(evt){
         var t = evt.time.getTime();
@@ -4888,8 +4967,11 @@
   var BEST_MODE_KEY = 'ctw_best_mode';
   function bestModeLoad(){ try{ return localStorage.getItem(BEST_MODE_KEY) === 'top3' ? 'top3' : '7day'; }catch(e){ return '7day'; } }
   var bestMode = bestModeLoad();
-  function bestDays(){ return bestMode === '7day' ? 7 : bestPrefs.days; }
-  pendingStores.best = {state:'idle', windows:[], how:'', few:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear'), mode: bestMode};
+  function bestDays(){ return bestMode === 'top3' ? bestPrefs.days : 7; }
+  /* Best Times: tapping a good day can open a details dialog (full sentence, temperature, wind, hour by hour). The dialog and its
+     code are kept, but it is switched off: set this to true to bring back the chevron and the tap-to-open rows. */
+  var BEST_DETAILS = false;
+  pendingStores.best = {state:'idle', windows:[], how:'', few:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear'), mode: bestMode, details: BEST_DETAILS};
   function bestHorizonHours(){ return bestPrefs.days * 24; }   // 3, 5 or 7 days of hourly forecast
   var BEST_MAX_WINDOWS = 3;
 
@@ -5181,7 +5263,7 @@
     }
     return '<div class="ag ' + (cls || '') + '"><div class="ag-title">' + title + '</div>' +
       '<div class="ag-dial"><svg viewBox="0 0 200 100" aria-hidden="true" focusable="false">' + svg + '</svg>' +
-      '<div class="ag-center"><span class="ag-word" style="color:' + (ink || 'var(--text-muted)') + '">' + (word === 'Unavailable' ? '<span class="ag-full">Unavailable</span><span class="ag-na">NA</span>' : word) + '</span>' +
+      '<div class="ag-center"><span class="ag-word" style="color:' + (ink || 'var(--text-muted)') + '">' + (word === 'Unavailable' ? '<span class="ag-full">No nearby data</span><span class="ag-na">NA</span>' : word) + '</span>' +
       (has ? '<span class="ag-num">' + Math.round(value) + '</span>' : '') + '</div></div></div>';
   }
 
@@ -5216,7 +5298,7 @@
       '<div class="card-head"><h2>Air Quality &amp; Pollen</h2></div>' +
       '<div class="card-body"><div class="ag-wrap"><div class="ag-grid" tabindex="0" role="group" aria-label="Air quality and pollen gauges, scrolls sideways">' +
         arcGauge('Air Quality Index', aqiG && aqiG.v, 300, AG_AQI_BANDS, aqiG ? aqiG.lv.label : 'Unavailable', aqiG ? aqiG.lv.ink : null, 'ag-main') +
-        arcGauge('Pollutants (PM2.5)', pmG && pmG.v, 300, AG_AQI_BANDS, pmG ? pmG.lv.label : 'Unavailable', pmG ? pmG.lv.ink : null) +
+        arcGauge('Fine particles (PM2.5)', pmG && pmG.v, 300, AG_AQI_BANDS, pmG ? pmG.lv.label : 'Unavailable', pmG ? pmG.lv.ink : null) +
         arcGauge('Weeds', pollen.weed, 100, AG_POLLEN_BANDS, weedLv.label, weedLv.ink) +
         arcGauge('Trees', pollen.tree, 100, AG_POLLEN_BANDS, treeLv.label, treeLv.ink) +
         arcGauge('Grasses', pollen.grass, 100, AG_POLLEN_BANDS, grassLv.label, grassLv.ink) +
@@ -5595,7 +5677,7 @@
     function windowCard(w, idx){
       var h = w.hours, first = h[0], last = h[h.length - 1];
       var dateStr = localDate(first.iso);
-      var day = dateStr === todayStr ? 'Today' : fmtDowLong(dateStr);
+      var day = dateStr === todayStr ? 'Today' : fmtDowLong(dateStr), dayShort = dateStr === todayStr ? 'Today' : fmtDow(dateStr);
       var when = fmtWindowRange(first.hour, last.hour + 1, first.i === 0);
       var temps = h.map(function(x){ return x.temp; });
       var tMinRaw = Math.min.apply(null, temps), tMaxRaw = Math.max.apply(null, temps);
@@ -5614,20 +5696,24 @@
       var humAvg = humVals.length ? Math.round(humVals.reduce(function(a, b){ return a + b; }, 0) / humVals.length) : null;
       return {
         key: first.iso,
-        cls: topMode ? 'bt-card--' + (idx + 1) : '',
+        cls: '',
         tone: topMode ? '' : bandFor(mph).css,
         none: false,
         medal: topMode ? medalSvg(idx) : '',
         windLabel: bandFor(mph).label,
+        windText: 'up to ' + fmtWind(mph) + (peak.dir ? ' ' + peak.dir : ''),
+        mark: topMode ? '' : 'good',
         windPill: bandFor(mph).pill,
         windInk: bandFor(mph).pillInk,
-        day: day,
+        day: dayShort,
+        dayLong: day,
         time: when,
         when: day + ' ' + when,
         temp: tempText,
         sky: midHr.fc || '',
         skyIcon: weatherIcon(midHr.fc, true, 30),
         summary: vdGoodSentence(vdAgg(h)),
+        brief: vdGoodShort(vdAgg(h)),
         detail: bestDetail(h, {day: day, time: when, temp: tempText, mph: mph, dir: peak.dir, popMax: popMax, ptype: peakPop.ptype, wetMax: wetMax, aqiMax: aqiMax, humVals: humVals, humAvg: humAvg}),
         shareHead: day + ', ' + new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) + ', ' + when,
         shareConds: [tempText, ampText(midHr.fc || '').toLowerCase(), fmtWind(mph) + ' wind',
@@ -5682,15 +5768,32 @@
         var dh = hrsAll.filter(function(x){ return localDate(x.iso) === d; });
         if(!dh.some(function(x){ return !x.why.some(function(t){ return /dark out/.test(t); }); })) return;   // nothing but darkness left today
         var dw = findBestWindows(dh);
-        if(dw.length){ windows.push(windowCard(dw[0], windows.length)); return; }
-        var dayName = d === todayStr ? 'Today' : fmtDowLong(d), dayWx = dayWeather(dh);
-        windows.push({key: d + '-none', cls: 'bt-card--none', tone: '', none: true, medal: '', windLabel: '', windPill: '', windInk: '', day: dayName, time: 'No good window',
+        if(dw.length){ windows.push(windowCard(dw[0], windows.length)); windows[windows.length - 1].date = d; return; }
+        var dayName = d === todayStr ? 'Today' : fmtDowLong(d), dayNameShort = d === todayStr ? 'Today' : fmtDow(d), dayWx = dayWeather(dh);
+        windows.push({key: d + '-none', cls: '', tone: '', none: true, medal: '', windLabel: '', windPill: '', windInk: '', day: dayNameShort, dayLong: dayName, date: d, mark: 'skip', why: dayReason(dh).replace(/^Skipped:\s*/, '').replace(/^./, function(c){ return c.toUpperCase(); }), time: '',
           when: dayName + ' no good window', temp: dayWx.text, sky: dayWx.sky, skyIcon: dayWx.icon, summary: dayReason(dh), detail: null, shareHead: '', shareConds: ''});
       });
     }
     var anyWindow = windows.some(function(w){ return !w.none; });
+    var skipsMode = bestMode === 'skips', weekendMode = bestMode === 'weekend';
+    if(skipsMode) windows = windows.filter(function(w){ return w.none; });
+    if(weekendMode){
+      // this weekend: the first Saturday or Sunday in the forecast, and the weekend day that follows it
+      var wkDates = [];
+      windows.forEach(function(w){
+        var dow = w.date ? new Date(w.date + 'T12:00:00').getDay() : -1;
+        if(dow === 6 || dow === 0){
+          if(!wkDates.length || (dow === 0 && new Date(wkDates[wkDates.length - 1] + 'T12:00:00').getDay() === 6)) wkDates.push(w.date);
+        }
+      });
+      windows = windows.filter(function(w){ return wkDates.indexOf(w.date) >= 0; });
+    }
 
-    var notes = [topMode
+    var notes = [weekendMode
+      ? 'Weekend: the best window of Saturday and Sunday, daylight only, chosen by temperature, wind, ground dryness & air quality. A day with nothing suitable says why. Skips rain, icy/snowy ground & darkness.'
+      : skipsMode
+      ? 'Skips: the days in the next 7 where no window passes your limits, with the main reasons. Skips rain, icy/snowy ground & darkness.'
+      : topMode
       ? 'Top 3: the next ' + bestPrefs.days + ' days, daylight only. Up to 3 options across those days, ranked by temperature, wind, ground dryness & air quality. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average.'
       : '7-Day: the best window of each of the next 7 days, daylight only, chosen by temperature, wind, ground dryness & air quality. A day with nothing suitable says why. Skips rain, icy/snowy ground & darkness. Precip chance is the highest chance of precipitation during the window; humidity is the window average.'];
     if(!inputs.aqi) notes.push('We couldn’t reach the air quality service, so air quality isn’t part of these rankings. Pull down to refresh and try again.');
@@ -5702,33 +5805,19 @@
     b.mode = bestMode;
     b.how = notes.join(' ');
     b.few = (topMode && windows.length >= 1 && windows.length <= 2)
-      ? 'There ' + (windows.length === 1 ? 'is only 1 best time' : 'are only 2 best times') + ' right now. Adjust settings to see more.' : '';
+      ? 'There ' + (windows.length === 1 ? 'is only 1 best time' : 'are only 2 best times') + ' right now. Adjust settings to see more.'
+      : (skipsMode && !windows.length ? 'No skipped days. Every day in the next 7 has a good window.' : (weekendMode && !windows.length ? 'No weekend days left in this forecast.' : ''));
     if(!anyWindow){
       var empty = buildEmptyBestNote(hourly);
       b.emptyTitle = empty.title;
       b.emptySub = empty.sub + (custom ? ' Your custom Best Times settings may be ruling windows out; use Customize to loosen them or reset to the defaults.' : '');
       b.fireplace = fireplaceSvg(empty.kind);
     }
-    b.state = anyWindow ? 'ready' : 'empty';
+    b.state = (anyWindow || ((skipsMode || weekendMode) && windows.length)) ? 'ready' : 'empty';
     var firstWin = windows.filter(function(w){ return !w.none; })[0];
     return firstWin ? firstWin.when : null;
   }
 
-
-  // Edge fades on the Best Times row: only on the side that has more cards to scroll to
-  (function(){
-    var sc = document.querySelector('.bt-cards'), wrap = sc && sc.parentElement, track = sc && sc.querySelector('.bt-track');
-    if(!sc || !wrap) return;
-    function upd(){
-      var max = sc.scrollWidth - sc.clientWidth;
-      wrap.classList.toggle('can-scroll-left', sc.scrollLeft > 1);
-      wrap.classList.toggle('can-scroll-right', sc.scrollLeft < max - 1);
-    }
-    sc.addEventListener('scroll', upd, {passive: true});
-    window.addEventListener('resize', upd);
-    if(window.ResizeObserver){ var ro = new ResizeObserver(upd); ro.observe(sc); if(track) ro.observe(track); }
-    upd();
-  })();
 
   /* A shared link opens straight to its place */
   function sharedPlace(){
@@ -5843,6 +5932,26 @@
     }
     var precip = a.pop >= 5 ? aOrAn(a.pop) + ' ' + a.pop + '% chance of ' + a.popType + ' around ' + a.popAt : 'no precipitation expected';
     return vdCap(vdFeel(a.tAvg)) + ' and ' + wind + ', with ' + precip + (air ? ' and ' + air : '') + '.';
+  }
+  // The same idea in as few words as the Best Times rows can hold in two lines on a phone (about 32 characters)
+  function vdGoodShort(a){
+    var k = bandFor(a.wMax).key;
+    var wind = k === 'calm' ? 'calm' : k === 'breezy' ? 'breezy' : k === 'windy' ? 'windy' : k === 'verywindy' ? 'blustery' : 'howling';
+    var feel = vdCap(vdFeel(a.tAvg));
+    var air = a.aqi !== null ? (a.aqi <= 50 ? 'good air' : 'moderate air') : '';
+    var c = [];
+    if(a.wet < 0.15 && a.pop < 10){
+      if(air) c.push(feel + ', ' + wind + ' and dry, ' + air + '.');
+      c.push(feel + ', ' + wind + ' and dry.');
+    }else if(a.pop >= 5){
+      c.push(feel + ' and ' + wind + ', ' + a.pop + '% chance of ' + a.popType + '.');
+      c.push(vdCap(a.pop + '% chance of ' + a.popType + '.'));
+    }else{
+      c.push(feel + ' and ' + wind + ', no precipitation.');
+      c.push(feel + ' and ' + wind + '.');
+    }
+    for(var i = 0; i < c.length; i++) if(c[i].length <= 32) return c[i];
+    return c[c.length - 1];
   }
   function vdWeakPoints(a){
     var w = [];
@@ -6384,9 +6493,11 @@
       var spa = vdSpan(r.hs, c);
       var lead = r.hs[0].i === 0 ? (r.fair ? 'Conditions are okay ' : 'Conditions look good ') + spa.phrase
         : 'Conditions should be good ' + spa.day + ' ' + spa.phrase;
-      out.push(lead + ', but there’s an active ' + r.alert + ' for your area.');
-      var aft4 = vdAfter(r, c); if(aft4) out.push(aft4);
+      // the warning first, then what to do; the weather note only follows
+      out.push(vdCap(r.alert) + ' is in effect for your area.');
       out.push('Please be careful, and check the alert above before heading outside.');
+      out.push('Otherwise, ' + vdLc(lead) + '.');
+      var aft4 = vdAfter(r, c); if(aft4) out.push(aft4);
       return out;
     }
     // Night time with otherwise calm weather
@@ -6670,7 +6781,7 @@
     // (none of these repeat the wording of the tag beside them: Go Outside!, Okay for Now, Wait a Bit, Heads Up, Stay Inside, Stay In All Day, Use Caution, Night Time)
     if(r.tornado) return vdCap(r.alert) + ' in effect: take shelter now.';
     if(r.flood) return vdCap(r.flood) + ' in effect: turn around, don’t drown.';
-    if(r.alert && r.state !== 'no') return 'Fine out, but there’s an active ' + r.alert + '.';
+    if(r.alert && r.state !== 'no') return vdCap(r.alert) + ' in effect.';   // the warning leads; "fine out" is not the point under an active warning
     if(r.state === 'no' && r.alert) return vdCap(r.alert) + ' in effect.';
     if(r.night && vdPredawn(c)){
       var nwp = r.state === 'maybe' ? r.hs : r.nextHs;
@@ -6829,8 +6940,44 @@
     vdBody.innerHTML = html;
     vdEl.hidden = false;
     var tg = vdTagFor(r);
-    tagEls.forEach(function(t){ if(t){ t.textContent = tg.t; t.className = 'vd-tag vd-tag--' + tg.k; t.hidden = false; } });
+    vdTagNow = tg.t;
+    tagEls.forEach(function(t){ if(t){ t.textContent = tg.t; t.className = 'vd-tag vd-tag--' + tg.k; t.setAttribute('aria-label', tg.t + ', what this means'); t.hidden = false; } });
+    vdClampSetup();
   }
+
+  // Phones: the hero's long paragraph stops after a whole sentence (within three lines), with an inline More / Less
+  var vdMoreOpen = false, vdPhoneMq = window.matchMedia ? window.matchMedia('(max-width:31.1875em)') : null;
+  function vdClampSetup(){
+    var det = vdBody.querySelector('.vd-detail');
+    if(!det) return;
+    if(det.dataset.full === undefined) det.dataset.full = det.textContent;
+    var full = det.dataset.full;
+    function plain(){ det.textContent = full; }
+    plain();
+    if(!vdPhoneMq || !vdPhoneMq.matches || vdBody.getAttribute('aria-hidden') === 'true') return;
+    var sentences = full.match(/[^.!?]+[.!?]+(?:["”’)]+)?(?:\s+|$)/g) || [full];
+    if(sentences.length < 2) return;
+    var lh = parseFloat(getComputedStyle(det).lineHeight) || 24, maxH = lh * 3 + 2;
+    function build(text, open){
+      det.textContent = '';
+      det.appendChild(document.createTextNode(text.replace(/\s+$/, '') + ' '));
+      var btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'vd-more'; btn.setAttribute('aria-expanded', String(open));
+      btn.textContent = open ? 'Less' : 'More';
+      btn.addEventListener('click', function(){ vdMoreOpen = !vdMoreOpen; vdClampSetup(); var nb = det.querySelector('.vd-more'); if(nb) nb.focus({preventScroll: true}); });
+      det.appendChild(btn);
+    }
+    if(vdMoreOpen){ build(full, true); return; }
+    plain();
+    if(det.offsetHeight <= maxH) return;   // already short enough
+    var k = sentences.length - 1;
+    for(; k > 1; k--){
+      build(sentences.slice(0, k).join(''), false);
+      if(det.offsetHeight <= maxH) break;
+    }
+    if(k === 1) build(sentences[0], false);   // never cut a sentence, even a long one
+  }
+  if(vdPhoneMq && vdPhoneMq.addEventListener) vdPhoneMq.addEventListener('change', function(){ if(vdCtx) vdClampSetup(); });
 
   // The short go / stay tag beside the place name on phones
   function vdTagFor(r){
