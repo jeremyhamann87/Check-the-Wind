@@ -2127,6 +2127,15 @@
   .bt-sky{display:flex; flex:0 0 auto}
   .bt-sky svg{display:block; width:30px; height:30px}
   .bt-tempb{font-weight:500; font-size:14px; color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap}   /* the window's temperature, beside the sky icon */
+  /* Desktop: no expanding. Each row carries its reasoning inline: day and time, the reasoning, then the sky icon and temperature. */
+  .bt-reason{display:none}
+  @media (min-width:64em){
+    .bt-row{ grid-template-columns:22px 9.5rem minmax(0,1fr) auto; grid-template-areas:"mark when reason wx"; column-gap:16px; cursor:default; padding-top:10px; padding-bottom:10px }
+    .bt-row:hover, .bt-row[aria-expanded="true"]{ background:none }
+    .bt-reason{ grid-area:reason; display:block; margin:0; font-size:14px; line-height:1.4; color:var(--text) }
+    .bt-item--none .bt-reason{ color:var(--text-muted) }
+    .bt-end, .bt-panel{ display:none !important }
+  }
   .bt-desc{margin:0; padding:12px 0 14px; font-size:14px; line-height:1.4; color:var(--text)}   /* the open row is one plain sentence or two: why the window is good, or why the day is skipped */
   .bt-end{grid-area:end; display:flex; align-items:center; justify-content:flex-end}
   .bt-mark{display:block; width:22px; height:22px; flex:0 0 auto}
@@ -2286,6 +2295,14 @@
   #todaySection .htile .sp-row{ flex-direction:column; align-items:center; gap:2px }
   #todaySection .htile .sp{ font-size:.9375rem }
   #todaySection .skel-htile .barwrap{ display:flex; align-items:flex-end; justify-content:center }
+  /* Precip: two tones of blue. A light container runs the full height under the icon row; the solid blue fill rises to the
+     chance of precipitation. The icon stays at the top of the column, and the trend line follows the top of each fill. */
+  #todaySection .hscroll.hr-precip .htile .barwrap::before{
+    content:""; position:absolute; left:50%; transform:translateX(-50%); top:36px; bottom:0; width:14px; border-radius:4px;   /* the same 14px as the Wind and Temp bars */
+    background:color-mix(in srgb, var(--hr-precip) 16%, transparent);
+  }
+  #todaySection .hscroll.hr-precip .htile .bar{ border-radius:4px; height:max(3px, calc((100% - 36px) * var(--k, .04))) }
+  #todaySection .hscroll.hr-precip .htile .hwx{ top:0; bottom:auto }
   /* the day label: horizontal, at the right of the module header; it names the day of the hours now in view */
   #todaySection .card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px }
   .day-tag{ flex:0 0 auto; padding:2px 0; white-space:nowrap;
@@ -2404,6 +2421,7 @@
   :root[data-theme="dark"]{ --module-bg:color-mix(in srgb, var(--surface) 80%, transparent) }
   .bw-card, .today-card, .week-card, .hero-wrap .hero-now, #airCard, .air-card{ background:var(--module-bg) !important }
   .vd-card{ background:transparent !important }   /* the hero text sits straight on the page, with no white card behind it */
+  @media (min-width:64em){ .vd-card{ background:var(--module-bg) !important } }   /* desktop: "Is it a Good Time to Go Outside?" is a white module again, like Hourly Forecast and Best Times */
   @media (min-width:64em){ .hero-wrap .hero-now{ background:transparent !important } }   /* desktop: Current Conditions sits straight on the page too */
   .bt-wrap{ background:transparent }
 
@@ -2791,8 +2809,8 @@
           </template>
           <template x-for="(w, idx) in $store.best.windows" :key="w.key">
             <li class="bt-item" :class="w.none ? 'bt-item--none' : ''" x-data="{open: false}" :data-when="w.when">
-              <button type="button" class="bt-row" :aria-expanded="open ? 'true' : 'false'" :aria-controls="'btp-' + w.key" @click="open = !open"
-                :aria-label="(w.dayLong || w.day) + (w.time ? ' ' + w.time : '') + '. ' + (w.none ? w.tempShort + '. ' + w.temp + '. Skipped' : w.temp + '. ' + w.summary) + '. ' + (open ? 'Hide' : 'Show') + ' details'">
+              <button type="button" class="bt-row" :aria-expanded="$store.best.flat ? null : (open ? 'true' : 'false')" :aria-controls="$store.best.flat ? null : 'btp-' + w.key" :tabindex="$store.best.flat ? -1 : 0" @click="if(!$store.best.flat) open = !open"
+                :aria-label="(w.dayLong || w.day) + (w.time ? ' ' + w.time : '') + '. ' + (w.none ? w.tempShort + '. ' + w.temp + '. Skipped' : w.temp + '. ' + w.summary) + ($store.best.flat ? '' : '. ' + (open ? 'Hide' : 'Show') + ' details')">
                 <span class="bt-markbox">
                   <span class="bt-medal" x-show="w.medal" x-html="w.medal"></span>
                   <svg class="bt-mark bt-mark--good" x-show="w.mark === 'good'" viewBox="0 0 24 24" fill="none" role="img" aria-label="Good day"><circle cx="12" cy="12" r="9.5" fill="currentColor"/><polyline points="7.9,12.4 10.8,15.3 16.2,9.1" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -2801,6 +2819,7 @@
                 <span class="bt-whenbox">
                   <span class="bt-when"><span class="bt-day" x-text="w.day"></span><span class="bt-time" x-text="w.time"></span></span>
                 </span>
+                <span class="bt-reason" x-text="w.reason"></span>
                 <span class="bt-wx">
                   <span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span>
                   <b class="bt-tempb" x-show="w.tempShort" x-text="w.tempShort"></b>
@@ -2809,7 +2828,7 @@
                   <svg class="bt-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9"/></svg>
                 </span>
               </button>
-              <div class="bt-panel" :id="'btp-' + w.key" :hidden="!open">
+              <div class="bt-panel" :id="'btp-' + w.key" :hidden="$store.best.flat || !open">
                 <p class="bt-desc" x-text="w.reason"></p>
                 <button type="button" class="bt-details" x-show="!w.none && $store.best.details" :data-win="idx" aria-haspopup="dialog">Hour-by-hour details</button>
               </div>
@@ -5203,6 +5222,7 @@
     });
     var keep = opts && opts.keepScroll ? todayInner.scrollLeft : 0;
     hourlyStrip.style.setProperty('--hr-grad', hrTempGradient(tMin, tMax));
+    hourlyStrip.classList.toggle('hr-precip', hourlyMode === 'precip');
     hourlyStrip.innerHTML = tiles.join('');
     todayInner.scrollLeft = keep;
 
@@ -5321,8 +5341,8 @@
       pts.push([x, y]);
     });
     var pathD = smoothPath(pts);
-    // phones get a finer line and smaller dots
-    var phone = window.matchMedia('(max-width:31.1875em)').matches, lw = phone ? 1.2 : 2, dr = phone ? 1.6 : 2.5, dash = phone ? '4 4' : '5 4';
+    // phones and desktop get the finer line and smaller dots (tablets keep the heavier one)
+    var phone = window.matchMedia('(max-width:31.1875em), (min-width:64em)').matches, lw = phone ? 1.2 : 2, dr = phone ? 1.6 : 2.5, dash = phone ? '4 4' : '5 4';
     var dots = pts.map(function(p){
       return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + dr + '" fill="var(--trend-line)"/>';
     }).join('');
@@ -5382,7 +5402,10 @@
   /* Best Times: tapping a good day can open a details dialog (full sentence, temperature, wind, hour by hour). The dialog and its
      code are kept, but it is switched off: set this to true to bring back the chevron and the tap-to-open rows. */
   var BEST_DETAILS = false;
-  pendingStores.best = {state:'idle', windows:[], how:'', few:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear'), mode: bestMode, details: BEST_DETAILS};
+  // Desktop (64em and up): Best Times rows are not expandable; the reasoning sits inline in the row ("flat"). Phones and tablets expand in place.
+  var bestFlatMq = window.matchMedia('(min-width:64em)');
+  pendingStores.best = {state:'idle', windows:[], how:'', few:'', emptyTitle:'', emptySub:'', fireplace: fireplaceSvg('clear'), mode: bestMode, details: BEST_DETAILS, flat: bestFlatMq.matches};
+  bestFlatMq.addEventListener('change', function(){ var b = store('best'); if(b) b.flat = bestFlatMq.matches; });
   function bestHorizonHours(){ return bestPrefs.days * 24; }   // 3, 5 or 7 days of hourly forecast
   var BEST_MAX_WINDOWS = 3;
 
