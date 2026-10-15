@@ -2287,6 +2287,29 @@
   .day-tag{ flex:0 0 auto; padding:2px 0; white-space:nowrap;
     color:var(--text-muted); font-size:14px; font-weight:500; line-height:1.4 }   /* plain text: no tag background */
   .day-tag:empty{ display:none }
+  /* the date in the header with a caret either side that jumps to the previous / next day */
+  .day-nav{ display:inline-flex; align-items:center; gap:0 }
+  .day-nav .day-tag{ text-align:center; padding-inline:4.5px }   /* each caret sits about 16px from the date's text (it was about 20px): 20% closer, for every day's label */
+  .day-step{ position:relative; display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; border:0; border-radius:4px;
+    background:transparent; color:var(--text-muted); cursor:pointer; -webkit-tap-highlight-color:transparent }
+  .day-step::after{ content:""; position:absolute; inset:-8px -2px }   /* a 44px-tall tap area */
+  .day-step svg{ width:20px; height:20px; display:block }
+  .day-step:disabled{ opacity:.35; cursor:default }
+  .day-step:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:1px }
+  @media (min-width:64em){ .day-step:not(:disabled):hover{ color:var(--text) } }
+  /* the Wind | Temp | Precip pills above the chart, like Best Times */
+  .hr-pills{ padding:16px 16px 0 }
+  #todaySection .today-inner{ padding-top:12px }
+  :root{ --hr-temp:#D9822B; --hr-precip:#2F6FD0 }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --hr-temp:#F0A560; --hr-precip:#6AB6FF } }
+  :root[data-theme="dark"]{ --hr-temp:#F0A560; --hr-precip:#6AB6FF }
+  /* The chart fills the module: temperature and precipitation have no arrow under the number, so their bars take that room
+     and the value sits at the bottom, with no blank band left inside the module. If the module is taller, the chart stretches. */
+  #todaySection .today-card{ display:flex; flex-direction:column }
+  #todaySection .card-body{ flex:1 1 auto; display:flex; flex-direction:column; min-height:0 }
+  #todaySection .today-inner{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column }
+  #todaySection .hscroll{ height:auto; flex:1 1 auto; min-height:206px; box-sizing:border-box }
+  @media (max-width:31.1875em){ #todaySection .hscroll{ min-height:146px } }
   /* at each new day's line: the date again, light and vertical, with no tag behind it */
   #todaySection .htile{ position:relative }
   .day-line-label .dl-short{ display:none }
@@ -2748,7 +2771,24 @@
   <div class="wind-row">
   <section id="todaySection" hidden>
     <div class="today-card">
-      <div class="card-head"><h2>Hourly Forecast</h2><span class="day-tag" id="dayTag" aria-hidden="true"></span></div>
+      <div class="card-head"><h2>Hourly Forecast</h2>
+        <span class="day-nav">
+          <button type="button" class="day-step" id="dayPrev" aria-label="Previous day">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="15,5 8,12 15,19"/></svg>
+          </button>
+          <span class="day-tag" id="dayTag" aria-hidden="true"></span>
+          <button type="button" class="day-step" id="dayNext" aria-label="Next day">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9,5 16,12 9,19"/></svg>
+          </button>
+        </span>
+      </div>
+      <div class="hr-pills">
+        <div class="bt-pills" id="hrPills" role="radiogroup" aria-label="Hourly chart">
+          <button type="button" class="bt-pill" role="radio" data-hr="wind" data-label="Wind" aria-checked="true" tabindex="0"><span>Wind</span></button>
+          <button type="button" class="bt-pill" role="radio" data-hr="temp" data-label="Temp" aria-checked="false" tabindex="-1"><span>Temp</span></button>
+          <button type="button" class="bt-pill" role="radio" data-hr="precip" data-label="Precip" aria-checked="false" tabindex="-1"><span>Precip</span></button>
+        </div>
+      </div>
       <div class="card-body today-card--scrollable">
       <div class="today-inner" id="todayInner" tabindex="0" role="region" aria-label="Hourly forecast for the next 7 days, scrollable">
         <div class="hscroll" id="hourlyStrip" role="list"></div>
@@ -4974,12 +5014,41 @@
     return q.year + '-' + q.month + '-' + q.day;
   }
 
-  function renderHourly(periods){
+  // Which chart the tiles draw: wind (the default), temperature, or chance of precipitation
+  var hourlyMode = 'wind';
+  // Temperature colors: cool blue and teal, through green and gold, to warm orange and red
+  var HR_TEMP_SCALE = [[15, '#3F6FBF'], [32, '#4F8FD0'], [45, '#3F9BB0'], [58, '#58A78A'], [68, '#C2A13A'], [78, '#E0873A'], [90, '#D8553F'], [100, '#B83A3A']];
+  function hrHex(h){ return [1, 3, 5].map(function(i){ return parseInt(h.slice(i, i + 2), 16); }); }
+  function hrTempColor(t){
+    var sc = HR_TEMP_SCALE;
+    if(t <= sc[0][0]) return sc[0][1];
+    if(t >= sc[sc.length - 1][0]) return sc[sc.length - 1][1];
+    for(var i = 1; i < sc.length; i++){
+      if(t <= sc[i][0]){
+        var f = (t - sc[i - 1][0]) / (sc[i][0] - sc[i - 1][0]), a = hrHex(sc[i - 1][1]), b = hrHex(sc[i][1]);
+        return 'rgb(' + a.map(function(v, k){ return Math.round(v + (b[k] - v) * f); }).join(',') + ')';
+      }
+    }
+    return sc[sc.length - 1][1];
+  }
+  // One gradient for the whole chart: the bottom of a bar is the coldest hour's color, and the color climbs with the bar,
+  // so a tall bar ends in a warm color and a short one stays cool
+  function hrTempGradient(tMin, tMax){
+    var stops = [hrTempColor(tMin) + ' 0%', hrTempColor(tMin) + ' 12%'];
+    for(var i = 1; i <= 4; i++){
+      var f = i / 4;
+      stops.push(hrTempColor(tMin + (tMax - tMin) * f) + ' ' + (12 + 88 * f).toFixed(0) + '%');
+    }
+    return 'linear-gradient(to top, ' + stops.join(', ') + ')';
+  }
+  function popOf(p){ return p.probabilityOfPrecipitation && typeof p.probabilityOfPrecipitation.value === 'number' ? p.probabilityOfPrecipitation.value : 0; }
+  function renderHourly(periods, opts){
     var next10 = periods.slice(0, 168);   // seven days of hours; the chart scrolls sideways
     if(!next10.length){ todaySection.hidden = true; return; }
     todaySection.hidden = false;
 
     var maxV = Math.max.apply(null, next10.map(function(p){ return parseWind(p.windSpeed).high; }).concat([10]));
+    var tMin = Math.min.apply(null, next10.map(function(p){ return p.temperature; })), tMax = Math.max.apply(null, next10.map(function(p){ return p.temperature; }));
     var firstDay = localDate(next10[0].startTime), prevDay = null;
     // Sunrise and sunset columns for every day in view: the service's times for the days it gave, computed ones for the rest
     var stripSun = sunEvents.slice(), haveSun = {};
@@ -5013,6 +5082,27 @@
       var band = bandFor(w.high);
       var h = Math.max(8, Math.round((w.high / maxV) * 46));
       var pct = Math.max(4, Math.round((w.high / maxV) * 100));
+      var barBg = band.pill, barStyle = null, valHtml;
+      if(hourlyMode === 'temp'){
+        // bar height relative to the other hours: the coldest hour is a short bar, the warmest the tallest
+        pct = tMax > tMin ? Math.round(12 + 88 * (p.temperature - tMin) / (tMax - tMin)) : 55;
+        barStyle = 'background-image:var(--hr-grad); background-size:100% calc(100% / var(--k, 1)); background-position:bottom; background-repeat:no-repeat';
+        valHtml = '<span class="sp-row"><span class="sp" style="color:var(--text)">' + tempNum(p.temperature) + '°</span></span>' +
+          '<span class="sr-only">' + tempNum(p.temperature) + ' degrees ' + (useCelsius ? 'Celsius' : 'Fahrenheit') + '</span>';
+      }else if(hourlyMode === 'precip'){
+        var pop = Math.round(popOf(p));
+        pct = Math.max(4, pop);
+        barBg = 'var(--hr-precip)';
+        valHtml = '<span class="sp-row"><span class="sp" style="color:var(--text)">' + pop + '%</span></span>' +
+          '<span class="sr-only">' + pop + ' percent chance of precipitation</span>';
+      }else{
+        valHtml = '<span class="sp-row">' +
+            '<span class="sp" style="color:' + band.css + '">' + windNum(w.high) + '</span>' +
+            '<span class="hdir">' + windArrowSvg(p.windDirection, band.css, 22) + '</span>' +
+          '</span>' +
+          '<span class="spunit">' + windUnit + '</span>' +
+          srDir(p.windDirection);
+      }
       var dateStr = localDate(p.startTime), starts = prevDay !== null && dateStr !== prevDay;
       prevDay = dateStr;
       return '<div class="htile' + (starts ? ' day-start' : '') + '" role="listitem" data-day="' + dateStr + '" data-daylabel="' + dayLabel(dateStr) + '">' +
@@ -5020,16 +5110,9 @@
         '<div class="hr">' + labelText + '</div>' +
         '<div class="barwrap" style="--k:' + (pct / 100).toFixed(3) + '">' +
           '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
-          '<div class="bar" style="--h:' + h + 'px; --pct:' + pct + '%; background:' + band.pill + '"></div>' +
+          '<div class="bar" style="--h:' + h + 'px; --pct:' + pct + '%; ' + (barStyle || 'background:' + barBg) + '"></div>' +
         '</div>' +
-        '<div class="spwrap">' +
-          '<span class="sp-row">' +
-            '<span class="sp" style="color:' + band.css + '">' + windNum(w.high) + '</span>' +
-            '<span class="hdir">' + windArrowSvg(p.windDirection, band.css, 22) + '</span>' +
-          '</span>' +
-          '<span class="spunit">' + windUnit + '</span>' +
-          srDir(p.windDirection) +
-        '</div>' +
+        '<div class="spwrap">' + valHtml + '</div>' +
       '</div>';
     }
 
@@ -5045,8 +5128,10 @@
         tiles.push(tileHtml(p, label.replace(/\s?[AP]M$/i, ''), sunHorizonIcon(28, evt.type), name + ' ' + label));
       });
     });
+    var keep = opts && opts.keepScroll ? todayInner.scrollLeft : 0;
+    hourlyStrip.style.setProperty('--hr-grad', hrTempGradient(tMin, tMax));
     hourlyStrip.innerHTML = tiles.join('');
-    todayInner.scrollLeft = 0;
+    todayInner.scrollLeft = keep;
 
     lastHourly = next10;
     drawTrendLine();
@@ -5054,18 +5139,73 @@
     updateDayTag();
   }
 
-  // The day tag at the left of the chart names the day of the hours now in view (the first tile past the tag)
+  // The day tag in the header names the day of the hours now in view; the carets either side jump to the previous / next day
   var dayTagEl = document.getElementById('dayTag'), dayTagLast = '';
+  var dayPrevBtn = document.getElementById('dayPrev'), dayNextBtn = document.getElementById('dayNext');
+  var HOURLY_PAD = 12;   // the strip's own left padding, so a day starts where the first one does
+  function dayAnchors(){
+    var out = [], seen = {};
+    [].forEach.call(hourlyStrip.querySelectorAll('.htile[data-day]'), function(t){
+      var d = t.getAttribute('data-day');
+      if(!seen[d]){ seen[d] = 1; out.push({day: d, label: t.getAttribute('data-daylabel'), left: Math.max(0, t.offsetLeft - HOURLY_PAD)}); }
+    });
+    return out;
+  }
+  function currentDayIndex(anchors){
+    var max = todayInner.scrollWidth - todayInner.clientWidth, edge = todayInner.scrollLeft + HOURLY_PAD;
+    if(max > 1 && todayInner.scrollLeft >= max - 1) return anchors.length - 1;
+    var tiles = hourlyStrip.querySelectorAll('.htile[data-day]'), day = anchors.length ? anchors[0].day : null;
+    for(var i = 0; i < tiles.length; i++){
+      if(tiles[i].offsetLeft + tiles[i].offsetWidth > edge){ day = tiles[i].getAttribute('data-day'); break; }
+    }
+    for(var k = 0; k < anchors.length; k++) if(anchors[k].day === day) return k;
+    return 0;
+  }
   function updateDayTag(){
     if(!dayTagEl) return;
-    var tiles = hourlyStrip.querySelectorAll('.htile[data-daylabel]');
-    if(!tiles.length) return;
-    var edge = todayInner.scrollLeft + 12, label = tiles[0].getAttribute('data-daylabel');
-    for(var i = 0; i < tiles.length; i++){
-      if(tiles[i].offsetLeft + tiles[i].offsetWidth > edge){ label = tiles[i].getAttribute('data-daylabel'); break; }
-    }
+    var anchors = dayAnchors();
+    if(!anchors.length) return;
+    var idx = currentDayIndex(anchors), label = anchors[idx].label;
     if(label !== dayTagLast){ dayTagLast = label; dayTagEl.textContent = label; }
+    var max = todayInner.scrollWidth - todayInner.clientWidth;
+    var atStart = idx === 0 && todayInner.scrollLeft <= 8, atEnd = idx >= anchors.length - 1 || todayInner.scrollLeft >= max - 1;
+    dayPrevBtn.disabled = atStart; dayNextBtn.disabled = atEnd;
   }
+  function jumpDay(dir){
+    var anchors = dayAnchors();
+    if(!anchors.length) return;
+    var idx = currentDayIndex(anchors), target;
+    if(dir < 0){
+      // partway into a day: back to its start first; at a day's start: the day before
+      target = todayInner.scrollLeft > anchors[idx].left + 8 ? idx : Math.max(0, idx - 1);
+    }else{
+      target = Math.min(anchors.length - 1, idx + 1);
+    }
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    todayInner.scrollTo({left: anchors[target].left, behavior: reduce ? 'auto' : 'smooth'});
+    announce('Showing ' + anchors[target].label + '.');
+  }
+  dayPrevBtn.addEventListener('click', function(){ jumpDay(-1); });
+  dayNextBtn.addEventListener('click', function(){ jumpDay(1); });
+
+  // Wind | Temp | Precip: the same chart, three ways
+  var hrPills = document.getElementById('hrPills');
+  hrPills.addEventListener('click', function(e){
+    var b = e.target.closest('.bt-pill');
+    if(!b || b.getAttribute('data-hr') === hourlyMode) return;
+    hourlyMode = b.getAttribute('data-hr');
+    [].forEach.call(hrPills.querySelectorAll('.bt-pill'), function(x){
+      var on = x === b; x.setAttribute('aria-checked', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1;
+    });
+    if(lastHourly) renderHourly(lastHourly, {keepScroll: true});
+    announce(hourlyMode === 'temp' ? 'Showing the hourly temperature.' : hourlyMode === 'precip' ? 'Showing the hourly chance of precipitation.' : 'Showing the hourly wind.');
+  });
+  hrPills.addEventListener('keydown', function(e){
+    var b = e.target.closest && e.target.closest('.bt-pill');
+    if(!b || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    var all = [].slice.call(hrPills.querySelectorAll('.bt-pill')), n = all[(all.indexOf(b) + (e.key === 'ArrowRight' ? 1 : all.length - 1)) % all.length];
+    e.preventDefault(); n.click(); n.focus();
+  });
 
   // Edge-fade gradients on the hourly strip only show in the direction
   // there's actually more to scroll, instead of a static right-only fade.
