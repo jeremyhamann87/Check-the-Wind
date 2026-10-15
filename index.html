@@ -2157,6 +2157,7 @@
   .bt-details{display:inline-flex; align-items:center; min-height:44px; padding:0; margin:0 0 4px; border:0; background:none; color:var(--text); font:inherit; font-size:14px; font-weight:600; text-decoration:underline; text-underline-offset:3px; cursor:pointer}
   .bt-details:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:4px}
   .bt-wtag{padding:1px 8px; font-size:14px; font-weight:500; line-height:1.35}   /* the same band tag the 7-Day Outlook uses */
+  .bt-wtag--row{ margin-left:8px }   /* in a row, a little more room between the temperature and the wind tag */
   .bt-skel-medal{width:22px; height:22px; border-radius:50%; flex:0 0 auto}
   .bt-skel-big{display:block; height:1.75rem; width:55%}
   .bt-skelrow{padding:14px 16px}
@@ -2844,7 +2845,7 @@
           <template x-for="(w, idx) in $store.best.windows" :key="w.key">
             <li class="bt-item" :class="w.none ? 'bt-item--none' : ''" x-data="{open: false}" :data-when="w.when">
               <button type="button" class="bt-row" :aria-expanded="$store.best.flat ? null : (open ? 'true' : 'false')" :aria-controls="$store.best.flat ? null : 'btp-' + w.key" :tabindex="$store.best.flat ? -1 : 0" @click="if(!$store.best.flat) open = !open"
-                :aria-label="(w.dayLong || w.day) + (w.time ? ' ' + w.time : '') + '. ' + (w.none ? w.tempShort + '. ' + w.temp + '. Skipped' : w.temp + '. ' + w.summary) + ($store.best.flat ? '' : '. ' + (open ? 'Hide' : 'Show') + ' details')">
+                :aria-label="(w.dayLong || w.day) + (w.time ? ' ' + w.time : '') + '. ' + (w.none ? w.tempShort + '. ' + w.windLabel + ' wind. ' + w.temp + '. Skipped' : w.temp + '. ' + w.windLabel + ' wind. ' + w.summary) + ($store.best.flat ? '' : '. ' + (open ? 'Hide' : 'Show') + ' details')">
                 <span class="bt-markbox">
                   <span class="bt-medal" x-show="w.medal" x-html="w.medal"></span>
                   <svg class="bt-mark bt-mark--good" x-show="w.mark === 'good'" viewBox="0 0 24 24" fill="none" role="img" aria-label="Good day"><circle cx="12" cy="12" r="9.5" fill="currentColor"/><polyline points="7.9,12.4 10.8,15.3 16.2,9.1" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -2857,6 +2858,7 @@
                 <span class="bt-wx">
                   <span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span>
                   <b class="bt-tempb" x-show="w.tempShort" x-text="w.tempShort"></b>
+                  <span class="hero-band-pill bt-wtag bt-wtag--row" x-show="w.windLabel" :style="'background:' + w.windPill + '; color:' + w.windInk" x-text="w.windLabel"></span>
                 </span>
                 <span class="bt-end">
                   <svg class="bt-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9"/></svg>
@@ -6254,7 +6256,7 @@
       else{ h = wet; text = wet.pop >= 5 ? Math.round(wet.pop) + '% chance of ' + wet.ptype : ampText(wet.fc || '') || 'Unsettled'; }
       var tLo = Math.min.apply(null, light.map(function(x){ return x.temp; })), tHi = Math.max.apply(null, light.map(function(x){ return x.temp; }));
       var tShort = (tempNum(tLo) === tempNum(tHi) ? '' + tempNum(tHi) : tempNum(tLo) + '–' + tempNum(tHi)) + '°';   // the day's daylight temperatures, like a good day's row
-      return {text: text, sky: h.fc || '', icon: weatherIcon(h.fc, true, 30), tempShort: tShort};
+      return {text: text, sky: h.fc || '', icon: weatherIcon(h.fc, true, 30), tempShort: tShort, windMph: windy.mph};
     }
     function dayReason(dh){
       var counts = {}, order = [], light = dh.filter(function(x){ return !x.why.some(function(t){ return /dark out/.test(t); }); });
@@ -6290,7 +6292,7 @@
         if(dw.length){ windows.push(windowCard(dw[0], windows.length)); windows[windows.length - 1].date = d; return; }
         var dayName = d === todayStr ? 'Today' : fmtDowLong(d), dayNameShort = d === todayStr ? 'Today' : fmtDow(d), dayWx = dayWeather(dh);
         windows.push({key: d + '-none', cls: '', tone: '', none: true, medal: '', windLabel: '', windPill: '', windInk: '', day: dayNameShort, dayLong: dayName, date: d, mark: 'skip', why: dayReason(dh).replace(/^Skipped:\s*/, '').replace(/^./, function(c){ return c.toUpperCase(); }), time: '',
-          when: dayName + ' no good window', time: 'Stay inside', reason: skipReason(dh, dayWx), temp: dayWx.text, tempShort: dayWx.tempShort, sky: dayWx.sky, skyIcon: dayWx.icon, summary: dayReason(dh), detail: null, shareHead: '', shareConds: ''});
+          when: dayName + ' no good window', time: 'Stay inside', reason: skipReason(dh, dayWx), temp: dayWx.text, tempShort: dayWx.tempShort, windLabel: bandFor(dayWx.windMph).label, windPill: bandFor(dayWx.windMph).pill, windInk: bandFor(dayWx.windMph).pillInk, sky: dayWx.sky, skyIcon: dayWx.icon, summary: dayReason(dh), detail: null, shareHead: '', shareConds: ''});
       });
     }
     var anyWindow = windows.some(function(w){ return !w.none; });
