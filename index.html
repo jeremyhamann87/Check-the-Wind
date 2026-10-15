@@ -2432,12 +2432,12 @@
   footer .disclaimers-link, footer .footer-contact{ text-decoration-color:color-mix(in srgb, currentColor 45%, transparent) }
   @media (max-width:63.99em){
     .footer-bar{ min-height:98px }
-    .footer-mill{ width:96px; height:96px; color:var(--text-faint); opacity:.5 }
+    .footer-mill{ width:66.4px; height:92px; right:13.6px; bottom:7.6px; color:var(--text-faint); opacity:.5 }   /* the same 96px-scale windmill, now in a box cropped to the drawing */
     .disclaimers-link, .footer-contact{ min-height:44px; padding:0 }   /* real 44px rows: stacked 30px rows had overlapping tap areas */
     .disclaimers-link::after, .footer-contact::after{ inset:0 }
   }
-  /* phones: the footer windmill is 50% bigger (96px to 144px) */
-  @media (max-width:31.1875em){ .footer-mill{ width:144px; height:144px } }
+  /* phones: the footer windmill is 50% bigger (96px to 144px scale) and its drawing sits flush with the right margin, its feet on the copyright line's baseline */
+  @media (max-width:31.1875em){ .footer-mill{ width:99.6px; height:138px; right:0; bottom:4.7px } }
 
   /* text links: a dotted underline (More / Less, Reset, the report links, the footer links, links in the dialogs, Clear, the consent link) */
   .vd-more, .bt-using button, .bt-details, .rp-link, .disclaimers-link, .footer-contact, .disclaimers-modal-body a, .sd-clear, .consent-text button{
@@ -2930,7 +2930,7 @@
       <a class="footer-contact" href="mailto:contact@checkthewind.com">contact@checkthewind.com</a>
       <span class="data-asof">Data as of <span id="dataAsOf">—</span></span>
       <span class="footer-copy">Copyright &copy; <span id="copyYear">2026</span> Check The Wind</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.184" stroke-linecap="round" stroke-linejoin="round" class="footer-mill" focusable="false" aria-hidden="true"><path d="M11 6.6L6.71 22.6M11 6.6L15.29 22.6M8.83 14.6H13.17M7.77 18.6H14.23"/><path d="M11 6.6H19"/><rect x="17.6" y="5.3" width="3" height="2.6" rx=".3"/><g class="wm-wheel"><circle cx="11" cy="6.6" r="5.3"/><path d="M11 6.6L16.10 6.60M11 6.6L15.42 9.15M11 6.6L13.55 11.02M11 6.6L11.00 11.70M11 6.6L8.45 11.02M11 6.6L6.58 9.15M11 6.6L5.90 6.60M11 6.6L6.58 4.05M11 6.6L8.45 2.18M11 6.6L11.00 1.50M11 6.6L13.55 2.18M11 6.6L15.42 4.05"/></g><circle cx="11" cy="6.6" r="1.1" fill="currentColor"/></svg>
+      <svg viewBox="4 -0.4 16.6 23" fill="none" stroke="currentColor" stroke-width="0.184" stroke-linecap="round" stroke-linejoin="round" class="footer-mill" focusable="false" aria-hidden="true"><path d="M11 6.6L6.71 22.6M11 6.6L15.29 22.6M8.83 14.6H13.17M7.77 18.6H14.23"/><path d="M11 6.6H19"/><rect x="17.6" y="5.3" width="3" height="2.6" rx=".3"/><g class="wm-wheel"><circle cx="11" cy="6.6" r="5.3"/><path d="M11 6.6L16.10 6.60M11 6.6L15.42 9.15M11 6.6L13.55 11.02M11 6.6L11.00 11.70M11 6.6L8.45 11.02M11 6.6L6.58 9.15M11 6.6L5.90 6.60M11 6.6L6.58 4.05M11 6.6L8.45 2.18M11 6.6L11.00 1.50M11 6.6L13.55 2.18M11 6.6L15.42 4.05"/></g><circle cx="11" cy="6.6" r="1.1" fill="currentColor"/></svg>
     </div>
   </footer>
 </div>
