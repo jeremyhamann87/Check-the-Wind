@@ -2325,7 +2325,7 @@
   #todaySection .hscroll.hr-all .htile .hwx svg{ width:24px; height:24px }
   #todaySection .hscroll.hr-all .htile .all-v{
     flex:0 0 var(--all-row); min-height:0; width:100%; display:flex; align-items:center; justify-content:center; border-top:1px solid var(--line);
-    font-size:15px; font-weight:500; color:var(--text); font-variant-numeric:tabular-nums;
+    font-size:15px; font-weight:500; color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap;
   }
   /* the wind speed sits in a small tag in its wind category's color (the same colors as the Wind chart and the hero tag) */
   /* the three number rows: 38.4px on phones (20% taller than they were), a compact 44px on tablets and desktop */
@@ -2421,11 +2421,9 @@
   .vd-tag, button.vd-tag{ border-radius:var(--chip-r); min-height:var(--chip-h); box-sizing:border-box }
   .hero-band-pill{ border-radius:var(--chip-r) }
 
-  /* Wind tag: on phones and tablets it opens the wind key, so it carries a small "i"; the wind direction is also written out ("from NW") */
-  .wk-i{ display:none }
+  /* Wind tag: on phones and tablets it opens the wind key; the wind direction is also written out ("from NW") */
   .wind-from{ display:none; font-size:14px; font-weight:400; color:var(--text-muted); white-space:nowrap }   /* desktop has the compass with its N marker */
   @media (max-width:63.99em){
-    .hero-wrap .hero-reading .wk-tag .wk-i{ display:inline-block; width:14px; height:14px; margin:-2px -2px 0 4px; vertical-align:middle }
     .hero-wrap .hero-now .hero-reading .wind-from{ display:inline; order:4; margin-left:-6px }
   }
 
@@ -3607,6 +3605,16 @@
   var radarLoop = null;
   var locationTZ = null;
   var sunEvents = [];
+  // Is it daytime at this moment? From the sunrise and sunset times themselves: the last event at or before it says so (a sunrise = day, a
+  // sunset = night); before the first event, the next one tells (a coming sunset = day). The forecast's own isDaytime flag is only the fallback,
+  // because it can call an hour "night" before the sun has set (a moon in the 6 PM hour when sunset is 6:22).
+  function isDayAtTime(events, ms, fallback){
+    var last = null;
+    for(var i = 0; i < events.length; i++){ if(events[i].time.getTime() <= ms) last = events[i]; else break; }
+    if(last) return last.type === 'sunrise';
+    if(events.length) return events[0].type === 'sunset';
+    return fallback;
+  }
   var lastHourly = null;
   var radarLat = null;
   var radarRegion = 'us';
@@ -4468,8 +4476,7 @@
               '<span class="unit-top">' +
                 '<span class="unit">' + windUnit + '</span>' +
                 '<span class="hero-pill-row">' +
-                  '<span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label +
-                    '<svg class="wk-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><circle cx="12" cy="7.6" r="1" fill="currentColor" stroke="none"/></svg></span>' +
+                  '<span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span>' +
                   '<button type="button" class="info-btn wk-btn" data-info="wind" aria-haspopup="dialog">' +
                     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8"/><circle cx="12" cy="16.8" r="1.4" fill="currentColor" stroke="none"/></svg>' +
                     '<span class="sr-only">Wind key: what the wind colors mean</span>' +
@@ -4480,7 +4487,7 @@
             '</span>' +
           '</div>' +
           '<div class="weather-now">' +
-            '<div class="wicon">' + weatherIcon(current.shortForecast, current.isDaytime, 38) + '</div>' +
+            '<div class="wicon">' + weatherIcon(current.shortForecast, isDayAtTime(sunEvents, Date.now(), current.isDaytime), 38) + '</div>' +
             '<div class="wtext"><b>' + fmtTemp(current.temperature) + '</b> · ' +
               (feels ? 'Feels like ' + fmtTemp(feels.f) + ' · ' : '') + ampText(current.shortForecast) +
               (outlook ? ' <span class="hazard-eta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' + outlook + '</span>' : '') + '</div>' +
@@ -5232,6 +5239,7 @@
         if(ev.sunset && !haveSun[d + 'sunset']) stripSun.push({type: 'sunset', time: ev.sunset});
       });
     }
+    stripSun.sort(function(a, b){ return a.time - b.time; });
     // "Today, Oct 13" / "Wed, Oct 14": what the day tag at the left of the chart says for each date
     function dayLabel(dateStr){
       var md = new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
@@ -5283,7 +5291,7 @@
         pct = Math.max(4, Math.round((w.high / maxV) * 100));
         barStyle = 'background:' + band.pill;
         // the unit appears once, on the first reading ("7 mph"); every other hour is just the number
-        primary = '<span class="all-wind" style="background:' + band.pill + '; color:' + band.pillInk + '">' + windNum(w.high) + (labelText === 'Now' ? ' ' + windUnit : '') + '</span><span class="sr-only"> ' + (useKmh ? 'kilometers' : 'miles') + ' per hour, ' + band.label + (p.windDirection ? ', from the ' + (dirWord(p.windDirection) || p.windDirection) : '') + '</span>';
+        primary = windNum(w.high) + (labelText === 'Now' ? ' ' + windUnit : '') + '<span class="sr-only"> ' + (useKmh ? 'kilometers' : 'miles') + ' per hour, ' + band.label + (p.windDirection ? ', from the ' + (dirWord(p.windDirection) || p.windDirection) : '') + '</span>';
         dirHtml = '<div class="vis-dir" aria-hidden="true">' + windArrowSvg(p.windDirection, band.css, 20, 0, true) + '</div>';
       }
       return (starts ? dayCol(dateStr) : '') + '<div class="htile all-tile' + (starts ? ' day-start' : '') + '" role="listitem" data-day="' + dateStr + '" data-daylabel="' + dayLabel(dateStr) + '" data-dayshort="' + (dateStr === firstDay ? 'Today' : fmtDow(dateStr)) + '">' +
@@ -5296,7 +5304,7 @@
 
     var tiles = [];
     next10.forEach(function(p, pi){
-      tiles.push(tileHtml(p, pi === 0 ? 'Now' : fmtHour(p.startTime), weatherIcon(p.shortForecast, p.isDaytime, 28), p.shortForecast || 'Forecast unavailable'));
+      tiles.push(tileHtml(p, pi === 0 ? 'Now' : fmtHour(p.startTime), weatherIcon(p.shortForecast, isDayAtTime(stripSun, new Date(p.startTime).getTime(), p.isDaytime), 28), p.shortForecast || 'Forecast unavailable'));
       var start = new Date(p.startTime).getTime();
       stripSun.forEach(function(evt){
         var t = evt.time.getTime();
