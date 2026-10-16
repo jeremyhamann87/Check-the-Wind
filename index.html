@@ -2301,14 +2301,6 @@
   #todaySection .htile .sp-row{ flex-direction:column; align-items:center; gap:2px }
   #todaySection .htile .sp{ font-size:.9375rem }
   #todaySection .skel-htile .barwrap{ display:flex; align-items:flex-end; justify-content:center }
-  /* Precip: two tones of blue. A light container runs the full height under the icon row; the solid blue fill rises to the
-     chance of precipitation. The icon stays at the top of the column, and the trend line follows the top of each fill. */
-  #todaySection .hscroll.hr-precip .htile .barwrap::before{
-    content:""; position:absolute; left:50%; transform:translateX(-50%); top:36px; bottom:0; width:14px; border-radius:4px;   /* the same 14px as the Wind and Temp bars */
-    background:color-mix(in srgb, var(--hr-precip) 16%, transparent);
-  }
-  #todaySection .hscroll.hr-precip .htile .bar{ border-radius:4px; height:max(3px, calc((100% - 36px) * var(--k, .04))) }
-  #todaySection .hscroll.hr-precip .htile .hwx{ top:0; bottom:auto }
   /* All: plain numbers stacked under the hour and its sky icon. The units live in a labels column pinned at the left of the scroller. */
   #todaySection .all-labels{ display:none }
   #todaySection.hr-all-on .card-body{ flex-direction:row }
@@ -2322,7 +2314,7 @@
   }
   #todaySection .all-labels .al-gap-hr{ flex:0 0 20px }
   #todaySection .all-labels .al-gap-ic{ flex:0 0 30px }
-  #todaySection .all-labels .al-row{ position:relative; z-index:1; flex:0 0 44px; min-height:0; display:flex; align-items:center; gap:3px; white-space:nowrap; border-top:1px solid var(--line) }
+  #todaySection .all-labels .al-row{ position:relative; z-index:1; flex:0 0 var(--all-row); min-height:0; display:flex; align-items:center; gap:3px; white-space:nowrap; border-top:1px solid var(--line) }
   html body #todaySection .all-labels .al-n{ font-size:12px !important; color:var(--text-secondary) }
   html body #todaySection .all-labels .al-u{ font-size:12px !important; color:var(--text-muted) }
   #todaySection .hscroll.hr-all .htile{ gap:0 }
@@ -2331,13 +2323,31 @@
   #todaySection .hscroll.hr-all .htile .hwx{ position:static; transform:none; flex:0 0 30px; width:auto; height:30px; align-items:center }
   #todaySection .hscroll.hr-all .htile .hwx svg{ width:24px; height:24px }
   #todaySection .hscroll.hr-all .htile .all-v{
-    flex:0 0 44px; min-height:0; width:100%; display:flex; align-items:center; justify-content:center; border-top:1px solid var(--line);
+    flex:0 0 var(--all-row); min-height:0; width:100%; display:flex; align-items:center; justify-content:center; border-top:1px solid var(--line);
     font-size:15px; font-weight:500; color:var(--text); font-variant-numeric:tabular-nums;
   }
   /* the wind speed sits in a small tag in its wind category's color (the same colors as the Wind chart and the hero tag) */
   /* the three number rows: 38.4px on phones (20% taller than they were), a compact 44px on tablets and desktop */
-  @media (max-width:31.1875em){
-    #todaySection .hscroll.hr-all .htile .all-v, #todaySection .all-labels .al-row{ flex-basis:38.4px }
+  #todaySection{ --all-row:44px }
+  @media (max-width:31.1875em){ #todaySection{ --all-row:38.4px } }
+  /* Wind, Temp and Precip: the first data row is the number, and the chart takes the place of the two rows below it */
+  #todaySection .all-labels .al-vis{ position:relative; z-index:1; flex:0 0 calc(var(--all-row) * 2); border-top:1px solid var(--line) }
+  #todaySection .all-labels .al-sizer{ height:0; overflow:hidden; visibility:hidden; white-space:nowrap; font-size:12px }
+  #todaySection .hscroll.hr-all .htile .all-vis{
+    flex:0 0 calc(var(--all-row) * 2); min-height:0; width:100%; box-sizing:border-box; border-top:1px solid var(--line);
+    display:flex; flex-direction:column; align-items:center; padding:6px 0;
+  }
+  #todaySection .hscroll.hr-all .htile .vis-zone{ position:relative; flex:1 1 auto; min-height:0; width:100% }
+  #todaySection .hscroll.hr-all .htile .vis-zone .bar{
+    position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:14px; min-height:0; border-radius:4px;
+    height:max(4px, calc(100% * var(--k, .04)));
+  }
+  #todaySection .hscroll.hr-all .htile .vis-dir{ flex:0 0 20px; display:flex; margin-top:4px }
+  #todaySection .hscroll.hr-all .htile .vis-dir svg{ width:20px; height:20px; display:block }
+  /* Precip: the light container runs the full height of the chart zone and the solid fill rises inside it */
+  #todaySection .hscroll.hr-mode-precip .htile .vis-zone::before{
+    content:""; position:absolute; left:50%; transform:translateX(-50%); top:0; bottom:0; width:14px; border-radius:4px;
+    background:color-mix(in srgb, var(--hr-precip) 16%, transparent);
   }
   #todaySection .hscroll.hr-all .htile .all-wind{ min-width:30px; padding:2px 7px; border-radius:var(--chip-r, 4px); text-align:center; line-height:1.3 }
   #todaySection.hr-all-on .today-card--scrollable::before{ left:var(--all-lab-w, 80px); width:20px }   /* the left edge fade starts after the labels (their width hugs the text) and is a narrow 20px (56px elsewhere) */
@@ -2434,6 +2444,10 @@
   #airCard .ag{ flex:none; min-width:0 }
   #airCard .ag-dial{ width:100%; max-width:240px }
   #airCard .card-body{ padding:16px }
+  /* Tablets: two rows of three (the air quality, fine particles and ozone gauges, then weeds, trees and grasses) */
+  @media (min-width:31.25em) and (max-width:63.99em){
+    #airCard .ag-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)) }
+  }
 
   /* Desktop: all six gauges in one row, small and with a thick ring; the number sits in the hole and the word underneath */
   .ag-w-s{ display:none }
@@ -2545,10 +2559,10 @@
   /* the map is a card like the others: no outline, a lighter timestamp */
   .radar{ border:0 }
 
-  /* Phones and tablets: the radar is a module like the others, with a "Weather Radar" header; the map fills the card under it.
-     Desktop keeps the bare map. */
+  /* Phones: the radar is a module like the others, with a "Weather Radar" header; the map sits in the card under it.
+     Tablets and desktop keep the bare map, with no card around it. */
   .radar-head{ display:none }
-  @media (max-width:63.99em){
+  @media (max-width:31.1875em){
     .hero-wrap .radar{ display:flex; flex-direction:column; background:var(--module-bg); border-radius:4px }
     .hero-wrap .radar .radar-head{ display:flex; align-items:center; flex:0 0 auto; min-height:40px; padding:6px 16px; border-bottom:1px solid var(--line) }
     html body .hero-wrap .radar .radar-head h2{ margin:0; font-size:14px !important; font-weight:500 !important; line-height:1.3; color:var(--text-muted) }
@@ -2563,6 +2577,11 @@
     .hero-wrap .radar .radar-map{ flex:0 0 auto; aspect-ratio:1 / .85 }
   }
   .radar .radar-tag{ letter-spacing:0; font-weight:500 }
+
+  /* Phones and tablets: the wind speed in Current Conditions is plain text, the same color and weight as the temperature and the other values (the wind tag keeps the category color); the unit matches the number */
+  @media (max-width:63.99em){
+    html body .hero-wrap .hero-now .hero-reading .val, html body .hero-wrap .hero-now .hero-reading .unit{ color:var(--text) !important; font-weight:500 !important }   /* the number and its unit */
+  }
 </style>
 </head>
 <body>
@@ -5238,39 +5257,33 @@
           '<div class="all-v">' + popAll + '<span class="sr-only"> percent chance of precipitation</span></div>' +
         '</div>';
       }
-      var h = Math.max(8, Math.round((w.high / maxV) * 46));
-      var pct = Math.max(4, Math.round((w.high / maxV) * 100));
-      var barBg = band.pill, barStyle = null, valHtml;
+      // Wind, Temp and Precip: the same table as All. The hour and the sky icon stay where they are, the primary number sits in the first
+      // row (its unit is in the pinned labels), and the chart takes the place of the two rows below it.
+      var dateStr = localDate(p.startTime), starts = prevDay !== null && dateStr !== prevDay;
+      prevDay = dateStr;
+      var primary, pct, barStyle, dirHtml = '';
       if(hourlyMode === 'temp'){
         // bar height relative to the other hours: the coldest hour is a short bar, the warmest the tallest
         pct = tMax > tMin ? Math.round(12 + 88 * (p.temperature - tMin) / (tMax - tMin)) : 55;
         barStyle = 'background-image:var(--hr-grad); background-size:100% calc(100% / var(--k, 1)); background-position:bottom; background-repeat:no-repeat';
-        valHtml = '<span class="sp-row"><span class="sp" style="color:var(--text)">' + tempNum(p.temperature) + '°</span></span>' +
-          '<span class="sr-only">' + tempNum(p.temperature) + ' degrees ' + (useCelsius ? 'Celsius' : 'Fahrenheit') + '</span>';
+        primary = tempNum(p.temperature) + '<span class="sr-only"> degrees ' + (useCelsius ? 'Celsius' : 'Fahrenheit') + '</span>';
       }else if(hourlyMode === 'precip'){
         var pop = Math.round(popOf(p));
         pct = Math.max(4, pop);
-        barBg = 'var(--hr-precip)';
-        valHtml = '<span class="sp-row"><span class="sp" style="color:var(--text)">' + pop + '%</span></span>' +
-          '<span class="sr-only">' + pop + ' percent chance of precipitation</span>';
+        barStyle = 'background:var(--hr-precip)';
+        primary = pop + '<span class="sr-only"> percent chance of precipitation</span>';
       }else{
-        valHtml = '<span class="sp-row">' +
-            '<span class="sp" style="color:' + band.css + '">' + windNum(w.high) + '</span>' +
-            '<span class="hdir">' + windArrowSvg(p.windDirection, band.css, 22) + '</span>' +
-          '</span>' +
-          '<span class="spunit">' + windUnit + '</span>' +
-          srDir(p.windDirection);
+        pct = Math.max(4, Math.round((w.high / maxV) * 100));
+        barStyle = 'background:' + band.pill;
+        primary = '<span class="all-wind" style="background:' + band.pill + '; color:' + band.pillInk + '">' + windNum(w.high) + '</span><span class="sr-only"> ' + (useKmh ? 'kilometers' : 'miles') + ' per hour, ' + band.label + (p.windDirection ? ', from the ' + (dirWord(p.windDirection) || p.windDirection) : '') + '</span>';
+        dirHtml = '<div class="vis-dir" aria-hidden="true">' + windArrowSvg(p.windDirection, band.css, 20, 0, true) + '</div>';
       }
-      var dateStr = localDate(p.startTime), starts = prevDay !== null && dateStr !== prevDay;
-      prevDay = dateStr;
-      return '<div class="htile' + (starts ? ' day-start' : '') + '" role="listitem" data-day="' + dateStr + '" data-daylabel="' + dayLabel(dateStr) + '">' +
+      return '<div class="htile all-tile' + (starts ? ' day-start' : '') + '" role="listitem" data-day="' + dateStr + '" data-daylabel="' + dayLabel(dateStr) + '">' +
         (starts ? '<span class="day-line-label" aria-hidden="true"><span class="dl-full">' + dayLabel(dateStr) + '</span><span class="dl-short">' + fmtDow(dateStr) + '</span></span>' : '') +
         '<div class="hr">' + labelText + '</div>' +
-        '<div class="barwrap" style="--k:' + (pct / 100).toFixed(3) + '">' +
-          '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
-          '<div class="bar" style="--h:' + h + 'px; --pct:' + pct + '%; ' + (barStyle || 'background:' + barBg) + '"></div>' +
-        '</div>' +
-        '<div class="spwrap">' + valHtml + '</div>' +
+        '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
+        '<div class="all-v">' + primary + '</div>' +
+        '<div class="all-vis"><div class="vis-zone" style="--k:' + (pct / 100).toFixed(3) + '" aria-hidden="true"><div class="bar" style="' + barStyle + '"></div></div>' + dirHtml + '</div>' +
       '</div>';
     }
 
@@ -5288,18 +5301,18 @@
     });
     var keep = opts && opts.keepScroll ? todayInner.scrollLeft : 0;
     hourlyStrip.style.setProperty('--hr-grad', hrTempGradient(tMin, tMax));
-    hourlyStrip.classList.toggle('hr-precip', hourlyMode === 'precip');
-    hourlyStrip.classList.toggle('hr-all', hourlyMode === 'all');
-    todaySection.classList.toggle('hr-all-on', hourlyMode === 'all');
+    ['wind', 'temp', 'precip', 'all'].forEach(function(m){ hourlyStrip.classList.toggle('hr-mode-' + m, hourlyMode === m); });
+    hourlyStrip.classList.add('hr-all');   // every view is the same table: the hour, the icon, then the data rows
+    todaySection.classList.add('hr-all-on');
     var allLab = document.getElementById('allLabels');
     if(allLab){
-      allLab.innerHTML = hourlyMode === 'all'
-        ? '<span class="al-gap al-gap-hr"></span><span class="al-gap al-gap-ic"></span>' +
-          '<span class="al-row"><span class="al-n">Temp</span><span class="al-u">' + (useCelsius ? '°C' : '°F') + '</span></span>' +
-          '<span class="al-row"><span class="al-n">Wind</span><span class="al-u">' + windUnit + '</span></span>' +
-          '<span class="al-row"><span class="al-n">Precip</span><span class="al-u">%</span></span>'
-        : '';
-      if(hourlyMode === 'all') todaySection.style.setProperty('--all-lab-w', allLab.offsetWidth + 'px');
+      var lblT = '<span class="al-row"><span class="al-n">Temp</span><span class="al-u">' + (useCelsius ? '°C' : '°F') + '</span></span>',
+          lblW = '<span class="al-row"><span class="al-n">Wind</span><span class="al-u">' + windUnit + '</span></span>',
+          lblP = '<span class="al-row"><span class="al-n">Precip</span><span class="al-u">%</span></span>';
+      allLab.innerHTML = '<span class="al-gap al-gap-hr"></span><span class="al-gap al-gap-ic"></span>' +
+        (hourlyMode === 'all' ? lblT + lblW + lblP : (hourlyMode === 'temp' ? lblT : hourlyMode === 'precip' ? lblP : lblW) + '<span class="al-vis"></span>') +
+        '<span class="al-sizer">Wind ' + windUnit + '</span>';   // keeps the column the same width in every view
+      todaySection.style.setProperty('--all-lab-w', allLab.offsetWidth + 'px');
     }
     hourlyStrip.innerHTML = tiles.join('');
     todayInner.scrollLeft = keep;
@@ -5313,7 +5326,7 @@
   // The day tag in the header names the day of the hours now in view; the carets either side jump to the previous / next day
   var dayTagEl = document.getElementById('dayTag'), dayTagLast = '';
   var dayPrevBtn = document.getElementById('dayPrev'), dayNextBtn = document.getElementById('dayNext');
-  function hourlyPad(){ return hourlyMode === 'all' ? 0 : 12; }   // the strip's own left padding (none in All, where the chart meets the pinned labels), so a day starts where the first one does
+  function hourlyPad(){ return 0; }   // the chart meets the pinned labels in every view, with no strip padding
   function dayAnchors(){
     var out = [], seen = {};
     [].forEach.call(hourlyStrip.querySelectorAll('.htile[data-day]'), function(t){
@@ -5419,8 +5432,8 @@
       pts.push([x, y]);
     });
     var pathD = smoothPath(pts);
-    // phones and desktop get the finer line and smaller dots (tablets keep the heavier one)
-    var phone = window.matchMedia('(max-width:31.1875em), (min-width:64em)').matches, lw = phone ? 1.2 : 2, dr = phone ? 1.6 : 2.5, dash = phone ? '4 4' : '5 4';
+    // one finer line and smaller dots at every width (phones, tablets and desktop)
+    var lw = 1.2, dr = 1.6, dash = '4 4';
     var dots = pts.map(function(p){
       return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + dr + '" fill="var(--trend-line)"/>';
     }).join('');
@@ -6324,7 +6337,7 @@
         if(dw.length){ windows.push(windowCard(dw[0], windows.length)); windows[windows.length - 1].date = d; return; }
         var dayName = d === todayStr ? 'Today' : fmtDowLong(d), dayNameShort = d === todayStr ? 'Today' : fmtDow(d), dayWx = dayWeather(dh);
         windows.push({key: d + '-none', cls: '', tone: '', none: true, medal: '', windLabel: '', windPill: '', windInk: '', day: dayNameShort, dayLong: dayName, date: d, mark: 'skip', why: dayReason(dh).replace(/^Skipped:\s*/, '').replace(/^./, function(c){ return c.toUpperCase(); }), time: '',
-          when: dayName + ' no good window', time: 'Stay inside', reason: skipReason(dh, dayWx), temp: dayWx.text, tempShort: dayWx.tempShort, sky: dayWx.sky, skyIcon: dayWx.icon, summary: dayReason(dh), detail: null, shareHead: '', shareConds: ''});
+          when: dayName + ' no good window', time: '', reason: skipReason(dh, dayWx), temp: dayWx.text, tempShort: dayWx.tempShort, sky: dayWx.sky, skyIcon: dayWx.icon, summary: dayReason(dh), detail: null, shareHead: '', shareConds: ''});
       });
     }
     var anyWindow = windows.some(function(w){ return !w.none; });
