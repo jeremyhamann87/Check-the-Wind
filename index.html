@@ -1992,8 +1992,8 @@
   @media (min-width:64em){
     .db-content .wind-row > section, .db-content #todaySection, .db-content #bestSection{ margin-top:24px !important }
   }
-  @media (max-width:31.1875em){
-    #weekSection{ display:none !important }   /* 7-Day Wind Outlook is hidden on phones for now (the markup stays; remove this line to bring it back) */
+  @media (max-width:63.99em){
+    #weekSection{ display:none !important }   /* 7-Day Wind Outlook is hidden on phones and tablets for now (the markup stays; remove this line to bring it back) */
   }
 
   /* Desktop: 24px between modules */
@@ -2126,6 +2126,14 @@
   .bt-markbox{grid-area:mark; display:flex; align-items:center; justify-content:center; width:22px}
   .bt-sky{display:flex; flex:0 0 auto}
   .bt-sky svg{display:block; width:30px; height:30px}
+  /* Skipped days wear a light red tint and good windows a light green one, across the whole row, open or closed (same lightness) */
+  :root{ --bt-good:#2FBE6E; --bt-bad:#E5484D }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bt-good:#4ED694; --bt-bad:#F26B61 } }
+  :root[data-theme="dark"]{ --bt-good:#4ED694; --bt-bad:#F26B61 }
+  .bt-item{ --bt-tint:color-mix(in srgb, var(--bt-good) 6%, transparent); --bt-open-bg:var(--bt-tint) }
+  .bt-item--none{ --bt-tint:color-mix(in srgb, var(--bt-bad) 6%, transparent) }
+  .bt-item .bt-row, .bt-item .bt-row:hover, .bt-item .bt-row[aria-expanded]{ background:var(--bt-tint) }
+  .bt-item .bt-panel{ background:var(--bt-tint) }
   .bt-tempb{font-weight:500; font-size:14px; color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap}   /* the window's temperature, beside the sky icon */
   /* Desktop: no expanding. Each row carries its reasoning inline: day and time, the reasoning, then the sky icon and temperature. */
   .bt-reason{display:none}
@@ -4236,6 +4244,9 @@
   var COMPASS16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
   // Reflectivity colour -> 0 none, 1 light (blue), 2 moderate (green), 3 heavy (yellow), 4 intense (orange, red, magenta, white)
   function radarLevelOf(r, g, b){
+    // The radar tiles draw the faintest returns (clear-air echoes, insects, ground clutter) as a pale blue-gray ramp. That is not
+    // precipitation, and its brighter shades used to be mistaken for the red "intense" colors (which gave a false "Thunderstorms").
+    if(r >= 90 && r <= 200 && g >= 100 && g <= 200 && b >= 165 && b <= 200 && b >= g - 8 && b >= r - 8) return 0;
     if(r >= 200 && b >= 150) return 4;
     if(r >= 200 && g >= 200 && b < 120) return 3;
     if(r >= 150 && g < 225) return 4;
@@ -4256,12 +4267,18 @@
           try{
             var c = document.createElement('canvas'); c.width = 256; c.height = 256;
             var ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0);
-            var best = 0;
+            var counts = [0, 0, 0, 0, 0];
             for(var dy = -2; dy <= 2; dy++) for(var dx = -2; dx <= 2; dx++){
               var x = Math.min(255, Math.max(0, px + dx)), y = Math.min(255, Math.max(0, py + dy));
               var d = ctx.getImageData(x, y, 1, 1).data;
               if(d[3] < 40) continue;
-              best = Math.max(best, radarLevelOf(d[0], d[1], d[2]));
+              counts[radarLevelOf(d[0], d[1], d[2])]++;
+            }
+            // a level counts only when it fills at least 3 of the 25 pixels (a single speck is noise); light echoes need just one
+            var best = 0;
+            for(var lv = 4; lv >= 1; lv--){
+              var n = 0; for(var k = lv; k <= 4; k++) n += counts[k];
+              if(n >= (lv >= 3 ? 3 : 1)){ best = lv; break; }
             }
             finish(best);
           }catch(e){ finish(null); }
@@ -4308,7 +4325,10 @@
     var mm = sig.model && typeof sig.model.precipitation === 'number' ? sig.model.precipitation : 0;
     var level = typeof sig.radar === 'number' ? sig.radar : 0;
 
-    var thunder = /thunder|tstm/.test(txt) || pw.some(function(w){ return /thunder/.test(w); }) || (code !== null && code >= 95) || level >= 4;
+    // Radar alone no longer calls thunderstorms: its intense colors need something else to agree (a real chance of precipitation
+    // in the forecast, a wet station report or model reading), since a stray radar return can show up on a clear day.
+    var radarThunder = level >= 4 && (pop >= 20 || /rain|drizzle|shower|sleet|freezing|snow/.test(txt) || mm > 0 || (code !== null && code >= 51));
+    var thunder = /thunder|tstm/.test(txt) || pw.some(function(w){ return /thunder/.test(w); }) || (code !== null && code >= 95) || radarThunder;
     var obsSnow = /snow|flurr|blizzard/.test(txt) || pw.some(function(w){ return /snow/.test(w); }) || (code !== null && ((code >= 71 && code <= 77) || code === 85 || code === 86));
     var obsRain = /rain|drizzle|shower|sleet|freezing/.test(txt) || pw.some(function(w){ return /rain|drizzle|sleet|ice_pellets|freezing/.test(w); }) || (code !== null && ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)));
     var fogOnly = /fog|mist|haze|smoke/.test(txt) || (code === 45 || code === 48);
