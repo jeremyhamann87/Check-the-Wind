@@ -2126,14 +2126,12 @@
   .bt-markbox{grid-area:mark; display:flex; align-items:center; justify-content:center; width:22px}
   .bt-sky{display:flex; flex:0 0 auto}
   .bt-sky svg{display:block; width:30px; height:30px}
-  /* Skipped days wear a light red tint and good windows a light green one, across the whole row, open or closed (same lightness) */
-  :root{ --bt-good:#2FBE6E; --bt-bad:#E5484D }
-  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bt-good:#4ED694; --bt-bad:#F26B61 } }
-  :root[data-theme="dark"]{ --bt-good:#4ED694; --bt-bad:#F26B61 }
-  .bt-item{ --bt-tint:color-mix(in srgb, var(--bt-good) 6%, transparent); --bt-open-bg:var(--bt-tint) }
-  .bt-item--none{ --bt-tint:color-mix(in srgb, var(--bt-bad) 6%, transparent) }
-  .bt-item .bt-row, .bt-item .bt-row:hover, .bt-item .bt-row[aria-expanded]{ background:var(--bt-tint) }
-  .bt-item .bt-panel{ background:var(--bt-tint) }
+  /* Skipped days wear a light red tint across the whole row, open or closed; good windows have none */
+  :root{ --bt-bad:#E5484D }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bt-bad:#F26B61 } }
+  :root[data-theme="dark"]{ --bt-bad:#F26B61 }
+  .bt-item--none{ --bt-tint:color-mix(in srgb, var(--bt-bad) 6%, transparent); --bt-open-bg:var(--bt-tint) }
+  .bt-item--none .bt-row, .bt-item--none .bt-row:hover, .bt-item--none .bt-row[aria-expanded], .bt-item--none .bt-panel{ background:var(--bt-tint) }
   .bt-tempb{font-weight:500; font-size:14px; color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap}   /* the window's temperature, beside the sky icon */
   /* Desktop: no expanding. Each row carries its reasoning inline: day and time, the reasoning, then the sky icon and temperature. */
   .bt-reason{display:none}
@@ -5517,7 +5515,7 @@
   async function fetchBestInputs(lat, lon){
     var q = 'latitude=' + lat.toFixed(4) + '&longitude=' + lon.toFixed(4) + '&timezone=auto';
     var r = await Promise.all([
-      fetchOptionalJson('https://air-quality-api.open-meteo.com/v1/air-quality?' + q + '&hourly=us_aqi&forecast_days=7'),
+      fetchOptionalJson('https://air-quality-api.open-meteo.com/v1/air-quality?' + q + '&hourly=us_aqi,us_aqi_pm2_5,us_aqi_pm10,us_aqi_ozone,us_aqi_nitrogen_dioxide,us_aqi_sulphur_dioxide,us_aqi_carbon_monoxide,dust&forecast_days=7'),
       fetchOptionalJson('https://api.open-meteo.com/v1/forecast?' + q + '&hourly=precipitation&past_days=2&forecast_days=1')
     ]);
     function toMap(data, field){
@@ -5529,7 +5527,22 @@
       });
       return any ? map : null;
     }
-    return { aqi: toMap(r[0], 'us_aqi'), past: toMap(r[1], 'precipitation') };
+    // Which pollutant is driving each hour's AQI: the highest of the per-pollutant AQIs ('dust' when coarse particles lead and blowing dust is high)
+    function driverMap(data){
+      if(!data || !data.hourly || !data.hourly.time) return null;
+      var H = data.hourly, keys = {pm25: 'us_aqi_pm2_5', pm10: 'us_aqi_pm10', ozone: 'us_aqi_ozone', no2: 'us_aqi_nitrogen_dioxide', so2: 'us_aqi_sulphur_dioxide', co: 'us_aqi_carbon_monoxide'};
+      var map = {}, any = false;
+      H.time.forEach(function(t, i){
+        var best = null, bv = -1;
+        Object.keys(keys).forEach(function(k){ var v = H[keys[k]] && H[keys[k]][i]; if(typeof v === 'number' && v > bv){ bv = v; best = k; } });
+        if(best){
+          if(best === 'pm10' && H.dust && typeof H.dust[i] === 'number' && H.dust[i] >= 50) best = 'dust';
+          map[t.slice(0, 13)] = best; any = true;
+        }
+      });
+      return any ? map : null;
+    }
+    return { aqi: toMap(r[0], 'us_aqi'), aqiDrv: driverMap(r[0]), past: toMap(r[1], 'precipitation') };
   }
 
   /* AirNow (EPA) powers the real-time "Air Quality Index" and "Pollutants (PM2.5)" gauges — official government
@@ -5863,6 +5876,7 @@
       var frozenText = iceText || (snowText && temp <= 34) || (wetText && temp <= 32);
       var chancey = /chance|slight|isolated|scattered/.test(text);
       var aqi = inputs.aqi && typeof inputs.aqi[p.startTime.slice(0, 13)] === 'number' ? inputs.aqi[p.startTime.slice(0, 13)] : null;
+      var aqiDrv = inputs.aqiDrv ? (inputs.aqiDrv[p.startTime.slice(0, 13)] || null) : null;
       var hour = parseInt(p.startTime.slice(11, 13), 10);
 
       var mid = new Date(p.startTime).getTime() + 1800000;
@@ -5900,7 +5914,7 @@
       wet = Math.min(1, wet * wetDecay(temp) + intensity * 0.6);
       frozen = Math.min(1, frozen * wetDecay(temp) + (frozenText ? intensity * 0.6 : 0));
 
-      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, dir: p.windDirection || '', pop: pop, ptype: ptype, hum: hum, wet: groundNow, aqi: aqi, ok: ok, score: score, why: why, fc: p.shortForecast || ''};
+      return {i: i, iso: p.startTime, hour: hour, temp: temp, mph: mph, dir: p.windDirection || '', pop: pop, ptype: ptype, hum: hum, wet: groundNow, aqi: aqi, aqiDrv: aqiDrv, ok: ok, score: score, why: why, fc: p.shortForecast || ''};
     });
   }
 
@@ -7042,6 +7056,12 @@
       }else{
         s = art + ev + ' is in effect' + (isNaN(end) ? '.' : ' until ' + vdLocalWhen(end, c) + '.');
       }
+      if(/air quality/.test(ev)){
+        // the agency's own reason, when its text names one
+        var adesc = String(a.description || '') + ' ' + String(a.headline || '');
+        var acause = /wildfire|smoke/i.test(adesc) ? 'wildfire smoke' : /ozone/i.test(adesc) ? 'ozone' : /particulate|pm\s?2\.5|fine particle/i.test(adesc) ? 'fine particles' : /dust/i.test(adesc) ? 'blowing dust' : '';
+        if(acause) s = s.replace(/\.$/, '') + ', because of ' + acause + '.';
+      }
       if(/wind/.test(ev)){
         var top = Math.max.apply(null, c.hrs.slice(0, 12).map(function(h){ return h.mph; }));
         if(top >= 15) s += ' Winds could reach ' + fmtWind(top) + '.';
@@ -7087,7 +7107,7 @@
       else if((m = /^cold at (\S+)/.exec(w))) phrases.push('it drops to ' + m[1]);
       else if((m = /^hot at (\S+)/.exec(w))) phrases.push('it heats up to ' + m[1]);
       else if(/snowy or icy/.test(w)) phrases.push('the ground turns snowy or icy');
-      else if((m = /AQI (\d+)/.exec(w))) phrases.push('air quality worsens (AQI ' + m[1] + ')');
+      else if((m = /AQI (\d+)/.exec(w))) phrases.push('air quality worsens (AQI ' + m[1] + (vdAqiCause(next) ? ', ' + vdAqiCause(next) : '') + ')');
       else if(/humidity/.test(w)) phrases.push('it gets humid');
       else if(/wet ground/.test(w)) phrases.push('the ground gets wet');
     });
@@ -7135,14 +7155,28 @@
     if(a.wet < 0.15 && a.pop < 20) opts.push('Give’r!');
     return opts.length ? vdPick(opts, seed, 5) : '';
   }
+  // Why the air quality is (or is going to be) poor, from the forecast's per-pollutant AQIs: "from ozone, which builds in afternoon sun and heat".
+  // The forecast is a model, so this names the leading pollutant, not a measurement. Empty when the forecast did not say.
+  function vdAqiCause(h){
+    var d = h && h.aqiDrv;
+    if(!d) return '';
+    if(d === 'ozone') return 'from ozone, which builds in afternoon sun and heat';
+    if(d === 'pm25') return h.mph < 8 ? 'from fine particles building up as the air stays still' : 'from fine particles, like smoke or haze';
+    if(d === 'dust') return 'from blowing dust';
+    if(d === 'pm10') return 'from dust and coarse particles';
+    if(d === 'no2') return 'from traffic and industrial pollution';
+    if(d === 'so2') return 'from sulfur dioxide';
+    if(d === 'co') return 'from carbon monoxide';
+    return '';
+  }
   // Why the current hour is ruled out, as a plain clause ("it’s dark out", "winds up to 25 mph", "the ground is wet")
-  function vdNowClause(w){
+  function vdNowClause(w, h){
     var m;
     if((m = /^wind up to (.+)$/.exec(w))) return 'winds up to ' + m[1];
     if((m = /^(\d+)(% chance of (?:rain|snow|sleet|mixed precip|hail|precipitation))$/.exec(w))) return aOrAn(+m[1]) + ' ' + m[1] + m[2];
     if((m = /^cold at (.+)$/.exec(w))) return 'it’s cold at ' + m[1];
     if((m = /^hot at (.+)$/.exec(w))) return 'it’s hot at ' + m[1];
-    if((m = /^poor air quality (\(.+\))$/.exec(w))) return 'air quality is poor ' + m[1];
+    if((m = /^poor air quality \(AQI (\d+)\)$/.exec(w))) return 'air quality is poor (AQI ' + m[1] + (vdAqiCause(h) ? ', ' + vdAqiCause(h) : '') + ')';
     if(w === 'snowy or icy ground') return 'the ground is snowy or icy';
     if(w === 'wet ground') return 'the ground is wet';
     if(w === 'high humidity') return 'it’s humid';
@@ -7382,7 +7416,7 @@
           'The whole town is asleep, so stay tucked in, warm and snug.'], seed, 8));
         out.push(vdPick(['Rest up and stay safe at home until the sun comes up.', 'Sleep tight, and keep the adventures for the morning.', 'Stay cozy and safe at home until daylight.'], seed, 9));
       }else{
-        var wx = (r.why || []).filter(function(w){ return !/dark out/.test(w); }).slice(0, 2).map(vdNowClause);
+        var wx = (r.why || []).filter(function(w){ return !/dark out/.test(w); }).slice(0, 2).map(function(w){ return vdNowClause(w, c.hrs[0]); });
         out.push(tw + (wx.length ? ', ' + vdList(wx) : ' is a rough one out there') + ', so stay snuggled up in bed.');
         out.push(vdDawnMinutes() !== null ? 'The town is waking up and people are getting ready, so stay safe at home until it passes.' : vdPick(['Stay safe and warm at home until it passes.', 'Be safe at home, and let the night pass by.'], seed, 9));
       }
@@ -7507,7 +7541,7 @@
       var aft2 = vdAfter(r, c); if(aft2) out.push(r.incoming ? 'Heads up: ' + vdLc(aft2) : aft2);
     }else if(r.state === 'maybe'){
       var sp2 = vdSpan(r.hs, c);
-      var nowWhy = r.why && r.why.length ? tw + ', ' + vdList(vdWhyClean(r.why).slice(0, 2).map(vdNowClause)) + ', so hang tight' : 'Hang tight';
+      var nowWhy = r.why && r.why.length ? tw + ', ' + vdList(vdWhyClean(r.why).slice(0, 2).map(function(w){ return vdNowClause(w, c.hrs[0]); })) + ', so hang tight' : 'Hang tight';
       out.push(nowWhy + (caVoice ? ', eh: ' : ': ') + sp2.day + ' ' + sp2.phrase + ' looks like a lovely time to get outside.');
       var hcM = vdHeroConditions(r.agg);
       out.push('Then it will be ' + vdLc(hcM.main));
@@ -8048,6 +8082,7 @@
     if(/warning$/i.test(ev)) return 'warning';
     if(/watch$/i.test(ev)) return 'watch';
     if(/advisory$/i.test(ev)) return 'advisory';
+    if(/^air quality alert$/i.test(ev)) return 'advisory';   // state air quality alerts, shown like an advisory
     return null;
   }
 
