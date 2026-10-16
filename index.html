@@ -5259,7 +5259,7 @@
           '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
           '<div class="all-v">' + tempNum(p.temperature) + '<span class="sr-only"> degrees ' + (useCelsius ? 'Celsius' : 'Fahrenheit') + '</span></div>' +
           '<div class="all-v"><span class="all-wind" style="background:' + band.pill + '; color:' + band.pillInk + '">' + windNum(w.high) + '</span><span class="sr-only"> ' + (useKmh ? 'kilometers' : 'miles') + ' per hour, ' + band.label + (p.windDirection ? ', from the ' + (dirWord(p.windDirection) || p.windDirection) : '') + '</span></div>' +
-          '<div class="all-v">' + popAll + '<span class="sr-only"> percent chance of precipitation</span></div>' +
+          '<div class="all-v">' + popAll + '%<span class="sr-only"> chance of precipitation</span></div>' +
         '</div>';
       }
       // Wind, Temp and Precip: the same table as All. The hour and the sky icon stay where they are, the primary number sits in the first
@@ -5276,7 +5276,7 @@
         var pop = Math.round(popOf(p));
         pct = Math.max(4, pop);
         barStyle = 'background:var(--hr-precip)';
-        primary = pop + '<span class="sr-only"> percent chance of precipitation</span>';
+        primary = pop + '%<span class="sr-only"> chance of precipitation</span>';
       }else{
         pct = Math.max(4, Math.round((w.high / maxV) * 100));
         barStyle = 'background:' + band.pill;
@@ -5314,7 +5314,9 @@
           lblW = '<span class="al-row"><span class="al-n">Wind</span><span class="al-u">' + windUnit + '</span></span>',
           lblP = '<span class="al-row"><span class="al-n">Precip</span><span class="al-u">%</span></span>';
       allLab.innerHTML = '<span class="al-gap al-gap-hr"></span><span class="al-gap al-gap-ic"></span>' +
-        (hourlyMode === 'all' ? lblT + lblW + lblP : (hourlyMode === 'temp' ? lblT : hourlyMode === 'precip' ? lblP : lblW) + '<span class="al-vis"></span>');
+        (hourlyMode === 'all' ? lblT + lblW + lblP
+          // Wind, Temp and Precip: the row label is just the unit
+          : '<span class="al-row"><span class="al-u">' + (hourlyMode === 'temp' ? (useCelsius ? '°C' : '°F') : hourlyMode === 'precip' ? '%' : windUnit) + '</span></span><span class="al-vis"></span>');
       todaySection.style.setProperty('--all-lab-w', allLab.offsetWidth + 'px');   // the labels hug their text
     }
     hourlyStrip.innerHTML = tiles.join('');
