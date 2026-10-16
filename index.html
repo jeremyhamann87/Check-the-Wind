@@ -5604,6 +5604,8 @@
     };
   }
 
+  // true when the AirNow result carries a real reading (not the Open-Meteo stand-in built from it)
+  function hasAirNow(r){ return !!(r && r.overall && typeof r.overall.aqi === 'number' && !r.overall.fromOm); }
   function clamp01(x){ return Math.max(0, Math.min(1, x)); }
   function wetDecay(temp){ return temp >= 75 ? 0.88 : temp >= 55 ? 0.92 : temp > 32 ? 0.95 : 0.97; }
 
@@ -8460,7 +8462,21 @@
     // (so it never says "Unavailable" while the Current Conditions show an AQI). PM2.5 stays Unavailable: there is no AQI for it.
     if(!(airNowRes && airNowRes.overall) && bestInputs && bestInputs.aqi && typeof bestInputs.aqi[hourly[0].startTime.slice(0, 13)] === 'number'){
       var omAqi = bestInputs.aqi[hourly[0].startTime.slice(0, 13)];
-      airNowRes = {overall: {aqi: Math.round(omAqi), catName: aqiCatName(omAqi)}, pm25: airNowRes && airNowRes.pm25 || null, ozone: airNowRes && airNowRes.ozone || null};
+      airNowRes = {overall: {aqi: Math.round(omAqi), catName: aqiCatName(omAqi), fromOm: true}, pm25: airNowRes && airNowRes.pm25 || null, ozone: airNowRes && airNowRes.ozone || null};
+    }
+    // The hero text, the Air quality stat and Best Times use the Open-Meteo forecast, while the row and gauges show AirNow's reading.
+    // Anchor the forecast to the real reading now, easing back to the forecast over the next 6 hours, so every AQI on the page agrees.
+    if(hasAirNow(airNowRes) && bestInputs && bestInputs.aqi){
+      var anchor = airNowRes.overall.aqi, k0 = hourly[0].startTime.slice(0, 13), om0 = bestInputs.aqi[k0], moved = false;
+      if(typeof om0 === 'number' && Math.round(om0) !== Math.round(anchor)){
+        var delta = anchor - om0;
+        for(var hk = 0; hk < 6 && hk < hourly.length; hk++){
+          var key = hourly[hk].startTime.slice(0, 13);
+          if(typeof bestInputs.aqi[key] === 'number') bestInputs.aqi[key] = Math.max(0, Math.round(bestInputs.aqi[key] + delta * (1 - hk / 6)));
+        }
+        moved = true;
+      }
+      if(moved) bestWhen = renderBest(hourly, bestInputs);
     }
     renderAirPollen(lat, todayStr, airNowRes);
     rpLoad(lat, lon, ca ? null : (props.cwa || props.gridId || null));
