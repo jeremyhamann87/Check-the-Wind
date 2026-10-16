@@ -2332,7 +2332,11 @@
   @media (max-width:31.1875em){ #todaySection{ --all-row:38.4px } }
   /* Wind, Temp and Precip: the first data row is the number, and the chart takes the place of the two rows below it */
   #todaySection .all-labels .al-vis{ position:relative; z-index:1; flex:0 0 calc(var(--all-row) * 2); border-top:1px solid var(--line) }
-  #todaySection .all-labels .al-sizer{ height:0; overflow:hidden; visibility:hidden; white-space:nowrap; font-size:12px }
+  /* The day bar: a narrow solid gray column that opens each day (it is not pinned: it scrolls by with the hours and never overlaps one).
+     The date runs up its side, in full on every screen size. */
+  #todaySection .hscroll .day-col{ flex:0 0 20px; width:20px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, var(--text-muted) 13%, var(--surface)) }
+  #todaySection .hscroll .day-col span{ writing-mode:vertical-rl; transform:rotate(180deg); white-space:nowrap; font-size:13px; font-weight:500; line-height:1; color:var(--text-secondary) }
+  #todaySection .hscroll.hr-all .htile.day-start{ border-left:0 }
   #todaySection .hscroll.hr-all .htile .all-vis{
     flex:0 0 calc(var(--all-row) * 2); min-height:0; width:100%; box-sizing:border-box; border-top:1px solid var(--line);
     display:flex; flex-direction:column; align-items:center; padding:6px 0;
@@ -5240,16 +5244,17 @@
       if(locationTZ) o.timeZone = locationTZ;
       return evt.time.toLocaleTimeString('en-US', o);
     }
+    // The day bar: a narrow solid gray column that opens each day, with the date written up its side. It sits between the hours (never over them) and scrolls by with them.
+    function dayCol(dateStr){ return '<div class="day-col" role="presentation" aria-hidden="true"><span>' + dayLabel(dateStr) + '</span></div>'; }
     function tileHtml(p, labelText, iconHtml, ariaLabel){
       var w = parseWind(p.windSpeed);
       var band = bandFor(w.high);
       if(hourlyMode === 'all'){
         // All: plain numbers stacked under the hour and its sky icon (the units are in the pinned labels at the left)
-        var dStr = localDate(p.startTime), startsAll = prevDay !== null && dStr !== prevDay;
+        var dStr = localDate(p.startTime), startsAll = prevDay !== null && dStr !== prevDay, barAll = prevDay === null || dStr !== prevDay;
         prevDay = dStr;
         var popAll = Math.round(popOf(p));
-        return '<div class="htile all-tile' + (startsAll ? ' day-start' : '') + '" role="listitem" data-day="' + dStr + '" data-daylabel="' + dayLabel(dStr) + '">' +
-          (startsAll ? '<span class="day-line-label" aria-hidden="true"><span class="dl-full">' + dayLabel(dStr) + '</span><span class="dl-short">' + fmtDow(dStr) + '</span></span>' : '') +
+        return (barAll ? dayCol(dStr) : '') + '<div class="htile all-tile' + (startsAll ? ' day-start' : '') + '" role="listitem" data-day="' + dStr + '" data-daylabel="' + dayLabel(dStr) + '" data-dayshort="' + (dStr === firstDay ? 'Today' : fmtDow(dStr)) + '">' +
           '<div class="hr">' + labelText + '</div>' +
           '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
           '<div class="all-v">' + tempNum(p.temperature) + '<span class="sr-only"> degrees ' + (useCelsius ? 'Celsius' : 'Fahrenheit') + '</span></div>' +
@@ -5259,7 +5264,7 @@
       }
       // Wind, Temp and Precip: the same table as All. The hour and the sky icon stay where they are, the primary number sits in the first
       // row (its unit is in the pinned labels), and the chart takes the place of the two rows below it.
-      var dateStr = localDate(p.startTime), starts = prevDay !== null && dateStr !== prevDay;
+      var dateStr = localDate(p.startTime), starts = prevDay !== null && dateStr !== prevDay, barNew = prevDay === null || dateStr !== prevDay;
       prevDay = dateStr;
       var primary, pct, barStyle, dirHtml = '';
       if(hourlyMode === 'temp'){
@@ -5278,8 +5283,7 @@
         primary = '<span class="all-wind" style="background:' + band.pill + '; color:' + band.pillInk + '">' + windNum(w.high) + '</span><span class="sr-only"> ' + (useKmh ? 'kilometers' : 'miles') + ' per hour, ' + band.label + (p.windDirection ? ', from the ' + (dirWord(p.windDirection) || p.windDirection) : '') + '</span>';
         dirHtml = '<div class="vis-dir" aria-hidden="true">' + windArrowSvg(p.windDirection, band.css, 20, 0, true) + '</div>';
       }
-      return '<div class="htile all-tile' + (starts ? ' day-start' : '') + '" role="listitem" data-day="' + dateStr + '" data-daylabel="' + dayLabel(dateStr) + '">' +
-        (starts ? '<span class="day-line-label" aria-hidden="true"><span class="dl-full">' + dayLabel(dateStr) + '</span><span class="dl-short">' + fmtDow(dateStr) + '</span></span>' : '') +
+      return (barNew ? dayCol(dateStr) : '') + '<div class="htile all-tile' + (starts ? ' day-start' : '') + '" role="listitem" data-day="' + dateStr + '" data-daylabel="' + dayLabel(dateStr) + '" data-dayshort="' + (dateStr === firstDay ? 'Today' : fmtDow(dateStr)) + '">' +
         '<div class="hr">' + labelText + '</div>' +
         '<div class="hwx" role="img" aria-label="' + ariaLabel.replace(/"/g, '&quot;') + '">' + iconHtml + '</div>' +
         '<div class="all-v">' + primary + '</div>' +
@@ -5310,11 +5314,11 @@
           lblW = '<span class="al-row"><span class="al-n">Wind</span><span class="al-u">' + windUnit + '</span></span>',
           lblP = '<span class="al-row"><span class="al-n">Precip</span><span class="al-u">%</span></span>';
       allLab.innerHTML = '<span class="al-gap al-gap-hr"></span><span class="al-gap al-gap-ic"></span>' +
-        (hourlyMode === 'all' ? lblT + lblW + lblP : (hourlyMode === 'temp' ? lblT : hourlyMode === 'precip' ? lblP : lblW) + '<span class="al-vis"></span>') +
-        '<span class="al-sizer">Wind ' + windUnit + '</span>';   // keeps the column the same width in every view
-      todaySection.style.setProperty('--all-lab-w', allLab.offsetWidth + 'px');
+        (hourlyMode === 'all' ? lblT + lblW + lblP : (hourlyMode === 'temp' ? lblT : hourlyMode === 'precip' ? lblP : lblW) + '<span class="al-vis"></span>');
+      todaySection.style.setProperty('--all-lab-w', allLab.offsetWidth + 'px');   // the labels hug their text
     }
     hourlyStrip.innerHTML = tiles.join('');
+    dayTagLast = '';
     todayInner.scrollLeft = keep;
 
     lastHourly = next10;
@@ -5326,12 +5330,12 @@
   // The day tag in the header names the day of the hours now in view; the carets either side jump to the previous / next day
   var dayTagEl = document.getElementById('dayTag'), dayTagLast = '';
   var dayPrevBtn = document.getElementById('dayPrev'), dayNextBtn = document.getElementById('dayNext');
-  function hourlyPad(){ return 0; }   // the chart meets the pinned labels in every view, with no strip padding
+  function hourlyPad(){ return 20; }   // the day bar's width: a day starts where its bar does, flush against the pinned labels
   function dayAnchors(){
     var out = [], seen = {};
     [].forEach.call(hourlyStrip.querySelectorAll('.htile[data-day]'), function(t){
       var d = t.getAttribute('data-day');
-      if(!seen[d]){ seen[d] = 1; out.push({day: d, label: t.getAttribute('data-daylabel'), left: Math.max(0, t.offsetLeft - hourlyPad())}); }
+      if(!seen[d]){ seen[d] = 1; out.push({day: d, label: t.getAttribute('data-daylabel'), short: t.getAttribute('data-dayshort'), left: Math.max(0, t.offsetLeft - hourlyPad())}); }
     });
     return out;
   }
