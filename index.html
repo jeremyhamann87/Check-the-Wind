@@ -6866,14 +6866,16 @@
     var k = bandFor(mph).key;
     return k === 'calm' ? 'calm winds' : k === 'breezy' ? 'a steady breeze' : k === 'windy' ? 'windy conditions' : k === 'verywindy' ? 'blustery winds' : 'howling winds';
   }
-  function vdGoodSentence(a){
+  function vdGoodSentence(a, hero){
     var k = bandFor(a.wMax).key;
     var wind = k === 'calm' ? 'calm' : k === 'breezy' ? 'breezy' : k === 'windy' ? 'windy' : k === 'verywindy' ? 'blustery' : 'howling';
-    var air = a.aqi !== null ? (a.aqi <= 50 ? 'good air quality' : 'moderate air quality') : '';
+    var air = a.aqi !== null && !hero ? (a.aqi <= 50 ? 'good air quality' : 'moderate air quality') : '';   // the hero leaves air to the Air Quality row
     // Dry ground and almost no chance of rain: "Mild, calm and dry". Otherwise say how likely precipitation is and when it could arrive.
     if(a.wet < 0.15 && a.pop < 10){
       return vdCap(vdFeel(a.tAvg)) + ', ' + wind + ' and dry' + (air ? ', with ' + air : '') + '.';
     }
+    // the hero does not restate "no precipitation expected": the ground row and the hazard row already say so
+    if(hero && a.pop < 5) return vdCap(vdFeel(a.tAvg)) + ' and ' + wind + '.';
     var precip = a.pop >= 5 ? aOrAn(a.pop) + ' ' + a.pop + '% chance of ' + a.popType + ' around ' + a.popAt : 'no precipitation expected';
     return vdCap(vdFeel(a.tAvg)) + ' and ' + wind + ', with ' + precip + (air ? ' and ' + air : '') + '.';
   }
@@ -7080,28 +7082,20 @@
       var ev = String(a.event || '').toLowerCase();
       return ev && !skipped[ev] && !/^tornado (warning|emergency)/.test(ev);
     });
+    // The banner above already names each alert and gives its times, so the text only adds what the banner does not say
     list.slice(0, 2).forEach(function(a){
-      var ev = String(a.event).toLowerCase(), art = /^[aeiou]/.test(ev) ? 'An ' : 'A ';
-      var end = Date.parse(a.ends || a.expires), onset = a.onset ? Date.parse(a.onset) : NaN;
-      var s;
-      if(!isNaN(onset) && onset > now + 60000){
-        s = art + ev + ' takes effect at ' + vdLocalWhen(onset, c) + (isNaN(end) ? '.' : ' and runs until ' + vdLocalWhen(end, c) + '.');
-      }else{
-        s = art + ev + ' is in effect' + (isNaN(end) ? '.' : ' until ' + vdLocalWhen(end, c) + '.');
-      }
+      var ev = String(a.event).toLowerCase();
       if(/air quality/.test(ev)){
         // the agency's own reason, when its text names one
         var adesc = String(a.description || '') + ' ' + String(a.headline || '');
         var acause = /wildfire|smoke/i.test(adesc) ? 'wildfire smoke' : /ozone/i.test(adesc) ? 'ozone' : /particulate|pm\s?2\.5|fine particle/i.test(adesc) ? 'fine particles' : /dust/i.test(adesc) ? 'blowing dust' : '';
-        if(acause) s = s.replace(/\.$/, '') + ', because of ' + acause + '.';
+        if(acause) out.push('The air quality alert is because of ' + acause + '.');
       }
       if(/wind/.test(ev)){
         var top = Math.max.apply(null, c.hrs.slice(0, 12).map(function(h){ return h.mph; }));
-        if(top >= 15) s += ' Winds could reach ' + fmtWind(top) + '.';
+        if(top >= 15) out.push('Winds could reach ' + fmtWind(top) + '.');
       }
-      out.push(s);
     });
-    if(list.length > 2) out.push('Plus ' + (list.length - 2) + ' more alert' + (list.length - 2 === 1 ? '' : 's') + ', listed above.');
     return out;
   }
   // Within an hour of sunrise: the town is waking up
@@ -7328,7 +7322,7 @@
     else if(h0 < 18){
       if(school && h0 >= 12 && h0 < 16) segs.push({label: 'school pick-up', win: windowOf(Math.max(h0, 14), 16)});
       segs.push({label: 'the commute home', win: h0 < 15 ? windowOf(16, 18) : windowOf(h0, h0 + 2)});
-    }else{ evening = true; segs.push({label: 'the evening', win: windowOf(h0, h0 + 2)}); }
+    }else{ evening = true; segs.push({label: 'getting around tonight', win: windowOf(h0, h0 + 2)}); }
     segs = segs.filter(function(sg){ return sg.win.length; });
     if(!segs.length) return '';
     var bad = segs.filter(function(sg){ sg.issues = troubleIn(sg.win); return sg.issues.length || sg.issues.implicit; });
@@ -7347,9 +7341,9 @@
     var all = []; segs.forEach(function(sg){ all = all.concat(sg.win); });
     var a = vdAgg(all);
     var comfy = a.tAvg >= 45 && a.tAvg <= 88 && a.pop < 20 && a.wMax < 16;
-    if(evening) return comfy ? vdPick(['It’s a good evening to unwind after work.', 'A fine evening to decompress after a long day.'], seed, 15) : '';
+    if(evening) return comfy ? vdPick(['It’s a good time to unwind after work.', 'A fine time to decompress after a long day.'], seed, 15) : '';
     var city = vdBigCityInfo(), walk = city && !/^a bus$/.test(city.transit) ? ' for the walk to ' + city.transit : '';
-    var roads = a.wet < 0.15 && a.pop < 15 ? 'dry roads' : 'little to slow you down', breeze = a.wMax < 12 ? 'light winds' : 'just a breeze';
+    var roads = 'little to slow you down', breeze = a.wMax < 12 ? 'light winds' : 'just a breeze';
     var out = [];
     var hn = c.hrs[0], lunch = h0 >= 11 && h0 < 14 && hn && hn.pop < 20 && hn.mph < 16 && hn.temp >= 50 && hn.temp <= 88;
     if(lunch) out.push(vdPick(['It’s a nice day to take your lunch break outside.', 'Take your lunch outside if you can.'], seed, 12));
@@ -7363,7 +7357,7 @@
     }else{
       var t = fmtH12(segs[0].win[Math.floor(segs[0].win.length / 2)].hour), clock = t.n + ' ' + t.ap;
       out.push(vdPick(['The commute home looks easy, with ' + roads + ' and ' + breeze + ' around ' + clock + '.',
-        'Expect ' + roads + ' and ' + breeze + ' for the commute home around ' + clock + '.'], seed, 13));
+        'You’ll have ' + breeze + ' and ' + roads + ' for the commute home around ' + clock + '.'], seed, 13));
     }
     // After work: what the 5 to 8 PM daylight hours suit
     var aw = today.filter(function(h){ return h.hour >= Math.max(17, h0) && h.hour <= 20 && !(h.why || []).some(function(w){ return /dark out/.test(w); }); });
@@ -7399,11 +7393,10 @@
   // and the chance gets a sentence of its own (see vdPrecipSentence)
   function vdHeroConditions(a){
     var split = a.pop >= 5 && !(a.wet < 0.15 && a.pop < 20);
-    if(!split) return {main: vdGoodSentence(a.wet < 0.15 && a.pop < 20 ? Object.assign({}, a, {pop: 0}) : a), split: false};
+    if(!split) return {main: vdGoodSentence(a.wet < 0.15 && a.pop < 20 ? Object.assign({}, a, {pop: 0}) : a, true), split: false};
     var k = bandFor(a.wMax).key;
     var wind = k === 'calm' ? 'calm' : k === 'breezy' ? 'breezy' : k === 'windy' ? 'windy' : k === 'verywindy' ? 'blustery' : 'howling';
-    var air = a.aqi !== null ? (a.aqi <= 50 ? 'good air quality' : 'moderate air quality') : '';
-    return {main: vdCap(vdFeel(a.tAvg)) + ' and ' + wind + (air ? ' with ' + air : '') + '.', split: true};
+    return {main: vdCap(vdFeel(a.tAvg)) + ' and ' + wind + '.', split: true};
   }
   // "There is a 28% chance of rain starting around 3 PM and continuing through the evening."
   function vdPrecipSentence(c, r){
@@ -7418,7 +7411,7 @@
     var st = fmtH12(day[j].hour), startsLater = day[j].i > nowI, endHour = day[end].hour, cont = '';
     if(end > j){
       var en = fmtH12(endHour + 1);
-      cont = endHour >= 22 ? 'continuing into the night' : endHour >= 18 ? 'continuing through the evening' : 'continuing until about ' + en.n + ' ' + en.ap;
+      cont = endHour >= 22 ? 'continuing into the night' : 'continuing until about ' + en.n + ' ' + en.ap;
     }
     var start = startsLater ? 'starting around ' + st.n + ' ' + st.ap : '';
     if(start && cont) return lead + ' ' + start + ' and ' + cont + '.';
@@ -7473,8 +7466,8 @@
       var lead = r.hs[0].i === 0 ? (r.fair ? 'Conditions are okay ' : 'Conditions look good ') + spa.phrase
         : 'Conditions should be good ' + spa.day + ' ' + spa.phrase;
       // the warning first, then what to do; the weather note only follows
-      out.push(vdCap(r.alert) + (r.alertSoon ? ' takes effect ' + vdBeginsWhen(r.alertSoon, c) + '.' : ' is in effect for your area.'));
-      out.push('Please be careful, and check the alert above before heading outside.');
+      out.push(r.alertSoon ? vdCap(r.alert) + ' takes effect ' + vdBeginsWhen(r.alertSoon, c) + '.' : 'Please be careful, and check the alert above before heading outside.');
+      if(r.alertSoon) out.push('Please be careful, and check the alert above before heading outside.');
       out.push('Otherwise, ' + vdLc(lead) + '.');
       var aft4 = vdAfter(r, c); if(aft4) out.push(aft4);
       return out;
@@ -7560,7 +7553,7 @@
         'Good news: ' + sp.day + ' ' + sp.phrase + ' works for getting outside.'
       ], seed, 1));
       var hcY = vdHeroConditions(r.agg);
-      out.push(vdPick([tw + ' will be ', 'Expect '], seed, 2) + vdLc(hcY.main));
+      out.push((tw === 'This evening' ? 'Expect ' : vdPick([tw + ' will be ', 'Expect '], seed, 2)) + vdLc(hcY.main));   // "This evening" is not said twice
       if(hcY.split){ var psY = vdPrecipSentence(c, r); if(psY) out.push(psY); }
       out.push(actsSentence);
       if(caVoice){ var cx1 = caExtra(r, c, seed); if(cx1) out.push(cx1); }
@@ -7585,7 +7578,9 @@
     }else{
       if(r.alert){
         // a Severe / Extreme warning: kind, but not playful
-        out.push('It’s best to stay inside for now' + (r.why.length ? ': ' + vdList(r.why.slice(0, 2).map(function(w){ return w.replace(/^an (active|upcoming) /, 'there is an $1 '); })) : '') + '. Please stay safe, and check the alert above.');
+        // the alert itself is in the banner: name only the other reasons
+        var whyNoAlert = r.why.filter(function(w){ return !/^an (active|upcoming) /.test(w); });
+        out.push('It’s best to stay inside for now' + (whyNoAlert.length ? ': ' + vdList(whyNoAlert.slice(0, 2)) : '') + '. Please stay safe, and check the alert above.');
       }else{
         var gong = r.why.length >= 2 || c.hrs[0].mph >= 25;
         out.push(caVoice
@@ -7637,10 +7632,10 @@
     function when(i, now, later){ return i === 0 ? now : later; }
     if(snowAt >= 0) mods.push(when(snowAt, 'Wear waterproof boots with good grip for the snow.', 'Snow is on the way, so wear waterproof boots with good grip.'));
     else if(iceAt >= 0 && minT <= 34) mods.push('Watch for ice: wear boots with good grip and take small steps.');
-    if(maxW >= 16 && !(minT < 32)) mods.push('A windproof layer will help with the wind.');
+    if(maxW >= 20 && !(minT < 32)) mods.push('A windproof layer will help with the wind.');   // only when the wind is really up (the Wind row shows the rest)
     if(city){
       if(rainAt >= 0 || snowAt >= 0 || minT < 25 || maxW >= 25) mods.push(vdCap(vdBigCityInfo().transit) + ' or a cab beats a long walk.');
-      else mods.push('Comfortable shoes are a must for all that walking.');
+      else if(!dark) mods.push('Comfortable shoes are a must for all that walking.');   // a daytime walking tip only
     }
     var pet = '';
     if(minT < 20) pet = 'It’s dangerously cold for pets: keep them indoors except for quick potty breaks, and bring in any animals that live outside.';
@@ -7746,7 +7741,25 @@
       return h ? 'Dark out until ' + (sr ? 'sunrise at ' + sr : vdWhenPhrase(h, c)) + '.' : 'Dark out.';
     }
     var nt = vdNowThen(reasons[0]);
+    // Falling precipitation clears when it stops (the hazard row's own clock), not when the whole window turns good
+    if(/^(Storms|Rain|Showers|Snow|Blizzard|Wintry mix|Hail)/.test(nt.now)){ var pe = vdPrecipEnd(c); if(pe) h = pe; }
+    else if(nt.now === 'Windy'){ var we = vdWindEnd(c); if(we) h = we; }
     return nt.now + ' now, ' + (h ? nt.then + ' ' + vdWhenPhrase(h, c) : 'with no break for ' + bestDays() + ' days') + '.';
+  }
+  // The first hour (within 6 hours) after strong wind (25 mph or more) that is blowing now has eased, like the hazard row; null otherwise
+  function vdWindEnd(c){
+    var hs = c.hrs || [];
+    if(!hs.length || !(hs[0].mph >= 25)) return null;
+    for(var i = 1; i < hs.length && i <= 6; i++){ if(!(hs[i].mph >= 25)) return hs[i]; }
+    return null;
+  }
+  // The first hour (within 6 hours) after precipitation that is falling now has stopped, by the same rule as the hazard row; null otherwise
+  function vdPrecipEnd(c){
+    var hs = c.hrs || [];
+    function wet(h){ return !!hazardType({shortForecast: h.fc}, true, true); }
+    if(!hs.length || !wet(hs[0])) return null;
+    for(var i = 1; i < hs.length && i <= 6; i++){ if(!wet(hs[i])) return hs[i]; }
+    return null;
   }
   // The next sunrise, as a clock time at the place ("6:24 AM"), or '' when unknown
   function vdNextSunrise(){
@@ -7794,10 +7807,10 @@
     }
     return vdChange(r, c, r.nextHs ? r.nextHs[0] : null);
   }
-  // Thunderstorms in the next 12 hours (now or on the way): lightning is possible
+  // Thunderstorms in the next 6 hours (now or on the way, not just a slight chance): lightning is possible
   function vdLightning(c){
-    var hs = (c.hrs || []).slice(0, 12);
-    var thunder = hs.some(function(h){ return /thunder/i.test(h.fc || '') || (h.why || []).some(function(w){ return /^thunderstorms?$/.test(w); }); });
+    var hs = (c.hrs || []).slice(0, 6);
+    var thunder = hs.some(function(h){ return (/thunder/i.test(h.fc || '') && (!/chance|slight|isolated|scattered/i.test(h.fc) || h.pop >= 40)) || (h.why || []).some(function(w){ return /^thunderstorms?$/.test(w); }); });
     return thunder ? 'Lightning is possible with the thunderstorms, so head indoors at the first rumble of thunder.' : '';
   }
   // The gray text under the headline: the earlier paragraph's wording (minus what the headline already says) plus clothing and pet advice
@@ -7913,8 +7926,6 @@
       '<div class="vd-prose"><span class="vd-head">' + vdNbTimes(vdHeadline(r, vdCtx)).replace(/([.?!])\s+/g, '$1\n').split('\n').map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(vdSubLines(r, vdCtx, actList).map(function(l){ return l.text; }).join(' ')) + '</div></div>' +
       (r.state === 'no' && r.next ? '<p class="vd-next">' + vdEsc(r.next) + '</p>' : '') +
       '<div class="vd-details" id="vdDetails"' + (vdOpen ? '' : ' hidden') + '>' + details + '</div>';
-    var minor = lastAlerts.filter(function(x){ return !(x.severity === 'Severe' || x.severity === 'Extreme'); })[0];
-    if(minor) html += '<p class="vd-next">Active alert: ' + vdEsc(minor.event) + '. Check the details before heading out.</p>';
     vdBody.className = 'vd-body vd-' + r.state + (vdOpen ? ' is-open' : '');
     vdBody.innerHTML = html;
     vdEl.hidden = false;
