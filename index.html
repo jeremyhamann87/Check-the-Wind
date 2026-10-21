@@ -2521,7 +2521,6 @@
   #airCard .ag-dial{ width:100%; max-width:240px }
   #airCard .card-body{ padding:16px }
   .ag-top{ margin:0 0 16px }
-  .ag-cap{ margin:8px 0 0; font-size:14px; line-height:1.4; color:var(--text-muted) }
   /* Tablets: two rows of three (the air quality, fine particles and ozone gauges, then weeds, trees and grasses) */
   @media (min-width:31.25em) and (max-width:63.99em){
     #airCard .ag-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)) }
@@ -6003,9 +6002,9 @@
     agLastArgs = [lat, dateStr, airNow];
     var tomorrowStr = nextDateStr(dateStr);
     var fcToday = airFc && airFc.days[dateStr], fcTomorrow = airFc && airFc.days[tomorrowStr];
-    var views = [{id: 'now', label: 'Now'}];
-    if(fcToday) views.push({id: 'today', label: 'Today'});
-    if(fcTomorrow) views.push({id: 'tomorrow', label: 'Tomorrow'});
+    var views = [{id: 'now', label: 'Current'}];
+    if(fcToday) views.push({id: 'today', label: 'Today’s Peak'});
+    if(fcTomorrow) views.push({id: 'tomorrow', label: 'Tomorrow’s Peak'});
     if(!views.some(function(v){ return v.id === airView; })) airView = 'now';
     var src = airView === 'today' ? fcToday : airView === 'tomorrow' ? fcTomorrow : airNow;
     var pollen = pollenEstimate(lat, airView === 'tomorrow' ? tomorrowStr : dateStr);
@@ -6023,11 +6022,10 @@
     var aqiG = src && src.overall ? {v: src.overall.aqi, lv: overallLv} : null;
     var pmG = src && src.pm25 ? {v: src.pm25.aqi, lv: pm25Lv} : null;
     var ozG = src && src.ozone ? {v: src.ozone.aqi, lv: ozoneLv} : null;
-    var cap = airView === 'now' ? 'The current reading from the nearest monitor.' : airView === 'today' ? 'Today’s expected peak.' : 'Tomorrow’s expected peak.';
     var top = views.length > 1
       ? '<div class="ag-top"><div class="bt-pills" id="agPills" role="radiogroup" aria-label="Air quality view">' + views.map(function(v){
           return '<button type="button" class="bt-pill" role="radio" data-ag="' + v.id + '" aria-checked="' + (v.id === airView ? 'true' : 'false') + '" tabindex="' + (v.id === airView ? 0 : -1) + '"><span>' + v.label + '</span></button>';
-        }).join('') + '</div><p class="ag-cap">' + cap + '</p></div>'
+        }).join('') + '</div></div>'
       : '';
     airCard.innerHTML =
       '<div class="card-head"><h2>Air Quality &amp; Pollen</h2></div>' +
