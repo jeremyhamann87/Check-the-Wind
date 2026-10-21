@@ -2520,6 +2520,8 @@
   #airCard .ag{ flex:none; min-width:0 }
   #airCard .ag-dial{ width:100%; max-width:240px }
   #airCard .card-body{ padding:16px }
+  .ag-top{ margin:0 0 16px }
+  .ag-cap{ margin:8px 0 0; font-size:14px; line-height:1.4; color:var(--text-muted) }
   /* Tablets: two rows of three (the air quality, fine particles and ozone gauges, then weeds, trees and grasses) */
   @media (min-width:31.25em) and (max-width:63.99em){
     #airCard .ag-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)) }
@@ -3131,7 +3133,7 @@
       <p>
         <strong>Air quality &amp; pollen.</strong> The Air Quality Index, Fine particles (PM2.5) and Ozone are sourced live from AirNow
         (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>), EPA — coverage depends on the nearest
-        reporting monitor. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Fine particles and Ozone gauges say no nearby data. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
+        reporting monitor. The Today and Tomorrow views show AirNow&rsquo;s forecast (the expected ozone and fine-particle peaks, set by the forecasters at your local air agency) where AirNow has one for your area; they are preliminary and can change. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Fine particles and Ozone gauges say no nearby data. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
         <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Pollen isn't available from any free public
         U.S. source, so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement.
       </p>
@@ -5697,6 +5699,54 @@
     };
   }
 
+  /* AirNow's forecast (the forecasters' expected ozone and PM2.5 for today and tomorrow) comes through the same proxy (?type=forecast).
+     The service changed in 2026 and its field names are not public, so the rows are read tolerantly (old and new spellings); anything
+     that does not look like a forecast gives null and the page keeps using the model and the current reading. */
+  var AQI_CAT_NUM = ['', 'Good', 'Moderate', 'Unhealthy for Sensitive Groups', 'Unhealthy', 'Very Unhealthy', 'Hazardous'];
+  var AQI_CAT_MID = {'Good': 25, 'Moderate': 75, 'Unhealthy for Sensitive Groups': 125, 'Unhealthy': 175, 'Very Unhealthy': 250, 'Hazardous': 350};
+  var AQI_CAT_LOW = {'Good': 25, 'Moderate': 51, 'Unhealthy for Sensitive Groups': 101, 'Unhealthy': 151, 'Very Unhealthy': 201, 'Hazardous': 301};   // the health ratings use the bottom of a category when the forecast gives only a category
+  function airFcNormalize(data){
+    if(!Array.isArray(data) || !data.length) return null;
+    function pick(o, keys){ for(var i = 0; i < keys.length; i++){ var v = o[keys[i]]; if(v !== undefined && v !== null && v !== '') return v; } return undefined; }
+    var rows = [], area = null;
+    data.forEach(function(o){
+      if(!o || typeof o !== 'object') return;
+      var ra = pick(o, ['reportingAreaName', 'reportingArea', 'ReportingArea']);
+      if(area === null) area = ra === undefined ? '' : ra;
+      if(ra !== undefined && ra !== area) return;   // the first reporting area only (the one nearest the place)
+      var pn = String(pick(o, ['parameterName', 'ParameterName', 'parameter']) || '').toUpperCase();
+      var kind = /^(OZONE|O3)/.test(pn) ? 'ozone' : /PM\s?2\.?5/.test(pn) ? 'pm25' : '';
+      if(!kind) return;
+      var date = String(pick(o, ['dateForecast', 'DateForecast', 'dateValid', 'date_valid', 'forecastDate']) || '').trim().slice(0, 10);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+      var cat = pick(o, ['aqiCategoryName', 'categoryName', 'category_name']);
+      if(cat === undefined){ var c = pick(o, ['Category', 'category']); cat = c && typeof c === 'object' ? (c.Name || c.name) : c; }
+      if(typeof cat === 'number' || /^\d$/.test(String(cat))) cat = AQI_CAT_NUM[+cat];
+      var aqi = pick(o, ['aqi', 'AQI', 'forecastAQI']); aqi = typeof aqi === 'number' ? aqi : parseFloat(aqi);
+      var low = aqi;
+      if(!(aqi >= 0)){ if(AQI_CAT_MID[cat]){ aqi = AQI_CAT_MID[cat]; low = AQI_CAT_LOW[cat]; } else return; }   // a category with no number: drawn at the middle of the category, rated from its bottom
+      if(!AQI_CAT_INFO[cat]) cat = aqiCatName(aqi);
+      var action = pick(o, ['actionDay', 'ActionDay']);
+      rows.push({kind: kind, date: date, aqi: Math.round(aqi), low: Math.round(low), cat: cat, action: action === true || /^true$/i.test(String(action))});
+    });
+    if(!rows.length) return null;
+    var days = {};
+    rows.forEach(function(r){
+      var d = days[r.date] = days[r.date] || {action: false};
+      if(!d[r.kind] || r.aqi > d[r.kind].aqi) d[r.kind] = {aqi: r.aqi, low: r.low, catName: r.cat};
+      if(r.action) d.action = true;
+    });
+    Object.keys(days).forEach(function(k){   // the overall index is the higher of the two pollutants
+      var d = days[k], best = null;
+      ['pm25', 'ozone'].forEach(function(p){ if(d[p] && (!best || d[p].aqi > best.aqi)) best = d[p]; });
+      d.overall = best ? {aqi: best.aqi, catName: best.catName} : null;
+    });
+    return {area: area || '', days: days};
+  }
+  async function fetchAirNowForecast(lat, lon){
+    var data = await fetchOptionalJson(AIRNOW_PROXY_URL + '?lat=' + lat.toFixed(4) + '&lon=' + lon.toFixed(4) + '&type=forecast', 15000);
+    try{ return airFcNormalize(data); }catch(e){ return null; }
+  }
   // true when the AirNow result carries a real reading (not the Open-Meteo stand-in built from it)
   function hasAirNow(r){ return !!(r && r.overall && typeof r.overall.aqi === 'number' && !r.overall.fromOm); }
   function clamp01(x){ return Math.max(0, Math.min(1, x)); }
@@ -5947,12 +5997,21 @@
     return short ? '<span class="ag-w-l">' + short[0] + '</span><span class="ag-w-s">' + short[1] + '</span>' : label;
   }
 
+  // Air Quality & Pollen: three views. Now is the live AirNow reading; Today and Tomorrow are AirNow's forecast (the expected peak), when there is one.
+  var airView = 'now', airFc = null;
   function renderAirPollen(lat, dateStr, airNow){
     agLastArgs = [lat, dateStr, airNow];
-    var pollen = pollenEstimate(lat, dateStr);
-    var overallLv = categorySeverity(airNow && airNow.overall);
-    var pm25Lv = categorySeverity(airNow && airNow.pm25);
-    var ozoneLv = categorySeverity(airNow && airNow.ozone);
+    var tomorrowStr = nextDateStr(dateStr);
+    var fcToday = airFc && airFc.days[dateStr], fcTomorrow = airFc && airFc.days[tomorrowStr];
+    var views = [{id: 'now', label: 'Now'}];
+    if(fcToday) views.push({id: 'today', label: 'Today'});
+    if(fcTomorrow) views.push({id: 'tomorrow', label: 'Tomorrow'});
+    if(!views.some(function(v){ return v.id === airView; })) airView = 'now';
+    var src = airView === 'today' ? fcToday : airView === 'tomorrow' ? fcTomorrow : airNow;
+    var pollen = pollenEstimate(lat, airView === 'tomorrow' ? tomorrowStr : dateStr);
+    var overallLv = categorySeverity(src && src.overall);
+    var pm25Lv = categorySeverity(src && src.pm25);
+    var ozoneLv = categorySeverity(src && src.ozone);
     // The pollutant gauges (PM2.5, Ozone) use their own wording, starting at Low, instead of the EPA category names
     var PM25_WORDS = {'Good':'Low', 'Moderate':'Moderate', 'Unhealthy for Sensitive Groups':'High', 'Unhealthy':'Very High', 'Very Unhealthy':'Severe', 'Hazardous':'Extreme'};
     if(PM25_WORDS[pm25Lv.label]) pm25Lv.label = PM25_WORDS[pm25Lv.label];
@@ -5961,12 +6020,18 @@
     var grassLv = pollenLevel(pollen.grass);
     var weedLv = pollenLevel(pollen.weed);
 
-    var aqiG = airNow && airNow.overall ? {v: airNow.overall.aqi, lv: overallLv} : null;
-    var pmG = airNow && airNow.pm25 ? {v: airNow.pm25.aqi, lv: pm25Lv} : null;
-    var ozG = airNow && airNow.ozone ? {v: airNow.ozone.aqi, lv: ozoneLv} : null;
+    var aqiG = src && src.overall ? {v: src.overall.aqi, lv: overallLv} : null;
+    var pmG = src && src.pm25 ? {v: src.pm25.aqi, lv: pm25Lv} : null;
+    var ozG = src && src.ozone ? {v: src.ozone.aqi, lv: ozoneLv} : null;
+    var cap = airView === 'now' ? 'The current reading from the nearest monitor.' : airView === 'today' ? 'Today’s expected peak.' : 'Tomorrow’s expected peak.';
+    var top = views.length > 1
+      ? '<div class="ag-top"><div class="bt-pills" id="agPills" role="radiogroup" aria-label="Air quality view">' + views.map(function(v){
+          return '<button type="button" class="bt-pill" role="radio" data-ag="' + v.id + '" aria-checked="' + (v.id === airView ? 'true' : 'false') + '" tabindex="' + (v.id === airView ? 0 : -1) + '"><span>' + v.label + '</span></button>';
+        }).join('') + '</div><p class="ag-cap">' + cap + '</p></div>'
+      : '';
     airCard.innerHTML =
       '<div class="card-head"><h2>Air Quality &amp; Pollen</h2></div>' +
-      '<div class="card-body"><div class="ag-wrap"><div class="ag-grid" role="group" aria-label="Air quality and pollen gauges">' +
+      '<div class="card-body">' + top + '<div class="ag-wrap"><div class="ag-grid" role="group" aria-label="Air quality and pollen gauges">' +
         arcGauge('Air Quality Index', aqiG && aqiG.v, 300, AG_AQI_BANDS, aqiG ? aqiWordHtml(aqiG.lv.label) : 'Unavailable', aqiG ? aqiG.lv.ink : null, 'ag-main') +
         arcGauge('Fine particles', pmG && pmG.v, 300, AG_AQI_BANDS, pmG ? pmG.lv.label : 'Unavailable', pmG ? pmG.lv.ink : null) +
         arcGauge('Ozone', ozG && ozG.v, 300, AG_AQI_BANDS, ozG ? ozG.lv.label : 'Unavailable', ozG ? ozG.lv.ink : null) +
@@ -5976,6 +6041,18 @@
       '</div></div></div>';
     airSection.hidden = false;
   }
+  airCard.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('[data-ag]');
+    if(!b || !agLastArgs || b.getAttribute('data-ag') === airView) return;
+    airView = b.getAttribute('data-ag'); renderAirPollen.apply(null, agLastArgs);
+    var nb = airCard.querySelector('[data-ag="' + airView + '"]'); if(nb) nb.focus({preventScroll: true});
+  });
+  airCard.addEventListener('keydown', function(e){
+    var b = e.target.closest && e.target.closest('[data-ag]');
+    if(!b || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    var all = [].slice.call(airCard.querySelectorAll('[data-ag]')), n = all[(all.indexOf(b) + (e.key === 'ArrowRight' ? 1 : all.length - 1)) % all.length];
+    e.preventDefault(); n.click();
+  });
 
   /* ---------- Health Risks ----------
      A Low / Medium / High outlook, for today and the next two days, for six conditions that weather and air quality can make worse:
@@ -6202,7 +6279,11 @@
     var rr = 1, drivers = [];
     m.factors.forEach(function(f){
       var r = f.fn(d);
-      if(r && r.rr > 1.002){ rr *= r.rr; drivers.push(r); }
+      if(r && r.rr > 1.002){
+        if(d.alertO3 && f.label === 'Ozone') r.text = 'high ozone (an air quality alert is in effect)';
+        if(d.alertPM && /^(Fine particles|Smoke)/.test(f.label)) r.text = 'fine particles (an air quality alert is in effect)';
+        rr *= r.rr; drivers.push(r);
+      }
     });
     rr = Math.min(rr, 2.5);
     drivers.sort(function(a, b){ return b.rr - a.rr; });
@@ -6236,7 +6317,21 @@
   function hwClamp(x, lo, hi){ return Math.max(lo, Math.min(hi, x)); }
   // One local day's measures, from the hourly series. Missing data leaves a measure null so its factors are skipped.
   // nowKey is the current local hour ("2026-10-20T19"); airNow, when real, anchors the air-quality forecast to the reading on the page.
-  function hwBuild(w, a, todayStr, nowKey, airNow){
+  // An active Air Quality Alert means the agency expects at least "unhealthy for sensitive groups" air (ozone 71 ppb or more, or PM2.5 35.5 µg/m³ or more),
+  // which the forecast model often misses (ozone peaks in the afternoon and the gauge is low in the morning). Which pollutant: the alert's own text.
+  function hwAlertAir(alerts, ds){
+    var o = {o3: false, pm: false};
+    (alerts || []).forEach(function(a){
+      if(!/air quality/i.test(a.event || '')) return;
+      var st = String(a.onset || a.effective || a.sent || '').slice(0, 10), en = String(a.ends || a.expires || '').slice(0, 10);
+      if((st && ds < st) || (en && ds > en)) return;
+      var t = String(a.description || '') + ' ' + String(a.headline || '');
+      if(/ozone/i.test(t)) o.o3 = true;
+      if(/particulate|pm\s?2\.5|fine particle|particle pollution|smoke/i.test(t)) o.pm = true;
+    });
+    return o;
+  }
+  function hwBuild(w, a, todayStr, nowKey, airNow, alerts, fc){
     var H = w.hourly, T = H.time;
     var ser = {T: H.temperature_2m, RH: H.relative_humidity_2m, AT: H.apparent_temperature, P: H.pressure_msl, UV: H.uv_index};
     function rng(times, ds){ var lo = -1, hi = -1; for(var i = 0; i < times.length; i++){ if(times[i].slice(0, 10) === ds){ if(lo < 0) lo = i; hi = i; } } return lo < 0 ? null : [lo, hi]; }
@@ -6311,6 +6406,16 @@
         var hot = 0, pp = ds; for(var z = 0; z < 3; z++){ var hd = day(pp); if(hd.ok && hd.Tmax >= 32) hot++; pp = hwPrevDate(pp); }
         d.streak = hot >= 3;
         var ai = air(ds, n === 0); d.pm25 = ai.pm25; d.o3ppb = ai.o3ppb; d.no2ppb = ai.no2ppb; d.no2ug = ai.no2ug; d.hasAir = ai.pm25 !== null || ai.o3ppb !== null;
+        // AirNow's forecast, where there is one, replaces the model's ozone peak and PM2.5 for that day (the forecasters' numbers are the authority)
+        var fd = fc && fc.days && fc.days[ds];
+        if(fd){
+          if(fd.ozone){ d.o3ppb = hwFromAqi(fd.ozone.low, HW_O3_BP); d.fcAir = true; }
+          if(fd.pm25){ d.pm25 = hwFromAqi(fd.pm25.low, HW_PM_BP); d.fcAir = true; }
+          if(fd.ozone || fd.pm25) d.hasAir = true;
+        }
+        var aq = hwAlertAir(alerts, ds);
+        if(aq.o3){ d.o3ppb = Math.max(d.o3ppb || 0, 71); d.alertO3 = true; d.hasAir = true; }
+        if(aq.pm){ d.pm25 = Math.max(d.pm25 || 0, 35.5); d.alertPM = true; d.hasAir = true; }
         out.push(d);
       }
       ds = nextDateStr(ds);
@@ -6321,7 +6426,7 @@
   var hwData = null, hwSel = 0, hwToken = 0;
   var healthSection = document.getElementById('healthSection'), healthCard = document.getElementById('healthCard');
   function hwReset(){ hwToken++; hwData = null; hwSel = 0; if(healthSection) healthSection.hidden = true; }
-  async function hwLoad(lat, lon, todayStr, nowKey, airNow){
+  async function hwLoad(lat, lon, todayStr, nowKey, airNow, alertsP, fc){
     if(!HW_ON) return;
     var token = ++hwToken;
     var q = 'latitude=' + lat.toFixed(4) + '&longitude=' + lon.toFixed(4) + '&timezone=auto';
@@ -6329,10 +6434,12 @@
       fetchOptionalJson('https://api.open-meteo.com/v1/forecast?' + q + '&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,pressure_msl,uv_index&past_days=31&forecast_days=' + (HW_PERIODS ? 8 : 2), 25000),
       fetchOptionalJson('https://air-quality-api.open-meteo.com/v1/air-quality?' + q + '&hourly=pm2_5,ozone,nitrogen_dioxide&past_days=2&forecast_days=' + (HW_PERIODS ? 7 : 2), 25000)
     ]);
+    var alerts = [];
+    try{ alerts = (await alertsP) || []; }catch(e){ alerts = []; }
     if(token !== hwToken) return;
     if(!res[0] || !res[0].hourly || !res[0].hourly.time){ healthSection.hidden = true; return; }
     var days;
-    try{ days = hwBuild(res[0], res[1], todayStr, nowKey, hasAirNow(airNow) ? airNow : null); }catch(e){ days = []; }
+    try{ days = hwBuild(res[0], res[1], todayStr, nowKey, hasAirNow(airNow) ? airNow : null, alerts, fc); }catch(e){ days = []; }
     if(!days.length){ healthSection.hidden = true; return; }
     hwData = {days: days, air: days.some(function(d){ return d.hasAir; })};
     hwSel = 0;
@@ -6381,6 +6488,9 @@
       '<ul class="hw-list" aria-label="Risk of each condition getting worse">' + rows + '</ul></div>';
     // what the ratings were based on, for the "How it works" dialog
     hwData.summary = {title: one ? 'Today’s forecast' : view.n === 3 ? 'The next 3 days' : 'The next 7 days', line: 'Temperature ' + bits.join(' · ')};
+    var alertWhat = days.some(function(d){ return d.alertO3; }) && days.some(function(d){ return d.alertPM; }) ? 'ozone and fine particles' : days.some(function(d){ return d.alertO3; }) ? 'ozone' : days.some(function(d){ return d.alertPM; }) ? 'fine particles' : '';
+    hwData.fcNote = days.some(function(d){ return d.fcAir; }) ? 'Ozone and fine particle levels come from AirNow’s forecast for the day.' : '';
+    hwData.alertNote = alertWhat ? 'An air quality alert is in effect for ' + alertWhat + ', so these ratings assume at least “unhealthy for sensitive groups” levels.' : '';
     hwData.airNote = !someAir ? 'Air quality data is not available here, so air quality is left out of these ratings.'
       : !allAir ? 'Air quality is forecast about five days ahead, so the last days use weather only.' : '';
     healthSection.hidden = false;
@@ -6415,6 +6525,8 @@
     if(hwData && hwData.summary){
       body.appendChild(mk('h3', 'wd-h', hwData.summary.title));
       body.appendChild(mk('p', 'hw-today', hwData.summary.line));
+      if(hwData.fcNote) body.appendChild(mk('p', 'hw-today', hwData.fcNote));
+      if(hwData.alertNote) body.appendChild(mk('p', 'hw-today', hwData.alertNote));
       if(hwData.airNote) body.appendChild(mk('p', 'hw-today', hwData.airNote));
     }
     HW_MODELS.forEach(function(m){
@@ -8983,6 +9095,7 @@
     lastLoad = {lat: lat, lon: lon, label: label};
     if(!quiet){
       heroAir = null;
+      airFc = null; airView = 'now';
       renderAlerts([]);
       var dcTop = document.querySelector('.db-content'); if(dcTop) dcTop.scrollTop = 0;
       clearLoadFailure();
@@ -8995,6 +9108,7 @@
     }
     var bestInputsPromise = fetchBestInputs(lat, lon);
     var airNowPromise = fetchAirNowCurrent(lat, lon);
+    var airFcPromise = fetchAirNowForecast(lat, lon);
     var alertsPromise = fetchAlerts(lat, lon);
     if(!quiet) setStatus('Contacting the weather service…');
 
@@ -9091,8 +9205,9 @@
       }
       if(moved) bestWhen = renderBest(hourly, bestInputs);
     }
+    airFc = ca ? null : await airFcPromise;   // AirNow covers the U.S. only
     renderAirPollen(lat, todayStr, airNowRes);
-    hwLoad(lat, lon, todayStr, hourly[0].startTime.slice(0, 13), airNowRes);
+    hwLoad(lat, lon, todayStr, hourly[0].startTime.slice(0, 13), airNowRes, alertsPromise, airFc);
     rpLoad(lat, lon, ca ? null : (props.cwa || props.gridId || null));
     setHeroAir(airNowRes, bestInputs, hourly);
 
