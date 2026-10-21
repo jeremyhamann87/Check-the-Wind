@@ -2117,7 +2117,7 @@
   .bt-row[aria-expanded="true"]{background:var(--bt-open-bg)}   /* an open row and its details share one background */
   .bt-row:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px; border-radius:4px}
   @media (min-width:64em){ .bt-row:hover{background:color-mix(in srgb, var(--text) 3%, var(--surface))} }
-  .bt-whenbox{grid-area:when; display:flex; align-items:center; min-width:0}
+  .bt-whenbox{grid-area:when; display:flex; align-items:center; min-width:0; margin-left:-6px}   /* the day sits closer to its mark (6px apart) */
   .bt-medal{display:flex; flex:0 0 auto}
   .bt-medal svg{display:block; width:22px; height:22px}
   .bt-when{display:flex; flex-direction:row; flex-wrap:wrap; align-items:baseline; gap:0 8px; min-width:0; line-height:1.3}   /* the day and its time on one line */
@@ -2154,7 +2154,7 @@
   .bt-end{grid-area:end; display:flex; align-items:center; justify-content:flex-end}
   .bt-mark{display:block; width:22px; height:22px; flex:0 0 auto}
   /* a quiet gray for both marks (the star is filled, the crossed circle is an outline, so the shape carries the meaning); kept at 3:1 or better against the surface in both themes */
-  .bt-mark--good, .bt-mark--skip{color:color-mix(in srgb, var(--text-muted) 76%, var(--surface))}
+  .bt-mark--good, .bt-mark--skip{color:color-mix(in srgb, var(--text-muted) 68%, var(--surface))}   /* the same lighter gray as the Health Risks icons */
   .bt-chev{display:block; width:20px; height:20px; color:var(--text-muted); transition:transform .15s}
   .bt-row[aria-expanded="true"] .bt-chev{transform:rotate(180deg)}
   @media (prefers-reduced-motion:reduce){ .bt-chev{transition:none} }
@@ -2435,9 +2435,10 @@
   .hw-lead{ font-weight:500; padding-bottom:4px !important }
   .hw-pts{ list-style:disc; margin:0; padding:0 0 0 18px }
   .hw-pts li{ margin:0 0 2px }
-  .hw-ico{ display:inline-flex; color:var(--text-muted) }
+  .hw-ico{ display:inline-flex; color:color-mix(in srgb, var(--text-muted) 68%, var(--surface)) }   /* a lighter gray, like the Best Times marks */
   .hw-ico svg{ width:24px; height:24px }
-  .hw-name{ font-weight:500 }
+  .hw-name{ font-weight:500; margin-left:-6px }   /* the name sits closer to its icon (6px apart) */
+  .hw-sum .hw-ico + .hw-sum-name{ margin-left:-6px }
   .hw-chip{ display:inline-flex; align-items:center; box-sizing:border-box; min-height:var(--chip-h, 26px); padding:0 10px; border-radius:var(--chip-r, 4px); font-weight:500; line-height:1.3; white-space:nowrap;
     color:color-mix(in srgb, var(--tg) 78%, var(--text)); background:color-mix(in srgb, var(--tg) 15%, var(--surface)) }
   .hw-chip--low{ --tg:var(--aqi-good-ink) }
@@ -2947,8 +2948,8 @@
                 :aria-label="(w.dayLong || w.day) + (w.time ? ' ' + w.time : '') + '. ' + (w.none ? w.tempShort + '. ' + w.temp + '. Skipped' : w.temp + '. ' + w.summary) + ($store.best.flat ? '' : '. ' + (open ? 'Hide' : 'Show') + ' details')">
                 <span class="bt-markbox">
                   <span class="bt-medal" x-show="w.medal" x-html="w.medal"></span>
-                  <svg class="bt-mark bt-mark--good" x-show="w.mark === 'good'" viewBox="0 0 24 24" fill="none" role="img" aria-label="Good day"><circle cx="12" cy="12" r="9.5" fill="currentColor"/><polyline points="7.9,12.4 10.8,15.3 16.2,9.1" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  <svg class="bt-mark bt-mark--skip" x-show="w.mark === 'skip'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" role="img" aria-label="Skipped"><circle cx="12" cy="12" r="8.5"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+                  <svg class="bt-mark bt-mark--good" x-show="w.mark === 'good'" viewBox="0 0 24 24" fill="none" role="img" aria-label="Good day"><circle cx="12" cy="12" r="9.5" fill="currentColor"/><polyline points="7.9,12.4 10.8,15.3 16.2,9.1" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg class="bt-mark bt-mark--skip" x-show="w.mark === 'skip'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" role="img" aria-label="Skipped"><circle cx="12" cy="12" r="8.5"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
                 </span>
                 <span class="bt-whenbox">
                   <span class="bt-when"><span class="bt-day" x-text="w.day"></span><span class="bt-time" x-text="w.time"></span></span>
@@ -6365,7 +6366,7 @@
     var rows = scored.map(function(x){
       var lv = x.r.level, word = lv === 'low' ? 'Low' : lv === 'medium' ? 'Medium' : 'High';
       var why = hwReason(x.r, one ? '' : hwDayName(x.i, x.d)), id = 'hwp-' + x.m.id;
-      var inner = '<span class="hw-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">' + HW_ICO[x.m.id] + '</svg></span>' +
+      var inner = '<span class="hw-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" focusable="false">' + HW_ICO[x.m.id] + '</svg></span>' +
         '<span class="hw-name">' + x.m.name + '</span><span class="hw-chip hw-chip--' + lv + '"><span class="sr-only">Risk: </span>' + word + '</span>' +
         '<span class="hw-end"><svg class="hw-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9"/></svg></span>';
       // every row opens to its reason, like Best Times
@@ -6418,7 +6419,7 @@
     }
     HW_MODELS.forEach(function(m){
       var det = mk('details', 'hw-det'), sum = mk('summary', 'hw-sum');
-      sum.innerHTML = '<span class="hw-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">' + HW_ICO[m.id] + '</svg></span>';
+      sum.innerHTML = '<span class="hw-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" focusable="false">' + HW_ICO[m.id] + '</svg></span>';
       sum.appendChild(mk('span', 'hw-sum-name', m.name));
       sum.appendChild(mk('span', 'hw-sum-ev', 'Evidence: ' + m.evidence));
       sum.insertAdjacentHTML('beforeend', '<svg class="hw-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg>');
