@@ -1673,9 +1673,6 @@
   .vd-hl{display:block}
   .vd-head{display:block; font-size:1.1875rem; font-weight:700; line-height:1.3; color:var(--text)}
   .vd-detail{display:block; margin-top:6px; font-size:1rem; line-height:1.5; color:var(--text-muted)}
-  .vd-more{position:relative; display:inline; padding:0; border:0; background:transparent; color:var(--text); font:inherit; font-weight:600; text-decoration:underline; text-underline-offset:3px; cursor:pointer}
-  .vd-more::after{content:""; position:absolute; inset:-14px -10px}   /* a 44px tap area around the inline link */
-  .vd-more:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:4px}
   .vd-line{margin:8px 0 0}
   .vd-line:first-child{margin-top:0}
   .vd-line b{margin-right:6px; font-weight:700; color:var(--text)}
@@ -2409,6 +2406,46 @@
   #todaySection .today-card--scrollable::before{ left:0; background:linear-gradient(to left, transparent, var(--module-bg)) }
   #todaySection .today-card--scrollable.can-scroll-right::after, #todaySection .today-card--scrollable.can-scroll-left::before{ opacity:1 }
 
+  /* ===== Weather | Health | Activity views (phones) =====
+     A segmented control under the header. Weather keeps the weather modules; Health holds Health Risks Today and Air Quality & Pollen; Activity holds Best Times to Get Outside.
+     Active weather alerts stay visible in both views. Larger screens show every module, as before. */
+  .view-seg, .hw-hero{ display:none }
+  @media (max-width:31.1875em){
+    .db-layout{ grid-template-rows:auto auto auto auto }
+    .db-layout > .wind-field{ grid-row:1 / 4 }
+    .db-layout > .hero-wrap{ grid-row:3 }
+    .db-layout > .db-content{ grid-row:4 }
+    .db-layout > .hw-hero{ grid-column:1; grid-row:3; position:relative; z-index:1; padding:16px 16px 0 }   /* the 16px gap under the text comes from the content area, the same as the Weather view */
+    html[data-view="health"] #hwHero:not([hidden]), html[data-view="activity"] #actHero:not([hidden]){ display:block }
+    .hw-hero .vd-prose{ display:block; margin:0; padding:0; text-align:left; font-size:1rem; line-height:1.5; color:var(--text) }
+    .hw-hero .vd-head{ font-size:1.5rem; line-height:1.2; letter-spacing:-.01em }
+    .hw-hero .vd-detail{ margin-top:8px }
+    /* a floating tab bar at the bottom, like the iOS 26 tab bar: a frosted capsule, an icon over a label, the chosen tab in a lighter capsule */
+    .view-seg{ position:fixed; left:0; right:0; width:calc((100% - 32px) * .75); box-sizing:border-box; bottom:calc(10px + env(safe-area-inset-bottom, 0px)); z-index:50; display:flex; gap:2px; padding:3px; border-radius:999px; margin:0 auto;
+      background:color-mix(in srgb, var(--surface) 72%, transparent); -webkit-backdrop-filter:blur(22px) saturate(1.7); backdrop-filter:blur(22px) saturate(1.7);
+      border:1px solid color-mix(in srgb, var(--text-muted) 18%, transparent); box-shadow:0 8px 28px rgba(16,28,38,.16), 0 1px 3px rgba(16,28,38,.10) }
+    .vs-btn{ position:relative; flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-height:45px; padding:2px 4px; border:0; border-radius:999px; background:transparent; color:var(--text); font:inherit; font-size:12px; font-weight:700; line-height:1; letter-spacing:0; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background-color .15s, color .15s }
+    .vs-btn[aria-selected="true"]{ background:color-mix(in srgb, var(--text-muted) 16%, transparent); color:var(--icon-blue) }
+    .vs-btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:-2px }
+    .view-seg .vs-btn[role="tab"], .view-seg .vs-btn[role="tab"] span{ font-size:12px !important; font-weight:700 }   /* beats the phone-wide 14px text rule */
+    .vs-ico{ display:block; width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round }
+    .vs-ico .vs-fill{ fill:currentColor }
+    .vs-ico--rain{ transform:scale(.84) }   /* the rain cloud is a little smaller than the other icons */
+    .vs-ico .vs-bold{ stroke-width:2.5 }
+    .vs-ico .vs-mid{ stroke-width:2.1 }
+    .vs-dot{ display:none; position:absolute; top:3px; left:calc(50% + 6px); width:10px; height:10px; border-radius:50%; background:var(--tg); border:2px solid var(--surface); box-sizing:content-box }
+    .db-content{ padding-bottom:calc(84px + env(safe-area-inset-bottom, 0px)) }   /* room for the tab bar under the last module and the footer */
+    #viewSeg[data-risk="medium"] .vs-dot{ display:inline-block; --tg:var(--aqi-usg-ink) }
+    #viewSeg[data-risk="high"] .vs-dot{ display:inline-block; --tg:var(--aqi-unhealthy-ink) }
+    html[data-view="health"] .hero-wrap, html[data-view="health"] #verdictSection, html[data-view="health"] #todaySection, html[data-view="health"] #bestSection,
+    html[data-view="health"] #weekSection, html[data-view="health"] #reportsSection, html[data-view="health"] .main-head{ display:none !important }
+    html[data-view="weather"] #healthSection, html[data-view="weather"] #airSection, html[data-view="weather"] #airNowRow{ display:none !important }   /* air quality is a Health topic */
+    html[data-view="weather"] #bestSection{ display:none !important }   /* Best Times is an Activity topic */
+    html[data-view="activity"] .hero-wrap, html[data-view="activity"] #verdictSection, html[data-view="activity"] #todaySection, html[data-view="activity"] #weekSection,
+    html[data-view="activity"] #reportsSection, html[data-view="activity"] .main-head, html[data-view="activity"] #healthSection, html[data-view="activity"] #airSection,
+    html[data-view="activity"] #airNowRow{ display:none !important }
+  }
+
   /* ===== Health Risks: a Low / Medium / High outlook for six conditions ===== */
   .health-card{ padding:0; border-radius:4px }
   .health-card .card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px }
@@ -2473,6 +2510,24 @@
   .hw-s-doi{ overflow-wrap:anywhere }
   .hw-fine{ margin-top:16px; color:var(--text-muted); font-size:14px }
 
+  /* Help (the footer's Help & About): sections that open and close one at a time, like the Best Times rows */
+  .hp-note{ margin:0 0 16px; color:var(--text-muted); line-height:1.5 }
+  .hp-sections{ border-bottom:1px solid var(--line) }
+  .hp-sec{ border-top:1px solid var(--line) }
+  .hp-sum{ display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:52px; cursor:pointer; list-style:none; color:var(--text) }
+  .hp-sum::-webkit-details-marker{ display:none }
+  .hp-sum:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+  .hp-sum-name{ flex:1 1 auto; font-weight:500 }
+  .hp-sum-chev{ flex:0 0 auto; width:20px; height:20px; color:var(--text-muted) }
+  .hp-sec[open] > .hp-sum .hp-sum-chev{ transform:rotate(180deg) }
+  .hp-panel{ padding:0 0 18px }
+  .hp-panel > p + p, .hp-panel > .hp-dyn + p, .hp-panel > p + .hp-dyn{ margin-top:12px }
+  .hp-h{ margin:16px 0 4px; font-size:1rem; font-weight:500; color:var(--text-muted) }
+  .hp-ul{ margin:4px 0 0; padding:0 0 0 18px }
+  .hp-ul li{ margin:0 0 4px; line-height:1.45 }
+  .hp-ul b{ font-weight:500; color:var(--text-muted) }
+  .hp-dyn .hw-det:first-of-type{ margin-top:12px }
+
   /* ============ Design scale (unifies what the sections above set one by one) ============
      Type weights: 400 text, 500 labels, values, tags, pills and links, 700 only for the headline, place name and alerts.
      Chips (filter pills, the go/stay tag, wind tags): 4px corners like the cards, 14px / 500.
@@ -2481,7 +2536,7 @@
   :root{ --row-h:56px; --chip-r:4px; --chip-h:26px }
 
   .bt-day, .bt-r dd, .bt-details, .bt-pill, .bt-pill[aria-checked="true"], .bt-pill::after, .vd-tag, button.vd-tag,
-  .bp-val, .bp-preview.is-warn, .bp-how-h, .vd-more, .vd-range, .vd-stat dd, .vd-chips li, .vd-wear strong, .vd-line b,
+  .bp-val, .bp-preview.is-warn, .bp-how-h, .vd-range, .vd-stat dd, .vd-chips li, .vd-wear strong, .vd-line b,
   .ag-title, .ag-num, .weather-now .wtext b, .ground-now .gtext b, .htile .sp, .htile .spunit, .pollen-row-label, .pollen-row-val,
   .dayrow .dname, .dayrow .dwind b, .dayrow .dshort .dval, .dayrow .temps .hi, .dval .wunit, .wk-table th, .wk-range,
   .wd-h, .wd-table td:first-child, .disclaimers-modal-body strong, .hero-wrap .hero-now .hero-reading .val{ font-weight:500 !important }
@@ -2561,15 +2616,15 @@
   footer .disclaimers-link, footer .footer-contact{ text-decoration-color:color-mix(in srgb, currentColor 45%, transparent) }
   @media (max-width:63.99em){
     .footer-bar{ min-height:98px }
-    .footer-mill{ width:66.4px; height:92px; right:13.6px; bottom:7.6px; color:var(--text-faint); opacity:.5 }   /* the same 96px-scale windmill, now in a box cropped to the drawing */
+    .footer-mill{ width:39.8px; height:55.2px; right:13.6px; top:-3px; bottom:auto; color:var(--text-faint); opacity:.5 }   /* the same 96px-scale windmill, now in a box cropped to the drawing */
     .disclaimers-link, .footer-contact{ min-height:44px; padding:0 }   /* real 44px rows: stacked 30px rows had overlapping tap areas */
     .disclaimers-link::after, .footer-contact::after{ inset:0 }
   }
   /* phones: the footer windmill is 50% bigger (96px to 144px scale) and its drawing sits flush with the right margin, its feet on the copyright line's baseline */
-  @media (max-width:31.1875em){ .footer-mill{ width:99.6px; height:138px; right:0; bottom:4.7px } }
+  @media (max-width:31.1875em){ .footer-mill{ width:59.8px; height:82.8px; right:0; top:-3px; bottom:auto } .footer-bar{ min-height:92px } }   /* the bar is taller than the windmill, so it never reaches up into the last module */
 
   /* text links: a dotted underline (More / Less, Reset, the report links, the footer links, links in the dialogs, Clear, the consent link) */
-  .vd-more, .bt-using button, .bt-details, .rp-link, .disclaimers-link, .footer-contact, .disclaimers-modal-body a, .sd-clear, .consent-text button{
+  .bt-using button, .bt-details, .rp-link, .disclaimers-link, .footer-contact, .disclaimers-modal-body a, .sd-clear, .consent-text button{
     text-decoration-line:underline; text-decoration-style:dotted; text-decoration-thickness:1.5px; text-underline-offset:3px }
 
   /* the Customize sliders icon is 20% smaller (24px to 19.2px) */
@@ -2781,6 +2836,17 @@
     </div>
   </div>
   </header>
+
+<!-- Phones: Weather, Health and Activity are three views of the same page (the other layouts show everything) -->
+<div class="view-seg" id="viewSeg" role="tablist" aria-label="Weather, Health or Activity">
+  <button type="button" class="vs-btn" role="tab" id="vsWeather" data-view="weather" aria-selected="true"><svg class="vs-ico vs-ico--rain" viewBox="4 7 34 40" aria-hidden="true"><g class="vs-fill"><rect x="6" y="24" width="30" height="13" rx="6.5"/><circle cx="14" cy="22" r="7"/><circle cx="23" cy="18" r="9"/><circle cx="31" cy="23" r="6.5"/></g><g stroke-width="3" stroke-linecap="round"><line x1="16" y1="41" x2="13.5" y2="46"/><line x1="24" y1="41" x2="21.5" y2="46"/><line x1="32" y1="41" x2="29.5" y2="46"/></g></svg><span>Weather</span></button>
+  <button type="button" class="vs-btn" role="tab" id="vsHealth" data-view="health" aria-selected="false" tabindex="-1"><svg class="vs-ico" viewBox="0 0 24 24" aria-hidden="true"><path class="vs-fill" d="M12 20.4s-8.2-5-8.2-11.1A4.7 4.7 0 0 1 12 6.5a4.7 4.7 0 0 1 8.2 2.8c0 6.1-8.2 11.1-8.2 11.1z"/></svg><span>Health</span><i class="vs-dot" aria-hidden="true"></i></button>
+  <button type="button" class="vs-btn" role="tab" id="vsActivity" data-view="activity" aria-selected="false" tabindex="-1"><svg class="vs-ico" viewBox="0 0 24 24" aria-hidden="true"><circle class="vs-fill" cx="10.2" cy="3.8" r="2.1"/><rect class="vs-fill" x="4.6" y="7.8" width="3.9" height="6" rx="1.4"/><g class="vs-mid"><path d="M10.5 8.1L9.7 14"/><path d="M9.7 14l2.7 3.1-.5 4.3"/><path d="M9.7 14L7.6 18l-1.7 3.2"/><path d="M10.6 9.3l5.4 2.7"/><path d="M15.4 8.2l2 13.2"/></g></svg><span>Activity</span></button>
+</div>
+
+<!-- Phones, Health view: the headline and short advice for today's health risks (the Weather view has the weather headline in the hero) -->
+<div class="hw-hero" id="hwHero" hidden></div>
+<div class="hw-hero" id="actHero" hidden></div>
 
 <div class="hero-wrap" role="region" aria-label="Current conditions">
   <div class="hero-head" id="heroHead"><button type="button" class="vd-tag" id="vdTag" data-info="tag" hidden></button></div>
@@ -3072,11 +3138,8 @@
 
   <footer>
     <div class="footer-bar">
-      <button type="button" class="disclaimers-link" id="disclaimersOpenBtn" aria-haspopup="dialog">Disclaimers &amp; Data Sources</button>
-      <button type="button" class="disclaimers-link" data-info="wind" aria-haspopup="dialog">Wind Key</button>
-      <a class="footer-contact" href="mailto:contact@checkthewind.com">contact@checkthewind.com</a>
-      <span class="data-asof">Data as of <span id="dataAsOf">—</span></span>
-      <span class="footer-copy">Copyright &copy; <span id="copyYear">2026</span> Check The Wind</span>
+      <button type="button" class="disclaimers-link" id="disclaimersOpenBtn" aria-haspopup="dialog">Help &amp; About</button>
+      <span class="data-asof">Data as of <span id="dataAsOf">&mdash;</span></span>
       <svg viewBox="4 -0.4 16.6 23" fill="none" stroke="currentColor" stroke-width="0.184" stroke-linecap="round" stroke-linejoin="round" class="footer-mill" focusable="false" aria-hidden="true"><path d="M11 6.6L6.71 22.6M11 6.6L15.29 22.6M8.83 14.6H13.17M7.77 18.6H14.23"/><path d="M11 6.6H19"/><rect x="17.6" y="5.3" width="3" height="2.6" rx=".3"/><g class="wm-wheel"><circle cx="11" cy="6.6" r="5.3"/><path d="M11 6.6L16.10 6.60M11 6.6L15.42 9.15M11 6.6L13.55 11.02M11 6.6L11.00 11.70M11 6.6L8.45 11.02M11 6.6L6.58 9.15M11 6.6L5.90 6.60M11 6.6L6.58 4.05M11 6.6L8.45 2.18M11 6.6L11.00 1.50M11 6.6L13.55 2.18M11 6.6L15.42 4.05"/></g><circle cx="11" cy="6.6" r="1.1" fill="currentColor"/></svg>
     </div>
   </footer>
@@ -3086,15 +3149,64 @@
 
 <div class="radar-modal modal-drawer" id="disclaimersModal" hidden>
   <div class="radar-modal-backdrop" id="disclaimersModalBackdrop"></div>
-  <div class="radar-modal-panel disclaimers-modal-panel" role="dialog" aria-modal="true" aria-labelledby="disclaimersModalTitle">
+  <div class="radar-modal-panel disclaimers-modal-panel wd-panel" role="dialog" aria-modal="true" aria-labelledby="disclaimersModalTitle">
     <div class="disclaimers-modal-head">
-      <h2 id="disclaimersModalTitle">Disclaimers &amp; Data Sources</h2>
+      <h2 id="disclaimersModalTitle">Help</h2>
       <button type="button" class="disclaimers-modal-close" id="disclaimersModalClose" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <div class="disclaimers-modal-body">
-      <p>
+    <div class="disclaimers-modal-body hp-body">
+      <p class="hp-note">
+        <strong>Please note.</strong> Forecasts, alerts, Best Times &amp; activity suggestions are provided for general information, as-is &amp; without
+        warranty, and can be wrong or delayed. They are not a substitute for official warnings. In severe weather follow
+        <a href="https://www.weather.gov" target="_blank" rel="noopener">weather.gov</a> &amp; your local officials, and call 911 in an emergency.
+      </p>
+    <div class="hp-sections">
+      <details class="hp-sec" data-hp="health">
+        <summary class="hp-sum"><span class="hp-sum-name">Health Risks</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
+        <div class="hp-panel">
+          <p>The headline at the top of the Health tab sums up the day: air quality first when it is the story, otherwise the conditions at Medium or High and their main causes, then general advice for those causes. The advice is general public-health guidance, not medical advice.</p>
+          <p>
+        The Low, Medium and High ratings are a general outlook built from published research
+        (the studies are listed in the module&rsquo;s &ldquo;How it works&rdquo; dialog), using forecast temperature, humidity, pressure, UV
+        and air quality from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>, with fine particles and ozone
+        adjusted to the current AirNow reading. They describe how likely a day is to be hard on a condition for people in general, not what
+        will happen to you, and are not medical advice, a diagnosis or a substitute for your clinician.
+      </p>
+          <div id="hpHealthBody" class="hp-dyn"></div>
+        </div>
+      </details>
+      <details class="hp-sec" data-hp="best">
+        <summary class="hp-sum"><span class="hp-sum-name">Best Times</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
+        <div class="hp-panel">
+          <div id="hpBestBody" class="hp-dyn"></div>
+          <p>
+        Best Times, and the Yes / Maybe / No answer to &ldquo;Is it a Good Time to Go Outside?&rdquo;,
+        are calculated by Check the Wind from the forecast, air-quality and rainfall data above, using default limits that you
+        can change with Customize. The activities listed are general suggestions based on those conditions, not safety advice.
+        They are a guide, not a guarantee.
+      </p>
+        </div>
+      </details>
+      <details class="hp-sec" data-hp="air">
+        <summary class="hp-sum"><span class="hp-sum-name">Air Quality &amp; Pollen</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
+        <div class="hp-panel">
+          <p>When AirNow has a forecast for your area, the module has three views. <strong>Current</strong> is the latest reading from the nearest monitor. <strong>Today&rsquo;s Peak</strong> and <strong>Tomorrow&rsquo;s Peak</strong> are the highest ozone and fine-particle levels AirNow&rsquo;s forecasters expect for those days. When a forecast gives only a category (such as Moderate) instead of a number, the gauge is drawn in the middle of that category. Where AirNow has no forecast, only the current reading shows.</p>
+          <p>The Air Quality Index runs from 0 to 500: 0&ndash;50 Good, 51&ndash;100 Moderate, 101&ndash;150 Unhealthy for Sensitive Groups, 151&ndash;200 Unhealthy, 201&ndash;300 Very Unhealthy and 301 or more Hazardous.</p>
+          <p>
+        The Air Quality Index, Fine particles (PM2.5) and Ozone are sourced live from AirNow
+        (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>), EPA — coverage depends on the nearest
+        reporting monitor. The Today and Tomorrow views show AirNow&rsquo;s forecast (the expected ozone and fine-particle peaks, set by the forecasters at your local air agency) where AirNow has one for your area; they are preliminary and can change. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Fine particles and Ozone gauges say no nearby data. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
+        <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Pollen isn't available from any free public
+        U.S. source, so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement.
+      </p>
+        </div>
+      </details>
+      <details class="hp-sec" data-hp="weather">
+        <summary class="hp-sum"><span class="hp-sum-name">Weather, Radar &amp; Maps</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
+        <div class="hp-panel">
+<p>
         <strong>Weather.</strong> In the U.S., wind speed, gusts, direction, temperature, forecasts &amp; weather alerts come live from the
         National Weather Service (<a href="https://api.weather.gov" target="_blank" rel="noopener">api.weather.gov</a>), NOAA.
         In Canada they come from Environment and Climate Change Canada&rsquo;s MSC GeoMet open data
@@ -3103,7 +3215,7 @@
         current conditions, the city-page hourly &amp; 7-day forecasts, and weather alerts. Coverage is limited to U.S. locations &amp;
         territories and Canada. Forecasts update hourly at the source; reload to refresh.
       </p>
-      <p>
+          <p>
         <strong>Right now.</strong> The forecast is not always the same as what is falling this minute, so the current conditions are
         checked against the nearest official weather station observation (under 90 minutes old), live radar at your location (NOAA
         radar tiles from the Iowa Environmental Mesonet) and the Open-Meteo model&rsquo;s current weather. Rain, snow or thunderstorms seen
@@ -3112,7 +3224,7 @@
         special marine) are the National Weather Service&rsquo;s storm-based warning polygons, served by the Iowa Environmental
         Mesonet, for U.S. locations.
       </p>
-      <p>
+          <p>
         <strong>Canada.</strong> Canadian forecasts come from the nearest Environment Canada forecast location, which can be some
         distance from the place you searched. Metric values are converted to &deg;F &amp; mph, and temperatures show in &deg;C and wind in km/h for visitors in Canada (judged from the browser&rsquo;s time zone or language) and for anyone looking at a Canadian place. The city-page hourly forecast covers 24
         hours, so Check the Wind fills the hours after that, and the wind on days the 7-day forecast doesn&rsquo;t mention it
@@ -3120,7 +3232,7 @@
         by <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Canadian alerts show each warning, watch or
         advisory with a link to its full text at weather.gc.ca; special weather statements are not shown. Forecast text is in English only.
       </p>
-      <p>
+          <p>
         <strong>Radar.</strong> Current radar is NOAA NEXRAD imagery served by Iowa State University's
         <a href="https://mesonet.agron.iastate.edu" target="_blank" rel="noopener">Iowa Environmental Mesonet</a>. The expanded radar
         uses NOAA MRMS observations &amp; NOAA HRRR model forecasts, which Check the Wind processes and extends a short way ahead
@@ -3129,27 +3241,13 @@
         (<a href="https://eccc-msc.github.io/open-data/msc-geomet/readme_en/" target="_blank" rel="noopener">MSC GeoMet</a>); there is no
         expanded or forecast radar there yet.
       </p>
-      <p>
-        <strong>Air quality &amp; pollen.</strong> The Air Quality Index, Fine particles (PM2.5) and Ozone are sourced live from AirNow
-        (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>), EPA — coverage depends on the nearest
-        reporting monitor. The Today and Tomorrow views show AirNow&rsquo;s forecast (the expected ozone and fine-particle peaks, set by the forecasters at your local air agency) where AirNow has one for your area; they are preliminary and can change. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Fine particles and Ozone gauges say no nearby data. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
-        <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Pollen isn't available from any free public
-        U.S. source, so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement.
-      </p>
-      <p>
-        <strong>Health Risks Today.</strong> The Low, Medium and High ratings are a general outlook built from published research
-        (the studies are listed in the module&rsquo;s &ldquo;How it works&rdquo; dialog), using forecast temperature, humidity, pressure, UV
-        and air quality from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>, with fine particles and ozone
-        adjusted to the current AirNow reading. They describe how likely a day is to be hard on a condition for people in general, not what
-        will happen to you, and are not medical advice, a diagnosis or a substitute for your clinician.
-      </p>
-      <p id="discLocalReports" hidden>
+          <p id="discLocalReports" hidden>
         <strong>Local weather reports.</strong> The Notes, Outlook, Nearby and Story tabs show text and pictures published by
         your local <a href="https://www.weather.gov" target="_blank" rel="noopener">National Weather Service</a> forecast office
         (forecast discussion, hazardous weather outlook, local storm reports and weather story), shown as published. Offices do
         not post every product at every moment, so a tab may say nothing is available. These reports are not available in Canada.
       </p>
-      <p>
+          <p>
         <strong>Places, maps &amp; sun times.</strong> Place search covers the U.S. and Canada and uses Open-Meteo's geocoding service (GeoNames data,
         <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>). A street address you search for
         (for example &ldquo;123 Main St, Denver, CO&rdquo;) is sent, when you press Enter, to OpenStreetMap&rsquo;s Nominatim service
@@ -3160,13 +3258,18 @@
         <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>.
         Sunrise &amp; sunset times by <a href="https://sunrise-sunset.org" target="_blank" rel="noopener">SUNRISE-SUNSET.ORG</a>.
       </p>
-      <p>
-        <strong>Best Times.</strong> Best Times, and the Yes / Maybe / No answer to &ldquo;Is it a Good Time to Go Outside?&rdquo;,
-        are calculated by Check the Wind from the forecast, air-quality and rainfall data above, using default limits that you
-        can change with Customize. The activities listed are general suggestions based on those conditions, not safety advice.
-        They are a guide, not a guarantee.
-      </p>
-      <p>
+        </div>
+      </details>
+      <details class="hp-sec" data-hp="wind">
+        <summary class="hp-sum"><span class="hp-sum-name">Wind Key</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
+        <div class="hp-panel">
+          <div id="hpWindBody" class="hp-dyn"></div>
+        </div>
+      </details>
+      <details class="hp-sec" data-hp="privacy">
+        <summary class="hp-sum"><span class="hp-sum-name">Privacy &amp; Analytics</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
+        <div class="hp-panel">
+          <p>
         <strong>Your information.</strong> Check the Wind has no accounts and no advertising. Your
         favorites, recent places, Best Times settings, animation preference &amp; last location are stored only in this browser, on your
         device; clearing your browser's site data removes them. To show you weather, the places you search for &mdash; and your
@@ -3174,7 +3277,7 @@
         This page loads its code library &amp; map software from cdnjs and its font from Google Fonts, which can see your IP address
         as any website you visit can.
       </p>
-      <p>
+          <p>
         <strong>Analytics.</strong> When you choose Accept on the banner, we use Google Analytics to count visits to Check the Wind and to understand, in aggregate, how
         the site is used and roughly who uses it. It records things like the pages viewed, how visitors arrive, the type of
         device &amp; browser, approximate location (city or region, from your IP address), and, when Google has enough data,
@@ -3186,11 +3289,16 @@
         <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">browser add-on</a>.
         If you choose Opt Out, analytics cookies are not set, and your choice is remembered in this browser.
       </p>
-      <p>
-        <strong>Please note.</strong> Forecasts, alerts, Best Times &amp; activity suggestions are provided for general information, as-is &amp; without
-        warranty, and can be wrong or delayed. They are not a substitute for official warnings. In severe weather follow
-        <a href="https://www.weather.gov" target="_blank" rel="noopener">weather.gov</a> &amp; your local officials, and call 911 in an emergency.
-      </p>
+        </div>
+      </details>
+      <details class="hp-sec" data-hp="contact">
+        <summary class="hp-sum"><span class="hp-sum-name">Contact</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
+        <div class="hp-panel">
+          <p>Questions, feedback or a place that looks wrong? Write to <a href="mailto:contact@checkthewind.com">contact@checkthewind.com</a>.</p>
+          <p>Copyright &copy; <span id="copyYear">2026</span> Check The Wind</p>
+        </div>
+      </details>
+    </div>
     </div>
   </div>
 </div>
@@ -4876,14 +4984,51 @@
     setTimeout(fin, 400);
   }
 
-  function openDisclaimersModal(){
-    disclaimersModalLastFocus = document.activeElement;
+  // Help: the sections open and close like the Best Times rows, one at a time. openDisclaimersModal('health') opens it at that section.
+  function fillHelpBest(box){
+    box.textContent = '';
+    box.appendChild(mk('p', null, 'Best Times looks through the next 7 days of forecast, keeps only the daylight hours, and scores each hour on temperature, wind, how dry the ground is and air quality. It then finds the stretches of at least two good hours and ranks them.'));
+    box.appendChild(mk('h3', 'hp-h', 'The four views'));
+    var views = mk('ul', 'hp-ul');
+    [['7-Day', 'the best window of each of the next 7 days, or the reason a day is skipped.'],
+     ['Top 3', 'the three best windows across the next ' + bestPrefs.days + ' days (Customize sets how many days).'],
+     ['Weekend', 'the best window of this Saturday and Sunday.'],
+     ['Skips', 'only the days where no window passes your limits, with the main reasons.']].forEach(function(v){
+      var li = mk('li'); li.appendChild(mk('b', null, v[0])); li.appendChild(document.createTextNode(': ' + v[1])); views.appendChild(li);
+    });
+    box.appendChild(views);
+    box.appendChild(mk('h3', 'hp-h', 'Why a day is skipped'));
+    box.appendChild(mk('p', null, 'A window is skipped when it breaks any of your limits, and a day is skipped when no stretch of at least two hours passes them. The reasons shown (rain or thunderstorms likely, strong winds, snow or icy ground, cold, heat, poor air quality, high humidity, wet ground) are what ruled the day out. Snow and ice are always skipped, and so is darkness.'));
+    box.appendChild(mk('h3', 'hp-h', 'The default limits'));
+    var lim = mk('ul', 'hp-ul');
+    BP_FIELDS.forEach(function(f){ lim.appendChild(mk('li', null, f.label + ': ' + f.fmt(BP_STD[f.k]))); });
+    box.appendChild(lim);
+    box.appendChild(mk('p', null, bpIsCustom(bestPrefs) ? 'You have changed some limits with Customize on the Best Times module. They are saved in this browser.' : 'You are using the default limits. Change them with Customize on the Best Times module.'));
+    box.appendChild(mk('h3', 'hp-h', 'The Activity headline'));
+    box.appendChild(mk('p', null, 'On the Activity tab the headline names the day with the strongest window and the activities it suits, lists the other good days, and says which days to skip and why. The activities are general suggestions, not safety advice.'));
+  }
+  function openDisclaimersModal(key, trigger){
+    disclaimersModalLastFocus = trigger || document.activeElement;
+    var hb = document.getElementById('hpHealthBody'), wb = document.getElementById('hpWindBody');
+    hb.textContent = ''; hwFillModal(hb);
+    fillHelpBest(document.getElementById('hpBestBody'));
+    wb.textContent = ''; fillWindKey(wb);
+    var target = null;
+    [].forEach.call(disclaimersModal.querySelectorAll('.hp-sec'), function(d){ d.open = !!key && d.getAttribute('data-hp') === key; if(d.open) target = d; });
     showModal(disclaimersModal);
     setBackgroundInert(true, disclaimersModal);
     lockPage('disclaimers');
     var closeBtn = document.getElementById('disclaimersModalClose');
     if(closeBtn) closeBtn.focus();
+    var hpBody = disclaimersModal.querySelector('.disclaimers-modal-body');
+    hpBody.scrollTop = 0;
+    if(target) hpBody.scrollTop = Math.max(0, target.offsetTop - hpBody.offsetTop - 12);
   }
+  disclaimersModal.addEventListener('toggle', function(e){
+    var d = e.target;
+    if(!d.classList || !d.classList.contains('hp-sec') || !d.open) return;
+    [].forEach.call(disclaimersModal.querySelectorAll('.hp-sec'), function(o){ if(o !== d) o.open = false; });
+  }, true);
   function closeDisclaimersModal(){
     if(disclaimersModal.hidden) return;
     hideModal(disclaimersModal);
@@ -4891,7 +5036,7 @@
     unlockPage('disclaimers');
     if(disclaimersModalLastFocus && typeof disclaimersModalLastFocus.focus === 'function') disclaimersModalLastFocus.focus({preventScroll: true});
   }
-  disclaimersOpenBtn.addEventListener('click', openDisclaimersModal);
+  disclaimersOpenBtn.addEventListener('click', function(e){ openDisclaimersModal(null, e.currentTarget); });
   document.getElementById('disclaimersModalClose').addEventListener('click', closeDisclaimersModal);
   document.getElementById('disclaimersModalBackdrop').addEventListener('click', closeDisclaimersModal);
   document.addEventListener('keydown', function(e){
@@ -4932,11 +5077,49 @@
     ['Take shelter', 'red', 'A tornado warning is in effect.']
   ];
   var vdTagNow = '';
+  function fillWindKey(body){
+    var intro = document.createElement('p');
+    intro.className = 'wk-intro';
+    intro.textContent = 'Color-coded wind ranges exist across Check The Wind, see the key below for wind speed ranges and categories.';
+    body.appendChild(intro);
+    var table = document.createElement('table');
+    table.className = 'wk-table';
+    var head = document.createElement('thead');
+    var hr = document.createElement('tr');
+    ['Category','Wind Range'].forEach(function(t){
+      var th = document.createElement('th');
+      th.scope = 'col';
+      th.textContent = t;
+      hr.appendChild(th);
+    });
+    head.appendChild(hr);
+    table.appendChild(head);
+    var tb = document.createElement('tbody');
+    windKeyRows().forEach(function(r){
+      var tr = document.createElement('tr');
+      var c1 = document.createElement('td');
+      var pill = document.createElement('span');
+      pill.className = 'hero-band-pill';
+      pill.style.background = 'var(--pill-' + r[1] + ')';
+      pill.style.color = 'var(--seg-ink-' + r[1] + ')';
+      pill.textContent = r[0];
+      c1.appendChild(pill);
+      var c2 = document.createElement('td');
+      c2.className = 'wk-range';
+      c2.style.color = r[3];
+      c2.textContent = r[2];
+      tr.appendChild(c1);
+      tr.appendChild(c2);
+      tb.appendChild(tr);
+    });
+    table.appendChild(tb);
+    body.appendChild(table);
+  }
   function fillInfoModal(kind){
     var title = document.getElementById('infoModalTitle');
     var body = document.getElementById('infoModalBody');
     body.textContent = '';
-    infoModal.querySelector('.disclaimers-modal-panel').classList.toggle('wd-panel', kind === 'window' || kind === 'health');
+    infoModal.querySelector('.disclaimers-modal-panel').classList.toggle('wd-panel', kind === 'window');
     if(kind === 'window' && winDetail){
       title.textContent = winDetail.title;
       var place = (hdrLoc.textContent || '').trim();
@@ -4970,47 +5153,9 @@
         row.appendChild(dt); row.appendChild(dd); tdl.appendChild(row);
       });
       body.appendChild(tdl);
-    }else if(kind === 'health'){
-      title.textContent = 'Health Risks Today: how it works';
-      hwFillModal(body);
     }else if(kind === 'wind'){
       title.textContent = 'Wind Key';
-      var intro = document.createElement('p');
-      intro.className = 'wk-intro';
-      intro.textContent = 'Color-coded wind ranges exist across Check The Wind, see the key below for wind speed ranges and categories.';
-      body.appendChild(intro);
-      var table = document.createElement('table');
-      table.className = 'wk-table';
-      var head = document.createElement('thead');
-      var hr = document.createElement('tr');
-      ['Category','Wind Range'].forEach(function(t){
-        var th = document.createElement('th');
-        th.scope = 'col';
-        th.textContent = t;
-        hr.appendChild(th);
-      });
-      head.appendChild(hr);
-      table.appendChild(head);
-      var tb = document.createElement('tbody');
-      windKeyRows().forEach(function(r){
-        var tr = document.createElement('tr');
-        var c1 = document.createElement('td');
-        var pill = document.createElement('span');
-        pill.className = 'hero-band-pill';
-        pill.style.background = 'var(--pill-' + r[1] + ')';
-        pill.style.color = 'var(--seg-ink-' + r[1] + ')';
-        pill.textContent = r[0];
-        c1.appendChild(pill);
-        var c2 = document.createElement('td');
-        c2.className = 'wk-range';
-        c2.style.color = r[3];
-        c2.textContent = r[2];
-        tr.appendChild(c1);
-        tr.appendChild(c2);
-        tb.appendChild(tr);
-      });
-      table.appendChild(tb);
-      body.appendChild(table);
+      fillWindKey(body);
     }
   }
   function openInfoModal(kind, trigger){
@@ -5030,6 +5175,7 @@
   }
   document.addEventListener('click', function(e){
     var btn = e.target.closest && e.target.closest('[data-info]');
+    if(btn && btn.getAttribute('data-info') === 'health'){ openDisclaimersModal('health', btn); return; }
     if(btn){ openInfoModal(btn.getAttribute('data-info'), btn); return; }
     var more = e.target.closest && e.target.closest('[data-win]');
     if(more){
@@ -5722,17 +5868,17 @@
       if(cat === undefined){ var c = pick(o, ['Category', 'category']); cat = c && typeof c === 'object' ? (c.Name || c.name) : c; }
       if(typeof cat === 'number' || /^\d$/.test(String(cat))) cat = AQI_CAT_NUM[+cat];
       var aqi = pick(o, ['aqi', 'AQI', 'forecastAQI']); aqi = typeof aqi === 'number' ? aqi : parseFloat(aqi);
-      var low = aqi;
-      if(!(aqi >= 0)){ if(AQI_CAT_MID[cat]){ aqi = AQI_CAT_MID[cat]; low = AQI_CAT_LOW[cat]; } else return; }   // a category with no number: drawn at the middle of the category, rated from its bottom
+      var low = aqi, est = false;
+      if(!(aqi >= 0)){ if(AQI_CAT_MID[cat]){ aqi = AQI_CAT_MID[cat]; low = AQI_CAT_LOW[cat]; est = true; } else return; }   // a category with no number: drawn at the middle of the category, rated from its bottom
       if(!AQI_CAT_INFO[cat]) cat = aqiCatName(aqi);
       var action = pick(o, ['actionDay', 'ActionDay']);
-      rows.push({kind: kind, date: date, aqi: Math.round(aqi), low: Math.round(low), cat: cat, action: action === true || /^true$/i.test(String(action))});
+      rows.push({kind: kind, date: date, aqi: Math.round(aqi), low: Math.round(low), est: est, cat: cat, action: action === true || /^true$/i.test(String(action))});
     });
     if(!rows.length) return null;
     var days = {};
     rows.forEach(function(r){
       var d = days[r.date] = days[r.date] || {action: false};
-      if(!d[r.kind] || r.aqi > d[r.kind].aqi) d[r.kind] = {aqi: r.aqi, low: r.low, catName: r.cat};
+      if(!d[r.kind] || r.aqi > d[r.kind].aqi) d[r.kind] = {aqi: r.aqi, low: r.low, est: r.est, catName: r.cat};
       if(r.action) d.action = true;
     });
     Object.keys(days).forEach(function(k){   // the overall index is the higher of the two pollutants
@@ -6280,6 +6426,10 @@
       if(r && r.rr > 1.002){
         if(d.alertO3 && f.label === 'Ozone') r.text = 'high ozone (an air quality alert is in effect)';
         if(d.alertPM && /^(Fine particles|Smoke)/.test(f.label)) r.text = 'fine particles (an air quality alert is in effect)';
+        // a forecast that gives only a category (no number) is quoted as the category, not as an inferred amount
+        if(!d.alertO3 && d.fcO3Cat && f.label === 'Ozone') r.text = 'ozone (forecast: ' + d.fcO3Cat.toLowerCase() + ')';
+        if(!d.alertPM && d.fcPmCat && /^(Fine particles|Smoke)/.test(f.label)) r.text = 'fine particles (forecast: ' + d.fcPmCat.toLowerCase() + ')';
+        r.label = f.label;
         rr *= r.rr; drivers.push(r);
       }
     });
@@ -6407,8 +6557,8 @@
         // AirNow's forecast, where there is one, replaces the model's ozone peak and PM2.5 for that day (the forecasters' numbers are the authority)
         var fd = fc && fc.days && fc.days[ds];
         if(fd){
-          if(fd.ozone){ d.o3ppb = hwFromAqi(fd.ozone.low, HW_O3_BP); d.fcAir = true; }
-          if(fd.pm25){ d.pm25 = hwFromAqi(fd.pm25.low, HW_PM_BP); d.fcAir = true; }
+          if(fd.ozone){ d.o3ppb = hwFromAqi(fd.ozone.low, HW_O3_BP); d.fcAir = true; if(fd.ozone.est) d.fcO3Cat = fd.ozone.catName; }
+          if(fd.pm25){ d.pm25 = hwFromAqi(fd.pm25.low, HW_PM_BP); d.fcAir = true; if(fd.pm25.est) d.fcPmCat = fd.pm25.catName; }
           if(fd.ozone || fd.pm25) d.hasAir = true;
         }
         var aq = hwAlertAir(alerts, ds);
@@ -6423,7 +6573,7 @@
 
   var hwData = null, hwSel = 0, hwToken = 0;
   var healthSection = document.getElementById('healthSection'), healthCard = document.getElementById('healthCard');
-  function hwReset(){ hwToken++; hwData = null; hwSel = 0; if(healthSection) healthSection.hidden = true; }
+  function hwReset(){ hwToken++; hwData = null; hwSel = 0; if(healthSection) healthSection.hidden = true; if(hwHero) hwHero.hidden = true; if(actHero) actHero.hidden = true; var vs = document.getElementById('viewSeg'); if(vs) vs.removeAttribute('data-risk'); }
   async function hwLoad(lat, lon, todayStr, nowKey, airNow, alertsP, fc){
     if(!HW_ON) return;
     var token = ++hwToken;
@@ -6492,6 +6642,8 @@
     hwData.airNote = !someAir ? 'Air quality data is not available here, so air quality is left out of these ratings.'
       : !allAir ? 'Air quality is forecast about five days ahead, so the last days use weather only.' : '';
     healthSection.hidden = false;
+    hwHeroRender(scored, days[0]);
+    viewSeg.setAttribute('data-risk', scored.some(function(x){ return x.r.level === 'high'; }) ? 'high' : scored.some(function(x){ return x.r.level === 'medium'; }) ? 'medium' : '');
   }
   if(healthCard){
     healthCard.addEventListener('click', function(e){
@@ -6515,6 +6667,185 @@
       e.preventDefault(); n.click();
     });
   }
+  /* ---------- Health headline and advice (the Health view's hero text, phones) ----------
+     A two-line headline and a short gray paragraph, like the weather hero: what the forecast means for the six conditions today,
+     and general advice for the main causes (public-health guidance on ozone, smoke, heat, cold and so on; not medical advice). */
+  var hwHero = document.getElementById('hwHero');
+  var HW_REC = {
+    ozone: 'Ozone is highest in the afternoon, so do hard outdoor exercise in the morning or indoors, and people with asthma or other lung conditions should keep their quick-relief medicine close.',
+    pm: 'Limit hard outdoor exercise, keep windows closed and run a good air filter indoors; a well-fitting N95 mask helps if you have to be out in smoke.',
+    heat: 'Drink water through the day, avoid heavy exertion in the afternoon heat and check on older neighbors.',
+    cold: 'Dress in layers, warm up before activity and cover your nose and mouth with a scarf if cold air bothers your breathing.',
+    migraine: 'Stay hydrated, keep regular sleep and meals and keep any migraine treatment within reach.',
+    joints: 'Gentle movement and warmth can ease stiff joints.',
+    no2: 'Avoid exercising along busy roads.',
+    sun: 'Wear sunglasses and a hat in the strong sun.',
+    hotnight: 'Keep your bedroom as cool as you can for sleep.'
+  };
+  function hwCatOf(label){
+    if(/^Ozone/.test(label)) return 'ozone';
+    if(/^(Fine particles|Smoke)/.test(label)) return 'pm';
+    if(/^(Traffic pollution|Nitrogen dioxide)/.test(label)) return 'no2';
+    if(/^(Heat|A multi-day heat wave|Hot, humid|Hot, dry)/.test(label)) return 'heat';
+    if(/^(Warm nights|Hot nights)/.test(label)) return 'hotnight';
+    if(/^(Cold|Dry, cold|A cool-down)/.test(label)) return 'cold';
+    if(/^(Falling pressure|Pressure swings|Unusual pressure)/.test(label)) return 'pressure';
+    if(/sun$/i.test(label)) return 'sun';
+    return '';
+  }
+  function hwHeroBuild(scored, d){
+    var city = String(hdrLoc.textContent || '').split(',')[0].trim() || 'your area';
+    var fd = airFc && airFc.days && airFc.days[d.ds], fT = airFc && airFc.days && airFc.days[nextDateStr(d.ds)];
+    function rank(e){ return e && AQI_CAT_INFO[e.catName] ? AQI_CAT_INFO[e.catName].rank : 0; }
+    var ozoneHigh = !!d.alertO3 || rank(fd && fd.ozone) >= 2, pmHigh = !!d.alertPM || rank(fd && fd.pm25) >= 2;
+    var high = scored.filter(function(x){ return x.r.level === 'high'; }), med = scored.filter(function(x){ return x.r.level === 'medium'; });
+    var top = (high.length ? high : med).slice().sort(function(a, b){ return b.r.rr / b.m.med - a.r.rr / a.m.med; });
+    function names(list){ return vdList(list.map(function(x){ return x.m.name.toLowerCase(); })); }
+    function clean(t){ return t.replace(/\s*[↑↓]/g, ''); }
+    var SHORT = {ozone: 'ozone', pm: 'fine particles', no2: 'traffic pollution', heat: 'the heat', hotnight: 'hot nights', cold: 'the cold', pressure: 'pressure changes', sun: 'strong sun'};
+    function short(dr){ return SHORT[hwCatOf(dr.label || '')] || (/humid|damp/.test(dr.text) ? 'damp air' : clean(dr.text).replace(/\s*\(.*$/, '')); }
+    var l1, l2;
+    if(ozoneHigh || pmHigh){
+      l1 = ozoneHigh && pmHigh ? 'Unhealthy air today.' : ozoneHigh ? 'Ozone is high today.' : 'Fine-particle pollution is high today.';
+      l2 = ozoneHigh ? 'Take it easier outdoors this afternoon.' : 'Limit time outdoors.';
+    }else if(high.length){
+      l1 = 'High risk for ' + names(top) + '.'; l2 = 'Mostly from ' + short(top[0].r.drivers[0]) + '.';
+    }else if(med.length){
+      l1 = 'Medium risk for ' + names(top) + '.'; l2 = 'Mostly from ' + short(top[0].r.drivers[0]) + '.';
+    }else{
+      l1 = 'Low health risks today.'; l2 = 'Nothing in the forecast stands out.';
+    }
+    var sents = [], cats = [];
+    if(top.length){
+      var causes = [], seen = {};
+      top.forEach(function(x){ x.r.drivers.filter(function(dr){ return dr.rr >= 1.02; }).forEach(function(dr){
+        var c = hwCatOf(dr.label || '');
+        if(c) cats.push(c === 'pressure' ? (x.m.id === 'migraine' ? 'migraine' : x.m.id === 'arthritis' ? 'joints' : '') : c);
+        var key = c || dr.text;
+        var txt = c === 'ozone' ? (ozoneHigh ? 'high ozone' : 'ozone') : c === 'pm' ? (pmHigh ? 'high fine-particle pollution' : 'fine particles') : clean(dr.text);
+        if(!seen[key]){ seen[key] = 1; causes.push({rr: dr.rr, text: txt}); }
+      }); });
+      causes.sort(function(a, b){ return b.rr - a.rr; });
+      var ct = causes.slice(0, 2).map(function(c){ return c.text; });
+      sents.push('In ' + city + ', the forecast shows ' + vdList(ct) + ', which raises ' + names(top) + ' risk.');
+      if(high.length && med.length) sents.push('Risk is medium for ' + names(med) + '.');
+      var recs = [], used = {};
+      HW_REC_ORDER.forEach(function(c){ if(cats.indexOf(c) >= 0 && !used[c] && recs.length < (high.length ? 3 : 2)){ used[c] = 1; recs.push(HW_REC[c]); } });
+      recs.forEach(function(r){ sents.push(r); });
+    }else{
+      sents.push('In ' + city + ', nothing in the forecast is likely to make these conditions worse today. It is a good day to be active outdoors.');
+    }
+    // the air tomorrow, when AirNow has a forecast
+    function worst(f){ return Math.max(rank(f && f.ozone), rank(f && f.pm25)); }
+    if(fT && fd){
+      var tT = worst(fT), tD = worst(fd);
+      if(tT >= 2 && tD >= 2) sents.push('Tomorrow’s air looks similar.');
+      else if(tT >= 2) sents.push('Air quality is expected to worsen tomorrow.');
+      else if(tD >= 2) sents.push('Air quality should improve tomorrow.');
+    }
+    // pollen is a seasonal estimate, so it is only mentioned when it is high
+    try{
+      var pol = pollenEstimate(lastLoad.lat, d.ds), pk = null;
+      [['Weed', pol.weed], ['Tree', pol.tree], ['Grass', pol.grass]].forEach(function(x){ var lv = pollenLevel(x[1]); if(lv.rank >= 3 && (!pk || x[1] > pk[1])) pk = x; });
+      if(pk) sents.push(pk[0] + ' pollen is estimated high today, so keep windows closed and rinse off after time outside.');
+    }catch(e){}
+    return {lines: [l1, l2], detail: sents.join(' ')};
+  }
+  var HW_REC_ORDER = ['ozone', 'pm', 'heat', 'cold', 'migraine', 'joints', 'no2', 'sun', 'hotnight'];
+  function hwHeroRender(scored, d){
+    if(hwHero) heroFill(hwHero, hwHeroBuild(scored, d));
+  }
+  // The Health and Activity headers: two headline lines and the full paragraph beneath
+  function heroFill(hero, o){
+    hero.innerHTML = '<div class="vd-prose"><span class="vd-head">' + o.lines.map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
+    hero.hidden = false;
+  }
+
+  /* ---------- Activity headline and advice (the Activity view's hero text, phones) ----------
+     Which day is best and what suits it, which other days are good, and which days to skip and why. Built from the same 7-day windows as Best Times. */
+  var actHero = document.getElementById('actHero');
+  function actHeroBuild(week, c){
+    var seed = vdSeed(c), big = vdBigCity();
+    function dn(d){ return d === c.todayStr ? 'today' : d === c.tomorrowStr ? 'tomorrow' : fmtDowLong(d); }
+    var goods = week.filter(function(x){ return x.good; }), skips = week.filter(function(x){ return !x.good; });
+    // what the skipped days have in common: "Skip Wednesday and Thursday: rain likely and strong winds."
+    var skipSents = [], groups = [], byKey = {};
+    skips.forEach(function(x){
+      var key = x.reasons.join('|');
+      if(!byKey[key]){ byKey[key] = {days: [], reasons: x.reasons}; groups.push(byKey[key]); }
+      byKey[key].days.push(dn(x.date));
+    });
+    groups.slice(0, 3).forEach(function(g){
+      skipSents.push('Skip ' + vdList(g.days) + ': ' + (g.reasons.length ? vdList(g.reasons) : 'conditions never stay good long enough to plan around') + '.');
+    });
+    if(!goods.length){
+      return {lines: ['No good outdoor time in the next ' + week.length + ' days.', big ? 'Better saved for museums, shows and a good dinner.' : 'Better saved for indoor plans.'],
+        detail: (week.length ? 'No day has a stretch of good weather long enough to plan around. ' + skipSents.join(' ') : 'Check back soon for the next forecast.')};
+    }
+    var best = goods.reduce(function(a, x){ return x.score > a.score ? x : a; }, goods[0]);
+    var acts = vdActivities().filter(function(x){ return x.ok(best.agg); }), pick = vdPickActs(acts, seed, 3);
+    var l1 = vdCap(dn(best.date)) + ' looks best.';
+    var l2 = pick.length ? 'Good for ' + vdListOr(pick.map(function(x){ return x.short; })) + '.' : 'Fine for a short outing.';
+    var a = best.agg, sp = vdSpan(best.hours, c);
+    var tempText = (tempNum(a.tMinRaw) === tempNum(a.tMaxRaw) ? tempNum(a.tMaxRaw) : tempNum(a.tMinRaw) + '–' + tempNum(a.tMaxRaw)) + (useCelsius ? '°C' : '°F');
+    var sents = ['The best window is ' + dn(best.date) + ' ' + sp.phrase + ', at ' + tempText + ' with winds up to ' + fmtWind(a.wMax) + ' and ' + (a.pop < 10 ? 'no rain expected' : 'a ' + a.pop + '% chance of ' + a.popType) + '.'];
+    var others = goods.filter(function(x){ return x !== best; });
+    if(!skips.length) sents.push('Every day in the forecast has a good window, so there is nothing to skip.');
+    else{
+      if(others.length) sents.push(others.length > 4 ? others.length + ' more days also look good.' : vdCap(vdList(others.map(function(x){ return dn(x.date); }))) + (others.length === 1 ? ' also looks' : ' also look') + ' good.');
+      sents = sents.concat(skipSents);
+    }
+    // a few activities the best day does not suit, and the day that does
+    var inBest = {}; acts.forEach(function(x){ inBest[x.name] = 1; });
+    var shown = {}; pick.forEach(function(x){ shown[x.name] = 1; });
+    var extra = acts.filter(function(x){ return !shown[x.name]; }).slice(0, 3);
+    if(extra.length) sents.push('It also suits ' + vdListOr(extra.map(function(x){ return x.short; })) + '.');
+    var byDay = {}, dayOrder = [];
+    vdActivities().forEach(function(x){
+      if(inBest[x.name]) return;
+      var d = others.filter(function(o){ return x.ok(o.agg); })[0];
+      if(!d) return;
+      if(!byDay[d.date]){ if(dayOrder.length >= 2) return; byDay[d.date] = []; dayOrder.push(d.date); }
+      if(byDay[d.date].length < 2) byDay[d.date].push(x.short);
+    });
+    dayOrder.forEach(function(d){ sents.push(vdCap(dn(d)) + ' is best for ' + vdList(byDay[d]) + '.'); });
+    return {lines: [l1, l2], detail: sents.join(' ')};
+  }
+  function actHeroRender(week, c){
+    if(!actHero) return;
+    if(!week.length){ actHero.hidden = true; return; }
+    heroFill(actHero, actHeroBuild(week, c));
+  }
+
+  /* ---------- Weather | Health views (phones) ----------
+     The view is remembered on this device and can be opened with ?view=health. The Health tab shows a dot when any condition is Medium or High. */
+  var viewSeg = document.getElementById('viewSeg'), VIEW_KEY = 'ctw-view';
+  function setView(v, opts){
+    v = v === 'health' || v === 'activity' ? v : 'weather';
+    document.documentElement.setAttribute('data-view', v);
+    [].forEach.call(viewSeg.querySelectorAll('.vs-btn'), function(b){ var on = b.getAttribute('data-view') === v; b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
+    try{ localStorage.setItem(VIEW_KEY, v); }catch(e){}
+    if(!(opts && opts.initial)){
+      window.scrollTo(0, 0);
+      setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 60);   // charts and the radar redraw once they are visible again
+      announce('Showing ' + (v === 'health' ? 'Health' : v === 'activity' ? 'Activity' : 'Weather') + '.');
+    }
+  }
+  (function(){
+    var q = null, saved = null;
+    try{ q = new URLSearchParams(location.search).get('view'); }catch(e){}
+    try{ saved = localStorage.getItem(VIEW_KEY); }catch(e){}
+    setView(q === 'health' || q === 'weather' || q === 'activity' ? q : saved, {initial: true});
+    viewSeg.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('.vs-btn'); if(b && b.getAttribute('aria-selected') !== 'true') setView(b.getAttribute('data-view')); });
+    viewSeg.addEventListener('keydown', function(e){
+      if(e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      var all = [].slice.call(viewSeg.querySelectorAll('.vs-btn')), i = all.indexOf(document.activeElement);
+      if(i < 0) return;
+      var n = all[(i + (e.key === 'ArrowRight' ? 1 : all.length - 1)) % all.length];
+      e.preventDefault(); n.click(); n.focus();
+    });
+  })();
+
   // The "How it works" dialog: the method in plain words, then each condition's evidence, factors and studies
   function hwFillModal(body){
     body.appendChild(mk('p', 'wk-intro', 'Each day, we check the forecast for weather and air quality that research links to flare-ups of each condition. Each weather condition we find adds a little extra risk, sized against what the research for that medical condition shows.' + (HW_PERIODS ? ' The 3 Day and 1 Week views show each condition’s highest rating in that period, and the day it happens.' : '')));
@@ -7062,6 +7393,17 @@
           when: dayName + ' no good window', time: '', reason: skipReason(dh, dayWx), groups: skipGroups(dh, dayWx), temp: dayWx.text, tempShort: dayWx.tempShort, sky: dayWx.sky, skyIcon: dayWx.icon, summary: dayReason(dh), detail: null, shareHead: '', shareConds: ''});
       });
     }
+    // the Activity header: the best window of each of the next 7 days, or why the day is skipped (whatever Best Times mode is showing)
+    var week = [], weekDates = [];
+    hrsAll.forEach(function(x){ var d = localDate(x.iso); if(weekDates.indexOf(d) < 0) weekDates.push(d); });
+    weekDates.slice(0, 7).forEach(function(d){
+      var dh = hrsAll.filter(function(x){ return localDate(x.iso) === d; });
+      if(!dh.some(function(x){ return !x.why.some(function(t){ return /dark out/.test(t); }); })) return;
+      var dw = findBestWindows(dh);
+      if(dw.length) week.push({date: d, good: true, hours: dw[0].hours, score: dw[0].score, agg: vdAgg(dw[0].hours)});
+      else week.push({date: d, good: false, reasons: dayReasonItems(dh)});
+    });
+    try{ actHeroRender(week, vdCtx); }catch(e){ if(actHero) actHero.hidden = true; }
     var anyWindow = windows.some(function(w){ return !w.none; });
     var skipsMode = bestMode === 'skips', weekendMode = bestMode === 'weekend';
     if(skipsMode) windows = windows.filter(function(w){ return w.none; });
@@ -8656,42 +8998,7 @@
     var tg = vdTagFor(r);
     vdTagNow = tg.t;
     tagEls.forEach(function(t){ if(t){ t.textContent = tg.t; t.className = 'vd-tag vd-tag--' + tg.k; t.setAttribute('aria-label', tg.t + ', what this means'); t.hidden = false; } });
-    vdClampSetup();
   }
-
-  // Phones: the hero's long paragraph stops after a whole sentence (within three lines), with an inline More / Less
-  var vdMoreOpen = false, vdPhoneMq = window.matchMedia ? window.matchMedia('(max-width:31.1875em)') : null;
-  function vdClampSetup(){
-    var det = vdBody.querySelector('.vd-detail');
-    if(!det) return;
-    if(det.dataset.full === undefined) det.dataset.full = det.textContent;
-    var full = det.dataset.full;
-    function plain(){ det.textContent = full; }
-    plain();
-    if(!vdPhoneMq || !vdPhoneMq.matches || vdBody.getAttribute('aria-hidden') === 'true') return;
-    var sentences = full.match(/[^.!?]+[.!?]+(?:["”’)]+)?(?:\s+|$)/g) || [full];
-    if(sentences.length < 2) return;
-    var lh = parseFloat(getComputedStyle(det).lineHeight) || 24, maxH = lh * 3 + 2;
-    function build(text, open){
-      det.textContent = '';
-      det.appendChild(document.createTextNode(text.replace(/\s+$/, '') + ' '));
-      var btn = document.createElement('button');
-      btn.type = 'button'; btn.className = 'vd-more'; btn.setAttribute('aria-expanded', String(open));
-      btn.textContent = open ? 'Less' : 'More';
-      btn.addEventListener('click', function(){ vdMoreOpen = !vdMoreOpen; vdClampSetup(); var nb = det.querySelector('.vd-more'); if(nb) nb.focus({preventScroll: true}); });
-      det.appendChild(btn);
-    }
-    if(vdMoreOpen){ build(full, true); return; }
-    plain();
-    if(det.offsetHeight <= maxH) return;   // already short enough
-    var k = sentences.length - 1;
-    for(; k > 1; k--){
-      build(sentences.slice(0, k).join(''), false);
-      if(det.offsetHeight <= maxH) break;
-    }
-    if(k === 1) build(sentences[0], false);   // never cut a sentence, even a long one
-  }
-  if(vdPhoneMq && vdPhoneMq.addEventListener) vdPhoneMq.addEventListener('change', function(){ if(vdCtx) vdClampSetup(); });
 
   // The short go / stay tag beside the place name on phones
   function vdTagFor(r){
@@ -10300,7 +10607,7 @@
   }
   document.getElementById('consentYes').addEventListener('click', function(){ choose('granted'); });
   document.getElementById('consentNo').addEventListener('click', function(){ choose('denied'); });
-  document.getElementById('consentMore').addEventListener('click', function(){ var b = document.getElementById('disclaimersOpenBtn'); if(b) b.click(); });
+  document.getElementById('consentMore').addEventListener('click', function(){ openDisclaimersModal('privacy', document.getElementById('consentMore')); });
 })();
 </script>
 </body>
