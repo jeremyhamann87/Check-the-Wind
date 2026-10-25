@@ -2450,11 +2450,11 @@
   .hw-lc .hw-sparkwrap{ margin-top:8px }
   .hw-axis{ position:relative; display:block; height:14px; margin-top:4px; color:color-mix(in srgb, var(--text-faint) 70%, var(--bg)) }
   .hw-axis span{ position:absolute; top:0; transform:translateX(-50%); line-height:14px; white-space:nowrap }
-  html body #healthCard .hw-axis span, html body #airCard .hw-axis span, html body .hero-now .hw-axis span{ font-size:10px !important }
-  .hw-drop{ display:flex; align-items:center; gap:6px; width:100%; height:100% }
-  .hw-drop svg{ flex:0 0 auto; width:46px; height:44px; overflow:visible }
-  .hw-drop-l{ color:var(--text-muted); line-height:1.2 }   /* the comfortable range, beside the droplet */
-  html body #healthCard .hw-drop-l{ font-size:11px !important }
+  html body #healthCard .hw-axis span, html body #airCard .hw-axis span, html body .hero-now .hw-axis span{ font-size:11px !important }
+  /* humidity: a full-width tank filled with water to today's humidity, with a wavy surface */
+  .hw-tank{ position:relative; display:block; width:100%; height:100%; overflow:hidden; border:1px solid var(--line); border-radius:6px; background:color-mix(in srgb, var(--text-muted) 8%, transparent) }
+  .hw-tank svg{ display:block; width:100%; height:100% }
+  .hw-tank-v{ position:absolute; right:8px; font-weight:600; line-height:20px; color:var(--text) }   /* the humidity sits at the right, just under the wavy surface */
   .hw-bars{ display:flex; align-items:flex-end; gap:2px; width:100%; height:100% }
   .hw-bars i{ flex:1 1 0; min-width:0; border-radius:3px; opacity:.5 }
   .hw-bars i.is-now{ opacity:1 }
@@ -2554,9 +2554,9 @@
   html body #healthCard .hw-chip{ font-size:14px !important }
   html body #healthCard .hw-ok-t{ font-size:24px !important }
   html body #healthCard .hw-ok-b{ font-size:16px !important }
-  html body #healthCard .hw-tile-v{ font-size:18px !important }
-  html body #healthCard .hw-cond-name, html body #healthCard .hw-cond-name > span{ font-size:18px !important }
-  html body #healthCard .hw-cond-big{ font-size:17px !important }
+  html body #healthCard .hw-tile-v{ font-size:20px !important }
+  html body #healthCard .hw-cond-name, html body #healthCard .hw-cond-name > span{ font-size:20px !important }
+  html body #healthCard .hw-cond-big{ font-size:14px !important }
   html body #healthCard .hw-tile--good .hw-cond-big{ font-weight:300 !important }   /* No Impacts is the quiet rating: light weight */
   html body #healthCard .hw-safe-t{ font-size:20px !important }
   /* the "How it works" dialog */
@@ -2654,7 +2654,7 @@
   }
   .cc-main{ display:flex; align-items:center; justify-content:center; gap:14px; padding:18px 16px !important }
   .cc-icon{ flex:0 0 auto; display:flex; align-items:center }
-  .cc-icon svg{ width:64px; height:64px }
+  .cc-icon svg{ width:80px; height:80px }
   .cc-temp{ flex:0 0 auto; display:flex; align-items:flex-start; line-height:.9; color:var(--text) }
   .cc-num{ font-weight:300; letter-spacing:-.02em }
   .cc-deg{ font-weight:300; margin-left:2px }
@@ -2662,14 +2662,21 @@
   .cc-cond{ font-weight:600; color:var(--text) }
   html body .hero-now .cc-main .cc-num.cc-num.cc-num{ font-size:68px !important }
   html body .hero-now .cc-main .cc-deg.cc-deg.cc-deg{ font-size:28px !important }
-  html body .hero-now .cc-main .cc-cond.cc-cond.cc-cond{ font-size:17px !important }
-  html body .hero-now .cc-main .cc-txt.cc-txt span.cc-hl{ font-size:15px !important }
-  html body .hero-now .cc-cards .hw-tile-v.hw-tile-v.hw-tile-v{ font-size:18px !important }
+  html body .hero-now .cc-main .cc-cond.cc-cond.cc-cond{ font-size:14px !important }
+  html body .hero-now .cc-main .cc-txt.cc-txt span.cc-hl{ font-size:14px !important }
+  html body .hero-now .cc-cards .hw-tile-v.hw-tile-v.hw-tile-v{ font-size:20px !important }
   .cc-air[hidden], .cc-uv[hidden]{ display:none }
+  .cc-cards .hw-tile-v{ flex-wrap:wrap; row-gap:4px }
+  .cc-spd{ white-space:nowrap }   /* a speed such as 18 mph never breaks; the tag drops below it when the card is narrow */
   .hero-now .cc-cards .hw-mini, .hero-now .cc-main{ background:var(--module-bg) !important; border:0 !important; border-radius:4px; overflow:hidden }   /* the standard card fill, like the Health cards; the container behind them has none */
   .cc-air .hw-mini, .cc-uv .hw-mini{ height:100% }
-  .cc-gpic{ display:flex; align-items:center; justify-content:center; height:58px; margin-top:8px }
-  .cc-gpic svg{ width:56px; height:56px }
+  .cc-gpic{ display:flex; align-items:center; justify-content:center; height:52px; margin-top:8px }
+  .cc-gpic svg{ width:48px; height:48px }
+  .cc-gpic--ground{ display:block; height:56px; margin:8px 0 0; overflow:hidden; border-radius:4px }   /* the ground scene fills the card's width inside its 16px side margins */
+  .cc-gpic--ground svg{ display:block; width:100%; height:56px }
+  .cc-gpic:not(.cc-gpic--wind) svg{ filter:saturate(.45) }   /* pictures are muted so color is left for meaning (levels, wind bands) */
+  .cc-gpic--wind{ height:auto; margin-top:10px }
+  .cc-gpic--wind svg{ width:72px; height:72px }   /* the compass is the card's picture */
   .cc-from{ color:var(--text-muted) }
   .hw-mini{ border:0; min-width:0 }
   .hw-mini .card-head h3{ gap:6px; min-width:0 }
@@ -2677,7 +2684,7 @@
   .hw-mini-body{ display:flex; flex-direction:column; gap:2px; padding:12px 16px 14px }
   .hw-tile--na{ --tg:var(--text-faint) }
   .hw-tile--na .hw-tile-v{ color:var(--text-muted); font-weight:500 }
-  html body #airCard .hw-tile-v{ font-size:18px !important }
+  html body #airCard .hw-tile-v{ font-size:20px !important }
 
   /* every up / down caret is one size and one glyph: 20px, halfway between the Best Times chevron (16) and the alert caret (24) */
   .bt-chev, .alert-toggle svg, .vd-toggle svg{ width:20px !important; height:20px !important }
@@ -2805,6 +2812,28 @@
   /* Every module header is one height: 40px (6px above and below), the same as the Health half-card headers */
   html body .hero-wrap .hn-head, html body #todaySection > .today-card > .card-head, html body #todaySection .card-head, html body .hero-now .hw-mini .card-head{ display:flex; align-items:center; box-sizing:border-box; min-height:40px; padding-top:6px; padding-bottom:6px }
   html body #todaySection .card-head{ height:40px }
+  /* ----- Weather tab, phones: one rhythm and fewer competing patterns ----- */
+  @media (max-width:31.1875em){
+    /* small gray labels group the modules (12px apart inside a group, 24px between groups) */
+    html body #todaySection::before, html body #weekSection::before, html body #airSection::before{ display:block; margin:0 0 8px; font-size:12px !important; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:color-mix(in srgb, var(--text-faint) 68%, var(--bg)) }
+    html body #todaySection::before{ content:"Today" }
+    html body #weekSection::before{ content:"This week" }
+    html body #airSection::before{ content:"Air and pollen" }
+    html body .hero-wrap .hero-top{ gap:12px }
+    html body .hero-wrap .hero-top > #todaySection{ margin-top:12px }
+    html body #weekSection{ margin-top:24px }
+    html body #airSection{ margin-top:24px }
+    html body .wind-row{ margin-top:0; gap:0 }
+    /* the radar is half as tall; the expand button opens the big map */
+    html body .hero-wrap .radar .radar-map{ aspect-ratio:1 / .5 }
+    /* Hourly Forecast views are tabs, the same as Best Times */
+    html body #hrPills{ display:flex; flex-wrap:nowrap; gap:0; width:100%; border-bottom:1px solid var(--line) }
+    html body #hrPills .bt-pill{ flex:1 1 0; justify-content:center; place-items:center; min-height:0; margin:0 0 -1px; padding:10px 4px; border:0; border-bottom:2px solid transparent; border-radius:0; background:none !important; color:var(--text-muted); font-weight:500 }
+    html body #hrPills .bt-pill[aria-checked="true"]{ color:var(--icon-blue); border-bottom-color:var(--icon-blue); font-weight:700 }
+  }
+  /* module headers carry a small gray icon like the half cards' */
+  .radar-head h2{ display:inline-flex; align-items:center; gap:6px }
+  .card-head h2 svg, .radar-head h2 svg{ flex:0 0 auto; width:18px; height:18px; color:color-mix(in srgb, var(--text-muted) 68%, var(--surface)) }
 </style>
 </head>
 <body>
@@ -3048,7 +3077,7 @@
 
   <section id="todaySection" hidden>
     <div class="today-card">
-      <div class="card-head"><h2>Hourly Forecast</h2>
+      <div class="card-head"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Hourly Forecast</span></h2>
         <span class="day-nav">
           <button type="button" class="day-step" id="dayPrev" aria-label="Previous day">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="15,5 8,12 15,19"/></svg>
@@ -3061,8 +3090,8 @@
       </div>
       <div class="hr-pills">
         <div class="bt-pills" id="hrPills" role="radiogroup" aria-label="Hourly chart">
-          <button type="button" class="bt-pill" role="radio" data-hr="all" data-label="All" aria-checked="false" tabindex="-1"><span>All</span></button>
-          <button type="button" class="bt-pill" role="radio" data-hr="wind" data-label="Wind" aria-checked="true" tabindex="0"><span>Wind</span></button>
+          <button type="button" class="bt-pill" role="radio" data-hr="all" data-label="All" aria-checked="true" tabindex="0"><span>All</span></button>
+          <button type="button" class="bt-pill" role="radio" data-hr="wind" data-label="Wind" aria-checked="false" tabindex="-1"><span>Wind</span></button>
           <button type="button" class="bt-pill" role="radio" data-hr="temp" data-label="Temp" aria-checked="false" tabindex="-1"><span>Temp</span></button>
           <button type="button" class="bt-pill" role="radio" data-hr="precip" data-label="Precip" aria-checked="false" tabindex="-1"><span>Precip</span></button>
         </div>
@@ -3139,7 +3168,7 @@
 
   <section id="weekSection" hidden x-data :hidden="$store.week.state === 'idle'" :aria-hidden="$store.week.state === 'loading' ? 'true' : null">
     <div class="week-card">
-    <div class="card-head"><h2>7-Day Wind Outlook</h2></div>
+    <div class="card-head"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.500" y="5" width="17" height="15.500" rx="2"/><path d="M3.500 10h17M8 3v4M16 3v4"/></svg><span>7-Day Wind Outlook</span></h2></div>
     <div class="card-body week-body">
     <div class="daylist" id="dayList" role="list">
       <div class="dayrow-head" aria-hidden="true">
@@ -3237,7 +3266,7 @@
       <details class="hp-sec" data-hp="health">
         <summary class="hp-sum"><span class="hp-sum-name">Health Outlook</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
         <div class="hp-panel">
-          <p>The Health tab starts with an outlook card for the day: when the air is the story it says when to be active, otherwise it names the conditions worth a little care and their main causes. Below it, each condition gets a rating (No Impacts, Heads Up or High Impacts) and a sentence on what it means for you, followed by the air and weather behind the ratings (air quality, pollen, temperature and pressure), the best three hours to be outside and a few simple tips. The best time looks at ozone, fine particles, feels-like temperature and UV hour by hour. The suggestions are general public-health guidance, not medical advice. Use Manage Health Preferences to choose which of the six conditions you see; the ratings and the headline then cover only those, and your choice is saved in this browser.</p>
+          <p>The Health tab starts with an outlook card for the day: when the air is the story it says when to be active, otherwise it names the conditions worth a little care and their main causes. Below it, each condition gets a rating (No Impacts, Heads Up or High Impacts) and a sentence on what it means for you. The suggestions are general public-health guidance, not medical advice. Use Manage Health Preferences to choose which of the six conditions you see; the ratings and the headline then cover only those, and your choice is saved in this browser.</p>
           <p>
         The No Impacts, Heads Up and High Impacts ratings are a general outlook built from published research (the studies are listed below), using forecast temperature, humidity, pressure, UV
         and air quality from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>, with fine particles and ozone
@@ -3705,29 +3734,42 @@
     return '<rect x="6" y="30" width="36" height="10" rx="4" fill="'+color+'"/>';
   }
 
-  function groundIcon(kind, size){
+  function groundIcon(kind, size, wide){
     size = size || 36;
     var body = '';
+    // wide: the ground runs the full width of the scene (the Current Conditions card), with the picture centered on it
+    var gb = function(color){ return wide ? '<rect x="-46" y="30" width="140" height="10" fill="' + color + '"/>' : groundBase(color); };
     switch(kind){
       case 'dry':
-        body = groundBase('var(--band-windy)') +
+        body = gb('var(--band-windy)') +
           '<g stroke="var(--icon-green)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none">' +
             '<path d="M24 31 L24 12"/>' +
             '<path d="M24 21 L18 21 L18 14"/>' +
             '<path d="M24 25 L30 25 L30 17"/>' +
           '</g>' +
+          (wide ? [[-12, .72], [3, .46], [47, .82], [61, .55]].map(function(c){
+            return '<g transform="translate(' + c[0] + ' 31) scale(' + c[1] + ') translate(-24 -31)" stroke="var(--icon-green)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M24 31 L24 12"/><path d="M24 21 L18 21 L18 14"/><path d="M24 25 L30 25 L30 17"/></g>';
+          }).join('') : '') +
           '<g class="gr-tumbleweed" stroke="#A9865A" stroke-width="1" stroke-linecap="round" fill="none">' +
             '<circle cx="0" cy="0" r="4.2" stroke-width="1.1"/>' +
             '<path d="M-3.8 -1.8 Q0 2.8 3.8 -0.9 M-2.8 1.8 Q0 -2.8 2.8 1.9 M-4.2 0 H4.2 M-1.2 -4 Q1 0 -1.2 4"/>' +
           '</g>';
         break;
       case 'wet':
-        body = groundBase('var(--cloud-2)') +
-          '<ellipse cx="21" cy="35.5" rx="10" ry="3.2" fill="var(--icon-blue)"/>' +
-          '<g stroke="var(--icon-blue)" stroke-width="2.4" stroke-linecap="round">' +
-            '<line class="wx-drop" style="animation-delay:0s" x1="15" y1="19" x2="13" y2="25"/>' +
-            '<line class="wx-drop" style="animation-delay:.5s" x1="22" y1="16" x2="20" y2="23"/>' +
-          '</g>' +
+        body = gb('var(--cloud-2)') +
+          (wide
+            // spread across the whole width: several puddles and a scatter of falling drops
+            ? [[-10, 6.5], [21, 10], [57, 8.5]].map(function(q){ return '<ellipse cx="' + q[0] + '" cy="35.5" rx="' + q[1] + '" ry="3.2" fill="var(--icon-blue)"/>'; }).join('') +
+              '<g stroke="var(--icon-blue)" stroke-width="2.4" stroke-linecap="round">' +
+                [[-20, 17], [-10, 21], [-1, 16], [8, 20], [15, 18], [24, 15], [44, 18], [53, 21], [62, 16], [70, 20]].map(function(q, i){
+                  return '<line class="wx-drop" style="animation-delay:' + ((i * 0.37) % 1.6).toFixed(2) + 's" x1="' + q[0] + '" y1="' + q[1] + '" x2="' + (q[0] - 2) + '" y2="' + (q[1] + 6.5) + '"/>';
+                }).join('') +
+              '</g>'
+            : '<ellipse cx="21" cy="35.5" rx="10" ry="3.2" fill="var(--icon-blue)"/>' +
+              '<g stroke="var(--icon-blue)" stroke-width="2.4" stroke-linecap="round">' +
+                '<line class="wx-drop" style="animation-delay:0s" x1="15" y1="19" x2="13" y2="25"/>' +
+                '<line class="wx-drop" style="animation-delay:.5s" x1="22" y1="16" x2="20" y2="23"/>' +
+              '</g>') +
           '<g class="gr-frog"><g class="gr-frog-s">' +
             '<g fill="#3DDC5B">' +
               '<ellipse cx="35" cy="32" rx="6.3" ry="4.8"/>' +
@@ -3741,7 +3783,7 @@
           '</g></g>';
         break;
       case 'icy':
-        body = groundBase('var(--cloud-2)') +
+        body = gb('var(--cloud-2)') +
           '<ellipse cx="24" cy="35.5" rx="12" ry="3.4" fill="var(--icon-blue)"/>' +
           '<g stroke="var(--surface)" stroke-width="1" opacity="0.85">' +
             '<path d="M16 34.5 L22 36.5"/>' +
@@ -3753,7 +3795,7 @@
         break;
       case 'snowy':
         body =
-          '<path d="M6 39 Q14 29 24 33 T42 37 L42 41 Q24 45 6 41 Z" fill="#fff" stroke="var(--border)" stroke-width="1"/>' +
+          (wide ? '<path d="M-46 39 Q-10 29 24 33 T94 37 L94 41 Q24 45 -46 41 Z" fill="#fff" stroke="var(--border)" stroke-width="1"/>' : '<path d="M6 39 Q14 29 24 33 T42 37 L42 41 Q24 45 6 41 Z" fill="#fff" stroke="var(--border)" stroke-width="1"/>') +
           '<g stroke="var(--icon-blue)" stroke-width="1.4" stroke-linecap="round">' +
             '<line x1="24" y1="13" x2="24" y2="23"/>' +
             '<line x1="19" y1="18" x2="29" y2="18"/>' +
@@ -3762,8 +3804,9 @@
           '</g>';
         break;
       default:
-        body = groundBase('var(--cloud)');
+        body = gb('var(--cloud)');
     }
+    if(wide) return '<svg width="100%" height="' + size + '" viewBox="-46 0 140 48" preserveAspectRatio="xMidYMax slice" fill="none" xmlns="http://www.w3.org/2000/svg">' + body + '</svg>';
     return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">'+body+'</svg>';
   }
 
@@ -4759,7 +4802,7 @@
   }
   function ccCard(title, ico, v, sub, tg, extra){
     return '<div class="today-card air-card hw-mini" style="--tg:' + tg + '"><div class="card-head"><h3>' + ico + '<span>' + title + '</span></h3></div>' +
-      '<div class="hw-mini-body"><span class="hw-tile-v">' + v + '</span><span class="hw-tile-s">' + (sub || '&nbsp;') + '</span>' + (extra || '') + '</div></div>';
+      '<div class="hw-mini-body"><span class="hw-tile-v">' + v + '</span>' + (sub === null ? '' : '<span class="hw-tile-s">' + (sub || '&nbsp;') + '</span>') + (extra || '') + '</div></div>';
   }
   function ccIco(key){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + HW_CELL_ICO[key] + '</svg>'; }
   // the Ground card's header icon: a boot standing on a flat horizon line, in the same gray line style as the other header icons
@@ -4778,6 +4821,7 @@
     el.innerHTML = ccCard('UV index', ccIco('sun'), cur < 0.5 ? 'None' : W[lv], 'Peak ' + hwR(d0.UV) + ' today', 'var(--icon-blue)', ch ? '<span class="hw-sparkwrap" aria-hidden="true">' + ch.graph + '</span>' + ch.axis : '');
     el.hidden = false;
   }
+  var CC_EXTRA_CARDS = false;   // Ground, UV index / Coming up and Humidity are switched off under Current Conditions (built, not shown); set to true to bring them back
   function ccPhoneHtml(current, daily, hourly, w, band, feelsAll, ground, outlook){
     var hl = ccHiLo(daily), fl = feelsAll ? tempNum(feelsAll.f) : tempNum(current.temperature);
     var main = '<div class="today-card air-card cc-main">' +
@@ -4787,9 +4831,9 @@
     var dir = current.windDirection;
     // the wind tag sits beside the speed; the compass is the 7-Day ring and arrow without its N
     var compass = dir ? windArrowSvg(dir, band.css, 56, 0, true).replace(/<text[^>]*>N<\/text>/, '').replace('viewBox="-2 -6 28 32"', 'viewBox="-2 -2 28 28"') : '';
-    var wind = ccCard('Wind', ccIco('aq'), windNum(w.high) + ' ' + windUnit + ' <span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span>',
-      (dir ? srDir(dir) + (dirWord(dir) ? '<span class="cc-from" aria-hidden="true">from ' + String(dir).toUpperCase() + '</span>' : '') : '&nbsp;'), band.css,
-      dir ? '<span class="cc-gpic" aria-hidden="true">' + compass + '</span>' : '');
+    var wind = ccCard('Wind', ccIco('aq'), '<span class="cc-spd">' + windNum(w.high) + ' ' + windUnit + '</span> <span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span>',
+      null, band.css,
+      dir ? '<span class="cc-gpic cc-gpic--wind">' + srDir(dir) + '<span aria-hidden="true">' + compass + '</span></span>' : '');
     var soon = '';
     if(outlook){
       var parts = String(outlook).split(' in ~');
@@ -4800,9 +4844,16 @@
     if(!soon) soon = '<div class="cc-uv" id="ccUvCard" hidden></div>';   // no weather on the way: the UV index takes this place once its data is in
     var gtone = ground.key === 'dry' ? 'var(--aqi-good-ink)' : ground.key === 'wet' ? 'var(--icon-blue)' : 'var(--aqi-usg-ink)';
     // the animated ground picture sits in the body of the card, where the other cards have their chart; the header icon is a small boot on a horizon line
-    var gnd = ccCard('Ground', ccBootIco(), vdEsc(ground.label), vdEsc(ground.hint), gtone,
-      '<span class="cc-gpic" aria-hidden="true">' + groundIcon(ground.key, 56) + '</span>');
-    return '<div class="cc-phone">' + main + '<div class="hw-minis cc-cards" role="group" aria-label="More current conditions">' + wind + soon + gnd + '<div class="cc-air" id="ccAirCard" hidden></div></div></div>';
+    var gnd = ccCard('Ground', ccBootIco(), vdEsc(ground.label), vdEsc(ground.hint.replace('precipitation', 'precip')), gtone,
+      '<span class="cc-gpic cc-gpic--ground" aria-hidden="true">' + groundIcon(ground.key, 56, true) + '</span>');
+    // humidity now, with the same droplet as the Health tab
+    var rh = current.relativeHumidity && typeof current.relativeHumidity.value === 'number' ? current.relativeHumidity.value : null, hum = '';
+    if(rh !== null){
+      hum = ccCard('Humidity', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3.500C12 3.500 6 10 6 14.500a6 6 0 0 0 12 0C18 10 12 3.500 12 3.500z"/></svg>',
+        rh < 30 ? 'Dry' : rh > 60 ? 'Humid' : 'Comfortable', 'Right now', 'var(--icon-blue)',
+        '<span class="hw-sparkwrap" aria-hidden="true">' + hwHumidTank({nowV: rh}, false) + '</span><span class="hw-axis" aria-hidden="true"></span>');
+    }
+    return '<div class="cc-phone">' + main + '<div class="hw-minis cc-cards" role="group" aria-label="More current conditions">' + wind + (CC_EXTRA_CARDS ? gnd + soon + hum : '') + '<div class="cc-air" id="ccAirCard" hidden></div></div></div>';
   }
   function renderHero(current, todayDaily, hourly, daily){
     var w = parseWind(current.windSpeed);
@@ -4868,7 +4919,7 @@
           '<div class="ground-now air-now" id="airNowRow" hidden><div class="gicon"></div><div class="gtext"></div></div>' +
         '</div>' +
         '<div class="radar" id="radarBox" role="group" aria-label="Weather radar map">' +
-          '<div class="radar-head"><h2>Weather Radar</h2></div>' +
+          '<div class="radar-head"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.500"/><path d="M12 12l6.500-4"/></svg><span>Weather Radar</span></h2></div>' +
           '<div class="radar-map" id="radarMapEl"></div>' +
           '<div class="radar-tag" id="radarTag">Radar</div>' +
           '<button type="button" class="radar-expand-btn" id="radarExpandBtn" aria-label="Expand radar map">' +
@@ -5600,7 +5651,7 @@
   }
 
   // Which chart the tiles draw: wind (the default), temperature, or chance of precipitation
-  var hourlyMode = 'wind';
+  var hourlyMode = 'all';
   // Temperature colors: cool blue and teal, through green and gold, to warm orange and red
   var HR_TEMP_SCALE = [[15, '#3F6FBF'], [32, '#4F8FD0'], [45, '#3F9BB0'], [58, '#58A78A'], [68, '#C2A13A'], [78, '#E0873A'], [90, '#D8553F'], [100, '#B83A3A']];
   function hrHex(h){ return [1, 3, 5].map(function(i){ return parseInt(h.slice(i, i + 2), 16); }); }
@@ -6312,15 +6363,19 @@
       var w = g.lv.label; if(wordMap && wordMap[w]) w = wordMap[w];
       return cell(label, icon, w, g.lv.rank, 'Index ' + Math.round(g.v), null, null, hwData ? airChart(key) : null);
     }
+    // one Pollen card (the strongest type) with the next 7 days of bars, like the Health tab's
+    function pollenCard(){
+      var top = ['weed', 'tree', 'grass'].reduce(function(a, k){ return pollen[k] > pollen[a] ? k : a; }, 'weed');
+      var lv = {weed: weedLv, tree: treeLv, grass: grassLv}[top], names = {weed: 'Weeds', tree: 'Trees', grass: 'Grasses'};
+      return cell('Pollen', 'flower', lv.label, lv.rank, lv.rank === 0 ? 'Quiet season' : names[top] + ' · estimate', 'pol', lv.rank <= 1 ? 'good' : lv.rank === 2 ? 'ok' : 'high', hwPollenBars(lat, dateStr));
+    }
     function polCell(label, icon, score, lv, type){ return cell(label, icon, lv.label, lv.rank, 'Estimate · ' + Math.round(score) + ' of 100', 'pol', lv.rank <= 1 ? 'good' : lv.rank === 2 ? 'ok' : 'high', hwPollenBars(lat, dateStr, type)); }
     airCard.innerHTML =
       '<div class="hw-minis" role="group" aria-label="Air quality and pollen">' +
         aqCell('Air quality', 'aq', aqiG, {'Unhealthy for Sensitive Groups': 'Sensitive groups'}, 'aq') +
         aqCell('Fine particles', 'particles', pmG, null, 'pm') +
         aqCell('Ozone', 'sun', ozG, null, 'o3') +
-        polCell('Weeds', 'flower', pollen.weed, weedLv, 'weed') +
-        polCell('Trees', 'tree', pollen.tree, treeLv, 'tree') +
-        polCell('Grasses', 'grass', pollen.grass, grassLv, 'grass') +
+        pollenCard() +
       '</div>';
     airSection.hidden = false;
   }
@@ -6858,6 +6913,16 @@
     var f = (c - T[i][0]) / (T[i + 1][0] - T[i][0]), a = T[i][1], b = T[i + 1][1];
     return 'rgb(' + [0, 1, 2].map(function(k){ return Math.round(a[k] + (b[k] - a[k]) * f); }).join(',') + ')';
   }
+  // UV lines are colored in oranges: pale at low UV, deepening to a burnt orange-red at extreme UV
+  var HW_UV_COL = [[0, [253, 214, 120]], [3, [248, 176, 70]], [6, [240, 132, 38]], [8, [228, 98, 30]], [11, [196, 58, 40]]];
+  function hwUvColor(u){
+    var T = HW_UV_COL, i = 0;
+    if(u <= T[0][0]) return 'rgb(' + T[0][1].join(',') + ')';
+    if(u >= T[T.length - 1][0]) return 'rgb(' + T[T.length - 1][1].join(',') + ')';
+    while(u > T[i + 1][0]) i++;
+    var f = (u - T[i][0]) / (T[i + 1][0] - T[i][0]), a = T[i][1], b = T[i + 1][1];
+    return 'rgb(' + [0, 1, 2].map(function(k){ return Math.round(a[k] + (b[k] - a[k]) * f); }).join(',') + ')';
+  }
   function hwLineGraph(se, heat){
     var vs = se.vals.map(function(x){ return x.v; }), mn = Math.min.apply(null, vs), mx = Math.max.apply(null, vs), mid = (mn + mx) / 2, span = Math.max(mx - mn, se.minSpan);   // at least minSpan tall, so a steady stretch reads flat
     var w = 140, h = 44, pad = 4, y = function(v){ return pad + (h - 2 * pad) * (1 - ((v - mid) / span + 0.5)); }, x = function(i){ return (i - se.lo) / (se.hi - se.lo) * w; };
@@ -6868,7 +6933,7 @@
       var gid = 'hwg' + (++hwGid), stops = '';
       for(var k = 0; k <= 10; k++){
         var yy = pad + (h - 2 * pad) * k / 10;
-        stops += '<stop offset="' + (yy / h * 100).toFixed(1) + '%" stop-color="' + hwTempColor(mid + span * (0.5 - k / 10)) + '"/>';
+        stops += '<stop offset="' + (yy / h * 100).toFixed(1) + '%" stop-color="' + (heat === 'uv' ? hwUvColor : hwTempColor)(mid + span * (0.5 - k / 10)) + '"/>';
       }
       defs = '<defs><linearGradient id="' + gid + '" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="' + h + '">' + stops + '</linearGradient></defs>';
       lineSt = ' style="stroke:url(#' + gid + ')"'; fillSt = ' style="fill:url(#' + gid + ');fill-opacity:.2"';
@@ -6879,7 +6944,7 @@
       (se.nowV !== null ? '<span class="hw-spark-dot" style="left:' + (nx / w * 100).toFixed(1) + '%;top:' + (y(se.nowV) / h * 100).toFixed(1) + '%"></span>' : '');
   }
   // the four cards under the conditions each carry a 44px chart like the condition cards: air quality and pollen as bars, temperature and pressure as lines
-  function hwLineChart(key){ var se = hwSeries(key, 12); return se ? {graph: hwLineGraph(se, key === 'temp' || key === 'feels'), axis: hwAxis(se)} : null; }
+  function hwLineChart(key){ var se = hwSeries(key, 12); return se ? {graph: hwLineGraph(se, key === 'uv' ? 'uv' : key === 'temp' || key === 'feels'), axis: hwAxis(se)} : null; }
   // air quality: 3-hour bars from 12 hours ago to 12 hours ahead, each in the color of the worse of ozone and fine particles
   function hwAirBars(){
     var so = hwSeries('o3', 12), sp = hwSeries('pm', 12);
@@ -6957,15 +7022,14 @@
     mental: [{k: 'temp'}, {k: 'o3', t: 'bars'}, {k: 'pm', t: 'bars'}]
   };
   // humidity as a comfort band: a slim bar with the comfortable range (30-60%) shaded and a dot at today's level, tinted when humidity is a trigger
-  function hwHumidDrop(se, on){
-    var pct = Math.max(0, Math.min(100, se.nowV)), top = 3, bot = 43, fy = bot - (bot - top) * pct / 100, id = 'hwd' + (++hwGid);
-    var path = 'M22 3 C22 3 8 19 8 29 a14 14 0 0 0 28 0 C36 19 22 3 22 3Z', y60 = bot - (bot - top) * .6, y30 = bot - (bot - top) * .3;
-    return '<span class="hw-drop" aria-hidden="true"><svg viewBox="0 0 46 44" focusable="false"><defs><clipPath id="' + id + '"><path d="' + path + '"/></clipPath></defs>' +
-      '<path d="' + path + '" fill="color-mix(in srgb, var(--text-muted) 12%, transparent)"/>' +
-      '<g clip-path="url(#' + id + ')"><rect x="6" y="' + fy.toFixed(1) + '" width="32" height="' + (bot + 2 - fy).toFixed(1) + '" fill="' + (on ? 'var(--tg)' : 'var(--icon-blue)') + '" fill-opacity=".55"/></g>' +
-      '<path d="' + path + '" fill="none" stroke="color-mix(in srgb, var(--text-muted) 80%, var(--surface))" stroke-width="1.4"/>' +
-      '<path d="M39.5 ' + y60.toFixed(1) + ' H42.5 V' + y30.toFixed(1) + ' H39.5" fill="none" stroke="var(--text-muted)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-      '<span class="hw-drop-l">Comfortable</span></span>';
+  function hwHumidTank(se, on){
+    var pct = Math.max(0, Math.min(100, se.nowV)), H = 44, W = 140, y = Math.max(3, H - H * pct / 100), amp = 3, half = 7, d = 'M0 ' + y.toFixed(1);
+    for(var x = 0, up = true; x < W; x += half, up = !up) d += (x === 0 ? ' Q ' + (half / 2) + ' ' + (y + (up ? -amp : amp)).toFixed(1) + ' ' + half + ' ' + y.toFixed(1) : ' T ' + (x + half) + ' ' + y.toFixed(1));
+    var col = on ? 'var(--tg)' : 'var(--icon-blue)';
+    return '<span class="hw-tank" aria-hidden="true"><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" focusable="false">' +
+      '<path d="' + d + ' L' + W + ' ' + H + ' L0 ' + H + ' Z" fill="' + col + '" fill-opacity=".38"/>' +
+      '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>' +
+      '<span class="hw-tank-v" style="top:' + Math.max(0, Math.min(H - 20, y + 3)).toFixed(1) + 'px">' + Math.round(pct) + '%</span></span>';
   }
   // the charts follow the triggers the sentence names: each of the top two drivers gets its chart (ozone and fine particles as bars, temperature, pressure or humidity as the trend), then the condition's usual charts fill any gap
   function hwChartSpecs(m, r){
@@ -6994,7 +7058,7 @@
       else if(spec.t === 'drop'){
         var hs = hwSeries(spec.k, 12); if(!hs || hs.nowV === null) return;
         var onH = (r && r.drivers || []).some(function(dr){ return dr.rr >= 1.02 && /humid|damp/i.test(dr.label || ''); });
-        label = hs.label; text = hs.text; trend = hs.trend; vis = hwHumidDrop(hs, onH);
+        label = hs.label; text = hs.text; trend = hs.trend; vis = hwHumidTank(hs, onH);
       }
       else{
         var se = hwSeries(spec.k, 12); if(!se) return;   // the cards show 12 hours either side of now, so the 6-hour labels have room
@@ -7049,7 +7113,7 @@
     var hs = hwSeries('humidity', 12);
     if(hs && hs.nowV !== null){
       var hv = hs.nowV, hword = hv < 30 ? 'Dry' : hv > 60 ? 'Humid' : 'Comfortable', away = hv < 30 ? 30 - hv : hv > 60 ? hv - 60 : 0;
-      add('humidity', away ? 1.5 + Math.min(2, away / 15) : 0.4, {k: 'Humidity', icon: 'drop', v: hword, s: hwR(hv) + '% right now', tone: away ? 'ok' : 'good', lvl: null, scale: 'aq', chart: {graph: hwHumidDrop(hs, false), axis: '<span class="hw-axis" aria-hidden="true"></span>'}}, used.humidity);
+      add('humidity', away ? 1.5 + Math.min(2, away / 15) : 0.4, {k: 'Humidity', icon: 'drop', v: hword, s: hwR(hv) + '% right now', tone: away ? 'ok' : 'good', lvl: null, scale: 'aq', chart: {graph: hwHumidTank(hs, false), axis: '<span class="hw-axis" aria-hidden="true"></span>'}}, used.humidity);
     }
     if(d.UV !== null && d.UV !== undefined){
       var ur = d.UV < 3 ? 0 : d.UV < 6 ? 1 : d.UV < 8 ? 2 : d.UV < 11 ? 3 : 4;
@@ -7195,6 +7259,8 @@
   }
   var hwSelected = hwPrefsLoad();
   function hwShown(){ return HW_MODELS.filter(function(m){ return hwSelected.indexOf(m.id) >= 0; }); }
+  var HW_TIPS = false;   // the Simple tips cards are switched off on the Health tab (built, not shown); set to true to bring them back
+  var HW_EXTRA_CARDS = false;   // the best time to be outside and the four air and weather cards are switched off on the Health tab (built, not shown); set to true to bring them back
   var HW_WEEK_BTN = false;   // the Week Ahead button is switched off for now (the drawer is still built); set to true to bring it back
   function renderHealth(){
     if(!hwData || !healthCard) return;
@@ -7225,12 +7291,12 @@
       '<div class="hw-acts">' + (HW_WEEK_BTN ? '<button type="button" class="bp-btn bp-primary" data-hwweek aria-haspopup="dialog">' + calIco + '<span>The Week Ahead</span></button>' : '') +
         '<button type="button" class="bp-btn bp-primary hw-prefs" data-hwprefs aria-haspopup="dialog">Manage Health Preferences</button>' +
         '<button type="button" class="bp-btn" data-info="health" aria-haspopup="dialog">' + infoIco + '<span>How the Health Outlook works</span></button></div>' +
-      (safe ? mod('', '<div class="hw-safe"><p class="hw-safe-t">' + vdEsc(safe.range) + '</p><p class="hw-safe-d">' + vdEsc(safe.why) + '</p>' +
+      (HW_EXTRA_CARDS && safe ? mod('', '<div class="hw-safe"><p class="hw-safe-t">' + vdEsc(safe.range) + '</p><p class="hw-safe-d">' + vdEsc(safe.why) + '</p>' +
         '<div class="hw-linewrap' + (safe.nowPct !== null ? ' has-now' : '') + '" aria-hidden="true"><div class="hw-line" style="background:linear-gradient(to right,' + safe.stops.map(function(g, i){ return 'color-mix(in srgb, var(--aqi-good-ink) ' + Math.round(16 + 84 * g) + '%, var(--surface)) ' + (i / (safe.stops.length - 1) * 100).toFixed(1) + '%'; }).join(',') + ')"></div>' +
           (safe.nowPct !== null ? '<i class="hw-now" style="left:' + safe.nowPct.toFixed(1) + '%"></i><span class="hw-now-l" style="left:clamp(16px, ' + safe.nowPct.toFixed(1) + '%, calc(100% - 16px))">Now</span>' : '') + '</div>' +
         '<div class="hw-bar-l" aria-hidden="true"><span>Morning</span><span>Afternoon</span><span>Evening</span></div></div>', 'Best time to be outside') : '') +
-      (tileHtml ? '<div class="hw-minis" role="group" aria-label="The air and weather today">' + tileHtml + '</div>' : '') +
-      '<div class="hw-tipcards" role="list" aria-label="Simple tips">' + tips.map(function(t){ return '<div class="today-card air-card hw-trow hw-trow--' + t.k + '" role="listitem">' + tipIco(t.k) + '<span>' + vdEsc(t.t) + '</span></div>'; }).join('') + '</div>' +
+      (HW_EXTRA_CARDS && tileHtml ? '<div class="hw-minis" role="group" aria-label="The air and weather today">' + tileHtml + '</div>' : '') +
+      (HW_TIPS ? '<div class="hw-tipcards" role="list" aria-label="Simple tips">' + tips.map(function(t){ return '<div class="today-card air-card hw-trow hw-trow--' + t.k + '" role="listitem">' + tipIco(t.k) + '<span>' + vdEsc(t.t) + '</span></div>'; }).join('') + '</div>' : '') +
       '<p class="hw-foot">General information, not medical advice.</p>';
     // what the ratings were based on, for the "How it works" dialog
     hwData.summary = {title: 'Today’s forecast', line: 'Temperature ' + bits.join(' · ')};
