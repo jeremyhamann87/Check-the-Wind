@@ -7304,32 +7304,42 @@
     var top = (high.length ? high : med).slice().sort(function(a, b){ return b.r.rr / b.m.med - a.r.rr / a.m.med; });
     function names(list){ return vdList(list.map(function(x){ return x.m.name.toLowerCase(); })); }
     function clean(t){ return t.replace(/\s*[↑↓]/g, ''); }
-    var l1, l2, tone = high.length ? 'high' : (med.length || ozoneHigh || pmHigh) ? 'medium' : 'low';
-    if(ozoneHigh || pmHigh){
-      if(ozoneHigh && pmHigh){ l1 = 'The air is heavy today.'; l2 = 'Indoor workouts or an early start will feel best.'; }
-      else if(ozoneHigh){ l1 = 'Mornings are best for activity.'; l2 = 'Ozone builds through the afternoon.'; }
-      else{ l1 = 'The air is smoky today.'; l2 = 'Indoor workouts are a comfortable choice.'; }
-    }else if(high.length){
-      l1 = 'A day to take it gently.'; l2 = 'A little extra care for ' + names(top) + '.';
-    }else if(med.length){
-      l1 = 'A little planning helps today.'; l2 = 'Worth some care: ' + names(top) + '.';
+    var tone = high.length ? 'high' : (med.length || ozoneHigh || pmHigh) ? 'medium' : 'low';
+    // the header names the primary health impact: the biggest trigger and the conditions it affects ("Changing pressure may affect arthritis today.")
+    var CAUSE = {pressure: 'Changing pressure', warming: 'A warm-up', heat: 'Heat', hotnight: 'Warm nights', cold: 'Cold', ozone: ozoneHigh ? 'High ozone' : 'Ozone', pm: pmHigh ? 'High fine particles' : 'Fine particles', no2: 'Traffic pollution', sun: 'Strong sun', humid: 'Humid air'};
+    function countOf(list){ return list.length <= 2 ? names(list) : list[0].m.name.toLowerCase() + ' and ' + (list.length - 1) + ' other conditions'; }
+    var l1, lead = '', group = top, rest = [];
+    if(top.length){
+      var lead0 = top[0].r.drivers.filter(function(dr){ return dr.rr >= 1.02; })[0] || top[0].r.drivers[0];
+      var wc = lead0 ? hwWhyCat(lead0.label || '') : '';
+      var cause = CAUSE[wc] || (lead0 ? vdCap(String(lead0.label).toLowerCase()) : 'The forecast');
+      var shares = function(x){ return x.r.drivers.some(function(dr){ return dr.rr >= 1.02 && hwWhyCat(dr.label || "") === wc; }); };
+      group = wc ? top.filter(shares) : [top[0]];
+      rest = top.filter(function(x){ return group.indexOf(x) < 0; });
+      l1 = cause + (high.length ? ' may strongly affect ' : ' may affect ') + countOf(group) + ' today.';
+    }else if(ozoneHigh || pmHigh){
+      l1 = ozoneHigh && pmHigh ? 'Heavy air may affect breathing today.' : ozoneHigh ? 'Ozone may affect breathing today.' : 'Smoky air may affect breathing today.';
     }else{
-      l1 = 'A great day to get moving.'; l2 = 'The forecast looks friendly.';
+      l1 = 'No health impacts expected today.';
     }
-    var sents = [l2];
+    var sents = [];
     if(top.length){
       var causes = [], seen = {};
-      top.forEach(function(x){ x.r.drivers.filter(function(dr){ return dr.rr >= 1.02; }).forEach(function(dr){
+      group.forEach(function(x){ x.r.drivers.filter(function(dr){ return dr.rr >= 1.02; }).forEach(function(dr){
         var c = hwCatOf(dr.label || '');
         var key = c || dr.text;
         var txt = c === 'ozone' ? (ozoneHigh ? 'high ozone' : 'ozone') : c === 'pm' ? (pmHigh ? 'high fine-particle pollution' : 'fine particles') : clean(dr.text);
         if(!seen[key]){ seen[key] = 1; causes.push({rr: dr.rr, text: txt}); }
       }); });
       causes.sort(function(a, b){ return b.rr - a.rr; });
-      sents.push('In ' + city + ', the forecast shows ' + vdList(causes.slice(0, 2).map(function(c){ return c.text; })) + ', worth keeping in mind for ' + names(top) + '.');
-      if(high.length && med.length) sents.push('A little planning will help with ' + names(med) + ' too.');
-    }else if(!ozoneHigh && !pmHigh){
-      sents.push('In ' + city + ', nothing in the forecast is likely to get in the way of a good day.');
+      sents.push('In ' + city + ', the forecast shows ' + vdList(causes.slice(0, 2).map(function(c){ return c.text; })) + '.');
+      if(rest.length) sents.push('Also worth keeping in mind for ' + names(rest) + '.');
+      if(high.length && med.length && !rest.length) sents.push('A little planning will help with ' + names(med) + ' too.');
+      sents.push(high.length ? 'A gentle day with a little extra care will go well.' : 'A little planning will keep the day on track.');
+    }else if(ozoneHigh || pmHigh){
+      sents.push(ozoneHigh && pmHigh ? 'Indoor workouts or an early start will feel best.' : ozoneHigh ? 'Ozone builds through the afternoon, so mornings are best for activity.' : 'Indoor workouts are a comfortable choice.');
+    }else{
+      sents.push('In ' + city + ', nothing in the forecast is likely to get in the way of a good day. A great day to get moving.');
     }
     // the air tomorrow, when AirNow has a forecast
     function worst(f){ return Math.max(rank(f && f.ozone), rank(f && f.pm25)); }
