@@ -427,13 +427,17 @@
   .bp-status:not(:empty){margin-bottom:8px}
   .bp-actions{display:flex; gap:12px; flex-wrap:wrap; margin-left:auto}
   .bp-btn{
-    min-height:44px; padding:0 18px; border:1px solid var(--border); border-radius:4px; background:var(--surface-2); color:var(--text);
+    min-height:44px; padding:0 18px; border:1px solid var(--icon-blue); border-radius:4px; background:var(--surface); color:var(--icon-blue);
     font:inherit; font-size:1rem; font-weight:600; cursor:pointer;
   }
-  @media (min-width:64em){ .bp-btn:hover{background:var(--hover-bg)} }
+  @media (min-width:64em){ .bp-btn:hover{background:color-mix(in srgb, var(--icon-blue) 10%, var(--surface))} }
   .bp-btn:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px}
-  .bp-primary{background:var(--text); color:var(--surface); border-color:var(--text)}
-  @media (min-width:64em){ .bp-primary:hover{background:color-mix(in srgb, var(--text) 85%, var(--surface))} }
+  /* buttons: primary is filled with the nav bar's selected blue (white text); secondary is a white fill with a blue outline and blue text */
+  :root{ --btn-on:#FFFFFF }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --btn-on:#08213D } }   /* the dark theme's blue is light, so its text is dark */
+  :root[data-theme="dark"]{ --btn-on:#08213D }
+  .bp-primary{background:var(--icon-blue); color:var(--btn-on); border-color:var(--icon-blue)}
+  @media (min-width:64em){ .bp-primary:hover{background:color-mix(in srgb, var(--icon-blue) 86%, #000)} }
   form.search button:focus{outline:4px solid var(--focus-ring); outline-offset:-4px; box-shadow:none}
   form.search input:focus{outline:2px solid var(--focus-ring); outline-offset:-2px; box-shadow:none}
   form.search button{
@@ -1835,26 +1839,6 @@
     .hero-wrap .vd-prose{ text-align:left }
   }
 
-  /* Air Quality & Pollen: half-circle gauges (the Air Quality Index large across the top, the other four in a grid under it) */
-  .ag-wrap{position:relative; margin:0 -16px; overflow:hidden}
-  .ag-wrap::before, .ag-wrap::after{content:""; position:absolute; top:0; bottom:0; width:56px; pointer-events:none; opacity:0; transition:opacity .15s}
-  .ag-wrap::after{right:0; background:linear-gradient(to right, transparent, var(--module-bg))}
-  .ag-wrap::before{left:0; background:linear-gradient(to left, transparent, var(--module-bg))}
-  .ag-wrap.can-scroll-right::after, .ag-wrap.can-scroll-left::before{opacity:1}
-  .ag-grid{display:flex; gap:12px; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; scroll-snap-type:x proximity; padding:2px 16px 14px; scroll-padding-inline:16px; scrollbar-width:thin; -webkit-overflow-scrolling:touch}
-  .ag-grid:focus-visible{outline:2px solid var(--focus-ring); outline-offset:-2px}
-  .ag{flex:0 0 150px; scroll-snap-align:start; display:flex; flex-direction:column; align-items:center; min-width:0}
-  .ag-title{font-size:.8125rem; font-weight:600; color:var(--text); text-align:center; margin-bottom:4px}
-  .ag-dial{position:relative; width:100%}
-  .ag-dial svg{display:block; width:100%; height:auto; overflow:visible}
-  .ag-center{position:absolute; left:50%; bottom:2%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; line-height:1.1; width:60%}
-  .ag-word{font-size:.6875rem; font-weight:500; text-align:center}
-  .ag-num{font-size:1.125rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums}
-  /* Phone: the gauge card hugs its content (16px under the dials); touch scrolling needs no visible scrollbar */
-  @media (max-width:63.99em){
-    .ag-grid{ padding-bottom:0; scrollbar-width:none }
-    .ag-grid::-webkit-scrollbar{ display:none }
-  }
 
   /* Mobile design D: the place name sits left with a go / stay tag at the far right, and the summary is left-aligned */
   .hero-head{display:none}
@@ -1951,15 +1935,6 @@
     .wind-row{ gap:32px; margin-top:32px }
   }
 
-  /* Desktop: the five gauges share the module's width (so they grow with it and never scroll) and the module hugs them vertically */
-  @media (min-width:64em){
-    #airCard .ag-wrap{ margin:0; overflow:visible }
-    #airCard .ag-wrap::before, #airCard .ag-wrap::after{ display:none }
-    #airCard .ag-grid{ overflow:visible; padding:0; gap:12px; scroll-snap-type:none }
-    #airCard .ag{ flex:1 1 0; min-width:0 }
-    #airCard .ag-dial{ width:100%; max-width:240px }
-    #airCard .card-body{ flex:0 0 auto; padding:16px 24px }
-  }
 
   /* Desktop: the go / stay tag in the card header has no drop shadow */
   @media (min-width:64em){
@@ -2044,13 +2019,6 @@
     #weekSection .dayrow .dwind .dval b{ white-space:nowrap }
   }
 
-  /* Desktop: the text under the air gauges is 12px, and a gauge with no reading says NA */
-  .ag-na{ display:none }
-  @media (min-width:64em){
-    .db-content .ag-word, .db-content .ag-word *{ font-size:.75rem !important }
-    .ag-word .ag-full{ display:none }
-    .ag-word .ag-na{ display:inline }
-  }
 
   /* Phone: the "best times" empty state puts the illustration on top and lets the text use the full width of the module */
   @media (max-width:31.1875em){
@@ -2435,8 +2403,8 @@
     .vs-ico .vs-mid{ stroke-width:2.1 }
     .vs-dot{ display:none; position:absolute; top:3px; left:calc(50% + 6px); width:10px; height:10px; border-radius:50%; background:var(--tg); border:2px solid var(--surface); box-sizing:content-box }
     .db-content{ padding-bottom:calc(84px + env(safe-area-inset-bottom, 0px)) }   /* room for the tab bar under the last module and the footer */
-    #viewSeg[data-risk="medium"] .vs-dot{ display:inline-block; --tg:var(--aqi-usg-ink) }
-    #viewSeg[data-risk="high"] .vs-dot{ display:inline-block; --tg:var(--accent) }
+    #viewSeg[data-risk="medium"] .vs-dot{ display:inline-block; --tg:var(--hw-med) }
+    #viewSeg[data-risk="high"] .vs-dot{ display:inline-block; --tg:var(--hw-high) }
     html[data-view="health"] .hero-wrap, html[data-view="health"] #verdictSection, html[data-view="health"] #todaySection, html[data-view="health"] #bestSection,
     html[data-view="health"] #weekSection, html[data-view="health"] #reportsSection, html[data-view="health"] #airSection, html[data-view="health"] .main-head{ display:none !important }
     html[data-view="weather"] #healthSection{ display:none !important }
@@ -2448,46 +2416,80 @@
     html[data-view="activity"] #airNowRow{ display:none !important }
   }
 
-  /* ===== Health Outlook: today's outlook, what it means per condition, the air and weather, the safest time, tips ===== */
-  .hw-module{ background:none; border:0; box-shadow:none; padding:0 }
-  .hw-outlook{ --tg:var(--aqi-good-ink); padding:18px 18px 20px; border-radius:4px; border:2px solid color-mix(in srgb, var(--tg) 55%, var(--surface)); background:color-mix(in srgb, var(--tg) 9%, var(--surface)) }
-  .hw-outlook--medium{ --tg:var(--aqi-usg-ink) }
-  .hw-outlook--high{ --tg:var(--accent) }
-  .hw-ok-k{ margin:0 0 6px; font-weight:600; color:color-mix(in srgb, var(--tg) 85%, var(--text)) }
-  .hw-ok-t{ margin:0; font-weight:700; line-height:1.15; letter-spacing:-.015em; color:color-mix(in srgb, var(--tg) 55%, var(--text)) }
-  .hw-ok-b{ margin:12px 0 0; line-height:1.5; color:var(--text) }
-  .hw-h3{ margin:28px 0 12px; font-weight:600; letter-spacing:-.005em; color:var(--text) }
-  .hw-conds, .hw-tips{ list-style:none; margin:0; padding:0; border-radius:4px; background:var(--surface); border:1px solid var(--line) }
-  .hw-crow{ padding:16px }
-  .hw-crow + .hw-crow, .hw-trow + .hw-trow{ border-top:1px solid var(--line) }
-  .hw-crow-top{ display:flex; align-items:center; justify-content:space-between; gap:12px }
-  .hw-cname{ flex:1 1 auto; min-width:0; margin:0 0 0 -6px; font-weight:600; color:var(--text) }   /* the name sits 6px from its icon, like the other icon rows */
-  .hw-csay{ margin:8px 0 0; line-height:1.45; color:var(--text) }
-  .hw-tiles{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px }
-  .hw-tile{ --tg:var(--aqi-good-ink); display:flex; flex-direction:column; gap:3px; min-width:0; padding:14px; border-radius:4px; border:2px solid color-mix(in srgb, var(--tg) 55%, var(--surface)); background:color-mix(in srgb, var(--tg) 9%, var(--surface)) }
+  /* ===== Health Outlook: the same module cards as the rest of the app (title inside the card above a divider) ===== */
+  .hw-module{ display:flex; flex-direction:column; gap:16px; background:none; border:0; box-shadow:none; padding:0 }
+  .hw-mod{ border:0 }
+  .hw-intro{ padding:0 }
+  .hw-ok-t{ margin:0; font-weight:700; line-height:1.2; letter-spacing:-.01em; color:var(--text) }
+  .hw-ok-b{ margin:8px 0 0; line-height:1.5; color:var(--text-muted) }
+  .hw-prefs{ display:block; width:100% }
+  .hw-tips{ list-style:none; margin:0; padding:0 }
+  .hw-trow{ position:relative }
+  .hw-tipcards{ display:flex; flex-direction:column; gap:12px }   /* each tip is its own card, 12px apart like the conditions */
+  .hw-conds{ display:flex; flex-direction:column; gap:12px }
+  .sec-eyebrow{ display:block; margin:0 0 6px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:color-mix(in srgb, var(--text-faint) 68%, var(--bg)) }   /* the small all-caps line above each tab's headline */
+  html body .sec-eyebrow.sec-eyebrow.sec-eyebrow{ font-size:12px !important }   /* beats the phone-wide 14px text rule */
+  .sec-eyebrow--phone{ display:none }
+  @media (max-width:31.1875em){ .sec-eyebrow--phone{ display:block } }
+  .hw-cond{ border:0; min-width:0; padding:18px 18px 16px; --tg:var(--hw-low) }
+  .hw-cond.hw-tile--ok{ --tg:var(--hw-med) }
+  .hw-cond.hw-tile--high{ --tg:var(--hw-high) }
+  .hw-cond-top{ display:flex; justify-content:space-between; align-items:center; gap:12px }
+  .hw-cond-name{ display:flex; align-items:center; gap:6px; min-width:0; margin:0; font-weight:600; letter-spacing:-.01em; line-height:1.2; color:var(--text) }
+  .hw-cond-ico{ flex:0 0 auto; width:26px; height:26px; color:var(--tg) }
+  .hw-cond-big{ flex:0 0 auto; font-weight:700; line-height:1.2; letter-spacing:-.01em; text-align:right; color:color-mix(in srgb, var(--tg) 62%, var(--text)) }   /* the rating word carries the color */
+  .hw-csay{ margin:10px 0 0; line-height:1.4; color:var(--text-muted) }
+  .hw-csay + .hw-csay{ margin-top:6px }
+  .hw-csay--what{ color:var(--text) }   /* what is in the forecast, then (lighter) why it matters for this condition */
+  .hw-lines{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line) }
+  .hw-lines--one{ grid-template-columns:minmax(0, 1fr) }   /* a single trigger gets one full-width chart */
+  .hw-lc{ min-width:0 }
+  .hw-lc-h{ display:flex; flex-direction:column; gap:1px; color:var(--text-muted) }
+  .hw-lc-h b{ font-weight:600; color:var(--text) }
+  .hw-trend{ width:13px; height:13px; margin-left:5px; vertical-align:-1px; color:var(--text-muted) }   /* up, down or steady beside a reading */
+  .hw-lc .hw-sparkwrap{ margin-top:8px }
+  .hw-axis{ position:relative; display:block; height:14px; margin-top:4px; color:color-mix(in srgb, var(--text-faint) 70%, var(--bg)) }
+  .hw-axis span{ position:absolute; top:0; transform:translateX(-50%); line-height:14px; white-space:nowrap }
+  html body #healthCard .hw-axis span, html body #airCard .hw-axis span{ font-size:10px !important }
+  .hw-drop{ display:flex; align-items:center; gap:6px; width:100%; height:100% }
+  .hw-drop svg{ flex:0 0 auto; width:46px; height:44px; overflow:visible }
+  .hw-drop-l{ color:var(--text-muted); line-height:1.2 }   /* the comfortable range, beside the droplet */
+  html body #healthCard .hw-drop-l{ font-size:11px !important }
+  .hw-bars{ display:flex; align-items:flex-end; gap:2px; width:100%; height:100% }
+  .hw-bars i{ flex:1 1 0; min-width:0; border-radius:3px; opacity:.5 }
+  .hw-bars i.is-now{ opacity:1 }
+  .hw-pillbox{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:100%; border-radius:22px; font-weight:600; background:color-mix(in srgb, var(--pc) 14%, var(--surface)); color:color-mix(in srgb, var(--pc) 78%, var(--text)) }
+  .hw-pillbox i{ flex:0 0 auto; width:9px; height:9px; border-radius:50%; background:var(--pc) }
   .hw-tile--ok{ --tg:var(--aqi-usg-ink) }
   .hw-tile--high{ --tg:var(--accent) }
-  .hw-tile-k{ font-weight:500; color:var(--text) }
-  .hw-tile-v{ font-weight:700; line-height:1.15; color:color-mix(in srgb, var(--tg) 55%, var(--text)) }
+  .hw-sparkwrap{ position:relative; display:block; height:44px; margin-top:8px }
+  .hw-spark{ display:block; width:100%; height:100%; overflow:visible }
+  .hw-spark-line{ fill:none; stroke:color-mix(in srgb, var(--text-muted) 80%, var(--surface)); stroke-width:2; stroke-linecap:round; stroke-linejoin:round }
+  .hw-spark-fill{ fill:color-mix(in srgb, var(--text-muted) 12%, transparent); stroke:none }
+  .hw-spark-now{ stroke:var(--text); stroke-width:1; stroke-dasharray:2 3; opacity:.55 }
+  .hw-spark-dot{ position:absolute; width:9px; height:9px; margin:-4.5px 0 0 -4.5px; border-radius:50%; background:var(--text); box-shadow:0 0 0 2px var(--surface) }
+  .hw-meter{ display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:3px; align-items:center; height:10px; margin-top:8px }
+  .hw-meter i{ display:block; height:5px; border-radius:3px; background:var(--c); opacity:.32 }
+  .hw-meter i.on{ height:10px; border-radius:5px; opacity:1 }
+  .hw-tile-v{ display:flex; align-items:center; gap:8px; font-weight:600; line-height:1.25; color:var(--text) }
+  .hw-dot{ flex:0 0 auto; width:10px; height:10px; border-radius:50%; background:var(--tg) }
   .hw-tile-s{ color:var(--text-muted) }
-  .hw-safe{ padding:18px 18px 14px; border-radius:4px; background:var(--surface); border:1px solid var(--line) }
-  .hw-safe-t{ margin:0; font-weight:700; line-height:1.15; letter-spacing:-.01em; color:var(--text) }
-  .hw-safe-d{ margin:8px 0 0; line-height:1.45; color:var(--text) }
-  .hw-bar{ display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:5px; margin:16px 0 8px }
-  .hw-bar i{ display:block; height:14px; border-radius:7px; background:color-mix(in srgb, var(--text-muted) 22%, var(--surface)) }
-  .hw-bar .hw-bar--good{ background:color-mix(in srgb, var(--aqi-good-ink) 32%, var(--surface)) }
-  .hw-bar .hw-bar--best{ background:var(--aqi-good-ink) }
+  .hw-safe{ padding:16px }
+  .hw-safe-t{ margin:0; font-weight:600; line-height:1.2; color:var(--text) }
+  .hw-safe-d{ margin:4px 0 0; line-height:1.4; color:var(--text-muted) }
+  .hw-linewrap{ position:relative; margin:14px 0 8px }
+  .hw-linewrap.has-now{ margin-top:30px }
+  .hw-line{ height:12px; border-radius:6px }   /* a gradient of greens: the deepest green is the best part of the day */
+  .hw-now{ position:absolute; top:-5px; bottom:-5px; width:3px; margin-left:-1.5px; border-radius:2px; background:var(--text); box-shadow:0 0 0 2px var(--surface) }
+  .hw-now-l{ position:absolute; top:-26px; transform:translateX(-50%); font-weight:600; line-height:1; color:var(--text) }
   .hw-bar-l{ display:flex; justify-content:space-between; color:var(--text-muted) }
-  .hw-trow{ display:flex; align-items:flex-start; gap:14px; padding:14px 16px; line-height:1.45; color:var(--text) }
-  .hw-trow svg{ flex:0 0 auto; width:22px; height:22px; margin-top:0; color:var(--aqi-good-ink) }
+  .hw-trow{ display:flex; align-items:flex-start; gap:12px; padding:14px 16px; line-height:1.4; color:var(--text) }
+  .hw-trow svg{ flex:0 0 auto; width:22px; height:22px; margin-top:-1px; color:var(--aqi-good-ink) }
   .hw-trow--alert svg{ color:var(--text-muted) }
-  .hw-acts{ display:grid; gap:12px; margin:24px 0 0 }
-  .hw-btn{ display:flex; align-items:center; justify-content:center; gap:10px; min-height:52px; padding:0 16px; border-radius:4px; border:2px solid var(--text); background:var(--surface); color:var(--text); font:inherit; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent }
-  .hw-btn--primary{ background:var(--text); color:var(--surface) }
-  .hw-btn svg{ flex:0 0 auto; width:22px; height:22px }
-  .hw-btn--top{ width:100%; margin:12px 0 0 }
-  .hw-btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:3px }
-  .hw-foot{ margin:14px 2px 0; text-align:center; color:var(--text-muted); line-height:1.5 }
+  .hw-acts{ display:grid; gap:12px }
+  .hw-acts .bp-btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100% }
+  .hw-acts .bp-btn svg{ flex:0 0 auto; width:20px; height:20px }
+  .hw-foot{ margin:0; text-align:center; color:var(--text-muted); line-height:1.5 }
   /* the next 7 days drawer */
   .hwk-list{ list-style:none; margin:0; padding:0; border-bottom:1px solid var(--line) }
   .hwk-row{ display:flex; gap:16px; padding:14px 0; border-top:1px solid var(--line) }
@@ -2497,14 +2499,19 @@
   .hwk-main{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:6px }
   .hwk-say{ margin:0; line-height:1.4; color:var(--text) }
   .hwk-note{ margin-top:12px }
-  /* the Customize Health Outlook drawer: a checkbox beside each health concern */
-  .hpf-intro{ margin:0 0 8px; color:var(--text-muted); line-height:1.5 }
+  /* the Manage Health Preferences drawer: each health concern is a full-width button you select, with today's impact level on the right */
+  .hpf-intro{ margin:0 0 12px; color:var(--text-muted); line-height:1.5 }
   .hpf-set{ margin:0; padding:0; border:0; min-width:0 }
-  .hpf-row{ display:flex; align-items:center; gap:14px; min-height:60px; padding:8px 0; border-top:1px solid var(--line); cursor:pointer; color:var(--text) }
-  .hpf-set > div > .hpf-row:last-child{ border-bottom:1px solid var(--line) }
-  .hpf-row input{ flex:0 0 auto; width:22px; height:22px; margin:0; accent-color:var(--icon-blue); cursor:pointer }
-  .hpf-row input:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
-  .hpf-txt{ display:flex; flex-direction:column; gap:2px; min-width:0 }
+  .hpf-row{ display:flex; align-items:center; gap:12px; width:100%; box-sizing:border-box; min-height:64px; margin:0 0 10px; padding:10px 14px; border:1px solid var(--line); border-radius:12px; background:var(--surface); color:var(--text); font:inherit; text-align:left; cursor:pointer }
+  .hpf-row[aria-checked="true"]{ border-color:var(--icon-blue); background:color-mix(in srgb, var(--icon-blue) 8%, var(--surface)) }
+  .hpf-row:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+  .hpf-check{ flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; box-sizing:border-box; border:1.5px solid var(--text-muted); border-radius:50%; color:transparent }
+  .hpf-check svg{ width:14px; height:14px }
+  .hpf-row[aria-checked="true"] .hpf-check{ border-color:var(--icon-blue); background:var(--icon-blue); color:#fff }
+  .hpf-top{ display:flex; align-items:baseline; justify-content:space-between; gap:10px }
+  .hpf-lv{ flex:0 0 auto; font-weight:700; text-align:right; color:color-mix(in srgb, var(--tg) 62%, var(--text)) }
+  .hpf-lv.is-low{ font-weight:300 }
+  .hpf-txt{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1 1 auto }
   .hpf-txt b{ font-weight:500; color:var(--text) }
   .hpf-txt small{ font-size:14px; color:var(--text-muted) }
   .hw-ico{ display:inline-flex; color:color-mix(in srgb, var(--text-muted) 68%, var(--surface)) }   /* a lighter gray, like the Best Times marks */
@@ -2513,20 +2520,20 @@
   .hw-sum .hw-ico + .hw-sum-name{ margin-left:-6px }
   .hw-chip{ display:inline-flex; align-items:center; box-sizing:border-box; min-height:var(--chip-h, 26px); padding:0 10px; border-radius:var(--chip-r, 4px); font-weight:500; line-height:1.3; white-space:nowrap;
     color:color-mix(in srgb, var(--tg) 78%, var(--text)); background:color-mix(in srgb, var(--tg) 15%, var(--surface)) }
-  .hw-chip--low{ --tg:var(--aqi-good-ink) }
-  .hw-chip--medium{ --tg:var(--aqi-usg-ink) }
-  .hw-chip--high{ --tg:var(--accent) }
+  .hw-chip--low{ --tg:var(--hw-low) }
+  .hw-chip--medium{ --tg:var(--hw-med) }
+  .hw-chip--high{ --tg:var(--hw-high) }
   .hw-today{ margin:0 0 8px; color:var(--text-muted); line-height:1.45 }
   .hw-today + .hw-det{ margin-top:16px }
   .disclaimers-modal-body .wk-intro + .wd-h{ margin-top:16px }
   html body #healthCard .hw-chip{ font-size:14px !important }
-  html body #healthCard .hw-ok-t{ font-size:28px !important }
-  html body #healthCard .hw-ok-b, html body #healthCard .hw-btn{ font-size:16px !important }
-  html body #healthCard .hw-h3{ font-size:19px !important }
-  html body #healthCard .hw-cname{ font-size:17px !important }
-  html body #healthCard .hw-csay, html body #healthCard .hw-trow, html body #healthCard .hw-safe-d{ font-size:15px !important }
-  html body #healthCard .hw-tile-v{ font-size:24px !important }
-  html body #healthCard .hw-safe-t{ font-size:26px !important }
+  html body #healthCard .hw-ok-t{ font-size:24px !important }
+  html body #healthCard .hw-ok-b{ font-size:16px !important }
+  html body #healthCard .hw-tile-v{ font-size:18px !important }
+  html body #healthCard .hw-cond-name, html body #healthCard .hw-cond-name > span{ font-size:18px !important }
+  html body #healthCard .hw-cond-big{ font-size:17px !important }
+  html body #healthCard .hw-tile--good .hw-cond-big{ font-weight:300 !important }   /* No Impacts is the quiet rating: light weight */
+  html body #healthCard .hw-safe-t{ font-size:20px !important }
   /* the "How it works" dialog */
   .hw-det{ border-top:1px solid var(--line) }
   .hw-sum{ display:flex; align-items:center; gap:12px; padding:12px 0; cursor:pointer; list-style:none }
@@ -2578,7 +2585,7 @@
 
   .bt-day, .bt-r dd, .bt-details, .bt-pill, .bt-pill[aria-checked="true"], .bt-pill::after, .vd-tag, button.vd-tag,
   .bp-val, .bp-preview.is-warn, .bp-how-h, .vd-range, .vd-stat dd, .vd-chips li, .vd-wear strong, .vd-line b,
-  .ag-title, .ag-num, .weather-now .wtext b, .ground-now .gtext b, .htile .sp, .htile .spunit, .pollen-row-label, .pollen-row-val,
+  .weather-now .wtext b, .ground-now .gtext b, .htile .sp, .htile .spunit, .pollen-row-label, .pollen-row-val,
   .dayrow .dname, .dayrow .dwind b, .dayrow .dshort .dval, .dayrow .temps .hi, .dval .wunit, .wk-table th, .wk-range,
   .wd-h, .wd-table td:first-child, .disclaimers-modal-body strong, .hero-wrap .hero-now .hero-reading .val{ font-weight:500 !important }
   .bt-pill::after{ font-weight:500 !important }
@@ -2609,38 +2616,27 @@
   }
 
 
-  /* Air Quality & Pollen: six gauges in two columns of three rows at every size (nothing scrolls) */
-  #airCard .ag-wrap{ margin:0; overflow:visible }
-  #airCard .ag-wrap::before, #airCard .ag-wrap::after{ display:none }
-  #airCard .ag-grid{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px 12px; overflow:visible; padding:0; scroll-snap-type:none }
-  #airCard .ag{ flex:none; min-width:0 }
-  #airCard .ag-dial{ width:100%; max-width:240px }
-  #airCard .card-body{ padding:16px }
-  .ag-top{ margin:0 0 16px }
-  /* Tablets: two rows of three (the air quality, fine particles and ozone gauges, then weeds, trees and grasses) */
-  @media (min-width:31.25em) and (max-width:63.99em){
-    #airCard .ag-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)) }
-  }
-
-  /* Desktop: all six gauges in one row, small and with a thick ring; the number sits in the hole and the word underneath */
-  .ag-w-s{ display:none }
-  @media (min-width:64em){
-    #airCard .ag-grid{ grid-template-columns:repeat(6, minmax(0, 1fr)); gap:0 4px; align-items:start }
-    #airCard .ag-dial{ max-width:none; margin-inline:auto }   /* each dial fills its column */
-    #airCard .card-body{ padding:16px 12px }
-    html body #airCard .ag-title{ font-size:12px !important; line-height:1.2; min-height:2.4em; display:flex; align-items:flex-end; justify-content:center; text-align:center }
-    #airCard .ag-dial{ margin-bottom:32px }   /* room for the word underneath, up to two lines */
-    #airCard .ag-center{ position:absolute; left:0; right:0; top:0; bottom:auto; width:auto; transform:none; aspect-ratio:2 / 1; display:block }
-    html body #airCard .ag-num{ position:absolute; left:50%; bottom:2%; transform:translateX(-50%); font-size:15px !important; line-height:1 }
-    html body #airCard .ag-word, html body #airCard .ag-word *{ font-size:12px !important; line-height:1.2 }
-    html body #airCard .ag-word{ position:absolute; top:100%; left:-2px; right:-2px; margin-top:6px; text-align:center }
-  }
+  /* Air Quality & Pollen: the same hairline-divided grid as "What's in the air and weather" in Health (two columns, three rows, at every size) */
+  html body #airCard.hw-airwrap{ display:block; background:none !important; border:0; box-shadow:none; padding:0 }   /* the readings are their own cards, so the wrapper is plain */
+  .hw-mini.hw-tile--good{ --tg:var(--aqi-good-ink) }
+  .hw-minis{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px }
+  .hw-mini{ border:0; min-width:0 }
+  .hw-mini .card-head h3{ gap:6px; min-width:0 }
+  .hw-mini .card-head svg{ flex:0 0 auto; width:18px; height:18px; color:color-mix(in srgb, var(--text-muted) 68%, var(--surface)) }
+  .hw-mini-body{ display:flex; flex-direction:column; gap:2px; padding:12px 16px 14px }
+  .hw-tile--na{ --tg:var(--text-faint) }
+  .hw-tile--na .hw-tile-v{ color:var(--text-muted); font-weight:500 }
+  html body #airCard .hw-tile-v{ font-size:18px !important }
 
   /* every up / down caret is one size and one glyph: 20px, halfway between the Best Times chevron (16) and the alert caret (24) */
   .bt-chev, .alert-toggle svg, .vd-toggle svg{ width:20px !important; height:20px !important }
 
   /* Modules: white at 80% opacity (the page's pale background and wind streaks show faintly through).
      In dark mode the same idea: the dark surface at 80%. */
+  /* the three condition ratings (No Impacts, Heads Up, High Impacts) use their own blue, violet and rose so they never read as air quality levels */
+  :root{ --hw-low:#2F6FB5; --hw-med:#7B62B8; --hw-high:#B24C86 }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --hw-low:#7DB2EA; --hw-med:#B09CE6; --hw-high:#E58AB8 } }
+  :root[data-theme="dark"]{ --hw-low:#7DB2EA; --hw-med:#B09CE6; --hw-high:#E58AB8 }
   :root{ --module-bg:rgba(255,255,255,.8) }
   @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --module-bg:color-mix(in srgb, var(--surface) 80%, transparent) } }
   :root[data-theme="dark"]{ --module-bg:color-mix(in srgb, var(--surface) 80%, transparent) }
@@ -3098,7 +3094,7 @@
 
   <div class="wind-row">
   <section id="airSection" hidden>
-    <div class="today-card air-card" id="airCard"></div>
+    <div class="hw-airwrap" id="airCard"></div>
   </section>
   </div>
 
@@ -3206,9 +3202,9 @@
       <details class="hp-sec" data-hp="health">
         <summary class="hp-sum"><span class="hp-sum-name">Health Outlook</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
         <div class="hp-panel">
-          <p>The Health tab starts with an outlook card for the day: when the air is the story it says when to be active, otherwise it names the conditions worth a little care and their main causes. Below it, each condition gets a rating (Good to go, Plan ahead or Go gentle) and a sentence on what it means for you, followed by the air and weather behind the ratings (air quality, pollen, temperature and pressure), the safest three hours to be outside and a few simple tips. The safest time looks at ozone, fine particles, feels-like temperature and UV hour by hour. The suggestions are general public-health guidance, not medical advice. Use My health preferences to choose which of the six conditions you see; the ratings and the headline then cover only those, and your choice is saved in this browser. The Week Ahead shows how each day looks.</p>
+          <p>The Health tab starts with an outlook card for the day: when the air is the story it says when to be active, otherwise it names the conditions worth a little care and their main causes. Below it, each condition gets a rating (No Impacts, Heads Up or High Impacts) and a sentence on what it means for you, followed by the air and weather behind the ratings (air quality, pollen, temperature and pressure), the best three hours to be outside and a few simple tips. The best time looks at ozone, fine particles, feels-like temperature and UV hour by hour. The suggestions are general public-health guidance, not medical advice. Use Manage Health Preferences to choose which of the six conditions you see; the ratings and the headline then cover only those, and your choice is saved in this browser.</p>
           <p>
-        The Good to go, Plan ahead and Go gentle ratings are a general outlook built from published research (the studies are listed below), using forecast temperature, humidity, pressure, UV
+        The No Impacts, Heads Up and High Impacts ratings are a general outlook built from published research (the studies are listed below), using forecast temperature, humidity, pressure, UV
         and air quality from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>, with fine particles and ozone
         adjusted to the current AirNow reading. They describe how likely a day is to be hard on a condition for people in general, not what
         will happen to you, and are not medical advice, a diagnosis or a substitute for your clinician.
@@ -3231,12 +3227,12 @@
       <details class="hp-sec" data-hp="air">
         <summary class="hp-sum"><span class="hp-sum-name">Air Quality &amp; Pollen</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
         <div class="hp-panel">
-          <p>When AirNow has a forecast for your area, the module has three views. <strong>Current</strong> is the latest reading from the nearest monitor. <strong>Today&rsquo;s Peak</strong> and <strong>Tomorrow&rsquo;s Peak</strong> are the highest ozone and fine-particle levels AirNow&rsquo;s forecasters expect for those days. When a forecast gives only a category (such as Moderate) instead of a number, the gauge is drawn in the middle of that category. Where AirNow has no forecast, only the current reading shows.</p>
+          <p>Air Quality &amp; Pollen on the Weather tab shows the latest reading from the nearest AirNow monitor for the Air Quality Index, fine particles and ozone, each on its own card with a five-step level meter. Weeds, trees and grasses are seasonal estimates. On the Health tab, the air quality tile and the ratings also take AirNow&rsquo;s forecast peak for today into account. When a forecast gives only a category (such as Moderate) instead of a number, the ratings use the bottom of that category.</p>
           <p>The Air Quality Index runs from 0 to 500: 0&ndash;50 Good, 51&ndash;100 Moderate, 101&ndash;150 Unhealthy for Sensitive Groups, 151&ndash;200 Unhealthy, 201&ndash;300 Very Unhealthy and 301 or more Hazardous.</p>
           <p>
         The Air Quality Index, Fine particles (PM2.5) and Ozone are sourced live from AirNow
         (<a href="https://www.airnow.gov" target="_blank" rel="noopener">airnow.gov</a>), EPA — coverage depends on the nearest
-        reporting monitor. The Today and Tomorrow views show AirNow&rsquo;s forecast (the expected ozone and fine-particle peaks, set by the forecasters at your local air agency) where AirNow has one for your area; they are preliminary and can change. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Fine particles and Ozone gauges say no nearby data. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
+        reporting monitor. The Health Outlook also uses AirNow&rsquo;s forecast (the expected ozone and fine-particle peaks, set by the forecasters at your local air agency) where AirNow has one for your area; forecasts are preliminary and can change. Where AirNow has no nearby reading, the Air Quality Index falls back to Open-Meteo&rsquo;s air-quality model and the Fine particles and Ozone cells say no data. Hourly air-quality &amp; recent-rainfall figures used for Best Times come from
         <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>. Pollen isn't available from any free public
         U.S. source, so trees/grasses/weeds levels are a seasonal estimate based on location &amp; time of year, not a measurement.
       </p>
@@ -3387,13 +3383,13 @@
   <div class="radar-modal-backdrop" id="healthPrefsBackdrop"></div>
   <div class="radar-modal-panel disclaimers-modal-panel hpf-panel" role="dialog" aria-modal="true" aria-labelledby="healthPrefsTitle">
     <div class="disclaimers-modal-head">
-      <h2 id="healthPrefsTitle">Customize Health Outlook</h2>
+      <h2 id="healthPrefsTitle">Manage Health Preferences</h2>
       <button type="button" class="disclaimers-modal-close" id="healthPrefsClose" aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="disclaimers-modal-body">
-      <p class="hpf-intro">Choose the health concerns that matter to you. Only these show in your Health Outlook and headline. Saved in this browser.</p>
+      <p class="hpf-intro">Choose the health concerns that matter to you. Only these show in your Health Outlook and headline. Each shows today’s impact level. Saved in this browser.</p>
       <fieldset class="hpf-set"><legend class="sr-only">Health concerns to show</legend><div id="hpfList"></div></fieldset>
     </div>
     <div class="bp-foot">
@@ -6175,65 +6171,14 @@
 
   /* Air Quality & Pollen readouts: half-circle gauges. The track shows every level as a muted band; the bands up to the reading are
      solid, and a dark tick marks the reading. The level name sits above the number in the middle. */
-  var AG_AQI_BANDS = [[0,50,'var(--aqi-good)'],[50,100,'var(--aqi-moderate)'],[100,150,'var(--aqi-usg)'],[150,200,'var(--aqi-unhealthy)'],[200,300,'var(--aqi-veryunhealthy)']];
-  var AG_POLLEN_BANDS = [[0,20,'var(--aqi-good)'],[20,45,'var(--aqi-moderate)'],[45,70,'var(--aqi-usg)'],[70,100,'var(--aqi-unhealthy)']];
-  var agUid = 0;
-  function agPt(r, phi){ return (100 - r * Math.cos(phi)).toFixed(2) + ',' + (100 - r * Math.sin(phi)).toFixed(2); }
-  var agDesktopMq = window.matchMedia('(min-width:64em)'), agLastArgs = null;
-  if(agDesktopMq.addEventListener) agDesktopMq.addEventListener('change', function(){ if(agLastArgs) renderAirPollen.apply(null, agLastArgs); });   // the ring thickness depends on the layout
-  function arcGauge(title, value, max, bands, word, ink, cls){
-    var Ro = 92, Ri = agDesktopMq.matches ? 60 : 76, has = typeof value === 'number' && !isNaN(value);   // phones: a thin ring with the word inside; desktop: smaller, thicker dials with the word below
-    function band(a, b, color, op){
-      var p1 = a / max * Math.PI, p2 = Math.min(b / max, 0.9995) * Math.PI;
-      return '<path d="M' + agPt(Ro, p1) + ' A' + Ro + ' ' + Ro + ' 0 0 1 ' + agPt(Ro, p2) + ' L' + agPt(Ri, p2) + ' A' + Ri + ' ' + Ri + ' 0 0 0 ' + agPt(Ri, p1) +
-        'Z" fill="' + color + '" opacity="' + op + '" stroke="var(--surface)" stroke-width="1.2" stroke-linejoin="round"/>';
-    }
-    var svg = bands.map(function(b){ return band(b[0], b[1], b[2], 0.28); }).join('');
-    if(has && value > 0){
-      var id = 'agc' + (++agUid), phi = Math.min(Math.max(value, 0) / max, 0.9995) * Math.PI;
-      svg += '<clipPath id="' + id + '"><path d="M100,100 L8,100 A92 92 0 0 1 ' + agPt(Ro + 6, phi) + ' Z"/></clipPath>' +
-        '<g clip-path="url(#' + id + ')">' + bands.map(function(b){ return band(b[0], b[1], b[2], 1); }).join('') + '</g>' +
-        '<line x1="' + agPt(Ri - 4, phi).split(',')[0] + '" y1="' + agPt(Ri - 4, phi).split(',')[1] + '" x2="' + agPt(Ro + 5, phi).split(',')[0] + '" y2="' + agPt(Ro + 5, phi).split(',')[1] +
-        '" stroke="var(--text)" stroke-width="3.4" stroke-linecap="round"/>';
-    }
-    return '<div class="ag ' + (cls || '') + '"><div class="ag-title">' + title + '</div>' +
-      '<div class="ag-dial"><svg viewBox="0 0 200 100" aria-hidden="true" focusable="false">' + svg + '</svg>' +
-      '<div class="ag-center"><span class="ag-word" style="color:' + (ink || 'var(--text-muted)') + '">' + (word === 'Unavailable' ? '<span class="ag-full">No nearby data</span><span class="ag-na">NA</span>' : word) + '</span>' +
-      (has ? '<span class="ag-num">' + Math.round(value) + '</span>' : '') + '</div></div></div>';
-  }
+  var agLastArgs = null;
 
-  // Edge fades on the gauge row, like the Wind Today strip: only on the side that has more to scroll to
-  function agWireFade(){
-    var row = airCard.querySelector('.ag-grid'), wrap = airCard.querySelector('.ag-wrap');
-    if(!row || !wrap) return;
-    function upd(){
-      var max = row.scrollWidth - row.clientWidth;
-      wrap.classList.toggle('can-scroll-left', row.scrollLeft > 1);
-      wrap.classList.toggle('can-scroll-right', row.scrollLeft < max - 1);
-    }
-    row.addEventListener('scroll', upd, {passive: true});
-    window.addEventListener('resize', upd);
-    upd();
-  }
-
-  // The Air Quality Index word: the two long EPA names have a shorter form for the small dials in the desktop row
-  function aqiWordHtml(label){
-    var short = {'Unhealthy for Sensitive Groups': ['Sensitive groups', 'Sensitive'], 'Very Unhealthy': ['Very Unhealthy', 'Very bad']}[label];
-    return short ? '<span class="ag-w-l">' + short[0] + '</span><span class="ag-w-s">' + short[1] + '</span>' : label;
-  }
-
-  // Air Quality & Pollen: three views. Now is the live AirNow reading; Today and Tomorrow are AirNow's forecast (the expected peak), when there is one.
-  var airView = 'now', airFc = null;
+  // Air Quality & Pollen: six readings, each its own half-width card, showing the live AirNow reading. AirNow's forecast peaks (airFc) feed the Health Outlook.
+  var airFc = null;
   function renderAirPollen(lat, dateStr, airNow){
     agLastArgs = [lat, dateStr, airNow];
-    var tomorrowStr = nextDateStr(dateStr);
-    var fcToday = airFc && airFc.days[dateStr], fcTomorrow = airFc && airFc.days[tomorrowStr];
-    var views = [{id: 'now', label: 'Current'}];
-    if(fcToday) views.push({id: 'today', label: 'Today’s Peak'});
-    if(fcTomorrow) views.push({id: 'tomorrow', label: 'Tomorrow’s Peak'});
-    if(!views.some(function(v){ return v.id === airView; })) airView = 'now';
-    var src = airView === 'today' ? fcToday : airView === 'tomorrow' ? fcTomorrow : airNow;
-    var pollen = pollenEstimate(lat, airView === 'tomorrow' ? tomorrowStr : dateStr);
+    var src = airNow;   // the live AirNow reading (the forecast peaks feed the Health Outlook instead)
+    var pollen = pollenEstimate(lat, dateStr);
     var overallLv = categorySeverity(src && src.overall);
     var pm25Lv = categorySeverity(src && src.pm25);
     var ozoneLv = categorySeverity(src && src.ozone);
@@ -6248,36 +6193,34 @@
     var aqiG = src && src.overall ? {v: src.overall.aqi, lv: overallLv} : null;
     var pmG = src && src.pm25 ? {v: src.pm25.aqi, lv: pm25Lv} : null;
     var ozG = src && src.ozone ? {v: src.ozone.aqi, lv: ozoneLv} : null;
-    var top = views.length > 1
-      ? '<div class="ag-top"><div class="bt-pills" id="agPills" role="radiogroup" aria-label="Air quality view">' + views.map(function(v){
-          return '<button type="button" class="bt-pill" role="radio" data-ag="' + v.id + '" aria-checked="' + (v.id === airView ? 'true' : 'false') + '" tabindex="' + (v.id === airView ? 0 : -1) + '"><span>' + v.label + '</span></button>';
-        }).join('') + '</div></div>'
-      : '';
+    // one cell: the name, a dot in the level's color with its word, and the reading underneath (the same cells as "What's in the air and weather")
+    function cell(label, icon, word, rank, sub, scale, tone, chart){
+      tone = tone || (rank === null ? 'na' : rank <= 0 ? 'good' : rank === 1 ? 'ok' : 'high');
+      return hwMiniHtml({k: label, icon: icon, v: word, s: sub, tone: tone, lvl: rank === null ? null : Math.min(4, rank), scale: scale || 'aq', chart: chart || null});
+    }
+    // the same 44px charts as the Health tab: bars for the air (3-hour, from the hourly air quality forecast) and for pollen (one per day, 7 days); the level meter is the fallback until that data has loaded
+    function airChart(key){
+      if(key === 'aq') return hwAirBars();
+      var se = hwData && hwSeries(key, 12);
+      return se ? {graph: hwBarGraph(se, key), axis: hwAxis(se)} : null;
+    }
+    function aqCell(label, icon, g, wordMap, key){
+      if(!g) return cell(label, icon, 'No data', null, 'No nearby monitor');
+      var w = g.lv.label; if(wordMap && wordMap[w]) w = wordMap[w];
+      return cell(label, icon, w, g.lv.rank, 'Index ' + Math.round(g.v), null, null, hwData ? airChart(key) : null);
+    }
+    function polCell(label, icon, score, lv, type){ return cell(label, icon, lv.label, lv.rank, 'Estimate · ' + Math.round(score) + ' of 100', 'pol', lv.rank <= 1 ? 'good' : lv.rank === 2 ? 'ok' : 'high', hwPollenBars(lat, dateStr, type)); }
     airCard.innerHTML =
-      '<div class="card-head"><h2>Air Quality &amp; Pollen</h2></div>' +
-      '<div class="card-body">' + top + '<div class="ag-wrap"><div class="ag-grid" role="group" aria-label="Air quality and pollen gauges">' +
-        arcGauge('Air Quality Index', aqiG && aqiG.v, 300, AG_AQI_BANDS, aqiG ? aqiWordHtml(aqiG.lv.label) : 'Unavailable', aqiG ? aqiG.lv.ink : null, 'ag-main') +
-        arcGauge('Fine particles', pmG && pmG.v, 300, AG_AQI_BANDS, pmG ? pmG.lv.label : 'Unavailable', pmG ? pmG.lv.ink : null) +
-        arcGauge('Ozone', ozG && ozG.v, 300, AG_AQI_BANDS, ozG ? ozG.lv.label : 'Unavailable', ozG ? ozG.lv.ink : null) +
-        arcGauge('Weeds', pollen.weed, 100, AG_POLLEN_BANDS, weedLv.label, weedLv.ink) +
-        arcGauge('Trees', pollen.tree, 100, AG_POLLEN_BANDS, treeLv.label, treeLv.ink) +
-        arcGauge('Grasses', pollen.grass, 100, AG_POLLEN_BANDS, grassLv.label, grassLv.ink) +
-      '</div></div></div>';
+      '<div class="hw-minis" role="group" aria-label="Air quality and pollen">' +
+        aqCell('Air quality', 'aq', aqiG, {'Unhealthy for Sensitive Groups': 'Sensitive groups'}, 'aq') +
+        aqCell('Fine particles', 'particles', pmG, null, 'pm') +
+        aqCell('Ozone', 'sun', ozG, null, 'o3') +
+        polCell('Weeds', 'flower', pollen.weed, weedLv, 'weed') +
+        polCell('Trees', 'tree', pollen.tree, treeLv, 'tree') +
+        polCell('Grasses', 'grass', pollen.grass, grassLv, 'grass') +
+      '</div>';
     airSection.hidden = false;
   }
-  airCard.addEventListener('click', function(e){
-    var b = e.target.closest && e.target.closest('[data-ag]');
-    if(!b || !agLastArgs || b.getAttribute('data-ag') === airView) return;
-    airView = b.getAttribute('data-ag'); renderAirPollen.apply(null, agLastArgs);
-    var nb = airCard.querySelector('[data-ag="' + airView + '"]'); if(nb) nb.focus({preventScroll: true});
-  });
-  airCard.addEventListener('keydown', function(e){
-    var b = e.target.closest && e.target.closest('[data-ag]');
-    if(!b || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
-    var all = [].slice.call(airCard.querySelectorAll('[data-ag]')), n = all[(all.indexOf(b) + (e.key === 'ArrowRight' ? 1 : all.length - 1)) % all.length];
-    e.preventDefault(); n.click();
-  });
-
   /* ---------- Health Risks ----------
      A Low / Medium / High outlook, for today and the next two days, for six conditions that weather and air quality can make worse:
      migraine, arthritis, cardiovascular, respiratory, kidney and mental health.
@@ -6657,12 +6600,13 @@
     hwData = {days: days, air: days.some(function(d){ return d.hasAir; }), w: res[0], a: res[1], nowKey: nowKey, aqi: airNow && airNow.overall ? airNow.overall : null};
     hwSel = 0;
     renderHealth();
+    if(agLastArgs) renderAirPollen.apply(null, agLastArgs);   // the Weather tab's air and pollen charts use this data
   }
   function hwDayName(i, d){ return i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : fmtDowLong(d.ds); }
   /* ---------- Health Outlook ----------
-     Top to bottom: today's outlook, what it means for each condition, the air and weather behind it, the safest time to head out,
+     Top to bottom: today's outlook, what it means for each condition, the air and weather behind it, the best time to be outside,
      a few simple tips and two buttons (preferences, the next 7 days). The ratings still come from the same models. */
-  var HW_WORD = {low: 'Good to go', medium: 'Plan ahead', high: 'Go gentle'};
+  var HW_WORD = {low: 'No Impacts', medium: 'Heads Up', high: 'High Impacts'};
   // what to try, by what is in the forecast (the first trigger with a tip wins)
   function hwTip(m, drivers){
     // [text, icon]
@@ -6686,18 +6630,70 @@
     }
     return null;
   }
-  // one condition: its name and rating, then a sentence on what is in the forecast and, when it needs a little care, one thing to try
+  // why each trigger matters for each condition, in plain words (what the weather or air does and why people with this condition feel it). The research behind each pairing is listed under How the Health Outlook works.
+  var HW_WHY = {
+    migraine: {
+      warming: 'Warmer spells are linked to more migraine attacks, partly because heat dehydrates you and disturbs sleep, two common triggers.',
+      pressure: 'Pressure changes are among the most common migraine triggers, thought to act on blood vessels and nerves in the head.',
+      humid: 'Humid air is linked to more migraine days, possibly because it makes it harder to stay hydrated and cool.',
+      no2: 'Traffic fumes are linked to more headache and migraine visits, possibly by inflaming blood vessels.',
+      sun: 'Bright light and strong sun are common migraine triggers.',
+      ozone: 'Ozone irritates the body and is linked to more migraine attacks, likely through inflammation.',
+      pm: 'Smoke and fine particles inflame blood vessels and are linked to more migraine attacks.'},
+    arthritis: {
+      pressure: 'Pressure changes may let the tissue around joints swell slightly, which can make painful joints feel worse.',
+      cold: 'Cold weather can stiffen joints and tighten the muscles around them, which many people with arthritis feel as more pain.',
+      humid: 'Damp air is a long-reported trigger of joint pain and stiffness, especially when it is also cold.',
+      heat: 'Hot, dry weather can dehydrate you, which raises uric acid and makes gout flares more likely.',
+      no2: 'Traffic pollution is linked to more inflammation in the body, which can aggravate inflammatory arthritis.',
+      pm: 'Fine particles are linked to more inflammation in the body, which can aggravate inflammatory arthritis.'},
+    cardio: {
+      cold: 'Cold narrows blood vessels and raises blood pressure, so the heart has to work harder.',
+      heat: 'Heat makes the heart work harder to cool you, and dehydration thickens blood, adding strain.',
+      pressure: 'Sudden pressure changes are linked to more heart events, possibly through their effect on blood pressure.',
+      pm: 'Fine particles reach the bloodstream and can inflame blood vessels, straining the heart.',
+      ozone: 'Ozone is linked to more heart problems, likely through inflammation and stress on blood vessels.'},
+    resp: {
+      ozone: 'Ozone irritates and inflames the airways, which can set off asthma symptoms and flare-ups in other lung conditions.',
+      pm: 'Fine particles settle deep in the lungs and can trigger coughing, wheezing and flare-ups.',
+      no2: 'Nitrogen dioxide irritates the airways and can set off asthma symptoms.',
+      cold: 'Cold, dry air can tighten the airways and trigger coughing and wheezing.',
+      heat: 'Hot, humid air is heavy to breathe and can make breathlessness worse.'},
+    kidney: {
+      heat: 'Heat and sweating can dehydrate you, which strains the kidneys and raises the chance of kidney stones.',
+      hotnight: 'Warm nights keep you sweating and make it harder to stay hydrated, which strains the kidneys.',
+      pm: 'Fine particles are linked to a faster decline in kidney function.'},
+    mental: {
+      heat: 'Heat and poor sleep are linked to low mood, irritability and more mental health emergencies.',
+      hotnight: 'Hot nights disturb sleep, and poor sleep makes low mood and anxiety harder to manage.',
+      ozone: 'Air pollution is linked to more anxiety and depression, possibly through inflammation.',
+      pm: 'Fine particles are linked to more anxiety, depression and mental health visits, possibly through inflammation.'}
+  };
+  function hwWhyCat(lb){
+    var c = hwCatOf(lb);
+    if(c === 'ozone' || c === 'pm' || c === 'no2' || c === 'heat' || c === 'hotnight' || c === 'cold' || c === 'pressure' || c === 'sun') return c;
+    if(/^Warming/.test(lb)) return 'warming';
+    if(/humid|damp/i.test(lb)) return 'humid';
+    return '';
+  }
+  // one condition: its name and rating, then what is in the forecast, why that matters for this condition and, when it needs a little care, one thing to try
   function hwRowHtml(x){
-    var m = x.m, r = x.r, lv = r.level, say, tip = '';
-    if(lv === 'low') say = 'Nothing in today’s forecast stands out.';
-    else{
+    var m = x.m, r = x.r, lv = r.level, what = '', why = '', tip = '';
+    if(lv !== 'low'){
       var top = r.drivers.filter(function(dr){ return dr.rr >= 1.02; }).slice(0, 2);
       if(!top.length) top = r.drivers.slice(0, 2);
-      say = vdCap(vdList(top.map(function(dr){ return dr.text.replace(/\s*[↑↓]/g, ''); }))) + ' can make this harder for some people.';
+      what = 'In the forecast: ' + vdList(top.map(function(dr){ return dr.text.replace(/\s*[↑↓]/g, ''); })) + '.';
+      var seen = {}, parts = [];
+      top.forEach(function(dr){ var c = hwWhyCat(dr.label || ''), t = (HW_WHY[m.id] || {})[c]; if(t && !seen[c]){ seen[c] = 1; parts.push(t); } });
+      why = parts.join(' ') || 'Studies link this to a higher chance of symptoms for people with this condition.';
       var tp = hwTip(m, r.drivers); tip = tp ? tp.t : '';
     }
-    return '<li class="hw-crow"><div class="hw-crow-top"><span class="hw-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" focusable="false">' + HW_ICO[m.id] + '</svg></span><h4 class="hw-cname">' + m.name + '</h4><span class="hw-chip hw-chip--' + lv + '"><span class="sr-only">Outlook: </span>' + HW_WORD[lv] + '</span></div>' +
-      '<p class="hw-csay">' + vdEsc(say + (tip ? ' ' + tip : '')) + '</p></li>';
+    var tone = lv === 'low' ? 'good' : lv === 'medium' ? 'ok' : 'high', d = x.d;
+    var ico = '<svg class="hw-cond-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + HW_ICO[m.id] + '</svg>';
+    // each condition is its own full-width card: the name and a tinted icon, the rating, what is in the forecast, then two line charts
+    return '<div class="today-card air-card hw-cond hw-tile--' + tone + '"><div class="hw-cond-top"><h3 class="hw-cond-name">' + ico + '<span>' + m.name + '</span></h3>' +
+      '<span class="hw-cond-big"><span class="sr-only">Outlook: </span>' + HW_WORD[lv] + '</span></div>' +
+      (lv === 'low' ? '' : '<p class="hw-csay hw-csay--what">' + vdEsc(what) + '</p><p class="hw-csay">' + vdEsc(why) + '</p>' + (tip ? '<p class="hw-csay">' + vdEsc(tip) + '</p>' : '') + hwCondCharts(m, d, r)) + '</div>';   // No Impacts cards are just the name and rating
   }
   // the highest relative risk any condition's model gives a kind of trigger (heat, cold, pressure ...) today
   function hwEnvRR(drivers, cat){
@@ -6705,41 +6701,273 @@
     drivers.forEach(function(dr){ if(hwCatOf(dr.label || '') === cat && dr.rr > best) best = dr.rr; });
     return best;
   }
+  // a small line graph of the sea-level pressure from 24 hours ago to 24 hours ahead, with a marker for now
+  // One hourly series for a line graph, from 24 hours ago to 24 hours ahead: {label, text (the value now), vals: [{i, v}], i0, lo, hi, minSpan}, or null
+  var HW_SERIES = {
+    pressure: {src: 'w', field: 'pressure_msl', label: 'Pressure', minSpan: 6, flat: 1, fmt: function(v){ return hwP(v); }},
+    temp: {src: 'w', field: 'temperature_2m', label: 'Temperature', minSpan: 8, flat: 1.5, fmt: function(v){ return hwT(v); }},
+    feels: {src: 'w', field: 'apparent_temperature', label: 'Feels like', minSpan: 8, flat: 1.5, fmt: function(v){ return hwT(v); }},
+    humidity: {src: 'w', field: 'relative_humidity_2m', label: 'Humidity', minSpan: 30, flat: 6, fmt: function(v){ return hwR(v) + '%'; }},
+    uv: {src: 'w', field: 'uv_index', label: 'UV index', minSpan: 6, flat: 1, fmt: function(v){ return String(hwR(v)); }},
+    o3: {src: 'a', field: 'ozone', label: 'Ozone', minSpan: 30, flat: 5, scale: 'o3', fmt: function(v){ return hwR(v) + ' ppb'; }},
+    pm: {src: 'a', field: 'pm2_5', label: 'Fine particles', minSpan: 10, flat: 2, scale: 'pm', fmt: function(v){ return hwR(v) + ' µg/m³'; }}
+  };
+  function hwSeries(key, half){
+    half = half || 24;
+    var def = HW_SERIES[key], D = hwData && (def.src === 'a' ? hwData.a : hwData.w), H = D && D.hourly;
+    if(!def || !H || !H.time || !H[def.field]) return null;
+    var i0 = H.time.indexOf(String(hwData.nowKey).slice(0, 13) + ':00');
+    if(i0 < half) return null;
+    var lo = Math.max(0, i0 - half), hi = Math.min(H.time.length - 1, i0 + half), vals = [], arr = H[def.field];
+    for(var i = lo; i <= hi; i++) if(typeof arr[i] === 'number') vals.push({i: i, v: arr[i]});
+    if(vals.length < Math.min(12, half)) return null;
+    // ozone (ug/m3 to ppb) and fine particles are scaled to today's own forecast (AirNow or alert), so the line agrees with the ratings
+    var f = 1, td = hwData.days && hwData.days[0];
+    if(def.scale === 'o3'){
+      vals.forEach(function(x){ x.v /= 1.96; });
+      var day = vals.filter(function(x){ return H.time[x.i].slice(0, 10) === (td && td.ds); }), pk = Math.max.apply(null, day.map(function(x){ return x.v; }).concat([0]));
+      if(td && td.o3ppb && pk > 0) f = hwClamp(td.o3ppb / pk, 0.5, 3);
+    }else if(def.scale === 'pm'){
+      var dp = vals.filter(function(x){ return H.time[x.i].slice(0, 10) === (td && td.ds); }), mp = dp.length ? dp.reduce(function(t, x){ return t + x.v; }, 0) / dp.length : 0;
+      if(td && td.pm25 && mp > 0) f = hwClamp(td.pm25 / mp, 0.4, 3);
+    }
+    if(f !== 1) vals.forEach(function(x){ x.v *= f; });
+    var now = vals.filter(function(x){ return x.i === i0; })[0];
+    // where it is heading: the change from now to 3 hours ahead (up, down or steady when the change is within def.flat)
+    var ahead = vals.filter(function(x){ return x.i === i0 + 3; })[0], trend = now && ahead ? (ahead.v - now.v > def.flat ? 'up' : now.v - ahead.v > def.flat ? 'down' : 'steady') : null;
+    return {label: def.label, text: now ? def.fmt(now.v) : '', trend: trend, vals: vals, i0: i0, lo: lo, hi: hi, minSpan: def.minSpan, nowV: now ? now.v : null, times: H.time};
+  }
+  // a small arrow beside a reading: up, down or steady over the next 3 hours
+  var HW_TREND = {up: ['M12 19V5M6 11l6-6 6 6', 'Rising'], down: ['M12 5v14M6 13l6 6 6-6', 'Falling'], steady: ['M5 12h14M13 6l6 6-6 6', 'Steady']};
+  function hwTrendIco(t){
+    return t && HW_TREND[t] ? '<svg class="hw-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" focusable="false"><title>' + HW_TREND[t][1] + ' over the next 3 hours</title><path d="' + HW_TREND[t][0] + '"/></svg>' : '';
+  }
+  // the line itself (an area, the line, a dashed marker and a dot for now)
+  // temperature lines are colored by how warm the air is (degrees C): deep blue when freezing, through teal and green, to yellow, orange and red when hot
+  var HW_TEMP_COL = [[-5, [59, 91, 219]], [5, [58, 142, 230]], [14, [47, 181, 196]], [21, [103, 194, 112]], [27, [242, 201, 76]], [32, [242, 153, 74]], [38, [229, 72, 77]]], hwGid = 0;
+  function hwTempColor(c){
+    var T = HW_TEMP_COL, i = 0;
+    if(c <= T[0][0]) return 'rgb(' + T[0][1].join(',') + ')';
+    if(c >= T[T.length - 1][0]) return 'rgb(' + T[T.length - 1][1].join(',') + ')';
+    while(c > T[i + 1][0]) i++;
+    var f = (c - T[i][0]) / (T[i + 1][0] - T[i][0]), a = T[i][1], b = T[i + 1][1];
+    return 'rgb(' + [0, 1, 2].map(function(k){ return Math.round(a[k] + (b[k] - a[k]) * f); }).join(',') + ')';
+  }
+  function hwLineGraph(se, heat){
+    var vs = se.vals.map(function(x){ return x.v; }), mn = Math.min.apply(null, vs), mx = Math.max.apply(null, vs), mid = (mn + mx) / 2, span = Math.max(mx - mn, se.minSpan);   // at least minSpan tall, so a steady stretch reads flat
+    var w = 140, h = 44, pad = 4, y = function(v){ return pad + (h - 2 * pad) * (1 - ((v - mid) / span + 0.5)); }, x = function(i){ return (i - se.lo) / (se.hi - se.lo) * w; };
+    var pts = se.vals.map(function(p){ return [x(p.i), y(p.v)]; }), line = smoothPath(pts);
+    var nx = x(se.i0), area = line + ' L ' + pts[pts.length - 1][0].toFixed(1) + ',' + h + ' L ' + pts[0][0].toFixed(1) + ',' + h + ' Z';
+    var defs = '', fillSt = '', lineSt = '';
+    if(heat){
+      var gid = 'hwg' + (++hwGid), stops = '';
+      for(var k = 0; k <= 10; k++){
+        var yy = pad + (h - 2 * pad) * k / 10;
+        stops += '<stop offset="' + (yy / h * 100).toFixed(1) + '%" stop-color="' + hwTempColor(mid + span * (0.5 - k / 10)) + '"/>';
+      }
+      defs = '<defs><linearGradient id="' + gid + '" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="' + h + '">' + stops + '</linearGradient></defs>';
+      lineSt = ' style="stroke:url(#' + gid + ')"'; fillSt = ' style="fill:url(#' + gid + ');fill-opacity:.2"';
+    }
+    return '<svg class="hw-spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true" focusable="false">' + defs +
+      '<path d="' + area + '" class="hw-spark-fill"' + fillSt + '/><path d="' + line + '" class="hw-spark-line"' + lineSt + ' vector-effect="non-scaling-stroke"/>' +
+      '<line x1="' + nx.toFixed(1) + '" x2="' + nx.toFixed(1) + '" y1="' + (se.nowV !== null ? y(se.nowV).toFixed(1) : 0) + '" y2="' + h + '" class="hw-spark-now" vector-effect="non-scaling-stroke"/></svg>' +   /* the dashed line runs only from the dot down to the axis */
+      (se.nowV !== null ? '<span class="hw-spark-dot" style="left:' + (nx / w * 100).toFixed(1) + '%;top:' + (y(se.nowV) / h * 100).toFixed(1) + '%"></span>' : '');
+  }
+  // the four cards under the conditions each carry a 44px chart like the condition cards: air quality and pollen as bars, temperature and pressure as lines
+  function hwLineChart(key){ var se = hwSeries(key, 12); return se ? {graph: hwLineGraph(se, key === 'temp' || key === 'feels'), axis: hwAxis(se)} : null; }
+  // air quality: 3-hour bars from 12 hours ago to 12 hours ahead, each in the color of the worse of ozone and fine particles
+  function hwAirBars(){
+    var so = hwSeries('o3', 12), sp = hwSeries('pm', 12);
+    if(!so || !sp) return null;
+    var pmAt = {};
+    sp.vals.forEach(function(x){ pmAt[sp.times[x.i]] = x.v; });
+    var buckets = [], cur = null;
+    so.vals.forEach(function(x){
+      var b = Math.floor((x.i - so.lo) / 3), pm = pmAt[so.times[x.i]];
+      if(!cur || cur.b !== b){ cur = {b: b, o: 0, p: 0, n: 0, hasNow: false}; buckets.push(cur); }
+      cur.o += x.v; cur.p += typeof pm === 'number' ? pm : 0; cur.n++; if(x.i === so.i0) cur.hasNow = true;
+    });
+    buckets.forEach(function(b){ b.o /= b.n; b.p /= b.n; });
+    var topO = Math.max(60, Math.max.apply(null, buckets.map(function(b){ return b.o; }))), topP = Math.max(15, Math.max.apply(null, buckets.map(function(b){ return b.p; })));
+    var cols = HW_SCALES.aq;
+    return {graph: '<span class="hw-bars" aria-hidden="true">' + buckets.map(function(b){
+      var rank = Math.max(hwAirRank('o3', b.o), hwAirRank('pm', b.p));
+      return '<i' + (b.hasNow ? ' class="is-now"' : '') + ' style="height:' + Math.round(12 + 88 * Math.min(1, Math.max(b.o / topO, b.p / topP))) + '%;background:' + cols[rank] + '"></i>';
+    }).join('') + '</span>', axis: hwAxis(so)};
+  }
+  // pollen: one bar per day for the next 7 days (the seasonal estimate), each in its level's color
+  function hwPollenBars(lat, ds, type){
+    var days = [], mx = 40, names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    for(var k = 0, dd = ds; k < 7; k++, dd = nextDateStr(dd)){
+      var pe = pollenEstimate(lat, dd), sc = type ? pe[type] : Math.max(pe.weed, pe.tree, pe.grass);
+      days.push({sc: sc, rank: Math.min(4, pollenLevel(sc).rank), dow: names[new Date(dd + 'T12:00:00').getDay()]});
+      mx = Math.max(mx, sc);
+    }
+    var cols = HW_SCALES.pol;
+    return {graph: '<span class="hw-bars" aria-hidden="true">' + days.map(function(x, k){
+      return '<i' + (k === 0 ? ' class="is-now"' : '') + ' style="height:' + Math.round(12 + 88 * Math.min(1, x.sc / mx)) + '%;background:' + cols[x.rank] + '"></i>';
+    }).join('') + '</span>', axis: '<span class="hw-axis" aria-hidden="true"><span style="left:7%">Today</span><span style="left:50%">' + days[3].dow + '</span><span style="left:93%">' + days[6].dow + '</span></span>'};
+  }
+  // a bar chart of the same hours (3-hour averages from 24 hours ago to 24 hours ahead), each bar colored by its air quality level; same 44px height as the line charts
+  function hwAirRank(key, v){
+    var T = key === 'o3' ? [54, 70, 85, 105] : [9, 35.4, 55.4, 125.4];   // EPA breakpoints: ozone in ppb, fine particles in ug/m3
+    for(var i = 0; i < T.length; i++) if(v <= T[i]) return i;
+    return 4;
+  }
+  function hwBarGraph(se, key){
+    var buckets = [], cur = null;
+    se.vals.forEach(function(x){ var b = Math.floor((x.i - se.lo) / 3); if(!cur || cur.b !== b){ cur = {b: b, sum: 0, n: 0, hasNow: false}; buckets.push(cur); } cur.sum += x.v; cur.n++; if(x.i === se.i0) cur.hasNow = true; });
+    var top = Math.max(key === 'o3' ? 60 : 15, Math.max.apply(null, buckets.map(function(b){ return b.sum / b.n; })));
+    var cols = HW_SCALES.aq;
+    return '<span class="hw-bars" aria-hidden="true">' + buckets.map(function(b){
+      var v = b.sum / b.n;
+      return '<i' + (b.hasNow ? ' class="is-now"' : '') + ' style="height:' + Math.round(12 + 88 * Math.min(1, v / top)) + '%;background:' + cols[hwAirRank(key, v)] + '"></i>';
+    }).join('') + '</span>';
+  }
+  // an air quality pill: today's level and index, tinted in its color; the same 44px height
+  function hwAqiPill(d){
+    var lv = hwAirLevel(d);
+    if(!lv) return null;
+    var tone = lv.r === 0 ? 'var(--aqi-good-ink)' : lv.r === 1 ? 'var(--aqi-moderate-ink)' : 'var(--aqi-usg-ink)';
+    return {label: 'Air quality', text: lv.cur ? 'Index ' + lv.cur.aqi : (lv.later ? 'Peaks later' : ''), html: '<span class="hw-pillbox" style="--pc:' + tone + '"><i aria-hidden="true"></i>' + HW_TONE_WORD[lv.r] + '</span>'};
+  }
+  // a tiny time axis for a chart: a label every 6 hours at the clock hours 12a, 6a, 12p and 6p
+  function hwAxis(se){
+    var names = {0: '12a', 6: '6a', 12: '12p', 18: '6p'}, out = '';
+    for(var i = se.lo; i <= se.hi; i++){
+      var hr = parseInt(String(se.times[i]).slice(11, 13), 10);
+      if(hr % 6 !== 0) continue;
+      var left = (i - se.lo) / (se.hi - se.lo) * 100;
+      out += '<span style="left:clamp(8px, ' + left.toFixed(1) + '%, calc(100% - 8px))">' + names[hr] + '</span>';
+    }
+    return '<span class="hw-axis" aria-hidden="true">' + out + '</span>';
+  }
+  // the two measures that matter most for a condition, each drawn as a line (trend), a bar chart (air) or a pill (air quality): the first two with data
+  var HW_CHARTS = {
+    migraine: [{k: 'pressure'}, {k: 'temp'}, {k: 'humidity', t: 'drop'}],
+    arthritis: [{k: 'pressure'}, {k: 'humidity', t: 'drop'}, {k: 'temp'}],
+    cardio: [{k: 'feels'}, {k: 'pm', t: 'bars'}, {k: 'o3', t: 'bars'}, {k: 'pressure'}],
+    resp: [{k: 'aqi', t: 'pill'}, {k: 'o3', t: 'bars'}, {k: 'pm', t: 'bars'}, {k: 'humidity', t: 'drop'}],
+    kidney: [{k: 'feels'}, {k: 'humidity', t: 'drop'}, {k: 'pm', t: 'bars'}],
+    mental: [{k: 'temp'}, {k: 'o3', t: 'bars'}, {k: 'pm', t: 'bars'}]
+  };
+  // humidity as a comfort band: a slim bar with the comfortable range (30-60%) shaded and a dot at today's level, tinted when humidity is a trigger
+  function hwHumidDrop(se, on){
+    var pct = Math.max(0, Math.min(100, se.nowV)), top = 3, bot = 43, fy = bot - (bot - top) * pct / 100, id = 'hwd' + (++hwGid);
+    var path = 'M22 3 C22 3 8 19 8 29 a14 14 0 0 0 28 0 C36 19 22 3 22 3Z', y60 = bot - (bot - top) * .6, y30 = bot - (bot - top) * .3;
+    return '<span class="hw-drop" aria-hidden="true"><svg viewBox="0 0 46 44" focusable="false"><defs><clipPath id="' + id + '"><path d="' + path + '"/></clipPath></defs>' +
+      '<path d="' + path + '" fill="color-mix(in srgb, var(--text-muted) 12%, transparent)"/>' +
+      '<g clip-path="url(#' + id + ')"><rect x="6" y="' + fy.toFixed(1) + '" width="32" height="' + (bot + 2 - fy).toFixed(1) + '" fill="' + (on ? 'var(--tg)' : 'var(--icon-blue)') + '" fill-opacity=".55"/></g>' +
+      '<path d="' + path + '" fill="none" stroke="color-mix(in srgb, var(--text-muted) 80%, var(--surface))" stroke-width="1.4"/>' +
+      '<path d="M39.5 ' + y60.toFixed(1) + ' H42.5 V' + y30.toFixed(1) + ' H39.5" fill="none" stroke="var(--text-muted)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      '<span class="hw-drop-l">Comfortable</span></span>';
+  }
+  // the charts follow the triggers the sentence names: each of the top two drivers gets its chart (ozone and fine particles as bars, temperature, pressure or humidity as the trend), then the condition's usual charts fill any gap
+  function hwChartSpecs(m, r){
+    var usual = HW_CHARTS[m.id] || [], picked = [];
+    function usualOf(keys, dflt){ return usual.filter(function(sp){ return keys.indexOf(sp.k) >= 0; })[0] || dflt; }
+    var top = (r && r.drivers || []).filter(function(dr){ return dr.rr >= 1.02; }).slice(0, 2);
+    if(!top.length) top = (r && r.drivers || []).slice(0, 2);
+    top.forEach(function(dr){
+      var lb = dr.label || '', c = hwCatOf(lb), sp = null;
+      if(c === 'ozone') sp = {k: 'o3', t: 'bars'};
+      else if(c === 'pm') sp = {k: 'pm', t: 'bars'};
+      else if(c === 'pressure') sp = {k: 'pressure'};
+      else if(c === 'heat' || c === 'hotnight' || c === 'cold' || /^Warming/.test(lb)) sp = usualOf(['feels', 'temp'], {k: 'temp'});
+      else if(/humid|damp/i.test(lb)) sp = usualOf(['humidity'], {k: 'humidity', t: 'drop'});
+      if(sp && !picked.some(function(q){ return q.k === sp.k; })) picked.push(sp);
+    });
+    if(!picked.length) usual.forEach(function(sp){ if(picked.length < 2) picked.push(sp); });   // only when no trigger has a chart: the condition's usual two
+    return picked;
+  }
+  function hwCondCharts(m, d, r){
+    var out = [];
+    hwChartSpecs(m, r).forEach(function(spec){
+      if(out.length >= 2) return;
+      var label, text, vis, trend = null, axis = '<span class="hw-axis" aria-hidden="true"></span>';
+      if(spec.t === 'pill'){ var pl = hwAqiPill(d); if(!pl) return; label = pl.label; text = pl.text; vis = pl.html; }
+      else if(spec.t === 'drop'){
+        var hs = hwSeries(spec.k, 12); if(!hs || hs.nowV === null) return;
+        var onH = (r && r.drivers || []).some(function(dr){ return dr.rr >= 1.02 && /humid|damp/i.test(dr.label || ''); });
+        label = hs.label; text = hs.text; trend = hs.trend; vis = hwHumidDrop(hs, onH);
+      }
+      else{
+        var se = hwSeries(spec.k, 12); if(!se) return;   // the cards show 12 hours either side of now, so the 6-hour labels have room
+        label = se.label; text = se.text; trend = se.trend; vis = spec.t === 'bars' ? hwBarGraph(se, spec.k) : hwLineGraph(se, spec.k === 'temp' || spec.k === 'feels'); axis = hwAxis(se);
+      }
+      out.push('<div class="hw-lc"><div class="hw-lc-h"><span>' + label + '</span><b>' + vdEsc(text) + hwTrendIco(trend) + '</b></div><span class="hw-sparkwrap">' + vis + '</span>' + axis + '</div>');
+    });
+    return out.length ? '<div class="hw-lines' + (out.length === 1 ? ' hw-lines--one' : '') + '" aria-hidden="true">' + out.join('') + '</div>' : '';
+  }
   var HW_TONE_WORD = ['Good', 'Moderate', 'Elevated', 'High', 'Very high'];
   // four tiles for the air and weather behind the ratings: [{k, v, s, tone}]; tone is good, ok or high
-  function hwTiles(d, drivers){
-    var tiles = [];
+  // today's air quality level for the tile and the pill: the worse of the current AirNow reading, AirNow's forecast peak and any alert
+  function hwAirLevel(d){
+    function rk(e){ return e && AQI_CAT_INFO[e.catName] ? AQI_CAT_INFO[e.catName].rank : 0; }
+    var cur = hwData.aqi, curRank = cur && AQI_CAT_INFO[cur.catName] ? AQI_CAT_INFO[cur.catName].rank : null;
+    var fd = airFc && airFc.days && airFc.days[d.ds], fRank = Math.max(rk(fd && fd.ozone), rk(fd && fd.pm25));
+    if(d.alertO3 || d.alertPM) fRank = Math.max(fRank, 2);
+    if(!cur && fRank <= 0) return null;
+    return {r: Math.min(4, Math.max(curRank || 0, fRank)), cur: cur, later: fRank > (curRank || 0)};
+  }
+  // the four cards under the conditions are chosen for the day: every reading that could be shown is scored by how much it matters today (the level it reaches, how far it is from comfortable), the measures already charted in the condition cards above (`used`) are left out, and the top four are shown. If fewer than four are left, the repeats fill in.
+  function hwTiles(d, drivers, used){
+    used = used || {};
+    var cand = [], W = ['Low', 'Moderate', 'High', 'Very high', 'Extreme'];
+    function add(key, score, tile, dup){ cand.push({key: key, score: score, tile: tile, dup: !!dup, order: cand.length}); }
+    function toneOf(r){ return r <= 0 ? 'good' : r === 1 ? 'ok' : 'high'; }
     function rk(e){ return e && AQI_CAT_INFO[e.catName] ? AQI_CAT_INFO[e.catName].rank : 0; }
     var cur = hwData.aqi, curRank = cur && AQI_CAT_INFO[cur.catName] ? AQI_CAT_INFO[cur.catName].rank : null;
     var fd = airFc && airFc.days && airFc.days[d.ds], fRank = Math.max(rk(fd && fd.ozone), rk(fd && fd.pm25));
     if(d.alertO3 || d.alertPM) fRank = Math.max(fRank, 2);
     if(cur || fRank > 0){
       var r = Math.min(4, Math.max(curRank || 0, fRank));
-      tiles.push({k: 'Air quality', v: HW_TONE_WORD[r], s: fRank > (curRank || 0) ? 'Peaks later today' : cur ? 'Index ' + cur.aqi : '', tone: r === 0 ? 'good' : r === 1 ? 'ok' : 'high'});
+      add('aq', r + 0.4, {k: 'Air quality', icon: 'aq', v: HW_TONE_WORD[r], s: fRank > (curRank || 0) ? 'Peaks later today' : cur ? 'Index ' + cur.aqi : '', tone: toneOf(r), lvl: r, scale: 'aq', chart: hwAirBars()}, used.aqi || (used.o3 && used.pm));
     }
     try{
       var pol = pollenEstimate(lastLoad.lat, d.ds), top = ['weed', 'tree', 'grass'].reduce(function(a, k){ return pol[k] > pol[a] ? k : a; }, 'weed');
       var lv = pollenLevel(pol[top]), names = {weed: 'Weeds', tree: 'Trees', grass: 'Grasses'};
-      tiles.push({k: 'Pollen', v: lv.label, s: lv.rank === 0 ? 'Quiet season' : names[top] + ' · estimate', tone: lv.rank <= 1 ? 'good' : lv.rank === 2 ? 'ok' : 'high'});
+      add('pollen', lv.rank + 0.3, {k: 'Pollen', icon: 'flower', v: lv.label, s: lv.rank === 0 ? 'Quiet season' : names[top] + ' · estimate', tone: lv.rank <= 1 ? 'good' : lv.rank === 2 ? 'ok' : 'high', lvl: Math.min(4, lv.rank), scale: 'pol', chart: hwPollenBars(lastLoad.lat, d.ds)}, false);
     }catch(e){}
     var heat = hwEnvRR(drivers, 'heat'), cold = hwEnvRR(drivers, 'cold');
     if(d.ATmax !== null && d.ATmax !== undefined){
-      if(heat >= 1.02 && heat >= cold) tiles.push({k: 'Temperature', v: heat >= 1.06 ? 'Hot' : 'Warm', s: 'Feels like ' + hwT(d.ATmax), tone: heat >= 1.06 ? 'high' : 'ok'});
-      else if(cold >= 1.02) tiles.push({k: 'Temperature', v: cold >= 1.06 ? 'Cold' : 'Cool', s: 'Low ' + hwT(d.Tmin), tone: cold >= 1.06 ? 'high' : 'ok'});
-      else tiles.push({k: 'Temperature', v: 'Comfortable', s: 'Feels like ' + hwT(d.ATmax), tone: 'good'});
+      var tt, big = Math.max(heat, cold) >= 1.06, some = Math.max(heat, cold) >= 1.02;
+      if(heat >= 1.02 && heat >= cold) tt = {k: 'Temperature', icon: 'thermo', v: heat >= 1.06 ? 'Hot' : 'Warm', s: 'Feels like ' + hwT(d.ATmax), tone: heat >= 1.06 ? 'high' : 'ok', lvl: heat >= 1.06 ? 4 : 3, scale: 'temp', chart: hwLineChart('feels')};
+      else if(cold >= 1.02) tt = {k: 'Temperature', icon: 'thermo', v: cold >= 1.06 ? 'Cold' : 'Cool', s: 'Low ' + hwT(d.Tmin), tone: cold >= 1.06 ? 'high' : 'ok', lvl: cold >= 1.06 ? 0 : 1, scale: 'temp', chart: hwLineChart('feels')};
+      else tt = {k: 'Temperature', icon: 'thermo', v: 'Comfortable', s: 'Feels like ' + hwT(d.ATmax), tone: 'good', lvl: 2, scale: 'temp', chart: hwLineChart('feels')};
+      add('temp', big ? 3.5 : some ? 2.5 : 0.6, tt, used.temp || used.feels);
     }
     if(d.pDelta !== null && d.pDelta !== undefined){
       var steady = Math.abs(d.pDelta) < 1.7, pr = hwEnvRR(drivers, 'pressure') >= 1.02;
-      tiles.push({k: 'Pressure', v: steady ? 'Steady' : d.pDelta < 0 ? 'Falling' : 'Rising', s: steady ? 'No big change' : (d.pDelta < 0 ? '↓ ' : '↑ ') + hwDP(Math.abs(d.pDelta)) + ' today', tone: pr ? 'ok' : 'good'});
+      add('pressure', steady ? 0.5 : pr ? 2.5 : 1.5, {k: 'Pressure', icon: 'gauge', v: steady ? 'Steady' : d.pDelta < 0 ? 'Falling' : 'Rising', s: steady ? 'No big change' : (d.pDelta < 0 ? '↓ ' : '↑ ') + hwDP(Math.abs(d.pDelta)) + ' today', tone: pr ? 'ok' : 'good', lvl: null, scale: 'press', chart: hwLineChart('pressure')}, used.pressure);
     }
-    return tiles;
+    var hs = hwSeries('humidity', 12);
+    if(hs && hs.nowV !== null){
+      var hv = hs.nowV, hword = hv < 30 ? 'Dry' : hv > 60 ? 'Humid' : 'Comfortable', away = hv < 30 ? 30 - hv : hv > 60 ? hv - 60 : 0;
+      add('humidity', away ? 1.5 + Math.min(2, away / 15) : 0.4, {k: 'Humidity', icon: 'drop', v: hword, s: hwR(hv) + '% right now', tone: away ? 'ok' : 'good', lvl: null, scale: 'aq', chart: {graph: hwHumidDrop(hs, false), axis: '<span class="hw-axis" aria-hidden="true"></span>'}}, used.humidity);
+    }
+    if(d.UV !== null && d.UV !== undefined){
+      var ur = d.UV < 3 ? 0 : d.UV < 6 ? 1 : d.UV < 8 ? 2 : d.UV < 11 ? 3 : 4;
+      add('uv', ur + 0.3, {k: 'UV index', icon: 'sun', v: W[ur], s: 'Peak ' + hwR(d.UV) + ' today', tone: toneOf(ur), lvl: ur, scale: 'aq', chart: hwLineChart('uv')}, false);
+    }
+    if(d.o3ppb !== null && d.o3ppb !== undefined){
+      var orank = hwAirRank('o3', d.o3ppb), so = hwSeries('o3', 12);
+      add('o3', orank + 0.2, {k: 'Ozone', icon: 'o3', v: HW_TONE_WORD[orank], s: 'Peak ' + hwR(d.o3ppb) + ' ppb', tone: toneOf(orank), lvl: orank, scale: 'aq', chart: so ? {graph: hwBarGraph(so, 'o3'), axis: hwAxis(so)} : null}, used.o3);
+    }
+    if(d.pm25 !== null && d.pm25 !== undefined){
+      var prank = hwAirRank('pm', d.pm25), sm = hwSeries('pm', 12);
+      add('pm', prank + 0.2, {k: 'Fine particles', icon: 'particles', v: HW_TONE_WORD[prank], s: 'About ' + hwR(d.pm25) + ' µg/m³', tone: toneOf(prank), lvl: prank, scale: 'aq', chart: sm ? {graph: hwBarGraph(sm, 'pm'), axis: hwAxis(sm)} : null}, used.pm);
+    }
+    function byScore(a, b){ return b.score - a.score || a.order - b.order; }
+    var fresh = cand.filter(function(c){ return !c.dup; }).sort(byScore), repeats = cand.filter(function(c){ return c.dup; }).sort(byScore);
+    return fresh.concat(repeats).slice(0, 4).map(function(c){ return c.tile; });
   }
   // the best three hours to be outside today (or tomorrow once the day is mostly over): cleanest air, mildest temperature and least sun
   function hwSafest(d){
     var W = hwData.w, A = hwData.a;
     if(!W || !W.hourly || !W.hourly.time) return null;
     var H = W.hourly, T = H.time, AH = A && A.hourly && A.hourly.time ? A.hourly : null;
-    var nowH = parseInt(String(hwData.nowKey).slice(11, 13), 10), tomorrow = isNaN(nowH) ? false : nowH >= 17, ds = tomorrow ? nextDateStr(d.ds) : d.ds;
+    var nowH = parseInt(String(hwData.nowKey).slice(11, 13), 10), tomorrow = isNaN(nowH) ? false : nowH >= 19, ds = tomorrow ? nextDateStr(d.ds) : d.ds;
     var hrs = [];
     for(var h = 6; h <= 20; h++){
       var key = ds + 'T' + ('0' + h).slice(-2) + ':00', i = T.indexOf(key);
@@ -6776,16 +7004,19 @@
     var f12 = function(h){ var n = h % 12 || 12; return n + ':00'; }, ap = function(h){ return h >= 12 ? 'PM' : 'AM'; };
     var h0 = best.win[0].h, h1 = h0 + 3;
     var range = ap(h0) === ap(h1) ? f12(h0) + ' – ' + f12(h1) + ' ' + ap(h1) : f12(h0) + ' ' + ap(h0) + ' – ' + f12(h1) + ' ' + ap(h1);
-    // six blocks across 6 AM to 9 PM
-    var edges = [0, 2, 5, 7, 10, 12, 15], blocks = [];
-    for(var q = 0; q < 6; q++){
-      var seg = hrs.filter(function(x){ return x.h >= 6 + edges[q] && x.h < 6 + edges[q + 1]; });
-      var inWin = seg.some(function(x){ return x.h >= h0 && x.h < h1; });
-      var mbk = avg(seg, 'b');
-      blocks.push(inWin ? 'best' : mbk <= best.mb + 0.5 ? 'good' : 'poor');
-    }
+    // how good each hour is across the day (6 AM to 9 PM), 0 (the hardest) to 1 (the best), for the gradient line
+    var bs = hrs.map(function(x){ return x.b; }), bMin = Math.min.apply(null, bs), bMax = Math.max.apply(null, bs), span = Math.max(1, bMax - bMin);
+    var stops = hrs.map(function(x){ return hwClamp(1 - (x.b - bMin) / span, 0, 1); });
     var cap = why.length ? why.join(' and ') : 'the most comfortable stretch of the day';
-    return {range: (tomorrow ? 'Tomorrow, ' : '') + range, why: vdCap(cap) + '.', blocks: blocks};
+    // where "now" falls on the line (today's line only, between 6 AM and 9 PM, in the place's own time)
+    var nowPct = null;
+    if(!tomorrow && !isNaN(nowH)){
+      var mins = 0;
+      try{ var tp = new Date().toLocaleTimeString('en-US', {timeZone: locationTZ || undefined, hour12: false, hour: '2-digit', minute: '2-digit'}).split(':'); mins = parseInt(tp[1], 10) || 0; }catch(e){}
+      var hf = nowH + mins / 60;
+      if(hf >= 6 && hf <= 20) nowPct = (hf - 6) / 14 * 100;
+    }
+    return {range: (tomorrow ? 'Tomorrow, ' : '') + range, why: vdCap(cap) + '.', stops: stops, nowPct: nowPct};
   }
   // a few simple tips: what to try for today's triggers, then water and a safety note
   function hwTipList(scored, d){
@@ -6817,6 +7048,35 @@
     check: '<polyline points="5,12.5 10,17.5 19,7"/>',
     alert: '<circle cx="12" cy="12" r="9"/><line x1="12" y1="7.5" x2="12" y2="12.5"/><circle cx="12" cy="16.2" r=".7" fill="currentColor"/>'
   };
+  // The air and weather cells (Health tab and Air Quality & Pollen on the Weather tab): a small icon, the reading, and a five-step level meter
+  var HW_CELL_ICO = {
+    aq: '<path d="M3 8h10a2.5 2.5 0 1 0-2.5-2.5"/><path d="M3 12h15a2.5 2.5 0 1 1-2.5 2.5"/><path d="M3 16h7a2 2 0 1 1-2 2"/>',
+    particles: '<circle cx="8" cy="9" r="2.2"/><circle cx="16" cy="7" r="1.4"/><circle cx="16.5" cy="14.5" r="2.6"/><circle cx="8.5" cy="17" r="1.5"/>',
+    sun: HW_TIP_ICO.sun,
+    flower: '<path d="M12 21v-9"/><circle cx="12" cy="8" r="2"/><path d="M12 6V3.5M12 10v.5M10 8H7.5M14 8h2.5"/><path d="M12 17c-3 0-4.5-1.5-5-3.5 2.5-.2 4.5.6 5 3.5zM12 15c3 0 4.5-1.5 5-3.5-2.5-.2-4.5.6-5 3.5z"/>',
+    tree: HW_TIP_ICO.tree,
+    grass: '<path d="M12 21V9M8 21c0-5 1-8 4-12M16 21c0-5-1-8-4-12M4.5 21c0-3 .5-5 2-7M19.5 21c0-3-.5-5-2-7"/>',
+    thermo: HW_TIP_ICO.thermo,
+    drop: '<path d="M12 3.5C12 3.5 6 10 6 14.5a6 6 0 0 0 12 0C18 10 12 3.5 12 3.5z"/>',
+    o3: '<circle cx="7.5" cy="12" r="2.8"/><circle cx="16.5" cy="7.5" r="2.8"/><circle cx="16.5" cy="16.5" r="2.8"/><path d="M10 10.6l4-2M10 13.4l4 2"/>',
+    gauge: '<path d="M4 17a8 8 0 0 1 16 0"/><path d="M12 17l3.5-4.5"/><circle cx="12" cy="17" r="1"/><path d="M4 20h16"/>'
+  };
+  // one reading as its own half-width card: the title (with its icon) in the header, then the word, the reading and the meter
+  function hwMiniHtml(c){
+    var cols = HW_SCALES[c.scale || 'aq'], meter = '';
+    if(c.lvl !== null && c.lvl !== undefined) meter = '<span class="hw-meter" aria-hidden="true">' + cols.map(function(col, i){ return '<i' + (i === c.lvl ? ' class="on"' : '') + ' style="--c:' + col + '"></i>'; }).join('') + '</span>';
+    var ico = c.icon ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + HW_CELL_ICO[c.icon] + '</svg>' : '';
+    if(c.chart) meter = '<span class="hw-sparkwrap" aria-hidden="true">' + c.chart.graph + '</span>' + c.chart.axis;
+    return '<div class="today-card air-card hw-mini hw-tile--' + c.tone + '"><div class="card-head"><h3>' + ico + '<span>' + c.k + '</span></h3></div>' +
+      '<div class="hw-mini-body"><span class="hw-tile-v"><i class="hw-dot" aria-hidden="true"></i>' + c.v + '</span><span class="hw-tile-s">' + (c.s || '&nbsp;') + '</span>' + meter + '</div></div>';
+  }
+  var HW_SCALES = {
+    aq: ['var(--aqi-good)', 'var(--aqi-moderate)', 'var(--aqi-usg)', 'var(--aqi-unhealthy)', 'var(--aqi-veryunhealthy)'],
+    pol: ['var(--aqi-good)', 'var(--aqi-good)', 'var(--aqi-moderate)', 'var(--aqi-usg)', 'var(--aqi-unhealthy)'],
+    temp: ['#3F6FBF', '#3F9BB0', '#58A78A', '#D4A03A', '#D9622B'],
+    press: ['#8FA0AE', '#8FA0AE', '#8FA0AE', '#8FA0AE', '#8FA0AE']
+  };
+  // c = {k: name, icon, v: word, s: reading, tone: good|ok|high|na, lvl: 0-4 (or null), scale}   (see hwMiniHtml)
   // Which conditions to show: the person's choice, saved in this browser (all six by default)
   var HW_PREF_KEY = 'checkTheWind.healthPrefs';
   var HW_HINT = {migraine: 'Headaches and migraine', arthritis: 'Joint pain and stiffness', cardio: 'Heart and circulation', resp: 'Asthma and lung health', kidney: 'Kidney health and hydration', mental: 'Mood and well-being'};
@@ -6830,6 +7090,7 @@
   }
   var hwSelected = hwPrefsLoad();
   function hwShown(){ return HW_MODELS.filter(function(m){ return hwSelected.indexOf(m.id) >= 0; }); }
+  var HW_WEEK_BTN = false;   // the Week Ahead button is switched off for now (the drawer is still built); set to true to bring it back
   function renderHealth(){
     if(!hwData || !healthCard) return;
     var days = hwData.days.slice(0, 1), d = days[0];
@@ -6843,21 +7104,28 @@
       pLo === null ? '' : 'pressure ' + hwP(pLo),
       uv === null ? '' : 'UV ' + hwR(uv), pm === null ? '' : 'PM2.5 ' + hwR(pm) + ' µg/m³'].filter(Boolean);
     var plan = scored.filter(function(x){ return x.r.level !== 'low'; }), fine = scored.filter(function(x){ return x.r.level === 'low'; });
-    var O = hwHeroBuild(scored, d), tiles = hwTiles(d, allDrivers), safe = hwSafest(d), tips = hwTipList(scored, d);
-    var tileHtml = tiles.map(function(t){ return '<div class="hw-tile hw-tile--' + t.tone + '"><span class="hw-tile-k">' + vdEsc(t.k) + '</span><b class="hw-tile-v">' + vdEsc(t.v) + '</b><span class="hw-tile-s">' + vdEsc(t.s) + '</span></div>'; }).join('');
+    var used = {};   // the measures charted in the condition cards above, so the four cards below show something different
+    scored.forEach(function(x){ if(x.r.level !== 'low') hwChartSpecs(x.m, x.r).forEach(function(sp){ used[sp.k] = true; }); });
+    var O = hwHeroBuild(scored, d), tiles = hwTiles(d, allDrivers, used), safe = hwSafest(d), tips = hwTipList(scored, d);
+    var tileHtml = tiles.map(function(t){ return hwMiniHtml({k: vdEsc(t.k), icon: t.icon, v: vdEsc(t.v), s: vdEsc(t.s), tone: t.tone, lvl: t.lvl, scale: t.scale, chart: t.chart}); }).join('');
     var tipIco = function(k){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + HW_TIP_ICO[k] + '</svg>'; };
+    // each section is a module card like the others: the title inside the card, above a divider
+    function mod(title, body, label){ return '<div class="today-card air-card hw-mod"' + (title ? '' : ' role="group" aria-label="' + label + '"') + '>' + (title ? '<div class="card-head"><h2>' + title + '</h2></div>' : '') + body + '</div>'; }
+    var calIco = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>';
+    var infoIco = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.9" r=".7" fill="currentColor"/></svg>';
     healthCard.innerHTML =
-      '<div class="hw-outlook hw-outlook--' + O.tone + '"><p class="hw-ok-k">Today’s Potential Health Impacts</p><h2 class="hw-ok-t" id="hwTitle">' + vdEsc(O.title) + '</h2><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
-      '<button type="button" class="hw-btn hw-btn--top" data-hwprefs aria-haspopup="dialog">My health preferences</button>' +
-      '<h3 class="hw-h3">What this means for you</h3>' +
-      '<ul class="hw-conds">' + plan.concat(fine).map(hwRowHtml).join('') + '</ul>' +
-      (tileHtml ? '<h3 class="hw-h3">What’s in the air and weather</h3><div class="hw-tiles">' + tileHtml + '</div>' : '') +
-      (safe ? '<h3 class="hw-h3">Safest time to go out</h3><div class="hw-safe"><p class="hw-safe-t">' + vdEsc(safe.range) + '</p><p class="hw-safe-d">' + vdEsc(safe.why) + '</p>' +
-        '<div class="hw-bar" aria-hidden="true">' + safe.blocks.map(function(b){ return '<i class="hw-bar--' + b + '"></i>'; }).join('') + '</div>' +
-        '<div class="hw-bar-l" aria-hidden="true"><span>Morning</span><span>Afternoon</span><span>Evening</span></div></div>' : '') +
-      '<h3 class="hw-h3">Simple tips</h3><ul class="hw-tips">' + tips.map(function(t){ return '<li class="hw-trow hw-trow--' + t.k + '">' + tipIco(t.k) + '<span>' + vdEsc(t.t) + '</span></li>'; }).join('') + '</ul>' +
-      '<div class="hw-acts"><button type="button" class="hw-btn hw-btn--primary" data-hwweek aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg><span>The Week Ahead</span></button>' +
-        '<button type="button" class="hw-btn" data-info="health" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.9" r=".7" fill="currentColor"/></svg><span>How the Health Outlook works</span></button></div>' +
+      '<div class="hw-intro"><span class="sec-eyebrow">Potential health impacts</span>' +
+        '<h2 class="hw-ok-t" id="hwTitle">' + vdEsc(O.title) + '</h2><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
+      '<div class="hw-conds">' + plan.concat(fine).map(hwRowHtml).join('') + '</div>' +
+      (safe ? mod('', '<div class="hw-safe"><p class="hw-safe-t">' + vdEsc(safe.range) + '</p><p class="hw-safe-d">' + vdEsc(safe.why) + '</p>' +
+        '<div class="hw-linewrap' + (safe.nowPct !== null ? ' has-now' : '') + '" aria-hidden="true"><div class="hw-line" style="background:linear-gradient(to right,' + safe.stops.map(function(g, i){ return 'color-mix(in srgb, var(--aqi-good-ink) ' + Math.round(16 + 84 * g) + '%, var(--surface)) ' + (i / (safe.stops.length - 1) * 100).toFixed(1) + '%'; }).join(',') + ')"></div>' +
+          (safe.nowPct !== null ? '<i class="hw-now" style="left:' + safe.nowPct.toFixed(1) + '%"></i><span class="hw-now-l" style="left:clamp(16px, ' + safe.nowPct.toFixed(1) + '%, calc(100% - 16px))">Now</span>' : '') + '</div>' +
+        '<div class="hw-bar-l" aria-hidden="true"><span>Morning</span><span>Afternoon</span><span>Evening</span></div></div>', 'Best time to be outside') : '') +
+      (tileHtml ? '<div class="hw-minis" role="group" aria-label="The air and weather today">' + tileHtml + '</div>' : '') +
+      '<div class="hw-tipcards" role="list" aria-label="Simple tips">' + tips.map(function(t){ return '<div class="today-card air-card hw-trow hw-trow--' + t.k + '" role="listitem">' + tipIco(t.k) + '<span>' + vdEsc(t.t) + '</span></div>'; }).join('') + '</div>' +
+      '<div class="hw-acts">' + (HW_WEEK_BTN ? '<button type="button" class="bp-btn bp-primary" data-hwweek aria-haspopup="dialog">' + calIco + '<span>The Week Ahead</span></button>' : '') +
+        '<button type="button" class="bp-btn bp-primary hw-prefs" data-hwprefs aria-haspopup="dialog">Manage Health Preferences</button>' +
+        '<button type="button" class="bp-btn" data-info="health" aria-haspopup="dialog">' + infoIco + '<span>How the Health Outlook works</span></button></div>' +
       '<p class="hw-foot">General information, not medical advice.</p>';
     // what the ratings were based on, for the "How it works" dialog
     hwData.summary = {title: 'Today’s forecast', line: 'Temperature ' + bits.join(' · ')};
@@ -6890,7 +7158,7 @@
     hwkBody.textContent = '';
     var models = hwShown(), days = hwData ? hwData.days.filter(function(d){ return d.ok !== false; }) : [];
     if(days.length < 2){ hwkBody.appendChild(mk('p', 'hpf-intro', 'The longer forecast is not available right now. Pull down to refresh and try again.')); return; }
-    hwkBody.appendChild(mk('p', 'hpf-intro', 'How each day looks for ' + (models.length === HW_MODELS.length ? 'all six conditions' : models.length === 1 ? models[0].name.toLowerCase() : 'the ' + models.length + ' conditions you chose') + '. Use My health preferences on the Health tab to change them.'));
+    hwkBody.appendChild(mk('p', 'hpf-intro', 'How each day looks for ' + (models.length === HW_MODELS.length ? 'all six conditions' : models.length === 1 ? models[0].name.toLowerCase() : 'the ' + models.length + ' conditions you chose') + '. Use Manage Health Preferences on the Health tab to change them.'));
     var ul = mk('ul', 'hwk-list');
     var airEnds = false;
     days.forEach(function(d, i){
@@ -6941,18 +7209,22 @@
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   });
 
-  /* ---------- Customize Health Outlook: which conditions to show ---------- */
+  /* ---------- Manage Health Preferences: which conditions to show ---------- */
   var hpfModal = document.getElementById('healthPrefsModal'), hpfList = document.getElementById('hpfList'), hpfStatus = document.getElementById('hpfStatus'), hpfLastFocus = null;
   function hpfBuild(){
     hpfList.textContent = '';
+    var d = hwData && hwData.days && hwData.days[0];
     HW_MODELS.forEach(function(m){
-      var row = mk('label', 'hpf-row');
-      var cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = m.id; cb.checked = hwSelected.indexOf(m.id) >= 0;
-      row.appendChild(cb);
-      var ico = mk('span', 'hw-ico'); ico.setAttribute('aria-hidden', 'true');
-      ico.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" focusable="false">' + HW_ICO[m.id] + '</svg>';
-      row.appendChild(ico);
-      var txt = mk('span', 'hpf-txt'); txt.appendChild(mk('b', null, m.name)); txt.appendChild(mk('small', null, HW_HINT[m.id]));
+      var on = hwSelected.indexOf(m.id) >= 0, lv = null;
+      try{ lv = d ? hwScore(m, d).level : null; }catch(e){}
+      var row = mk('button', 'hpf-row');
+      row.type = 'button'; row.value = m.id; row.setAttribute('role', 'checkbox'); row.setAttribute('aria-checked', on ? 'true' : 'false');
+      var ck = mk('span', 'hpf-check'); ck.setAttribute('aria-hidden', 'true');
+      ck.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" focusable="false"><polyline points="5 12.5 10 17.5 19 7"/></svg>';
+      row.appendChild(ck);
+      var txt = mk('span', 'hpf-txt'), top = mk('span', 'hpf-top'); top.appendChild(mk('b', null, m.name));
+      if(lv){ var w = mk('span', 'hpf-lv' + (lv === 'low' ? ' is-low' : ''), HW_WORD[lv]); w.style.setProperty('--tg', lv === 'low' ? 'var(--hw-low)' : lv === 'medium' ? 'var(--hw-med)' : 'var(--hw-high)'); top.appendChild(w); }
+      txt.appendChild(top); txt.appendChild(mk('small', null, HW_HINT[m.id]));
       row.appendChild(txt);
       hpfList.appendChild(row);
     });
@@ -6969,7 +7241,7 @@
     showModal(hpfModal);
     setBackgroundInert(true, hpfModal);
     lockPage('healthprefs');
-    var first = hpfList.querySelector('input'); if(first) first.focus();
+    var first = hpfList.querySelector('.hpf-row'); if(first) first.focus();
   }
   function closeHpf(){
     if(hpfModal.hidden) return;
@@ -6978,15 +7250,17 @@
     unlockPage('healthprefs');
     if(hpfLastFocus && typeof hpfLastFocus.focus === 'function') hpfLastFocus.focus({preventScroll: true});
   }
-  hpfList.addEventListener('change', function(e){
-    var boxes = [].slice.call(hpfList.querySelectorAll('input'));
-    var ids = boxes.filter(function(b){ return b.checked; }).map(function(b){ return b.value; });
-    if(!ids.length){ e.target.checked = true; hpfStatus.textContent = 'Keep at least one condition selected.'; return; }
-    hpfStatus.textContent = ids.length === boxes.length ? 'Showing all six conditions.' : 'Showing ' + ids.length + ' of ' + boxes.length + '.';
+  hpfList.addEventListener('click', function(e){
+    var row = e.target.closest && e.target.closest('.hpf-row'); if(!row) return;
+    var rows = [].slice.call(hpfList.querySelectorAll('.hpf-row'));
+    var ids = rows.filter(function(b){ return b === row ? b.getAttribute('aria-checked') !== 'true' : b.getAttribute('aria-checked') === 'true'; }).map(function(b){ return b.value; });
+    if(!ids.length){ hpfStatus.textContent = 'Keep at least one condition selected.'; return; }
+    row.setAttribute('aria-checked', row.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+    hpfStatus.textContent = ids.length === rows.length ? 'Showing all six conditions.' : 'Showing ' + ids.length + ' of ' + rows.length + '.';
     hpfApply(ids);
   });
   document.getElementById('hpfAll').addEventListener('click', function(){
-    [].forEach.call(hpfList.querySelectorAll('input'), function(b){ b.checked = true; });
+    [].forEach.call(hpfList.querySelectorAll('.hpf-row'), function(b){ b.setAttribute('aria-checked', 'true'); });
     hpfStatus.textContent = 'Showing all six conditions.';
     hpfApply(HW_MODELS.map(function(m){ return m.id; }));
   });
@@ -7069,7 +7343,7 @@
   }
   // The Health and Activity headers: two headline lines and the full paragraph beneath
   function heroFill(hero, o){
-    hero.innerHTML = '<div class="vd-prose"><span class="vd-head">' + o.lines.map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
+    hero.innerHTML = '<div class="vd-prose">' + (o.eyebrow ? '<span class="sec-eyebrow sec-eyebrow--phone">' + vdEsc(o.eyebrow) + '</span>' : '') + '<span class="vd-head">' + o.lines.map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
     hero.hidden = false;
   }
 
@@ -7126,7 +7400,7 @@
   function actHeroRender(week, c){
     if(!actHero) return;
     if(!week.length){ actHero.hidden = true; return; }
-    heroFill(actHero, actHeroBuild(week, c));
+    var ao = actHeroBuild(week, c); ao.eyebrow = 'Activity'; heroFill(actHero, ao);
   }
 
   /* ---------- Weather | Health views (phones) ----------
@@ -7161,7 +7435,7 @@
   // The "How it works" dialog: the method in plain words, then each condition's evidence, factors and studies
   function hwFillModal(body){
     body.appendChild(mk('p', 'wk-intro', 'Each day, we check the forecast for weather and air quality that research links to flare-ups of each condition. Each weather condition we find adds a little extra risk, sized against what the research for that medical condition shows.' + (HW_PERIODS ? ' The 3 Day and 1 Week views show each condition’s highest rating in that period, and the day it happens.' : '')));
-    var cut = mk('p', 'wk-intro', 'Good to go means little or no extra risk. Plan ahead and Go gentle mean the extra risk reaches the cut-off shown under each condition. The numbers come from studies of large groups of people, so they describe how likely a day is to be hard on that condition in general, not what will happen to you. Where a study gave no usable number, a small estimate in the same direction is used and marked “Our estimate”.');
+    var cut = mk('p', 'wk-intro', 'No Impacts means little or no extra risk. Heads Up and High Impacts mean the extra risk reaches the cut-off shown under each condition. The numbers come from studies of large groups of people, so they describe how likely a day is to be hard on that condition in general, not what will happen to you. Where a study gave no usable number, a small estimate in the same direction is used and marked “Our estimate”.');
     body.appendChild(cut);
     if(hwData && hwData.summary){
       body.appendChild(mk('h3', 'wd-h', hwData.summary.title));
@@ -7179,7 +7453,7 @@
       det.appendChild(sum);
       var inner = mk('div', 'hw-det-body');
       inner.appendChild(mk('p', 'hw-about', m.about));
-      inner.appendChild(mk('p', 'hw-cuts', 'Plan ahead at ' + hwR((m.med - 1) * 100) + '% extra risk, Go gentle at ' + hwR((m.high - 1) * 100) + '%.'));
+      inner.appendChild(mk('p', 'hw-cuts', 'Heads Up at ' + hwR((m.med - 1) * 100) + '% extra risk, High Impacts at ' + hwR((m.high - 1) * 100) + '%.'));
       inner.appendChild(mk('h3', 'wd-h', 'What the forecast adds'));
       var ul = mk('ul', 'hw-factors');
       m.factors.forEach(function(f){
@@ -9301,7 +9575,7 @@
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>' +
       '<p class="vd-sentence">' + vdEsc(r.sentence) + '</p>' +
       '<p class="vd-acts-line">' + vdEsc(actsLine) + '</p>' +
-      '<div class="vd-prose"><span class="vd-head">' + vdNbTimes(vdHeadline(r, vdCtx)).replace(/([.?!])\s+/g, '$1\n').split('\n').map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(vdSubLines(r, vdCtx, actList).map(function(l){ return l.text; }).join(' ')) + '</div></div>' +
+      '<div class="vd-prose"><span class="sec-eyebrow sec-eyebrow--phone">Current weather</span><span class="vd-head">' + vdNbTimes(vdHeadline(r, vdCtx)).replace(/([.?!])\s+/g, '$1\n').split('\n').map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(vdSubLines(r, vdCtx, actList).map(function(l){ return l.text; }).join(' ')) + '</div></div>' +
       (r.state === 'no' && r.next ? '<p class="vd-next">' + vdEsc(r.next) + '</p>' : '') +
       '<div class="vd-details" id="vdDetails"' + (vdOpen ? '' : ' hidden') + '>' + details + '</div>';
     vdBody.className = 'vd-body vd-' + r.state + (vdOpen ? ' is-open' : '');
@@ -9720,7 +9994,7 @@
     lastLoad = {lat: lat, lon: lon, label: label};
     if(!quiet){
       heroAir = null;
-      airFc = null; airView = 'now';
+      airFc = null;
       renderAlerts([]);
       var dcTop = document.querySelector('.db-content'); if(dcTop) dcTop.scrollTop = 0;
       clearLoadFailure();
