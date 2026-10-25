@@ -2652,7 +2652,8 @@
     .hero-now > .card-head.hn-head, .hero-now > .hero-reading, .hero-now > .weather-now, .hero-now > .ground-now{ display:none !important }
     .hero-now > .cc-phone{ display:flex; flex-direction:column; gap:12px }
   }
-  .cc-main{ display:flex; align-items:center; justify-content:center; gap:14px; padding:18px 16px !important }
+  .cc-main{ display:block; padding:0 !important }
+  .cc-row{ display:flex; align-items:center; justify-content:center; gap:14px; padding:18px 16px }
   .cc-icon{ flex:0 0 auto; display:flex; align-items:center }
   .cc-icon svg{ width:80px; height:80px }
   .cc-temp{ flex:0 0 auto; display:flex; align-items:flex-start; line-height:.9; color:var(--text) }
@@ -2666,6 +2667,10 @@
   html body .hero-now .cc-main .cc-txt.cc-txt span.cc-hl{ font-size:14px !important }
   html body .hero-now .cc-cards .hw-tile-v.hw-tile-v.hw-tile-v{ font-size:20px !important }
   .cc-air[hidden], .cc-uv[hidden]{ display:none }
+  .cc-wl{ display:flex; align-items:center; flex-wrap:wrap; gap:4px 5px; margin-top:2px }
+  .cc-wc{ display:inline-flex }
+  .cc-wc svg{ width:20px; height:20px }
+  html body .hero-now .cc-wl .wk-tag{ font-size:12px !important; min-height:0; padding:1px 7px }
   .cc-cards .hw-tile-v{ flex-wrap:wrap; row-gap:4px }
   .cc-spd{ white-space:nowrap }   /* a speed such as 18 mph never breaks; the tag drops below it when the card is narrow */
   .hero-now .cc-cards .hw-mini, .hero-now .cc-main{ background:var(--module-bg) !important; border:0 !important; border-radius:4px; overflow:hidden }   /* the standard card fill, like the Health cards; the container behind them has none */
@@ -2810,7 +2815,7 @@
     html body .hero-wrap .hero-now .hero-reading .val, html body .hero-wrap .hero-now .hero-reading .unit{ color:var(--text) !important; font-weight:500 !important }   /* the number and its unit */
   }
   /* Every module header is one height: 40px (6px above and below), the same as the Health half-card headers */
-  html body .hero-wrap .hn-head, html body #todaySection > .today-card > .card-head, html body #todaySection .card-head, html body .hero-now .hw-mini .card-head{ display:flex; align-items:center; box-sizing:border-box; min-height:40px; padding-top:6px; padding-bottom:6px }
+  html body .hero-wrap .hn-head, html body #todaySection > .today-card > .card-head, html body #todaySection .card-head, html body .hero-now .hw-mini .card-head, html body .hero-now .cc-main .card-head{ display:flex; align-items:center; box-sizing:border-box; min-height:40px; padding-top:6px; padding-bottom:6px }
   html body #todaySection .card-head{ height:40px }
   /* ----- Weather tab, phones: one rhythm and fewer competing patterns ----- */
   @media (max-width:31.1875em){
@@ -4821,13 +4826,18 @@
     el.innerHTML = ccCard('UV index', ccIco('sun'), cur < 0.5 ? 'None' : W[lv], 'Peak ' + hwR(d0.UV) + ' today', 'var(--icon-blue)', ch ? '<span class="hw-sparkwrap" aria-hidden="true">' + ch.graph + '</span>' + ch.axis : '');
     el.hidden = false;
   }
+  var CC_WIND_CARD = false;   // the Wind half card is switched off: wind lives in the readout card now; set to true to bring it back
   var CC_EXTRA_CARDS = false;   // Ground, UV index / Coming up and Humidity are switched off under Current Conditions (built, not shown); set to true to bring them back
   function ccPhoneHtml(current, daily, hourly, w, band, feelsAll, ground, outlook){
     var hl = ccHiLo(daily), fl = feelsAll ? tempNum(feelsAll.f) : tempNum(current.temperature);
-    var main = '<div class="today-card air-card cc-main">' +
+    // wind sits under Feels: the speed, the 7-Day compass and the wind tag (which opens the wind key)
+    var dir0 = current.windDirection;
+    var windLine = '<span class="cc-wl"><span class="cc-spd">' + windNum(w.high) + ' ' + windUnit + '</span>' + (dir0 ? srDir(dir0) + '<span aria-hidden="true" class="cc-wc">' + windArrowSvg(dir0, band.css, 20, 0, true) + '</span>' : '') +
+      '<span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + band.label + '</span></span>';
+    var main = '<div class="today-card air-card cc-main"><div class="card-head"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 13V4.500a1.500 1.500 0 0 1 3 0V12"/><path d="M11 11.500v-2a1.500 1.500 0 0 1 3 0V12"/><path d="M14 10.500a1.500 1.500 0 0 1 3 0V12"/><path d="M17 11.500a1.500 1.500 0 0 1 3 0V16a6 6 0 0 1-6 6h-2a6 6 0 0 1-5-2.700L6.800 19c-.3-.5-1.400-2.400-3.300-5.700a1.500 1.500 0 0 1 .5-2 1.900 1.900 0 0 1 2.300.3L8 13"/></svg><span>Current Conditions</span></h2></div><div class="cc-row">' +
       '<div class="cc-icon" role="img" aria-label="' + vdEsc(ampText(current.shortForecast)) + '">' + weatherIcon(current.shortForecast, isDayAtTime(sunEvents, Date.now(), current.isDaytime), 72) + '</div>' +
       '<div class="cc-temp" aria-label="' + tempNum(current.temperature) + ' degrees"><span class="cc-num">' + tempNum(current.temperature) + '</span><span class="cc-deg" aria-hidden="true">°</span></div>' +
-      '<div class="cc-txt"><b class="cc-cond">' + vdEsc(ampText(current.shortForecast)) + '</b>' + (hl ? '<span class="cc-hl">' + hl + '</span>' : '') + '<span class="cc-hl">Feels ' + fl + '</span></div></div>';
+      '<div class="cc-txt"><b class="cc-cond">' + vdEsc(ampText(current.shortForecast)) + '</b>' + (hl ? '<span class="cc-hl">' + hl + '</span>' : '') + '<span class="cc-hl">Feels ' + fl + '</span>' + windLine + '</div></div></div>';
     var dir = current.windDirection;
     // the wind tag sits beside the speed; the compass is the 7-Day ring and arrow without its N
     var compass = dir ? windArrowSvg(dir, band.css, 56, 0, true).replace(/<text[^>]*>N<\/text>/, '').replace('viewBox="-2 -6 28 32"', 'viewBox="-2 -2 28 28"') : '';
@@ -4853,7 +4863,7 @@
         rh < 30 ? 'Dry' : rh > 60 ? 'Humid' : 'Comfortable', 'Right now', 'var(--icon-blue)',
         '<span class="hw-sparkwrap" aria-hidden="true">' + hwHumidTank({nowV: rh}, false) + '</span><span class="hw-axis" aria-hidden="true"></span>');
     }
-    return '<div class="cc-phone">' + main + '<div class="hw-minis cc-cards" role="group" aria-label="More current conditions">' + wind + (CC_EXTRA_CARDS ? gnd + soon + hum : '') + '<div class="cc-air" id="ccAirCard" hidden></div></div></div>';
+    return '<div class="cc-phone">' + main + '<div class="hw-minis cc-cards" role="group" aria-label="More current conditions">' + (CC_WIND_CARD ? wind : '') + (CC_EXTRA_CARDS ? gnd + hum : '') + '<div class="cc-air" id="ccAirCard" hidden></div>' + (soon || '<div class="cc-uv" id="ccUvCard" hidden></div>') + '</div></div>';
   }
   function renderHero(current, todayDaily, hourly, daily){
     var w = parseWind(current.windSpeed);
