@@ -2483,6 +2483,31 @@
   .hw-now{ position:absolute; top:-5px; bottom:-5px; width:3px; margin-left:-1.5px; border-radius:2px; background:var(--text); box-shadow:0 0 0 2px var(--surface) }
   .hw-now-l{ position:absolute; top:-26px; transform:translateX(-50%); font-weight:600; line-height:1; color:var(--text) }
   .hw-bar-l{ display:flex; justify-content:space-between; color:var(--text-muted) }
+  /* Activity: every best time is a card like the Health tab's best time to be outside (day and sky, the big time range, a line of why, the gradient line) */
+  .btc-module{ display:flex; flex-direction:column; gap:12px }
+  .btc-module .bt-foot{ display:block; margin:0 }
+  /* the view selector is a row of tabs: equal columns on a thin line, the chosen tab in blue with a blue underline (its bold width is reserved so switching never shifts the row) */
+  .btc-tabs{ display:flex; width:100%; border-bottom:1px solid var(--line) }
+  .btc-tab{ position:relative; flex:1 1 0; min-width:0; display:inline-grid; place-items:center; margin:0 0 -1px; padding:10px 4px; border:0; border-bottom:2px solid transparent; background:none; color:var(--text-muted); font:inherit; font-size:14px; font-weight:500; line-height:1.2; white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent }
+  .btc-tab > span, .btc-tab::after{ grid-area:1 / 1 }
+  .btc-tab::after{ content:attr(data-label); height:0; overflow:hidden; visibility:hidden; font-weight:700 }
+  .btc-tab[aria-selected="true"]{ color:var(--icon-blue); border-bottom-color:var(--icon-blue); font-weight:700 }
+  .btc-tab:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:-2px; border-radius:4px }
+  @media (min-width:64em){ .btc-tab[aria-selected="false"]:hover{ color:var(--text) } }
+  .btc-list{ display:flex; flex-direction:column; gap:12px }
+  .btc-list[hidden]{ display:none }
+  .btc-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px }
+  .btc-day{ display:inline-flex; align-items:center; gap:8px; font-weight:500; color:var(--text-muted) }
+  .btc-wx{ display:inline-flex; align-items:center; gap:6px; color:var(--text) }
+  .btc-wx .bt-sky{ display:inline-flex }
+  .btc-wx .bt-sky svg{ width:26px; height:26px }
+  .btc--none .hw-safe-t{ color:var(--text-muted) }
+  .btc-skel{ display:block; height:14px; margin-top:10px; border-radius:4px }
+  .btc-skel--big{ height:22px }
+  .btc-custom{ display:flex; align-items:center; justify-content:center; gap:8px; width:100% }
+  .btc-custom[hidden]{ display:none }
+  .btc-custom svg{ flex:0 0 auto; width:20px; height:20px }
+  html body #bestSection .hw-safe-t{ font-size:20px !important }
   .hw-trow{ display:flex; align-items:flex-start; gap:12px; padding:14px 16px; line-height:1.4; color:var(--text) }
   .hw-trow svg{ flex:0 0 auto; width:22px; height:22px; margin-top:-1px; color:var(--aqi-good-ink) }
   .hw-trow--alert svg{ color:var(--text-muted) }
@@ -3023,72 +3048,53 @@
   </section>
 
   <section id="bestSection" hidden x-data :hidden="$store.best.state === 'idle'" :aria-hidden="$store.best.state === 'loading' ? 'true' : null">
-    <div class="bw-card">
-    <div class="card-head"><h2>Best Times to Get Outside</h2>
-      <div class="bw-actions">
-        <button type="button" class="bt-customize" id="bestCustomBtn" aria-haspopup="dialog">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2" fill="var(--surface)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2" fill="var(--surface)"/></svg>
-          <span>Customize</span>
-        </button>
-      </div></div>
-    <div class="bt-body" id="bestList">
+    <div class="btc-module" id="bestList">
       <div class="bt-foot" :hidden="$store.best.state === 'loading'">
-        <div class="bt-pills" role="radiogroup" aria-label="Best Times view">
-          <button type="button" class="bt-pill" role="radio" data-mode="7day" data-label="7-Day" :aria-checked="$store.best.mode === '7day' ? 'true' : 'false'" :tabindex="$store.best.mode === '7day' ? 0 : -1"><span>7-Day</span></button>
-          <button type="button" class="bt-pill" role="radio" data-mode="top3" data-label="Top 3" :aria-checked="$store.best.mode === 'top3' ? 'true' : 'false'" :tabindex="$store.best.mode === 'top3' ? 0 : -1"><span>Top 3</span></button>
-          <button type="button" class="bt-pill" role="radio" data-mode="weekend" data-label="Weekend" :aria-checked="$store.best.mode === 'weekend' ? 'true' : 'false'" :tabindex="$store.best.mode === 'weekend' ? 0 : -1"><span>Weekend</span></button>
-          <button type="button" class="bt-pill" role="radio" data-mode="skips" data-label="Skips" :aria-checked="$store.best.mode === 'skips' ? 'true' : 'false'" :tabindex="$store.best.mode === 'skips' ? 0 : -1"><span>Skips</span></button>
+        <div class="btc-tabs" role="tablist" aria-label="Best Times view">
+          <button type="button" class="btc-tab" role="tab" data-mode="7day" data-label="7-Day" :aria-selected="$store.best.mode === '7day' ? 'true' : 'false'" :tabindex="$store.best.mode === '7day' ? 0 : -1"><span>7-Day</span></button>
+          <button type="button" class="btc-tab" role="tab" data-mode="top3" data-label="Top 3" :aria-selected="$store.best.mode === 'top3' ? 'true' : 'false'" :tabindex="$store.best.mode === 'top3' ? 0 : -1"><span>Top 3</span></button>
+          <button type="button" class="btc-tab" role="tab" data-mode="weekend" data-label="Weekend" :aria-selected="$store.best.mode === 'weekend' ? 'true' : 'false'" :tabindex="$store.best.mode === 'weekend' ? 0 : -1"><span>Weekend</span></button>
+          <button type="button" class="btc-tab" role="tab" data-mode="skips" data-label="Skips" :aria-selected="$store.best.mode === 'skips' ? 'true' : 'false'" :tabindex="$store.best.mode === 'skips' ? 0 : -1"><span>Skips</span></button>
         </div>
       </div>
-      <div class="bt-wrap" :hidden="$store.best.state === 'empty' || ($store.best.state === 'ready' && !$store.best.windows.length)">
-        <ul class="bt-list" :aria-label="$store.best.mode === 'top3' ? 'Best times to get outside, ranked' : $store.best.mode === 'weekend' ? 'Best times to get outside this weekend' : $store.best.mode === 'skips' ? 'Days with no good window in the next seven days' : 'Best time to get outside on each of the next seven days'">
-          <template x-for="n in ($store.best.state === 'loading' ? 3 : 0)" :key="n">
-            <li class="bt-item" aria-hidden="true"><div class="bt-skelrow"><span class="skel bt-skel-big"></span></div></li>
-          </template>
-          <template x-for="(w, idx) in $store.best.windows" :key="w.key">
-            <li class="bt-item" :class="w.none ? 'bt-item--none' : ''" x-data="{open: false}" :data-when="w.when">
-              <button type="button" class="bt-row" :aria-expanded="$store.best.flat ? null : (open ? 'true' : 'false')" :aria-controls="$store.best.flat ? null : 'btp-' + w.key" :tabindex="$store.best.flat ? -1 : 0" @click="if(!$store.best.flat) open = !open"
-                :aria-label="(w.dayLong || w.day) + (w.time ? ' ' + w.time : '') + '. ' + (w.none ? w.tempShort + '. ' + w.temp + '. Skipped' : w.temp + '. ' + w.summary) + ($store.best.flat ? '' : '. ' + (open ? 'Hide' : 'Show') + ' details')">
-                <span class="bt-markbox">
-                  <span class="bt-medal" x-show="w.medal" x-html="w.medal"></span>
-                  <svg class="bt-mark bt-mark--good" x-show="w.mark === 'good'" viewBox="0 0 24 24" fill="none" role="img" aria-label="Good day"><circle cx="12" cy="12" r="9.5" fill="currentColor"/><polyline points="7.9,12.4 10.8,15.3 16.2,9.1" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  <svg class="bt-mark bt-mark--skip" x-show="w.mark === 'skip'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" role="img" aria-label="Skipped"><circle cx="12" cy="12" r="8.5"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
-                </span>
-                <span class="bt-whenbox">
-                  <span class="bt-when"><span class="bt-day" x-text="w.day"></span><span class="bt-time" x-text="w.time"></span></span>
-                </span>
-                <span class="bt-reason" x-text="w.reason"></span>
-                <span class="bt-wx">
-                  <span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span>
-                  <b class="bt-tempb" x-show="w.tempShort" x-text="w.tempShort"></b>
-                </span>
-                <span class="bt-end">
-                  <svg class="bt-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9"/></svg>
-                </span>
-              </button>
-              <div class="bt-panel" :id="'btp-' + w.key" :hidden="$store.best.flat || !open">
-                <div class="bt-grps">
-                  <template x-for="g in (w.groups || [])" :key="g.title">
-                    <div class="bt-grp">
-                      <template x-if="g.multi"><div><p class="bt-lead" x-text="g.title"></p><ul class="bt-pts"><template x-for="it in g.items"><li x-text="it"></li></template></ul></div></template>
-                      <template x-if="!g.multi"><p class="bt-one" x-text="g.text"></p></template>
-                    </div>
-                  </template>
-                </div>
-                <button type="button" class="bt-details" x-show="!w.none && $store.best.details" :data-win="idx" aria-haspopup="dialog">Hour-by-hour details</button>
+      <div class="btc-list" role="list" :hidden="$store.best.state === 'empty' || ($store.best.state === 'ready' && !$store.best.windows.length)"
+        :aria-label="$store.best.mode === 'top3' ? 'Best times to get outside, ranked' : $store.best.mode === 'weekend' ? 'Best times to get outside this weekend' : $store.best.mode === 'skips' ? 'Days with no good window in the next seven days' : 'Best time to get outside on each of the next seven days'">
+        <template x-for="n in ($store.best.state === 'loading' ? 3 : 0)" :key="n">
+          <div class="today-card air-card btc" aria-hidden="true"><div class="hw-safe"><span class="skel btc-skel" style="width:40%"></span><span class="skel btc-skel btc-skel--big" style="width:60%"></span><span class="skel btc-skel" style="width:85%"></span></div></div>
+        </template>
+        <template x-for="(w, idx) in $store.best.windows" :key="w.key">
+          <div class="today-card air-card btc" :class="w.none ? 'btc--none' : ''" role="listitem" :data-when="w.when"
+            :aria-label="(w.dayLong || w.day) + '. ' + (w.none ? 'No good window. ' + w.reason : w.range + '. ' + w.temp + '. ' + w.summary)">
+            <div class="hw-safe">
+              <div class="btc-top">
+                <span class="btc-day"><span class="bt-medal" x-show="w.medal" x-html="w.medal"></span><span x-text="w.dayLong || w.day"></span></span>
+                <span class="btc-wx" x-show="w.tempShort"><span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span><b class="bt-tempb" x-text="w.tempShort"></b></span>
               </div>
-            </li>
-          </template>
-        </ul>
+              <p class="hw-safe-t" x-text="w.none ? 'No good window' : w.range"></p>
+              <p class="hw-safe-d" x-text="w.none ? w.reason : w.summary"></p>
+              <div class="hw-linewrap" :class="w.nowPct !== null && w.nowPct !== undefined ? 'has-now' : ''" aria-hidden="true" x-show="!w.none && w.grad">
+                <div class="hw-line" :style="'background:' + w.grad"></div>
+                <template x-if="w.nowPct !== null && w.nowPct !== undefined"><i class="hw-now" :style="'left:' + w.nowPct.toFixed(1) + '%'"></i></template>
+                <template x-if="w.nowPct !== null && w.nowPct !== undefined"><span class="hw-now-l" :style="'left:clamp(16px, ' + w.nowPct.toFixed(1) + '%, calc(100% - 16px))'">Now</span></template>
+              </div>
+              <div class="hw-bar-l" aria-hidden="true" x-show="!w.none && w.grad"><span>Morning</span><span>Afternoon</span><span>Evening</span></div>
+            </div>
+          </div>
+        </template>
       </div>
       <p class="bt-few" x-show="$store.best.few" x-text="$store.best.few"></p>
       <template x-if="$store.best.state === 'empty'">
-        <div class="bw-empty">
-          <div><span class="bw-empty-title" x-text="$store.best.emptyTitle"></span><span class="bw-empty-sub" x-text="$store.best.emptySub"></span></div>
-          <div aria-hidden="true" x-html="$store.best.fireplace"></div>
+        <div class="today-card air-card">
+          <div class="bw-empty">
+            <div><span class="bw-empty-title" x-text="$store.best.emptyTitle"></span><span class="bw-empty-sub" x-text="$store.best.emptySub"></span></div>
+            <div aria-hidden="true" x-html="$store.best.fireplace"></div>
+          </div>
         </div>
       </template>
-    </div>
+      <button type="button" class="bp-btn bp-primary btc-custom" id="bestCustomBtn" aria-haspopup="dialog" :hidden="$store.best.state === 'loading'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2" fill="var(--surface)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2" fill="var(--surface)"/></svg>
+        <span>Customize Best Times</span>
+      </button>
     </div>
   </section>
 
@@ -5427,14 +5433,14 @@
   document.getElementById('bestCustomBtn').addEventListener('click', function(e){ openBp(e.currentTarget); });
   // 7-Day / Top 3 (in the module header): arrow keys move between the two
   document.getElementById('bestSection').addEventListener('keydown', function(e){
-    var tab = e.target.closest && e.target.closest('.bt-pill');
+    var tab = e.target.closest && e.target.closest('.btc-tab');
     if(!tab || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
-    var tabs = [].slice.call(document.querySelectorAll('#bestSection .bt-pill')), next = tabs[(tabs.indexOf(tab) + 1) % tabs.length];
+    var tabs = [].slice.call(document.querySelectorAll('#bestSection .btc-tab')), next = tabs[(tabs.indexOf(tab) + 1) % tabs.length];
     e.preventDefault(); next.click(); next.focus();
   });
   // 7-Day / Top 3: remembered on this device
   document.getElementById('bestSection').addEventListener('click', function(e){
-    var btn = e.target.closest('.bt-pill');
+    var btn = e.target.closest('.btc-tab');
     if(!btn) return;
     var m = btn.getAttribute('data-mode'); m = (m === 'top3' || m === 'skips' || m === 'weekend') ? m : '7day';
     if(m === bestMode) return;
@@ -7868,6 +7874,33 @@
     renderVerdict();
 
     var topMode = bestMode === 'top3';
+    // the big time range, like the Health tab's best time: "9:00 AM – 6:00 PM" (or "Now – 6:00 PM")
+    function btRange(startHour, endHour, startsNow){
+      var a = fmtH12(startHour), e = fmtH12(endHour);
+      if(startsNow) return 'Now – ' + e.n + ':00 ' + e.ap;
+      return a.ap === e.ap ? a.n + ':00 – ' + e.n + ':00 ' + e.ap : a.n + ':00 ' + a.ap + ' – ' + e.n + ':00 ' + e.ap;
+    }
+    // the gradient line under it: how good each hour of the day is from 6 AM to 8 PM (the window's hours deepest, other workable hours lighter, hours that miss your limits faintest), and where now falls on today's line
+    function btBar(dateStr, win){
+      var inWin = {}, byHour = {};
+      (win || []).forEach(function(x){ inWin[x.iso] = 1; });
+      hrsAll.forEach(function(x){ if(localDate(x.iso) === dateStr) byHour[x.hour] = x; });
+      var stops = [];
+      for(var hh = 6; hh <= 20; hh++){
+        var x = byHour[hh], g = 0.02;
+        if(x && x.ok){ var q = clamp01((x.score - 0.5) / 0.4); g = inWin[x.iso] ? 0.7 + 0.3 * q : 0.25 + 0.2 * q; }
+        stops.push(g);
+      }
+      var grad = 'linear-gradient(to right,' + stops.map(function(g, i){ return 'color-mix(in srgb, var(--aqi-good-ink) ' + Math.round(16 + 84 * g) + '%, var(--surface)) ' + (i / (stops.length - 1) * 100).toFixed(1) + '%'; }).join(',') + ')';
+      var nowPct = null;
+      if(dateStr === todayStr && hrsAll.length){
+        var mins = 0;
+        try{ var tp = new Date().toLocaleTimeString('en-US', {timeZone: locationTZ || undefined, hour12: false, hour: '2-digit', minute: '2-digit'}).split(':'); mins = parseInt(tp[1], 10) || 0; }catch(e){}
+        var hf = hrsAll[0].hour + mins / 60;
+        if(hf >= 6 && hf <= 20) nowPct = (hf - 6) / 14 * 100;
+      }
+      return {grad: grad, nowPct: nowPct};
+    }
     function windowCard(w, idx){
       var h = w.hours, first = h[0], last = h[h.length - 1];
       var dateStr = localDate(first.iso);
@@ -7888,8 +7921,12 @@
       var peakPop = h.reduce(function(a, x){ return x.pop > a.pop ? x : a; }, h[0]);
       var humVals = h.filter(function(x){ return x.hum !== null; }).map(function(x){ return x.hum; });
       var humAvg = humVals.length ? Math.round(humVals.reduce(function(a, b){ return a + b; }, 0) / humVals.length) : null;
+      var bar = btBar(dateStr, h);
       return {
         key: first.iso,
+        range: btRange(first.hour, last.hour + 1, first.i === 0),
+        grad: bar.grad,
+        nowPct: bar.nowPct,
         cls: '',
         tone: topMode ? '' : bandFor(mph).css,
         none: false,
