@@ -7117,15 +7117,15 @@
       '<div class="hw-intro"><span class="sec-eyebrow">Potential health impacts</span>' +
         '<h2 class="hw-ok-t" id="hwTitle">' + vdEsc(O.title) + '</h2><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
       '<div class="hw-conds">' + plan.concat(fine).map(hwRowHtml).join('') + '</div>' +
+      '<div class="hw-acts">' + (HW_WEEK_BTN ? '<button type="button" class="bp-btn bp-primary" data-hwweek aria-haspopup="dialog">' + calIco + '<span>The Week Ahead</span></button>' : '') +
+        '<button type="button" class="bp-btn bp-primary hw-prefs" data-hwprefs aria-haspopup="dialog">Manage Health Preferences</button>' +
+        '<button type="button" class="bp-btn" data-info="health" aria-haspopup="dialog">' + infoIco + '<span>How the Health Outlook works</span></button></div>' +
       (safe ? mod('', '<div class="hw-safe"><p class="hw-safe-t">' + vdEsc(safe.range) + '</p><p class="hw-safe-d">' + vdEsc(safe.why) + '</p>' +
         '<div class="hw-linewrap' + (safe.nowPct !== null ? ' has-now' : '') + '" aria-hidden="true"><div class="hw-line" style="background:linear-gradient(to right,' + safe.stops.map(function(g, i){ return 'color-mix(in srgb, var(--aqi-good-ink) ' + Math.round(16 + 84 * g) + '%, var(--surface)) ' + (i / (safe.stops.length - 1) * 100).toFixed(1) + '%'; }).join(',') + ')"></div>' +
           (safe.nowPct !== null ? '<i class="hw-now" style="left:' + safe.nowPct.toFixed(1) + '%"></i><span class="hw-now-l" style="left:clamp(16px, ' + safe.nowPct.toFixed(1) + '%, calc(100% - 16px))">Now</span>' : '') + '</div>' +
         '<div class="hw-bar-l" aria-hidden="true"><span>Morning</span><span>Afternoon</span><span>Evening</span></div></div>', 'Best time to be outside') : '') +
       (tileHtml ? '<div class="hw-minis" role="group" aria-label="The air and weather today">' + tileHtml + '</div>' : '') +
       '<div class="hw-tipcards" role="list" aria-label="Simple tips">' + tips.map(function(t){ return '<div class="today-card air-card hw-trow hw-trow--' + t.k + '" role="listitem">' + tipIco(t.k) + '<span>' + vdEsc(t.t) + '</span></div>'; }).join('') + '</div>' +
-      '<div class="hw-acts">' + (HW_WEEK_BTN ? '<button type="button" class="bp-btn bp-primary" data-hwweek aria-haspopup="dialog">' + calIco + '<span>The Week Ahead</span></button>' : '') +
-        '<button type="button" class="bp-btn bp-primary hw-prefs" data-hwprefs aria-haspopup="dialog">Manage Health Preferences</button>' +
-        '<button type="button" class="bp-btn" data-info="health" aria-haspopup="dialog">' + infoIco + '<span>How the Health Outlook works</span></button></div>' +
       '<p class="hw-foot">General information, not medical advice.</p>';
     // what the ratings were based on, for the "How it works" dialog
     hwData.summary = {title: 'Today’s forecast', line: 'Temperature ' + bits.join(' · ')};
