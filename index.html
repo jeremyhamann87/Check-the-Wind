@@ -2486,14 +2486,14 @@
   /* Activity: every best time is a card like the Health tab's best time to be outside (day and sky, the big time range, a line of why, the gradient line) */
   .btc-module{ display:flex; flex-direction:column; gap:12px }
   .btc-module .bt-foot{ display:block; margin:0 }
-  /* the view selector is a row of tabs: equal columns on a thin line, the chosen tab in blue with a blue underline (its bold width is reserved so switching never shifts the row) */
-  .btc-tabs{ display:flex; width:100%; border-bottom:1px solid var(--line) }
-  .btc-tab{ position:relative; flex:1 1 0; min-width:0; display:inline-grid; place-items:center; margin:0 0 -1px; padding:10px 4px; border:0; border-bottom:2px solid transparent; background:none; color:var(--text-muted); font:inherit; font-size:14px; font-weight:500; line-height:1.2; white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent }
+  /* the view selector is a row of fully rounded pills in the button colors: the chosen one is the primary (blue fill, white text), the others the secondary (white fill, blue outline and text); each reserves its bold width so switching never shifts the row */
+  .btc-tabs{ display:flex; gap:8px; width:100% }
+  .btc-tab{ position:relative; flex:1 1 0; min-width:0; display:inline-grid; place-items:center; margin:0; padding:9px 8px; border:1px solid var(--icon-blue); border-radius:999px; background:var(--surface); color:var(--icon-blue); font:inherit; font-size:14px; font-weight:500; line-height:1.2; white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent }
   .btc-tab > span, .btc-tab::after{ grid-area:1 / 1 }
   .btc-tab::after{ content:attr(data-label); height:0; overflow:hidden; visibility:hidden; font-weight:700 }
-  .btc-tab[aria-selected="true"]{ color:var(--icon-blue); border-bottom-color:var(--icon-blue); font-weight:700 }
-  .btc-tab:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:-2px; border-radius:4px }
-  @media (min-width:64em){ .btc-tab[aria-selected="false"]:hover{ color:var(--text) } }
+  .btc-tab[aria-selected="true"]{ background:var(--icon-blue); border-color:var(--icon-blue); color:var(--btn-on); font-weight:700 }
+  .btc-tab:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+  @media (min-width:64em){ .btc-tab[aria-selected="false"]:hover{ background:color-mix(in srgb, var(--icon-blue) 10%, var(--surface)) } }
   .btc-list{ display:flex; flex-direction:column; gap:12px }
   .btc-list[hidden]{ display:none }
   .btc-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px }
@@ -2827,11 +2827,11 @@
     html body .wind-row{ margin-top:0; gap:0 }
     /* the radar is half as tall; the expand button opens the big map */
     html body .hero-wrap .radar .radar-map{ aspect-ratio:1 / .5 }
-    /* Hourly Forecast views are tabs, the same as Best Times */
-    html body #hrPills{ display:flex; flex-wrap:nowrap; gap:0; width:100%; border-bottom:1px solid var(--line) }
-    html body #hrPills .bt-pill{ flex:1 1 0; justify-content:center; place-items:center; min-height:0; margin:0 0 -1px; padding:10px 4px; border:0; border-bottom:2px solid transparent; border-radius:0; background:none !important; color:var(--text-muted); font-weight:500 }
-    html body #hrPills .bt-pill[aria-checked="true"]{ color:var(--icon-blue); border-bottom-color:var(--icon-blue); font-weight:700 }
   }
+  /* Hourly Forecast views are the same pills as Best Times */
+  html body #hrPills{ display:flex; flex-wrap:nowrap; gap:8px; width:100% }
+  html body #hrPills .bt-pill{ flex:1 1 0; justify-content:center; place-items:center; min-height:0; margin:0; padding:9px 8px; border:1px solid var(--icon-blue); border-radius:999px; background:var(--surface) !important; color:var(--icon-blue); font-weight:500 }
+  html body #hrPills .bt-pill[aria-checked="true"]{ background:var(--icon-blue) !important; border-color:var(--icon-blue); color:var(--btn-on); font-weight:700 }
   /* module headers carry a small gray icon like the half cards' */
   .radar-head h2{ display:inline-flex; align-items:center; gap:6px }
   .card-head h2 svg, .radar-head h2 svg{ flex:0 0 auto; width:18px; height:18px; color:color-mix(in srgb, var(--text-muted) 68%, var(--surface)) }
