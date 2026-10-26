@@ -2457,10 +2457,16 @@
   /* humidity: a full-width tank filled with water to today's humidity, with a wavy surface */
   .hw-tank{ position:relative; display:block; width:100%; height:100%; overflow:hidden; border:1px solid var(--line); border-radius:6px; background:color-mix(in srgb, var(--text-muted) 8%, transparent) }
   .hw-tank svg{ display:block; width:100%; height:100% }
+  /* on the Current Conditions card the tank takes all the height under the words, inside the card's margins, so the card stays full of water as it stretches */
+  .hw-mini--fill{ display:flex; flex-direction:column }
+  .hw-mini--fill > .hw-body--fill{ flex:1 1 auto }
+  .hw-tank--fill svg{ position:absolute; inset:0; width:100%; height:100% }   /* the picture never sets the card's height */
+  .hw-tank--fill{ position:relative; flex:1 1 auto; height:auto; min-height:44px; margin-top:8px; border:1px solid var(--line); border-radius:6px; background:color-mix(in srgb, var(--text-muted) 12%, transparent); overflow:hidden }
   .hw-tank-v{ position:absolute; right:8px; font-weight:600; line-height:20px; color:var(--text) }   /* the humidity sits at the right, just under the wavy surface */
   .hw-bars{ display:flex; align-items:flex-end; gap:2px; width:100%; height:100% }
   .hw-bars i{ flex:1 1 0; min-width:0; border-radius:3px; opacity:.5 }
-  .hw-bars i.is-now{ opacity:1 }
+  .hw-bars i.is-now{ position:relative; opacity:1 }
+  .hw-bars i.is-now::after{ content:""; position:absolute; left:50%; top:-4.5px; width:9px; height:9px; margin-left:-4.5px; border-radius:50%; background:var(--text); box-shadow:0 0 0 2px var(--surface) }   /* the black dot (as in the line graphs) sits on top of the current bar, halfway across it */
   .hw-pillbox{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:100%; border-radius:22px; font-weight:600; background:color-mix(in srgb, var(--pc) 14%, var(--surface)); color:color-mix(in srgb, var(--pc) 78%, var(--text)) }
   .hw-pillbox i{ flex:0 0 auto; width:9px; height:9px; border-radius:50%; background:var(--pc) }
   .hw-tile--ok{ --tg:var(--aqi-usg-ink) }
@@ -4889,8 +4895,8 @@
     return typeof H === 'number' && typeof L === 'number' ? 'H: ' + tempNum(Math.max(H, L)) + ' | L: ' + tempNum(Math.min(H, L)) : '';
   }
   function ccCard(title, ico, v, sub, tg, extra){
-    return '<div class="today-card air-card hw-mini" style="--tg:' + tg + '"><div class="card-head"><h3>' + ico + '<span>' + title + '</span></h3></div>' +
-      '<div class="hw-mini-body"><span class="hw-tile-v">' + v + '</span>' + (sub === null ? '' : '<span class="hw-tile-s">' + (sub || '&nbsp;') + '</span>') + (extra || '') + '</div></div>';
+    return '<div class="today-card air-card hw-mini' + (extra && /hw-tank--fill/.test(extra) ? ' hw-mini--fill' : '') + '" style="--tg:' + tg + '"><div class="card-head"><h3>' + ico + '<span>' + title + '</span></h3></div>' +
+      '<div class="hw-mini-body' + (extra && /hw-tank--fill/.test(extra) ? ' hw-body--fill' : '') + '"><span class="hw-tile-v">' + v + '</span>' + (sub === null ? '' : '<span class="hw-tile-s">' + (sub || '&nbsp;') + '</span>') + (extra || '') + '</div></div>';
   }
   function ccIco(key){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + HW_CELL_ICO[key] + '</svg>'; }
   // the Ground card's header icon: a boot standing on a flat horizon line, in the same gray line style as the other header icons
@@ -4984,7 +4990,7 @@
     if(rh !== null){
       hum = ccCard('Humidity', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3.500C12 3.500 6 10 6 14.500a6 6 0 0 0 12 0C18 10 12 3.500 12 3.500z"/></svg>',
         rh < 30 ? 'Dry' : rh > 60 ? 'Humid' : 'Comfortable', 'Right now', 'var(--icon-blue)',
-        '<span class="hw-sparkwrap" aria-hidden="true">' + hwHumidTank({nowV: rh}, false) + '</span><span class="hw-axis" aria-hidden="true"></span>');
+        hwHumidTank({nowV: rh}, false, true));
     }
     // no weather on the way: the UV index takes this place by day (once its data is in), and humidity takes it at night
     var isDayNow = isDayAtTime(sunEvents, Date.now(), current.isDaytime);
@@ -7158,10 +7164,14 @@
     mental: [{k: 'temp'}, {k: 'o3', t: 'bars'}, {k: 'pm', t: 'bars'}]
   };
   // humidity as a comfort band: a slim bar with the comfortable range (30-60%) shaded and a dot at today's level, tinted when humidity is a trigger
-  function hwHumidTank(se, on){
-    var pct = Math.max(0, Math.min(100, se.nowV)), H = 44, W = 140, y = Math.max(3, H - H * pct / 100), amp = 3, half = 7, d = 'M0 ' + y.toFixed(1);
+  function hwHumidTank(se, on, fill){
+    var pct = Math.max(0, Math.min(100, se.nowV)), H = fill ? 100 : 44, W = 140, y = Math.max(3, H - H * pct / 100), amp = 3, half = 7, d = 'M0 ' + y.toFixed(1);
     for(var x = 0, up = true; x < W; x += half, up = !up) d += (x === 0 ? ' Q ' + (half / 2) + ' ' + (y + (up ? -amp : amp)).toFixed(1) + ' ' + half + ' ' + y.toFixed(1) : ' T ' + (x + half) + ' ' + y.toFixed(1));
     var col = on ? 'var(--tg)' : 'var(--icon-blue)';
+    if(fill) return '<span class="hw-tank hw-tank--fill" aria-hidden="true"><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" focusable="false">' +
+      '<path d="' + d + ' L' + W + ' ' + H + ' L0 ' + H + ' Z" fill="' + col + '" fill-opacity=".34"/>' +
+      '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>' +
+      '<span class="hw-tank-v" style="top:calc(' + y.toFixed(1) + '% + 5px)">' + Math.round(pct) + '%</span></span>';
     return '<span class="hw-tank" aria-hidden="true"><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" focusable="false">' +
       '<path d="' + d + ' L' + W + ' ' + H + ' L0 ' + H + ' Z" fill="' + col + '" fill-opacity=".38"/>' +
       '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>' +
