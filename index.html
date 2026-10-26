@@ -2842,6 +2842,8 @@
     /* the radar is half as tall; the expand button opens the big map */
     html body .hero-wrap .radar .radar-map{ aspect-ratio:1 / .5 }
   }
+  /* Hourly Forecast shows only the All view: the view pills are hidden (still built; remove this rule to bring them back) */
+  html body #todaySection .hr-pills{ display:none !important }
   /* Hourly Forecast views are the same pills as Best Times */
   html body #hrPills{ display:flex; flex-wrap:nowrap; gap:8px; width:100% }
   html body #hrPills .bt-pill{ flex:1 1 0; justify-content:center; place-items:center; min-height:0; margin:0; padding:4.5px 8px; border:1px solid var(--icon-blue); border-radius:999px; background:var(--surface) !important; color:var(--icon-blue); font-weight:500 }
