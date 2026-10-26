@@ -2819,15 +2819,11 @@
   html body #todaySection .card-head{ height:40px }
   /* ----- Weather tab, phones: one rhythm and fewer competing patterns ----- */
   @media (max-width:31.1875em){
-    /* small gray labels group the modules (12px apart inside a group, 24px between groups) */
-    html body #todaySection::before, html body #weekSection::before, html body #airSection::before{ display:block; margin:0 0 8px; font-size:12px !important; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:color-mix(in srgb, var(--text-faint) 68%, var(--bg)) }
-    html body #todaySection::before{ content:"Today" }
-    html body #weekSection::before{ content:"This week" }
-    html body #airSection::before{ content:"Air and pollen" }
+    /* every module on the Weather tab is 12px from the next */
     html body .hero-wrap .hero-top{ gap:12px }
-    html body .hero-wrap .hero-top > #todaySection{ margin-top:12px }
-    html body #weekSection{ margin-top:24px }
-    html body #airSection{ margin-top:24px }
+    html body .hero-wrap .hero-top > #todaySection{ margin-top:0 }
+    html body #weekSection{ margin-top:12px }
+    html body #airSection{ margin-top:12px }
     html body .wind-row{ margin-top:0; gap:0 }
     /* the radar is half as tall; the expand button opens the big map */
     html body .hero-wrap .radar .radar-map{ aspect-ratio:1 / .5 }
@@ -2839,6 +2835,48 @@
   /* module headers carry a small gray icon like the half cards' */
   .radar-head h2{ display:inline-flex; align-items:center; gap:6px }
   .card-head h2 svg, .radar-head h2 svg{ flex:0 0 auto; width:18px; height:18px; color:color-mix(in srgb, var(--text-muted) 68%, var(--surface)) }
+  /* ----- hero: only the headline on phones, with a More button that opens the full text and a read-aloud player ----- */
+  .hero-more{ display:none }
+  @media (max-width:31.1875em){
+    html body .vd-prose .vd-detail, html body .hw-intro .hw-ok-b{ display:none !important }
+    /* a small speech bubble at the end of the headline opens the full text and the read-aloud player */
+    .hero-more{ position:relative; display:inline-flex; vertical-align:-3px; margin:0 0 0 8px; padding:0; border:0; background:none; color:color-mix(in srgb, var(--text-muted) 75%, var(--bg)); cursor:pointer; -webkit-tap-highlight-color:transparent }
+    .hero-more svg{ width:22px; height:22px }
+    .hero-more::after{ content:""; position:absolute; inset:-11px }
+    .hero-more:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:4px }
+  }
+  .hm-head{ margin:0 0 10px; font-weight:700; line-height:1.3; color:var(--text) }
+  html body #heroMoreModal .hm-head{ font-size:20px !important }
+  .hm-text{ margin:0 0 16px; line-height:1.55; color:var(--text-muted) }
+  .hm-player{ display:flex; flex-direction:column; gap:12px; margin-top:20px; padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--surface) }
+  .hm-who{ display:flex; align-items:center; gap:12px }
+  .hm-avatar{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:3px; width:44px; height:44px; border-radius:50%; background:color-mix(in srgb, var(--icon-blue) 14%, var(--surface)) }
+  .hm-avatar i{ display:block; width:3px; height:10px; border-radius:2px; background:var(--icon-blue) }
+  .hm-avatar i:nth-child(2), .hm-avatar i:nth-child(4){ height:16px }
+  .hm-avatar i:nth-child(3){ height:22px }
+  .hm-player.is-speaking .hm-avatar i{ animation:hmBar .9s ease-in-out infinite }
+  .hm-player.is-speaking .hm-avatar i:nth-child(2){ animation-delay:.12s }
+  .hm-player.is-speaking .hm-avatar i:nth-child(3){ animation-delay:.24s }
+  .hm-player.is-speaking .hm-avatar i:nth-child(4){ animation-delay:.36s }
+  .hm-player.is-speaking .hm-avatar i:nth-child(5){ animation-delay:.48s }
+  @keyframes hmBar{ 0%, 100%{ transform:scaleY(.45) } 50%{ transform:scaleY(1.25) } }
+  @media (prefers-reduced-motion:reduce){ .hm-player.is-speaking .hm-avatar i{ animation:none } }
+  .hm-name{ display:flex; flex-direction:column; min-width:0 }
+  .hm-name b{ font-weight:700; color:var(--text) }
+  .hm-name small{ color:var(--text-muted) }
+  .hm-ctrl{ display:flex; align-items:center; gap:12px }
+  .hm-play{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:48px; height:48px; border:0; border-radius:50%; background:var(--icon-blue); color:var(--btn-on); cursor:pointer }
+  .hm-play svg{ width:22px; height:22px }
+  .hm-play .hm-i-pause{ display:none }
+  .hm-player.is-speaking .hm-play .hm-i-play{ display:none }
+  .hm-player.is-speaking .hm-play .hm-i-pause{ display:block }
+  .hm-play:focus-visible, .hm-speed:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px }
+  .hm-prog{ position:relative; flex:1 1 auto; height:6px; border-radius:3px; background:color-mix(in srgb, var(--text-muted) 18%, var(--surface)); overflow:hidden }
+  .hm-prog i{ display:block; width:0; height:100%; border-radius:3px; background:var(--icon-blue); transition:width .25s linear }
+  .hm-speed{ flex:0 0 auto; min-width:52px; height:36px; padding:0 10px; border:1px solid var(--icon-blue); border-radius:4px; background:var(--surface); color:var(--icon-blue); font:inherit; font-weight:600; cursor:pointer }
+  .hm-voice{ display:flex; align-items:center; gap:10px; color:var(--text-muted) }
+  .hm-voice select{ flex:1 1 auto; min-width:0; height:36px; padding:0 8px; border:1px solid var(--line); border-radius:4px; background:var(--surface); color:var(--text); font:inherit }
+  .hm-note{ margin:0; color:var(--text-muted) }
 </style>
 </head>
 <body>
@@ -3448,6 +3486,38 @@
   </div>
 </div>
 
+<div class="radar-modal modal-drawer" id="heroMoreModal" hidden>
+  <div class="radar-modal-backdrop" id="heroMoreBackdrop"></div>
+  <div class="radar-modal-panel disclaimers-modal-panel hpf-panel" role="dialog" aria-modal="true" aria-labelledby="heroMoreTitle">
+    <div class="disclaimers-modal-head">
+      <h2 id="heroMoreTitle">Details</h2>
+      <button type="button" class="disclaimers-modal-close" id="heroMoreClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="disclaimers-modal-body">
+      <p class="hm-head" id="heroMoreHead"></p>
+      <p class="hm-text" id="heroMoreText"></p>
+      <div class="hm-player" id="hmPlayer" role="group" aria-label="Listen to this">
+        <div class="hm-who">
+          <span class="hm-avatar" id="hmAvatar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="hm-name"><b>Breeze</b><small id="hmStatus" role="status" aria-live="polite">Reads this aloud</small></span>
+        </div>
+        <div class="hm-ctrl">
+          <button type="button" class="hm-play" id="hmPlay" aria-label="Play">
+            <svg class="hm-i-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8 5.500v13a1 1 0 0 0 1.500.86l10.500-6.500a1 1 0 0 0 0-1.720L9.500 4.640A1 1 0 0 0 8 5.500z"/></svg>
+            <svg class="hm-i-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><rect x="6.500" y="5" width="4" height="14" rx="1"/><rect x="13.500" y="5" width="4" height="14" rx="1"/></svg>
+          </button>
+          <div class="hm-prog" id="hmProg" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="hmProgBar"></i></div>
+          <button type="button" class="hm-speed" id="hmSpeed" aria-label="Reading speed">1×</button>
+        </div>
+        <div class="hm-voice" id="hmVoiceRow"><label for="hmVoice">Voice</label><select id="hmVoice"></select></div>
+        <p class="hm-note" id="hmNote" hidden>Read aloud isn’t available in this browser.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="radar-modal modal-drawer" id="healthPrefsModal" hidden>
   <div class="radar-modal-backdrop" id="healthPrefsBackdrop"></div>
   <div class="radar-modal-panel disclaimers-modal-panel hpf-panel" role="dialog" aria-modal="true" aria-labelledby="healthPrefsTitle">
@@ -3949,6 +4019,10 @@
   var dataAsOf = document.getElementById('dataAsOf');
   (function(){ var y = document.getElementById('copyYear'); if(y) y.textContent = new Date().getFullYear(); })();   // the footer's year follows the clock
   var heroEl = document.getElementById('hero');
+  function heroMoreBtn(kind){
+    return '<button type="button" class="hero-more" data-hero-more="' + kind + '" aria-haspopup="dialog" aria-label="More details, and listen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.500 3.500V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M8 10h8M8 13h5"/></svg></button>';
+  }
+  var heroMore = {};   // the full headline and text of each tab's hero, for the More drawer and the read-aloud player
   var todaySection = document.getElementById('todaySection');
   var todayInner = document.getElementById('todayInner');
   var hourlyStrip = document.getElementById('hourlyStrip');
@@ -4851,7 +4925,6 @@
         vdEsc(parts[0]), parts[1] ? 'In ~' + vdEsc(parts[1]) : '', 'var(--icon-blue)',
         '<span class="cc-gpic" aria-hidden="true">' + weatherIcon(parts[0].replace(/ (possible|ends?)$/, ''), isDayAtTime(sunEvents, Date.now(), current.isDaytime), 56) + '</span>');
     }
-    if(!soon) soon = '<div class="cc-uv" id="ccUvCard" hidden></div>';   // no weather on the way: the UV index takes this place once its data is in
     var gtone = ground.key === 'dry' ? 'var(--aqi-good-ink)' : ground.key === 'wet' ? 'var(--icon-blue)' : 'var(--aqi-usg-ink)';
     // the animated ground picture sits in the body of the card, where the other cards have their chart; the header icon is a small boot on a horizon line
     var gnd = ccCard('Ground', ccBootIco(), vdEsc(ground.label), vdEsc(ground.hint.replace('precipitation', 'precip')), gtone,
@@ -4863,6 +4936,9 @@
         rh < 30 ? 'Dry' : rh > 60 ? 'Humid' : 'Comfortable', 'Right now', 'var(--icon-blue)',
         '<span class="hw-sparkwrap" aria-hidden="true">' + hwHumidTank({nowV: rh}, false) + '</span><span class="hw-axis" aria-hidden="true"></span>');
     }
+    // no weather on the way: the UV index takes this place by day (once its data is in), and humidity takes it at night
+    var isDayNow = isDayAtTime(sunEvents, Date.now(), current.isDaytime);
+    if(!soon) soon = (!isDayNow && hum) ? hum : '<div class="cc-uv" id="ccUvCard" hidden></div>';
     return '<div class="cc-phone">' + main + '<div class="hw-minis cc-cards" role="group" aria-label="More current conditions">' + (CC_WIND_CARD ? wind : '') + (CC_EXTRA_CARDS ? gnd + hum : '') + '<div class="cc-air" id="ccAirCard" hidden></div>' + (soon || '<div class="cc-uv" id="ccUvCard" hidden></div>') + '</div></div>';
   }
   function renderHero(current, todayDaily, hourly, daily){
@@ -7294,9 +7370,10 @@
     function mod(title, body, label){ return '<div class="today-card air-card hw-mod"' + (title ? '' : ' role="group" aria-label="' + label + '"') + '>' + (title ? '<div class="card-head"><h2>' + title + '</h2></div>' : '') + body + '</div>'; }
     var calIco = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>';
     var infoIco = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.9" r=".7" fill="currentColor"/></svg>';
+    heroMore.health = {eyebrow: 'Potential health impacts', head: O.title, text: O.body};
     healthCard.innerHTML =
       '<div class="hw-intro"><span class="sec-eyebrow">Potential health impacts</span>' +
-        '<h2 class="hw-ok-t" id="hwTitle">' + vdEsc(O.title) + '</h2><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
+        '<h2 class="hw-ok-t" id="hwTitle">' + vdEsc(O.title) + heroMoreBtn('health') + '</h2><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
       '<div class="hw-conds">' + plan.concat(fine).map(hwRowHtml).join('') + '</div>' +
       '<div class="hw-acts">' + (HW_WEEK_BTN ? '<button type="button" class="bp-btn bp-primary" data-hwweek aria-haspopup="dialog">' + calIco + '<span>The Week Ahead</span></button>' : '') +
         '<button type="button" class="bp-btn bp-primary hw-prefs" data-hwprefs aria-haspopup="dialog">Manage Health Preferences</button>' +
@@ -7389,6 +7466,119 @@
     else if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   });
+
+  /* ---------- Hero "More" drawer and the read-aloud player ----------
+     Phones show only each tab's headline. More opens the full text in a drawer, with a player (Breeze) that reads it aloud using the voices
+     built into the person's device (the Web Speech API): nothing is sent anywhere. The text is read a sentence at a time so long passages do not
+     cut out, and pausing remembers the sentence it was on. */
+  var hmModal = document.getElementById('heroMoreModal'), hmPlayer = document.getElementById('hmPlayer'), hmPlay = document.getElementById('hmPlay'),
+      hmBar = document.getElementById('hmProgBar'), hmProg = document.getElementById('hmProg'), hmStatus = document.getElementById('hmStatus'),
+      hmSpeed = document.getElementById('hmSpeed'), hmVoiceSel = document.getElementById('hmVoice'), hmLastFocus = null;
+  var HM_RATES = [1, 1.25, 1.5, 0.85], HM_KEY_RATE = 'ctw-voice-rate', HM_KEY_VOICE = 'ctw-voice-name';
+  var tts = {ok: 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window, sents: [], lens: [], total: 0, i: 0, state: 'idle', seq: 0, rate: 1, voice: null};
+  try{ var sr = parseFloat(localStorage.getItem(HM_KEY_RATE)); if(HM_RATES.indexOf(sr) >= 0) tts.rate = sr; }catch(e){}
+  function hmSay(t){ return t.replace(/\bmph\b/gi, 'miles per hour').replace(/km\/h/gi, 'kilometers per hour').replace(/°F/g, ' degrees Fahrenheit').replace(/°C/g, ' degrees Celsius').replace(/°/g, ' degrees').replace(/%/g, ' percent').replace(/\bAQI\b/g, 'A Q I').replace(/\bUV\b/g, 'U V').replace(/\bPM2\.5\b/g, 'P M 2.5').replace(/\bNO₂\b/g, 'nitrogen dioxide'); }
+  function hmUi(){
+    var playing = tts.state === 'playing';
+    hmPlayer.classList.toggle('is-speaking', playing);
+    hmPlay.setAttribute('aria-label', playing ? 'Pause' : tts.state === 'paused' ? 'Resume' : tts.state === 'done' ? 'Play again' : 'Play');
+    hmStatus.textContent = playing ? 'Reading…' : tts.state === 'paused' ? 'Paused' : tts.state === 'done' ? 'Done' : 'Reads this aloud';
+    hmSpeed.textContent = (tts.rate === 0.85 ? '0.85' : tts.rate) + '×';
+  }
+  function hmProgress(f){ f = Math.max(0, Math.min(1, f || 0)); hmBar.style.width = (f * 100).toFixed(1) + '%'; hmProg.setAttribute('aria-valuenow', Math.round(f * 100)); }
+  function hmBefore(i){ var n = 0; for(var k = 0; k < i && k < tts.lens.length; k++) n += tts.lens[k]; return n; }
+  function hmStop(){ tts.seq++; if(tts.ok){ try{ speechSynthesis.cancel(); }catch(e){} } tts.state = 'idle'; tts.i = 0; hmProgress(0); hmUi(); }
+  function hmSpeakFrom(i){
+    if(!tts.ok) return;
+    try{ speechSynthesis.cancel(); }catch(e){}
+    var seq = ++tts.seq; tts.i = i; tts.state = 'playing'; hmUi();
+    (function next(){
+      if(seq !== tts.seq || tts.state !== 'playing') return;
+      if(tts.i >= tts.sents.length){ tts.state = 'done'; hmProgress(1); hmUi(); return; }
+      var raw = tts.sents[tts.i], spoken = hmSay(raw), u = new SpeechSynthesisUtterance(spoken);
+      u.rate = tts.rate;
+      if(tts.voice){ u.voice = tts.voice; u.lang = tts.voice.lang; }
+      u.onboundary = function(e){ if(seq === tts.seq) hmProgress((hmBefore(tts.i) + (e.charIndex / Math.max(1, spoken.length)) * raw.length) / Math.max(1, tts.total)); };
+      u.onend = function(){ if(seq !== tts.seq) return; tts.i++; hmProgress(hmBefore(tts.i) / Math.max(1, tts.total)); next(); };
+      u.onerror = function(e){ if(seq !== tts.seq || e.error === 'canceled' || e.error === 'interrupted') return; tts.state = 'idle'; hmUi(); };
+      speechSynthesis.speak(u);
+    })();
+  }
+  function hmPrepare(text){
+    tts.sents = (text.match(/[^.!?]+[.!?]*\s*/g) || [text]).map(function(x){ return x.trim(); }).filter(Boolean);
+    tts.lens = tts.sents.map(function(x){ return x.length + 1; });
+    tts.total = tts.lens.reduce(function(a, b){ return a + b; }, 0);
+  }
+  // the English voices on this device, the most natural-sounding first (enhanced, premium and neural voices, then well-known good ones)
+  function hmVoices(){
+    var list = tts.ok ? speechSynthesis.getVoices().filter(function(v){ return /^en/i.test(v.lang); }) : [];
+    function score(v){ var n = v.name.toLowerCase(), sc = 0; if(/natural|neural|enhanced|premium|siri/.test(n)) sc += 6; if(/samantha|ava|allison|serena|karen|daniel|google us english|aria|jenny/.test(n)) sc += 3; if(/en[-_]us/i.test(v.lang)) sc += 2; if(v.localService) sc += 1; return sc; }
+    return list.sort(function(a, b){ return score(b) - score(a); });
+  }
+  function hmFillVoices(){
+    var list = hmVoices(), saved = null;
+    try{ saved = localStorage.getItem(HM_KEY_VOICE); }catch(e){}
+    hmVoiceSel.innerHTML = '';
+    list.forEach(function(v){ var o = document.createElement('option'); o.value = v.name; o.textContent = v.name.replace(/\s*\(.*?\)\s*$/, '') + ' (' + v.lang + ')'; hmVoiceSel.appendChild(o); });
+    var pick = list.filter(function(v){ return v.name === saved; })[0] || list[0] || null;
+    tts.voice = pick;
+    if(pick) hmVoiceSel.value = pick.name;
+    document.getElementById('hmVoiceRow').hidden = list.length < 2;
+  }
+  if(tts.ok){
+    hmFillVoices();
+    try{ speechSynthesis.addEventListener('voiceschanged', hmFillVoices); }catch(e){ speechSynthesis.onvoiceschanged = hmFillVoices; }
+  }else{
+    document.getElementById('hmNote').hidden = false;
+    document.querySelector('.hm-ctrl').hidden = true; document.getElementById('hmVoiceRow').hidden = true;
+  }
+  hmPlay.addEventListener('click', function(){
+    if(!tts.ok) return;
+    if(tts.state === 'playing'){ tts.seq++; try{ speechSynthesis.cancel(); }catch(e){} tts.state = 'paused'; hmUi(); }   // pausing remembers the sentence
+    else if(tts.state === 'paused'){ hmSpeakFrom(tts.i); }
+    else{ hmProgress(0); hmSpeakFrom(0); }
+  });
+  hmSpeed.addEventListener('click', function(){
+    tts.rate = HM_RATES[(HM_RATES.indexOf(tts.rate) + 1) % HM_RATES.length];
+    try{ localStorage.setItem(HM_KEY_RATE, String(tts.rate)); }catch(e){}
+    hmUi();
+    if(tts.state === 'playing') hmSpeakFrom(tts.i);
+  });
+  hmVoiceSel.addEventListener('change', function(){
+    tts.voice = hmVoices().filter(function(v){ return v.name === hmVoiceSel.value; })[0] || null;
+    try{ localStorage.setItem(HM_KEY_VOICE, hmVoiceSel.value); }catch(e){}
+    if(tts.state === 'playing') hmSpeakFrom(tts.i);
+  });
+  function openHeroMore(kind, trigger){
+    var c = heroMore[kind]; if(!c) return;
+    hmLastFocus = trigger || document.activeElement;
+    document.getElementById('heroMoreTitle').textContent = c.eyebrow || 'Details';
+    document.getElementById('heroMoreHead').textContent = c.head;
+    document.getElementById('heroMoreText').textContent = c.text;
+    hmStop(); hmPrepare(c.head + ' ' + c.text);
+    showModal(hmModal); setBackgroundInert(true, hmModal); lockPage('heromore');
+    hmPlay.focus();
+  }
+  function closeHeroMore(){
+    if(hmModal.hidden) return;
+    hmStop(); hideModal(hmModal); setBackgroundInert(false); unlockPage('heromore');
+    if(hmLastFocus && typeof hmLastFocus.focus === 'function') hmLastFocus.focus({preventScroll: true});
+  }
+  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-hero-more]'); if(b) openHeroMore(b.getAttribute('data-hero-more'), b); });
+  document.getElementById('heroMoreClose').addEventListener('click', closeHeroMore);
+  document.getElementById('heroMoreBackdrop').addEventListener('click', closeHeroMore);
+  document.addEventListener('keydown', function(e){
+    if(hmModal.hidden) return;
+    if(e.key === 'Escape'){ closeHeroMore(); return; }
+    if(e.key !== 'Tab') return;
+    var f = [].slice.call(hmModal.querySelectorAll('button:not([disabled]), select, [tabindex]:not([tabindex="-1"])')).filter(function(el){ return el.offsetParent !== null; });
+    if(!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if(!hmModal.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+    else if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
+  window.addEventListener('pagehide', function(){ if(tts.ok) try{ speechSynthesis.cancel(); }catch(e){} });
 
   /* ---------- Manage Health Preferences: which conditions to show ---------- */
   var hpfModal = document.getElementById('healthPrefsModal'), hpfList = document.getElementById('hpfList'), hpfStatus = document.getElementById('hpfStatus'), hpfLastFocus = null;
@@ -7533,8 +7723,9 @@
     return {title: l1, body: sents.join(' '), tone: tone};
   }
   // The Health and Activity headers: two headline lines and the full paragraph beneath
-  function heroFill(hero, o){
-    hero.innerHTML = '<div class="vd-prose">' + (o.eyebrow ? '<span class="sec-eyebrow sec-eyebrow--phone">' + vdEsc(o.eyebrow) + '</span>' : '') + '<span class="vd-head">' + o.lines.map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
+  function heroFill(hero, o, kind){
+    if(kind) heroMore[kind] = {eyebrow: o.eyebrow || '', head: o.lines.join(' '), text: o.detail};
+    hero.innerHTML = '<div class="vd-prose">' + (o.eyebrow ? '<span class="sec-eyebrow sec-eyebrow--phone">' + vdEsc(o.eyebrow) + '</span>' : '') + '<span class="vd-head">' + o.lines.map(function(t, i, a){ return '<span class="vd-hl">' + vdEsc(t) + (kind && i === a.length - 1 ? heroMoreBtn(kind) : '') + '</span>'; }).join('') + '</span>' + '<div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
     hero.hidden = false;
   }
 
@@ -7591,7 +7782,7 @@
   function actHeroRender(week, c){
     if(!actHero) return;
     if(!week.length){ actHero.hidden = true; return; }
-    var ao = actHeroBuild(week, c); ao.eyebrow = 'Activity'; heroFill(actHero, ao);
+    var ao = actHeroBuild(week, c); ao.eyebrow = 'Activity'; heroFill(actHero, ao, 'activity');
   }
 
   /* ---------- Weather | Health views (phones) ----------
@@ -9797,7 +9988,11 @@
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><polyline points="5,9 12,16 19,9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>' +
       '<p class="vd-sentence">' + vdEsc(r.sentence) + '</p>' +
       '<p class="vd-acts-line">' + vdEsc(actsLine) + '</p>' +
-      '<div class="vd-prose"><span class="sec-eyebrow sec-eyebrow--phone">Current weather</span><span class="vd-head">' + vdNbTimes(vdHeadline(r, vdCtx)).replace(/([.?!])\s+/g, '$1\n').split('\n').map(function(t){ return '<span class="vd-hl">' + vdEsc(t) + '</span>'; }).join('') + '</span><div class="vd-detail">' + vdEsc(vdSubLines(r, vdCtx, actList).map(function(l){ return l.text; }).join(' ')) + '</div></div>' +
+      (function(){
+        var wh = vdNbTimes(vdHeadline(r, vdCtx)).replace(/([.?!])\s+/g, '$1\n'), wd = vdSubLines(r, vdCtx, actList).map(function(l){ return l.text; }).join(' ');
+        heroMore.weather = {eyebrow: 'Current weather', head: wh.replace(/\n/g, ' ').replace(/\u00A0/g, ' '), text: wd};
+        return '<div class="vd-prose"><span class="sec-eyebrow sec-eyebrow--phone">Current weather</span><span class="vd-head">' + wh.split('\n').map(function(t, i, a){ return '<span class="vd-hl">' + vdEsc(t) + (i === a.length - 1 ? heroMoreBtn('weather') : '') + '</span>'; }).join('') + '</span>' + '<div class="vd-detail">' + vdEsc(wd) + '</div></div>';
+      })() +
       (r.state === 'no' && r.next ? '<p class="vd-next">' + vdEsc(r.next) + '</p>' : '') +
       '<div class="vd-details" id="vdDetails"' + (vdOpen ? '' : ' hidden') + '>' + details + '</div>';
     vdBody.className = 'vd-body vd-' + r.state + (vdOpen ? ' is-open' : '');
