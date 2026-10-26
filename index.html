@@ -2431,12 +2431,15 @@
   html body .sec-eyebrow.sec-eyebrow.sec-eyebrow{ font-size:12px !important }   /* beats the phone-wide 14px text rule */
   .sec-eyebrow--phone{ display:none }
   @media (max-width:31.1875em){ .sec-eyebrow--phone{ display:block } }
-  .hw-cond{ border:0; min-width:0; padding:18px 18px 16px; --tg:var(--hw-low) }
+  .hw-cond{ border:0; min-width:0; padding:0; --tg:var(--hw-low) }
+  .hw-cond-body{ padding:12px 16px 16px }
+  .hw-cond-body > .hw-csay:first-child{ margin-top:0 }
+  .hw-cond-top:last-child{ border-bottom:0 }   /* a No Impacts card is only its header */
   .hw-cond.hw-tile--ok{ --tg:var(--hw-med) }
   .hw-cond.hw-tile--high{ --tg:var(--hw-high) }
   .hw-cond-top{ display:flex; justify-content:space-between; align-items:center; gap:12px }
-  .hw-cond-name{ display:flex; align-items:center; gap:6px; min-width:0; margin:0; font-weight:600; letter-spacing:-.01em; line-height:1.2; color:var(--text) }
-  .hw-cond-ico{ flex:0 0 auto; width:26px; height:26px; color:var(--tg) }
+  .hw-cond-name{ display:flex; align-items:center; gap:6px; min-width:0; margin:0; font-weight:500; line-height:1.2; color:var(--text-muted) }
+  .hw-cond-ico{ flex:0 0 auto; width:18px; height:18px; color:color-mix(in srgb, var(--text-muted) 68%, var(--surface)) }   /* the same gray header icon as the other modules */
   .hw-cond-big{ flex:0 0 auto; font-weight:700; line-height:1.2; letter-spacing:-.01em; text-align:right; color:color-mix(in srgb, var(--tg) 62%, var(--text)) }   /* the rating word carries the color */
   .hw-csay{ margin:10px 0 0; line-height:1.4; color:var(--text-muted) }
   .hw-csay + .hw-csay{ margin-top:6px }
@@ -2488,7 +2491,8 @@
   .btc-module .bt-foot{ display:block; margin:0 }
   /* the view selector is a row of fully rounded pills in the button colors: the chosen one is the primary (blue fill, white text), the others the secondary (white fill, blue outline and text); each reserves its bold width so switching never shifts the row */
   .btc-tabs{ display:flex; gap:8px; width:100% }
-  .btc-tab{ position:relative; flex:1 1 0; min-width:0; display:inline-grid; place-items:center; margin:0; padding:9px 8px; border:1px solid var(--icon-blue); border-radius:999px; background:var(--surface); color:var(--icon-blue); font:inherit; font-size:14px; font-weight:500; line-height:1.2; white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent }
+  .btc-tab{ position:relative; flex:1 1 0; min-width:0; display:inline-grid; place-items:center; margin:0; padding:4.5px 8px; border:1px solid var(--icon-blue); border-radius:999px; background:var(--surface); color:var(--icon-blue); font:inherit; font-size:14px; font-weight:500; line-height:1.2; white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent }
+  .btc-tab::before{ content:""; position:absolute; inset:-8px 0 }   /* the tap area stays 44px tall */
   .btc-tab > span, .btc-tab::after{ grid-area:1 / 1 }
   .btc-tab::after{ content:attr(data-label); height:0; overflow:hidden; visibility:hidden; font-weight:700 }
   .btc-tab[aria-selected="true"]{ background:var(--icon-blue); border-color:var(--icon-blue); color:var(--btn-on); font-weight:700 }
@@ -2496,7 +2500,8 @@
   @media (min-width:64em){ .btc-tab[aria-selected="false"]:hover{ background:color-mix(in srgb, var(--icon-blue) 10%, var(--surface)) } }
   .btc-list{ display:flex; flex-direction:column; gap:12px }
   .btc-list[hidden]{ display:none }
-  .btc-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px }
+  .btc-top.card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; box-sizing:border-box; min-height:40px; padding:6px 16px; border-bottom:1px solid var(--line) }   /* the same 40px module header, with a divider */
+  .btc-ico{ flex:0 0 auto; width:18px; height:18px; color:color-mix(in srgb, var(--text-muted) 68%, var(--surface)) }
   .btc-day{ display:inline-flex; align-items:center; gap:8px; font-weight:500; color:var(--text-muted) }
   .btc-wx{ display:inline-flex; align-items:center; gap:6px; color:var(--text) }
   .btc-wx .bt-sky{ display:inline-flex }
@@ -2555,7 +2560,7 @@
   html body #healthCard .hw-ok-t{ font-size:24px !important }
   html body #healthCard .hw-ok-b{ font-size:16px !important }
   html body #healthCard .hw-tile-v{ font-size:20px !important }
-  html body #healthCard .hw-cond-name, html body #healthCard .hw-cond-name > span{ font-size:20px !important }
+  html body #healthCard .hw-cond-name, html body #healthCard .hw-cond-name > span{ font-size:14px !important }
   html body #healthCard .hw-cond-big{ font-size:14px !important }
   html body #healthCard .hw-tile--good .hw-cond-big{ font-weight:300 !important }   /* No Impacts is the quiet rating: light weight */
   html body #healthCard .hw-safe-t{ font-size:20px !important }
@@ -2667,6 +2672,9 @@
   html body .hero-now .cc-main .cc-txt.cc-txt span.cc-hl{ font-size:14px !important }
   html body .hero-now .cc-cards .hw-tile-v.hw-tile-v.hw-tile-v{ font-size:20px !important }
   .cc-air[hidden], .cc-uv[hidden]{ display:none }
+  .cc-cg-l{ position:absolute; top:0; padding:0 3px; text-align:right; white-space:nowrap; line-height:14px; color:var(--text) }
+  .cc-cg-l.is-after{ text-align:left }
+  html body .hero-now .cc-cg-l{ font-size:11px !important }
   .cc-wl{ display:flex; align-items:center; flex-wrap:wrap; gap:4px 5px; margin-top:2px }
   .cc-wc{ display:inline-flex }
   .cc-wc svg{ width:20px; height:20px }
@@ -2830,7 +2838,7 @@
   }
   /* Hourly Forecast views are the same pills as Best Times */
   html body #hrPills{ display:flex; flex-wrap:nowrap; gap:8px; width:100% }
-  html body #hrPills .bt-pill{ flex:1 1 0; justify-content:center; place-items:center; min-height:0; margin:0; padding:9px 8px; border:1px solid var(--icon-blue); border-radius:999px; background:var(--surface) !important; color:var(--icon-blue); font-weight:500 }
+  html body #hrPills .bt-pill{ flex:1 1 0; justify-content:center; place-items:center; min-height:0; margin:0; padding:4.5px 8px; border:1px solid var(--icon-blue); border-radius:999px; background:var(--surface) !important; color:var(--icon-blue); font-weight:500 }
   html body #hrPills .bt-pill[aria-checked="true"]{ background:var(--icon-blue) !important; border-color:var(--icon-blue); color:var(--btn-on); font-weight:700 }
   /* module headers carry a small gray icon like the half cards' */
   .radar-head h2{ display:inline-flex; align-items:center; gap:6px }
@@ -3166,11 +3174,11 @@
         <template x-for="(w, idx) in $store.best.windows" :key="w.key">
           <div class="today-card air-card btc" :class="w.none ? 'btc--none' : ''" role="listitem" :data-when="w.when"
             :aria-label="(w.dayLong || w.day) + '. ' + (w.none ? 'No good window. ' + w.reason : w.range + '. ' + w.temp + '. ' + w.summary)">
+            <div class="btc-top card-head">
+              <span class="btc-day"><span class="bt-medal" x-show="w.medal" x-html="w.medal"></span><svg class="btc-ico" x-show="!w.medal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span x-text="w.dayLong || w.day"></span></span>
+              <span class="btc-wx" x-show="w.tempShort"><span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span><b class="bt-tempb" x-text="w.tempShort"></b></span>
+            </div>
             <div class="hw-safe">
-              <div class="btc-top">
-                <span class="btc-day"><span class="bt-medal" x-show="w.medal" x-html="w.medal"></span><span x-text="w.dayLong || w.day"></span></span>
-                <span class="btc-wx" x-show="w.tempShort"><span class="bt-sky" role="img" :aria-label="w.sky" x-html="w.skyIcon"></span><b class="bt-tempb" x-text="w.tempShort"></b></span>
-              </div>
               <p class="hw-safe-t" x-text="w.none ? 'No good window' : w.range"></p>
               <p class="hw-safe-d" x-text="w.none ? w.reason : w.summary"></p>
               <div class="hw-linewrap" :class="w.nowPct !== null && w.nowPct !== undefined ? 'has-now' : ''" aria-hidden="true" x-show="!w.none && w.grad">
@@ -4492,9 +4500,10 @@
       var approx = fmtEta(mins);
       if(active && !type){
         var verb = (active === 'Rain' || active === 'Snow') ? ' ends' : ' end';
+        hazardOutlook.last = {mins: mins, ends: true};   // for the Coming up graph
         return active + verb + ' in ~' + approx;
       }
-      if(!active && type) return type + (/chance/i.test(hourly[i].shortForecast) ? ' possible' : '') + ' in ~' + approx;
+      if(!active && type){ hazardOutlook.last = {mins: mins, ends: false}; return type + (/chance/i.test(hourly[i].shortForecast) ? ' possible' : '') + ' in ~' + approx; }
     }
     return '';
   }
@@ -4902,6 +4911,47 @@
   }
   var CC_WIND_CARD = false;   // the Wind half card is switched off: wind lives in the readout card now; set to true to bring it back
   var CC_EXTRA_CARDS = false;   // Ground, UV index / Coming up and Humidity are switched off under Current Conditions (built, not shown); set to true to bring them back
+  // the Coming up graph: the chance of precipitation over the next few hours on an evenly spaced hour axis (like the air quality chart), with a solid line at Now (wherever it falls between two hours) and a dashed line where the precipitation Starts or Ends. "Now" and "Starts" / "Ends" sit inside the graph at the top of their lines, ending at the line.
+  function ccComingGraph(hourly, ol){
+    var W = 140, H = 44, X0 = 6, HR = 3600000, now = Date.now(), cur = null;
+    (hourly || []).forEach(function(p){ if(new Date(p.startTime).getTime() <= now) cur = p; });   // the hour we are in
+    if(!cur) return '';
+    // hours shown: enough that the change sits in the left 60% of the graph (so its word fits on the right of its line), but never fewer than 3 or more than 8
+    var N = Math.max(3, Math.min(8, Math.ceil(((now - new Date(cur.startTime).getTime()) / HR + ol.mins / 60) / 0.6)));
+    var t0 = new Date(cur.startTime).getTime(), hr0 = parseInt(String(cur.startTime).slice(11, 13), 10);
+    function fx(t){ return X0 + (t - t0) / (N * HR) * (W - X0); }
+    var pts = [];
+    (hourly || []).forEach(function(p){
+      var t = new Date(p.startTime).getTime();
+      if(t < t0 || t > t0 + (N + 1) * HR) return;
+      var pop = p.probabilityOfPrecipitation && typeof p.probabilityOfPrecipitation.value === 'number' ? p.probabilityOfPrecipitation.value : 0;
+      pts.push([fx(t), 17 + (H - 21) * (1 - Math.max(0, Math.min(100, pop)) / 100)]);   // the top 14px is kept clear for the words
+    });
+    if(pts.length < 2) return '';
+    var line = smoothPath(pts), nx = fx(now), ex = Math.max(nx + 7, Math.min(W - 2, fx(now + ol.mins * 60000))), close = ex < W - 40;   // 'close' now means: the word fits on the right side of the line
+    // the chance of precipitation right now (between the two hours either side), for the black dot
+    var ny = pts[0][1];
+    for(var u = 1; u < pts.length; u++){ if(pts[u][0] >= nx){ var fr = (nx - pts[u - 1][0]) / Math.max(0.001, pts[u][0] - pts[u - 1][0]); ny = pts[u - 1][1] + (pts[u][1] - pts[u - 1][1]) * fr; break; } }
+    var ticks = '';
+    for(var k = 1; k < N; k++){ var tx = fx(t0 + k * HR).toFixed(1); ticks += '<line x1="' + tx + '" x2="' + tx + '" y1="' + (H - 5) + '" y2="' + H + '" stroke="var(--text-muted)" stroke-width="1" vector-effect="non-scaling-stroke"/>'; }
+    var gr = '<svg class="hw-spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="overflow:hidden">' +
+      '<path d="' + line + ' L ' + W + ',' + H + ' L ' + X0 + ',' + H + ' Z" fill="var(--icon-blue)" fill-opacity=".18"/>' +
+      '<path d="' + line + '" fill="none" stroke="var(--icon-blue)" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+      ticks +
+      '<line x1="' + nx.toFixed(1) + '" x2="' + nx.toFixed(1) + '" y1="' + ny.toFixed(1) + '" y2="' + H + '" class="hw-spark-now" vector-effect="non-scaling-stroke"/>' +
+      '<line x1="' + ex.toFixed(1) + '" x2="' + ex.toFixed(1) + '" y1="0" y2="' + H + '" stroke="var(--text)" stroke-width="1.4" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/></svg>';
+    // the black dot (as in the other graphs) marks now; the dashed line down from it, and "Starts" / "Ends" on top of the dashed line at the change
+    var lab = '<span class="hw-spark-dot" style="left:' + (nx / W * 100).toFixed(1) + '%;top:' + (ny / H * 100).toFixed(1) + '%"></span>' +
+      '<span class="cc-cg-l' + (close ? ' is-after' : '') + '" style="' + (close ? 'left:' + (ex / W * 100).toFixed(1) : 'right:' + (100 - ex / W * 100).toFixed(1)) + '%">' + (ol.ends ? 'Ends' : 'Starts') + '</span>';
+    // clock hours, evenly spaced like the air quality chart (every hour for a short look, every second hour for a longer one)
+    var step = N <= 4 ? 1 : 2, axis = '<span class="hw-axis" aria-hidden="true">';
+    for(var q = 0; q < N; q += step){
+      var hh = (hr0 + q) % 24;
+      axis += '<span style="left:clamp(10px, ' + (fx(t0 + q * HR) / W * 100).toFixed(1) + '%, calc(100% - 10px))">' + (hh % 12 || 12) + (hh >= 12 ? 'p' : 'a') + '</span>';
+    }
+    axis += '</span>';
+    return '<span class="hw-sparkwrap" aria-hidden="true">' + gr + lab + '</span>' + axis;
+  }
   function ccPhoneHtml(current, daily, hourly, w, band, feelsAll, ground, outlook){
     var hl = ccHiLo(daily), fl = feelsAll ? tempNum(feelsAll.f) : tempNum(current.temperature);
     // wind sits under Feels: the speed, the 7-Day compass and the wind tag (which opens the wind key)
@@ -4920,10 +4970,10 @@
       dir ? '<span class="cc-gpic cc-gpic--wind">' + srDir(dir) + '<span aria-hidden="true">' + compass + '</span></span>' : '');
     var soon = '';
     if(outlook){
-      var parts = String(outlook).split(' in ~');
+      var parts = String(outlook).split(' in ~'), ol = hazardOutlook.last || {mins: 60, ends: false};
       soon = ccCard('Coming up', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
         vdEsc(parts[0]), parts[1] ? 'In ~' + vdEsc(parts[1]) : '', 'var(--icon-blue)',
-        '<span class="cc-gpic" aria-hidden="true">' + weatherIcon(parts[0].replace(/ (possible|ends?)$/, ''), isDayAtTime(sunEvents, Date.now(), current.isDaytime), 56) + '</span>');
+        ccComingGraph(hourly, ol));
     }
     var gtone = ground.key === 'dry' ? 'var(--aqi-good-ink)' : ground.key === 'wet' ? 'var(--icon-blue)' : 'var(--aqi-usg-ink)';
     // the animated ground picture sits in the body of the card, where the other cards have their chart; the header icon is a small boot on a horizon line
@@ -6937,9 +6987,9 @@
     var tone = lv === 'low' ? 'good' : lv === 'medium' ? 'ok' : 'high', d = x.d;
     var ico = '<svg class="hw-cond-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + HW_ICO[m.id] + '</svg>';
     // each condition is its own full-width card: the name and a tinted icon, the rating, what is in the forecast, then two line charts
-    return '<div class="today-card air-card hw-cond hw-tile--' + tone + '"><div class="hw-cond-top"><h3 class="hw-cond-name">' + ico + '<span>' + m.name + '</span></h3>' +
+    return '<div class="today-card air-card hw-cond hw-tile--' + tone + '"><div class="hw-cond-top card-head"><h3 class="hw-cond-name">' + ico + '<span>' + m.name + '</span></h3>' +
       '<span class="hw-cond-big"><span class="sr-only">Outlook: </span>' + HW_WORD[lv] + '</span></div>' +
-      (lv === 'low' ? '' : '<p class="hw-csay hw-csay--what">' + vdEsc(what) + '</p><p class="hw-csay">' + vdEsc(why) + '</p>' + (tip ? '<p class="hw-csay">' + vdEsc(tip) + '</p>' : '') + hwCondCharts(m, d, r)) + '</div>';   // No Impacts cards are just the name and rating
+      (lv === 'low' ? '' : '<div class="hw-cond-body"><p class="hw-csay hw-csay--what">' + vdEsc(what) + '</p><p class="hw-csay">' + vdEsc(why) + '</p>' + (tip ? '<p class="hw-csay">' + vdEsc(tip) + '</p>' : '') + hwCondCharts(m, d, r) + '</div>') + '</div>';   // No Impacts cards are just the name and rating
   }
   // the highest relative risk any condition's model gives a kind of trigger (heat, cold, pressure ...) today
   function hwEnvRR(drivers, cat){
