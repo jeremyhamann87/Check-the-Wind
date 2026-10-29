@@ -2921,15 +2921,15 @@
     .rd-card{ background:var(--rd-card); border-radius:8px}
     .rd-hero{ padding:16px 18px; display:flex; flex-direction:column; gap:12px }
     html body #rdWx .rd-place{ font-size:16px !important; font-weight:500; color:var(--rd-ink) }
-    .rd-now{ display:flex; justify-content:center; align-items:center; gap:16px }
+    .rd-now{ display:flex; justify-content:space-between; align-items:center; gap:12px }
     .rd-icon{ display:block; line-height:0 }
-    .rd-icon svg{ width:104px !important; height:78px !important; display:block }
-    .rd-nowtxt{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:4px; min-width:0 }
+    .rd-icon svg{ width:56px !important; height:42px !important; display:block }
+    .rd-nowtxt{ display:flex; flex-direction:column; align-items:flex-start; text-align:left; gap:2px; min-width:0; flex:1 1 auto }
     html body #rdWx .rd-temp{ display:flex; align-items:flex-start; line-height:1; color:var(--rd-ink) }
     html body #rdWx .rd-temp span{ font-size:44px !important; font-weight:500; line-height:1 }
     html body #rdWx .rd-temp small{ font-size:18px !important; font-weight:500; line-height:1.2; margin-top:3px }
     html body #rdWx .rd-sub{ font-size:14px !important; color:var(--rd-sub); line-height:1.3 }
-    html body #rdWx .rd-wind{ display:flex; align-items:center; gap:8px; font-size:14px !important; font-weight:500 }
+    html body #rdWx .rd-wind{ display:flex; flex-wrap:wrap; align-items:center; gap:2px 8px; font-size:14px !important; font-weight:500 }
     html body #rdWx .rd-wind > span:first-child{ font-size:14px !important }
     .rd-wc svg{ display:block; width:20px; height:20px }
     html body #rdWx .rd-v .hero-band-pill{ font-size:12px !important; font-weight:700; padding:3px 10px; border-radius:8px }
@@ -2982,8 +2982,8 @@
     html body #healthCard .hw-intro .hero-more, html body #actHero .hero-more{ display:none }
     html body #healthCard .hw-intro .sec-eyebrow, html body #actHero .sec-eyebrow{ padding:0 4px; margin:0; line-height:14px }   /* label to card is 14px, as on Weather */
     html body #healthCard .hw-intro .sec-eyebrow, html body #actHero .sec-eyebrow{ font-size:12px !important; font-weight:400; letter-spacing:.14em; text-transform:uppercase; color:var(--rd-label) }
-    html body #healthCard .hw-ok-t, html body #actHero .vd-head{ font-size:18px !important; font-weight:500; line-height:1.3; letter-spacing:0; color:var(--rd-ink) }
-    html body #actHero .vd-hl{ font-size:18px !important }
+    html body #healthCard .hw-ok-t, html body #actHero .vd-head{ font-size:16px !important; font-weight:500; line-height:1.3; letter-spacing:0; color:var(--rd-ink) }
+    html body #actHero .vd-hl{ font-size:16px !important }
     .db-layout > .hw-hero{ padding:12px 16px 0 }
     html body #healthCard{ margin-top:-4px }   /* the first label sits the same distance under the header on all three tabs */
     #healthCard.hw-module{ gap:14px }
@@ -3009,7 +3009,7 @@
     html body #bestList .btc-tab span{ font-size:15px !important }
     html body #bestList .btc{ border:0; border-radius:8px; box-shadow:none }
     html body #bestList .btc-top{ background:none; border:0; min-height:0; padding:14px 18px 0 }
-    html body #bestList .btc-day{ font-size:15px !important; font-weight:700 }
+    html body #bestList .btc-day{ font-size:16px !important; font-weight:500; color:var(--rd-ink) }
     html body #bestList .hw-safe{ padding:6px 18px 16px }
     /* Activity: Today stays a card; the other days are one table, like the Weather conditions list (day, best time, temperature) */
     html body #bestList .btc-list{ gap:0 }
@@ -5221,9 +5221,10 @@
         '<span class="rd-place">' + vdEsc(place) + '</span>' +
         '<div class="rd-now">' +
           '<span class="rd-icon" role="img" aria-label="' + vdEsc(ampText(cur.shortForecast)) + '">' + weatherIcon(cur.shortForecast, isDay, 96) + '</span>' +
+          '<span class="rd-temp" aria-label="' + tempNum(cur.temperature) + ' degrees"><span>' + tempNum(cur.temperature) + '°</span><small>' + (useCelsius ? 'C' : 'F') + '</small></span>' +
           '<div class="rd-nowtxt">' +
-            '<span class="rd-temp" aria-label="' + tempNum(cur.temperature) + ' degrees"><span>' + tempNum(cur.temperature) + '°</span><small>' + (useCelsius ? 'C' : 'F') + '</small></span>' +
-            '<span class="rd-sub">' + vdEsc(ampText(cur.shortForecast)) + ' · Feels like ' + fl + '</span>' +
+            '<span class="rd-sub">' + vdEsc(ampText(cur.shortForecast)) + '</span>' +
+            '<span class="rd-sub">Feels like ' + fl + '</span>' +
             '<span class="rd-wind"><span>' + windNum(s.w.high) + ' ' + windUnit + '</span>' + (dir ? srDir(dir) + '<span aria-hidden="true" class="rd-wc">' + windArrowSvg(dir, band.css, 20, 0, true) + '</span>' : '') +
               '<span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + vdEsc(band.label) + '</span></span>' +
           '</div>' +
