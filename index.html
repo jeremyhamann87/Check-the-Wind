@@ -39,7 +39,7 @@
 <meta name="twitter:description" content="Live wind speed and direction, the 7-day wind outlook, alerts, air quality and the best times to get outside.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
@@ -2893,6 +2893,146 @@
   .hm-voice{ display:flex; align-items:center; gap:10px; color:var(--text-muted) }
   .hm-voice select{ flex:1 1 auto; min-width:0; height:36px; padding:0 8px; border:1px solid var(--line); border-radius:4px; background:var(--surface); color:var(--text); font:inherit }
   .hm-note{ margin:0; color:var(--text-muted) }
+
+  /* ===== Phone redesign (from the Claude Design file): flat and simple. Roboto; white, large-radius cards on a pale ground; small
+     spaced capitals as labels instead of module headers; light-blue selected states; a status dot on each condition. Phones only. ===== */
+  :root{ --rd-bg:#F2F5FA; --rd-card:#FFFFFF; --rd-ink:#1F1F1F; --rd-sub:#444746; --rd-line:#E1E5EA; --rd-sel:#C2E7FF; --rd-sel-ink:#001D35; --rd-panel:#F5F7FA;
+    --rd-good:#1E8E3E; --rd-warn:#E8A317; --rd-high:#E8710A; --rd-bad:#D93025; --rd-blue:#2F7DD1; --rd-label:#9BA2AA }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --rd-bg:#0E1620; --rd-card:#16212C; --rd-ink:#E8EFF3; --rd-sub:#A9BCCB; --rd-line:#2A3A49; --rd-sel:#1F4E73; --rd-sel-ink:#D6EEFF; --rd-panel:#1C2A38;
+    --rd-good:#4CC36F; --rd-warn:#F0B73A; --rd-high:#F28B3C; --rd-bad:#F2665B; --rd-blue:#5CB4FF; --rd-label:#7F93A4 } }
+  :root[data-theme="dark"]{ --rd-bg:#0E1620; --rd-card:#16212C; --rd-ink:#E8EFF3; --rd-sub:#A9BCCB; --rd-line:#2A3A49; --rd-sel:#1F4E73; --rd-sel-ink:#D6EEFF; --rd-panel:#1C2A38;
+    --rd-good:#4CC36F; --rd-warn:#F0B73A; --rd-high:#F28B3C; --rd-bad:#F2665B; --rd-blue:#5CB4FF; --rd-label:#7F93A4 }
+  .rd-wx, .rd-search, .rd-sum--more, .rd-sum--more + .rd-more{ display:none }
+  @media (max-width:31.1875em){
+    :root, :root:not([data-theme="light"]), :root[data-theme="dark"]{ --module-bg:var(--rd-card); --page-bg:var(--rd-bg) }
+    html body{ background:var(--rd-bg); color:var(--rd-ink) }
+    html body, html body :not(svg):not(svg *){ font-family:Roboto, system-ui, -apple-system, sans-serif }
+    /* the header is the original one (windmill logo, place, tag, search); only its ground is the flat page color */
+    .db-layout > header.top{ padding:14px 16px 4px; background:color-mix(in srgb, var(--rd-bg) 80%, transparent) !important; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border:0; box-shadow:none }
+    /* the Weather view: the new layout replaces the hero, hourly, 7-day and air modules (they stay on tablets and desktops) */
+    html[data-view="weather"] #rdWx:not([hidden]){ display:flex }
+    html[data-view="weather"] #heroSection, html[data-view="weather"] #weekSection, html[data-view="weather"] #airSection, html[data-view="weather"] #todaySection{ display:none !important }
+    .rd-wx{ flex-direction:column; gap:14px; padding:0 16px 0 }
+    html body #rdWx > .rd-label:first-child{ padding-top:0 }
+    html body #rdWx .rd-label, html body #rdWx .rd-date{ font-size:12px !important; font-weight:400; color:var(--rd-label) }
+    html body #rdWx .rd-label{ letter-spacing:.14em; text-transform:uppercase; padding:8px 4px 0 }
+    .rd-labrow{ display:flex; align-items:baseline; justify-content:space-between }
+    html body #rdWx .rd-labrow .rd-date{ padding:8px 4px 0; text-transform:uppercase; letter-spacing:.14em }
+    .rd-card{ background:var(--rd-card); border-radius:8px}
+    .rd-hero{ padding:16px 18px; display:flex; flex-direction:column; gap:12px }
+    html body #rdWx .rd-place{ font-size:16px !important; font-weight:500; color:var(--rd-ink) }
+    .rd-now{ display:flex; justify-content:center; align-items:center; gap:16px }
+    .rd-icon{ display:block; line-height:0 }
+    .rd-icon svg{ width:104px !important; height:78px !important; display:block }
+    .rd-nowtxt{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:4px; min-width:0 }
+    html body #rdWx .rd-temp{ display:flex; align-items:flex-start; line-height:1; color:var(--rd-ink) }
+    html body #rdWx .rd-temp span{ font-size:44px !important; font-weight:500; line-height:1 }
+    html body #rdWx .rd-temp small{ font-size:18px !important; font-weight:500; line-height:1.2; margin-top:3px }
+    html body #rdWx .rd-sub{ font-size:14px !important; color:var(--rd-sub); line-height:1.3 }
+    html body #rdWx .rd-wind{ display:flex; align-items:center; gap:8px; font-size:14px !important; font-weight:500 }
+    html body #rdWx .rd-wind > span:first-child{ font-size:14px !important }
+    .rd-wc svg{ display:block; width:20px; height:20px }
+    html body #rdWx .rd-v .hero-band-pill{ font-size:12px !important; font-weight:700; padding:3px 10px; border-radius:8px }
+    html body #rdWx .rd-wind .hero-band-pill{ font-size:12px !important; font-weight:700; padding:3px 10px; border-radius:8px}
+    .rd-sum{ display:grid; grid-template-columns:minmax(0,1fr) 24px; align-items:start; gap:8px; width:100%; min-height:44px; padding:10px 12px; border:0; border-radius:8px; background:var(--rd-panel); color:var(--rd-ink); text-align:left; cursor:pointer }
+    html body .rd-sum-t.rd-sum-t.rd-sum-t{ font-size:14px !important; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+    html body .rd-sum[aria-expanded="true"] .rd-sum-t.rd-sum-t.rd-sum-t{ white-space:normal; overflow:visible; text-overflow:clip }
+    .rd-sum svg{ width:22px; height:22px; margin-top:1px; transition:transform .2s }
+    .rd-sum[aria-expanded="true"] svg{ transform:rotate(180deg) }
+    .rd-sum:focus-visible, .rd-listen:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:8px}
+    .rd-sum--more{ display:grid }
+    .rd-more, .rd-sum--more + .rd-more:not([hidden]){ display:flex; flex-direction:column; gap:14px }
+    .rd-more[hidden], .rd-more:empty{ display:none }
+    .rd-per{ display:flex; flex-direction:column; gap:2px }
+    html body #rdWx .rd-per b{ font-size:15px !important; font-weight:700 }
+    html body #rdWx .rd-per span{ font-size:16px !important; line-height:1.4 }
+    .rd-listen{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:0 18px; border:0; border-radius:8px; background:var(--rd-sel); color:var(--rd-sel-ink); font-weight:700; cursor:pointer; align-self:flex-start }
+    html body .rd-listen.rd-listen.rd-listen{ font-size:15px !important }
+    .rd-listen svg{ width:20px; height:20px }
+    /* hourly: cards that scroll sideways, the current hour in the light blue */
+    .rd-hrs{ display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-padding-inline:16px; margin:0 -16px; padding:0 16px 6px; scrollbar-width:none }
+    .rd-hrs::-webkit-scrollbar{ display:none }
+    .rd-hr{ flex:0 0 84px; scroll-snap-align:start; box-sizing:border-box; background:var(--rd-card); color:var(--rd-ink); border-radius:8px; padding:12px; display:flex; flex-direction:column; align-items:center; gap:8px }
+    .rd-hr.is-now{ background:var(--rd-sel); color:var(--rd-sel-ink) }
+    html body #rdWx .rd-hr b{ font-size:15px !important; font-weight:400 }
+    .rd-hr-i{ display:block; line-height:0 }
+    .rd-hr-i svg{ width:32px !important; height:24px !important; display:block }
+    html body #rdWx .rd-hr-t{ font-size:20px !important; font-weight:500; line-height:1 }
+    html body #rdWx .rd-hr-w, html body #rdWx .rd-hr-p{ font-size:15px !important; font-weight:300 }
+    .rd-hr-p{ display:flex; align-items:center; gap:4px; color:var(--rd-sub) }
+    .rd-hr.is-now .rd-hr-p{ color:var(--rd-sel-ink) }
+    /* conditions: one list, a status dot before each value */
+    .rd-list{ border-radius:8px; padding:0; overflow:hidden; display:flex; flex-direction:column }
+    .rd-row{ padding:0 18px; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:14px; min-height:42px }
+    .rd-row + .rd-row{ border-top:1px solid var(--rd-line) }
+    html body #rdWx .rd-k{ font-size:14px !important; font-weight:300 }
+    .rd-v{ display:flex; align-items:center; gap:8px; font-weight:500; text-align:right }
+    html body #rdWx .rd-v{ font-size:14px !important }
+    .rd-dot{ flex:0 0 auto; width:10px; height:10px; border-radius:5px; background:var(--rd-good) }
+    .rd-dot--warn{ background:var(--rd-warn) } .rd-dot--high{ background:var(--rd-high) } .rd-dot--bad{ background:var(--rd-bad) } .rd-dot--blue{ background:var(--rd-blue) }
+    /* the tab bar: a white pill with the chosen tab in light blue */
+    .view-seg{ background:var(--rd-card) !important; -webkit-backdrop-filter:none; backdrop-filter:none; border:0 !important; box-shadow:0 2px 12px rgba(0,0,0,.18) !important; padding:6px; gap:4px }
+    .vs-btn[aria-selected="true"]{ background:var(--rd-sel) !important; color:var(--rd-sel-ink) !important }
+    .vs-btn{ color:var(--rd-ink) }
+    .view-seg{ border-radius:999px !important } .vs-btn{ border-radius:999px !important }
+  }
+  @media (max-width:31.1875em){
+    /* Health: a summary card, then one list of conditions with a status dot on each */
+    html body #healthCard .hw-intro, html body #actHero .vd-prose{ background:none; padding:0; display:flex; flex-direction:column; gap:14px }
+    html body #healthCard .hw-intro .hero-more, html body #actHero .hero-more{ display:none }
+    html body #healthCard .hw-intro .sec-eyebrow, html body #actHero .sec-eyebrow{ padding:0 4px; margin:0; line-height:14px }   /* label to card is 14px, as on Weather */
+    html body #healthCard .hw-intro .sec-eyebrow, html body #actHero .sec-eyebrow{ font-size:12px !important; font-weight:400; letter-spacing:.14em; text-transform:uppercase; color:var(--rd-label) }
+    html body #healthCard .hw-ok-t, html body #actHero .vd-head{ font-size:18px !important; font-weight:500; line-height:1.3; letter-spacing:0; color:var(--rd-ink) }
+    html body #actHero .vd-hl{ font-size:18px !important }
+    .db-layout > .hw-hero{ padding:12px 16px 0 }
+    html body #healthCard{ margin-top:-4px }   /* the first label sits the same distance under the header on all three tabs */
+    #healthCard.hw-module{ gap:14px }
+    html body #healthCard .hw-conds{ background:var(--rd-card); border-radius:8px; padding:0; overflow:hidden; gap:0; display:flex; flex-direction:column }
+    html body #healthCard .hw-cond{ background:none; border:0; border-radius:0; box-shadow:none; padding:0 18px }
+    html body #healthCard .hw-cond + .hw-cond{ border-top:1px solid var(--rd-line) }
+    html body #healthCard .hw-cond-top{ min-height:42px; padding:0; background:none; border:0 }
+    html body #healthCard .hw-cond-ico{ display:none }
+    html body #healthCard .hw-cond-name, html body #healthCard .hw-cond-name > span{ font-size:14px !important; font-weight:300 !important; letter-spacing:normal; line-height:normal; color:var(--rd-ink) }
+    /* the warning, watch and advisory banners have 8px corners (the colored head is clipped to them) */
+    html body .alert, html body .db-content .alert, html body header.top .alert{ border-radius:8px }
+    /* one button style on phones: the standard 44px button with 8px corners */
+    html body .bp-btn{ border-radius:8px }
+    html body #healthCard .hw-cond-big{ display:inline-flex; align-items:center; gap:8px; font-size:14px !important; font-weight:500 !important; letter-spacing:normal !important; line-height:normal; color:var(--rd-ink) }
+    html body #healthCard .hw-tile--good .hw-cond-big{ font-weight:500 !important }   /* same weight as the Weather list (beats the light No Impacts weight) */
+    html body #healthCard .hw-cond-big::before{ content:""; flex:0 0 auto; width:10px; height:10px; border-radius:5px; background:var(--rd-good) }
+    html body #healthCard .hw-tile--ok .hw-cond-big::before{ background:var(--rd-warn) }
+    html body #healthCard .hw-tile--high .hw-cond-big::before{ background:var(--rd-bad) }
+    html body #healthCard .hw-cond-body{ background:var(--rd-panel); border-radius:8px; padding:16px; margin:0 0 16px }
+    /* Activity: pill selectors with the light-blue selected state, and rounded day cards without module headers */
+    html body #bestList .btc-tab{ min-height:40px; padding:0 6px; border:0; border-radius:8px; background:var(--rd-card); color:var(--rd-ink); font-weight:500 }
+    html body #bestList .btc-tab[aria-selected="true"], html body #bestList .btc-tab[aria-pressed="true"], html body #bestList .btc-tab.is-on{ background:var(--rd-sel); color:var(--rd-sel-ink); font-weight:700 }
+    html body #bestList .btc-tab span{ font-size:15px !important }
+    html body #bestList .btc{ border:0; border-radius:8px; box-shadow:none }
+    html body #bestList .btc-top{ background:none; border:0; min-height:0; padding:14px 18px 0 }
+    html body #bestList .btc-day{ font-size:15px !important; font-weight:700 }
+    html body #bestList .hw-safe{ padding:6px 18px 16px }
+    /* Activity: Today stays a card; the other days are one table, like the Weather conditions list (day, best time, temperature) */
+    html body #bestList .btc-list{ gap:0 }
+    html body #bestList .btc:not(.btc--row){ position:relative; margin-bottom:12px }
+    html body #bestList .btc:not(.btc--row):has(+ .btc){ margin-bottom:44px }
+    html body #bestList .btc:not(.btc--row):has(+ .btc)::after{ content:"The week ahead"; position:absolute; left:4px; top:100%; margin-top:14px; font-size:12px; font-weight:400; letter-spacing:.14em; text-transform:uppercase; color:var(--rd-label) }
+    html body #bestList .btc.btc--row{ display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; column-gap:14px; min-height:42px; padding:0 18px; border-radius:0 }
+    html body #bestList .btc.btc--row .btc-top, html body #bestList .btc.btc--row .hw-safe{ display:contents }
+    html body #bestList .btc.btc--row .btc-ico, html body #bestList .btc.btc--row .bt-sky, html body #bestList .btc.btc--row .hw-safe-d{ display:none !important }
+    html body #bestList .btc.btc--row .btc-day{ grid-column:1; grid-row:1; font-size:14px !important; font-weight:300; color:var(--rd-ink) }
+    html body #bestList .btc.btc--row .hw-safe-t{ grid-column:2; grid-row:1; margin:0; font-size:14px !important; font-weight:400; text-align:right; color:var(--rd-ink) }
+    html body #bestList .btc.btc--row .btc--none .hw-safe-t, html body #bestList .btc--none.btc--row .hw-safe-t{ color:var(--rd-sub) }
+    html body #bestList .btc.btc--row .btc-wx{ grid-column:3; grid-row:1; min-width:52px; justify-content:flex-end }
+    html body #bestList .btc.btc--row .bt-tempb{ font-size:14px !important; font-weight:500 }
+    html body #bestList .btc.btc--row + .btc.btc--row{ border-top:1px solid var(--rd-line) }
+    html body #bestList .btc:not(.btc--row) + .btc, html body #bestList .btc.btc--row:first-of-type{ border-radius:8px 8px 0 0 }
+    html body #bestList .btc.btc--row:last-child{ border-radius:0 0 8px 8px }
+    html body #bestList .btc:not(.btc--row) + .btc:last-child, html body #bestList .btc.btc--row:first-of-type:last-child{ border-radius:8px }
+    /* only Today's card keeps its green bar (and Morning / Afternoon / Evening); the other days are text only */
+    html body #bestList .btc.btc--row .hw-linewrap, html body #bestList .btc.btc--row .hw-bar-l{ display:none !important }
+    html body #bestList .hw-safe-t{ font-size:22px !important; font-weight:500 }
+    html body #bestList .hw-safe-d{ font-size:15px !important; color:var(--rd-sub) }
+  }
 </style>
 </head>
 <body>
@@ -2910,6 +3050,7 @@
         <span class="logo-swap"><span class="logo-text">Check the Wind</span><span class="logo-loc" id="logoLoc" aria-hidden="true"></span></span>
       </h1>
     </div>
+    <button type="button" class="rd-search" id="rdSearch" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg><span>Search</span></button>
     <div class="hdr-loc" id="hdrLoc"></div>
     <div class="m-loc-row">
       <span class="m-loc-name" id="mLocName"></span>
@@ -3072,6 +3213,9 @@
   <span class="ptr-text">Refreshing data…</span>
 </div>
 
+<!-- Phones, Weather view: the simple layout (the current conditions card, the hourly cards and the conditions list), built by rdRender() -->
+<div class="rd-wx" id="rdWx" hidden></div>
+
 <div class="wrap">
   <section class="load-error" id="loadError" hidden role="alert">
     <svg class="load-error-art" viewBox="-50 0 300 140" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -3180,7 +3324,7 @@
           <div class="today-card air-card btc" aria-hidden="true"><div class="hw-safe"><span class="skel btc-skel" style="width:40%"></span><span class="skel btc-skel btc-skel--big" style="width:60%"></span><span class="skel btc-skel" style="width:85%"></span></div></div>
         </template>
         <template x-for="(w, idx) in $store.best.windows" :key="w.key">
-          <div class="today-card air-card btc" :class="w.none ? 'btc--none' : ''" role="listitem" :data-when="w.when"
+          <div class="today-card air-card btc" :class="[w.none ? 'btc--none' : '', ($store.best.mode === 'top3' || !String(w.when || '').startsWith('Today')) ? 'btc--row' : '']" role="listitem" :data-when="w.when"
             :aria-label="(w.dayLong || w.day) + '. ' + (w.none ? 'No good window. ' + w.reason : w.range + '. ' + w.temp + '. ' + w.summary)">
             <div class="btc-top card-head">
               <span class="btc-day"><span class="bt-medal" x-show="w.medal" x-html="w.medal"></span><svg class="btc-ico" x-show="!w.medal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span x-text="w.dayLong || w.day"></span></span>
@@ -4908,13 +5052,21 @@
   }
   // the UV index card (shown when no weather is on the way): the level now, the day's peak and the hourly line, like the Health tab's
   function applyHeroUv(){
+    rdConds();
     var el = document.getElementById('ccUvCard');
     if(!el) return;
     var d0 = hwData && hwData.days && hwData.days[0];
     if(!d0 || d0.UV === null || d0.UV === undefined){ el.hidden = true; el.innerHTML = ''; return; }
     var se = hwSeries('uv', 12), cur = se && se.nowV !== null ? se.nowV : d0.UV, W = ['Low', 'Moderate', 'High', 'Very high', 'Extreme'];
     var lv = cur < 3 ? 0 : cur < 6 ? 1 : cur < 8 ? 2 : cur < 11 ? 3 : 4, ch = hwLineChart('uv');
-    el.innerHTML = ccCard('UV index', ccIco('sun'), cur < 0.5 ? 'None' : W[lv], 'Peak ' + hwR(d0.UV) + ' today', 'var(--icon-blue)', ch ? '<span class="hw-sparkwrap" aria-hidden="true">' + ch.graph + '</span>' + ch.axis : '');
+    // when the UV index peaks today: the hour of the highest hourly value
+    var peakAt = '', UVH = hwData.w && hwData.w.hourly;
+    if(UVH && UVH.time && UVH.uv_index){
+      var bi = -1, bv = 0.5;
+      UVH.time.forEach(function(t, i){ if(String(t).slice(0, 10) === d0.ds && typeof UVH.uv_index[i] === 'number' && UVH.uv_index[i] > bv){ bv = UVH.uv_index[i]; bi = i; } });
+      if(bi >= 0){ var ph = parseInt(String(UVH.time[bi]).slice(11, 13), 10); peakAt = 'Peaks at ' + (ph % 12 || 12) + ' ' + (ph >= 12 ? 'PM' : 'AM'); }
+    }
+    el.innerHTML = ccCard('UV index', ccIco('sun'), cur < 0.5 ? 'None' : W[lv], peakAt || 'No UV today', 'var(--icon-blue)', ch ? '<span class="hw-sparkwrap" aria-hidden="true">' + ch.graph + '</span>' + ch.axis : '');
     el.hidden = false;
   }
   var CC_WIND_CARD = false;   // the Wind half card is switched off: wind lives in the readout card now; set to true to bring it back
@@ -4999,6 +5151,136 @@
     if(!soon) soon = (!isDayNow && hum) ? hum : '<div class="cc-uv" id="ccUvCard" hidden></div>';
     return '<div class="cc-phone">' + main + '<div class="hw-minis cc-cards" role="group" aria-label="More current conditions">' + (CC_WIND_CARD ? wind : '') + (CC_EXTRA_CARDS ? gnd + hum : '') + '<div class="cc-air" id="ccAirCard" hidden></div>' + (soon || '<div class="cc-uv" id="ccUvCard" hidden></div>') + '</div></div>';
   }
+
+  /* ---------- Phone redesign: the Weather view ----------
+     A simple, flat layout from the design file: a current-conditions card (place, sky, temperature, feels like, wind, and a one-line
+     written forecast that opens), hourly cards that scroll sideways, and one list of conditions with a status dot on each. It is built
+     from the same data as the modules it replaces (those stay on tablets and desktops). */
+  var rdWx = document.getElementById('rdWx'), rdS = null, rdAirData = null, rdOpen = false;
+  function rdTone(rank){ return rank <= 0 ? 'good' : rank === 1 ? 'warn' : rank === 2 ? 'high' : 'bad'; }
+  function rdRow(label, tone, val){ return '<div class="rd-row"><span class="rd-k">' + label + '</span><span class="rd-v">' + (tone ? '<i class="rd-dot rd-dot--' + tone + '" aria-hidden="true"></i>' : '') + val + '</span></div>'; }
+  function rdHour(p){ var h = parseInt(String(p.startTime).slice(11, 13), 10); return (h % 12 || 12) + (h >= 12 ? 'p' : 'a'); }
+  function rdConds(){
+    var el = document.getElementById('rdConds'), s = rdS;
+    if(!el || !s) return;
+    var rows = '', cur = s.current;
+    if(s.outlook){ var parts = String(s.outlook).split(' in ~'); rows += rdRow('Coming up', 'blue', vdEsc(parts[0]) + (parts[1] ? ' · in ~' + vdEsc(parts[1]) : '')); }
+    rows += rdRow('Wind', '', windNum(s.w.high) + ' ' + windUnit + ' <span class="hero-band-pill wk-tag" style="background:' + s.band.pill + '; color:' + s.band.pillInk + '">' + vdEsc(s.band.label) + '</span>');   // the wind tag stands in for the status dot
+    if(heroAir){
+      var ar = AQI_CAT_INFO[heroAir.cat] ? AQI_CAT_INFO[heroAir.cat].rank : 0;
+      rows += rdRow('Air quality', rdTone(ar), (heroAir.cat === 'Unhealthy for Sensitive Groups' ? 'Sensitive groups' : vdEsc(heroAir.cat)) + ' · ' + heroAir.aqi);
+    }
+    if(rdAirData){
+      if(rdAirData.pm) rows += rdRow('Fine particles', rdTone(rdAirData.pm.lv.rank), vdEsc(rdAirData.pm.lv.label) + ' · ' + Math.round(rdAirData.pm.v));
+      if(rdAirData.o3) rows += rdRow('Ozone', rdTone(rdAirData.o3.lv.rank), vdEsc(rdAirData.o3.lv.label) + ' · ' + Math.round(rdAirData.o3.v));
+    }
+    rows += rdRow('Ground', s.ground.key === 'dry' ? 'good' : 'warn', vdEsc(s.ground.label));
+    if(rdAirData && rdAirData.pollen) rows += rdRow('Pollen', rdAirData.pollen.rank <= 1 ? 'good' : rdAirData.pollen.rank === 2 ? 'warn' : rdAirData.pollen.rank === 3 ? 'high' : 'bad', vdEsc(rdAirData.pollen.label));
+    var rh = cur.relativeHumidity && typeof cur.relativeHumidity.value === 'number' ? Math.round(cur.relativeHumidity.value) : null;
+    if(rh !== null) rows += rdRow('Humidity', rh < 30 || rh > 60 ? 'warn' : 'good', (rh < 30 ? 'Dry' : rh > 60 ? 'Humid' : 'Comfortable') + ' · ' + rh + '%');
+    var d0 = typeof hwData !== 'undefined' && hwData && hwData.days && hwData.days[0];
+    if(d0 && d0.UV !== null && d0.UV !== undefined){
+      var se = hwSeries('uv', 12), uv = se && se.nowV !== null ? se.nowV : d0.UV, UVW = ['Low', 'Moderate', 'High', 'Very high', 'Extreme'];
+      var lv = uv < 3 ? 0 : uv < 6 ? 1 : uv < 8 ? 2 : uv < 11 ? 3 : 4, peak = '', UVH = hwData.w && hwData.w.hourly;
+      if(UVH && UVH.time && UVH.uv_index){
+        var bi = -1, bv = 0.5;
+        UVH.time.forEach(function(t, i){ if(String(t).slice(0, 10) === d0.ds && typeof UVH.uv_index[i] === 'number' && UVH.uv_index[i] > bv){ bv = UVH.uv_index[i]; bi = i; } });
+        if(bi >= 0){ var ph = parseInt(String(UVH.time[bi]).slice(11, 13), 10); peak = ' · peak ' + (ph % 12 || 12) + ' ' + (ph >= 12 ? 'PM' : 'AM'); }
+      }
+      rows += rdRow('UV index', uv < 0.5 ? 'good' : rdTone(lv), (uv < 0.5 ? 'None' : UVW[lv]) + peak);
+    }
+    el.innerHTML = rows;
+  }
+  function rdRender(){
+    var s = rdS;
+    if(!rdWx || !s) return;
+    var cur = s.current, hourly = s.hourly || [], band = s.band;
+    var place = String((document.getElementById('mLocName') || {}).textContent || '').trim();
+    var isDay = isDayAtTime(sunEvents, Date.now(), cur.isDaytime);
+    var fl = s.feelsAll ? tempNum(s.feelsAll.f) : tempNum(cur.temperature);
+    var head = heroMore.weather ? (heroMore.weather.text || heroMore.weather.head) : ampText(cur.shortForecast);   // the one line is the start of our written text
+    var dir = cur.windDirection;
+    // the opened forecast is our own written text (the same words the headline and the read-aloud use); the raw forecast periods are the fallback
+    var smart = heroMore.weather && heroMore.weather.text ? heroMore.weather.text : '';
+    var per = smart ? '' : (s.daily || []).slice(0, 3).map(function(p){
+      return '<div class="rd-per"><b>' + vdEsc(p.name) + '</b><span>' + vdEsc(p.detailedForecast || p.shortForecast || '') + '</span></div>';
+    }).join('');
+    var droplet = '<svg width="12" height="16" viewBox="0 0 12 16" fill="none" aria-hidden="true" focusable="false"><path d="M6 1C6 1 1.5 6.2 1.5 9.8a4.5 4.5 0 0 0 9 0C10.5 6.2 6 1 6 1z" fill="var(--rd-blue)"/></svg>';
+    var cards = hourly.slice(0, 168).map(function(p, i){
+      var pop = p.probabilityOfPrecipitation && typeof p.probabilityOfPrecipitation.value === 'number' ? Math.round(p.probabilityOfPrecipitation.value) : 0;
+      return '<div class="rd-hr' + (i === 0 ? ' is-now' : '') + '" data-day="' + String(p.startTime).slice(0, 10) + '"><b>' + (i === 0 ? 'Now' : rdHour(p)) + '</b>' +
+        '<span class="rd-hr-i" role="img" aria-label="' + vdEsc(ampText(p.shortForecast)) + '">' + weatherIcon(p.shortForecast, isDayAtTime(sunEvents, new Date(p.startTime).getTime(), p.isDaytime), 32) + '</span>' +
+        '<span class="rd-hr-t">' + tempNum(p.temperature) + '°</span>' +
+        '<span class="rd-hr-w">' + windNum(parseWind(p.windSpeed).high) + ' ' + windUnit + '</span>' +
+        '<span class="rd-hr-p">' + droplet + pop + '%</span></div>';
+    }).join('');
+    var dateLab = hourly[0] ? rdDayLabel(String(hourly[0].startTime).slice(0, 10)) : '', oldHrs = rdWx.querySelector('.rd-hrs'), keepX = oldHrs ? oldHrs.scrollLeft : 0;
+    rdWx.innerHTML =
+      '<span class="rd-label">Current conditions</span>' +
+      '<div class="rd-card rd-hero">' +
+        '<span class="rd-place">' + vdEsc(place) + '</span>' +
+        '<div class="rd-now">' +
+          '<span class="rd-icon" role="img" aria-label="' + vdEsc(ampText(cur.shortForecast)) + '">' + weatherIcon(cur.shortForecast, isDay, 96) + '</span>' +
+          '<div class="rd-nowtxt">' +
+            '<span class="rd-temp" aria-label="' + tempNum(cur.temperature) + ' degrees"><span>' + tempNum(cur.temperature) + '°</span><small>' + (useCelsius ? 'C' : 'F') + '</small></span>' +
+            '<span class="rd-sub">' + vdEsc(ampText(cur.shortForecast)) + ' · Feels like ' + fl + '</span>' +
+            '<span class="rd-wind"><span>' + windNum(s.w.high) + ' ' + windUnit + '</span>' + (dir ? srDir(dir) + '<span aria-hidden="true" class="rd-wc">' + windArrowSvg(dir, band.css, 20, 0, true) + '</span>' : '') +
+              '<span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + vdEsc(band.label) + '</span></span>' +
+          '</div>' +
+        '</div>' +
+        '<button type="button" class="rd-sum" id="rdSum" aria-expanded="' + rdOpen + '" aria-controls="rdMore" aria-label="' + (rdOpen ? 'Hide' : 'Show') + ' written forecast"><span class="rd-sum-t">' + vdEsc(head) + '</span>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>' +
+        '<div class="rd-more" id="rdMore"' + (rdOpen ? '' : ' hidden') + '>' + per +
+        '</div>' +
+      '</div>' +
+      '<div class="rd-labrow"><span class="rd-label">Hourly</span><span class="rd-date" id="rdDate">' + vdEsc(dateLab) + '</span></div>' +
+      '<div class="rd-hrs" role="list" tabindex="0" aria-label="Hourly forecast">' + cards + '</div>' +
+      '<span class="rd-label">Conditions</span>' +
+      '<div class="rd-card rd-list" id="rdConds"></div>';
+    rdConds();
+    rdWx.hidden = false;
+    var nh = rdWx.querySelector('.rd-hrs'); if(nh && keepX) nh.scrollLeft = keepX;
+  }
+  // "Thu, Oct 29" from a YYYY-MM-DD day (a calendar date, so no time zone shift)
+  function rdDayLabel(ds){
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(ds || '');
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]).toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'}) : '';
+  }
+  // the date in the corner follows the day of the first card in view as the hours scroll
+  var rdScrollRaf = 0;
+  rdWx && rdWx.addEventListener('scroll', function(e){
+    var el = e.target;
+    if(!el || !el.classList || !el.classList.contains('rd-hrs') || rdScrollRaf) return;
+    rdScrollRaf = requestAnimationFrame(function(){
+      rdScrollRaf = 0;
+      var kids = el.children, left = el.scrollLeft + 16, day = '';
+      for(var i = 0; i < kids.length; i++){ if(kids[i].offsetLeft + kids[i].offsetWidth > left + 8){ day = kids[i].getAttribute('data-day'); break; } }
+      var d = document.getElementById('rdDate'), t = rdDayLabel(day);
+      if(d && t && d.textContent !== t) d.textContent = t;
+    });
+  }, true);
+  // the gray button with the start of our written text, and the Listen button it opens (Weather builds its own; Health and Activity use this one)
+  function rdSumHtml(kind){
+    var c = heroMore[kind];
+    if(!c || !c.text) return '';
+    return '<button type="button" class="rd-sum rd-sum--more" aria-expanded="false" aria-label="Show full text"><span class="rd-sum-t">' + vdEsc(c.text) + '</span>' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>';
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('.rd-sum');
+    if(!b) return;
+    var more = b.nextElementSibling, open = b.getAttribute('aria-expanded') !== 'true';
+    if(b.id === 'rdSum') rdOpen = open;
+    b.setAttribute('aria-expanded', open);
+    b.setAttribute('aria-label', (open ? 'Hide' : 'Show') + (b.id === 'rdSum' ? ' written forecast' : ' full text'));
+    if(more && more.classList.contains('rd-more')) more.hidden = !open;
+  });
+  (function(){
+    var sb = document.getElementById('rdSearch'), mb = document.getElementById('mSearchBtn');
+    if(sb && mb) sb.addEventListener('click', function(){ mb.click(); });
+    var nm = document.getElementById('mLocName');
+    if(nm) new MutationObserver(function(){ var pl = document.querySelector('#rdWx .rd-place'); if(pl) pl.textContent = String(nm.textContent || '').trim(); }).observe(nm, {childList: true, characterData: true, subtree: true});
+  })();
   function renderHero(current, todayDaily, hourly, daily){
     var w = parseWind(current.windSpeed);
     var band = bandFor(w.high);
@@ -5075,6 +5357,8 @@
     applyHeroAir();
     applyHeroUv();
     syncWindTag();
+    rdS = {current: current, daily: daily, hourly: hourly, w: w, band: band, feelsAll: feelsAll, ground: ground, outlook: outlook};
+    rdRender();
   }
 
   function stopRadarLoop(){
@@ -6449,6 +6733,7 @@
     applyHeroAir();
   }
   function applyHeroAir(){
+    rdConds();
     var ccAir = document.getElementById('ccAirCard');
     if(ccAir){
       if(heroAir){
@@ -6522,6 +6807,8 @@
         pollenCard() +
       '</div>';
     airSection.hidden = false;
+    rdAirData = {pm: pmG, o3: ozG, pollen: (function(){ var t = ['weed', 'tree', 'grass'].reduce(function(a, k){ return pollen[k] > pollen[a] ? k : a; }, 'weed'); return {weed: weedLv, tree: treeLv, grass: grassLv}[t]; })()};
+    rdConds();
   }
   /* ---------- Health Risks ----------
      A Low / Medium / High outlook, for today and the next two days, for six conditions that weather and air quality can make worse:
@@ -7385,7 +7672,7 @@
     var ico = c.icon ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + HW_CELL_ICO[c.icon] + '</svg>' : '';
     if(c.chart) meter = '<span class="hw-sparkwrap" aria-hidden="true">' + c.chart.graph + '</span>' + c.chart.axis;
     return '<div class="today-card air-card hw-mini hw-tile--' + c.tone + '"><div class="card-head"><h3>' + ico + '<span>' + c.k + '</span></h3></div>' +
-      '<div class="hw-mini-body"><span class="hw-tile-v"><i class="hw-dot" aria-hidden="true"></i>' + c.v + '</span><span class="hw-tile-s">' + (c.s || '&nbsp;') + '</span>' + meter + '</div></div>';
+      '<div class="hw-mini-body"><span class="hw-tile-v">' + c.v + '</span><span class="hw-tile-s">' + (c.s || '&nbsp;') + '</span>' + meter + '</div></div>';
   }
   var HW_SCALES = {
     aq: ['var(--aqi-good)', 'var(--aqi-moderate)', 'var(--aqi-usg)', 'var(--aqi-unhealthy)', 'var(--aqi-veryunhealthy)'],
@@ -7435,7 +7722,7 @@
     heroMore.health = {eyebrow: 'Potential health impacts', head: O.title, text: O.body};
     healthCard.innerHTML =
       '<div class="hw-intro"><span class="sec-eyebrow">Potential health impacts</span>' +
-        '<h2 class="hw-ok-t" id="hwTitle">' + vdEsc(O.title) + heroMoreBtn('health') + '</h2><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
+        '<div class="rd-card rd-hero"><h2 class="hw-ok-t" id="hwTitle">' + vdEsc(O.title) + heroMoreBtn('health') + '</h2>' + rdSumHtml('health') + '</div><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
       '<div class="hw-conds">' + plan.concat(fine).map(hwRowHtml).join('') + '</div>' +
       '<div class="hw-acts">' + (HW_WEEK_BTN ? '<button type="button" class="bp-btn bp-primary" data-hwweek aria-haspopup="dialog">' + calIco + '<span>The Week Ahead</span></button>' : '') +
         '<button type="button" class="bp-btn bp-primary hw-prefs" data-hwprefs aria-haspopup="dialog">Manage Health Preferences</button>' +
@@ -7787,7 +8074,7 @@
   // The Health and Activity headers: two headline lines and the full paragraph beneath
   function heroFill(hero, o, kind){
     if(kind) heroMore[kind] = {eyebrow: o.eyebrow || '', head: o.lines.join(' '), text: o.detail};
-    hero.innerHTML = '<div class="vd-prose">' + (o.eyebrow ? '<span class="sec-eyebrow sec-eyebrow--phone">' + vdEsc(o.eyebrow) + '</span>' : '') + '<span class="vd-head">' + o.lines.map(function(t, i, a){ return '<span class="vd-hl">' + vdEsc(t) + (kind && i === a.length - 1 ? heroMoreBtn(kind) : '') + '</span>'; }).join('') + '</span>' + '<div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
+    hero.innerHTML = '<div class="vd-prose">' + (o.eyebrow ? '<span class="sec-eyebrow sec-eyebrow--phone">' + vdEsc(o.eyebrow) + '</span>' : '') + '<div class="rd-card rd-hero"><span class="vd-head">' + o.lines.map(function(t, i, a){ return '<span class="vd-hl">' + vdEsc(t) + (kind && i === a.length - 1 ? heroMoreBtn(kind) : '') + '</span>'; }).join('') + '</span>' + (kind ? rdSumHtml(kind) : '') + '</div>' + '<div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
     hero.hidden = false;
   }
 
@@ -10063,6 +10350,7 @@
     var tg = vdTagFor(r);
     vdTagNow = tg.t;
     tagEls.forEach(function(t){ if(t){ t.textContent = tg.t; t.className = 'vd-tag vd-tag--' + tg.k; t.setAttribute('aria-label', tg.t + ', what this means'); t.hidden = false; } });
+    rdRender();
   }
 
   // The short go / stay tag beside the place name on phones
