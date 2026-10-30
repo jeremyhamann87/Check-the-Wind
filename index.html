@@ -2902,13 +2902,13 @@
     --rd-good:#4CC36F; --rd-warn:#F0B73A; --rd-high:#F28B3C; --rd-bad:#F2665B; --rd-blue:#5CB4FF; --rd-label:#7F93A4 } }
   :root[data-theme="dark"]{ --rd-bg:#0E1620; --rd-card:#16212C; --rd-ink:#E8EFF3; --rd-sub:#A9BCCB; --rd-line:#2A3A49; --rd-sel:#1F4E73; --rd-sel-ink:#D6EEFF; --rd-panel:#1C2A38;
     --rd-good:#4CC36F; --rd-warn:#F0B73A; --rd-high:#F28B3C; --rd-bad:#F2665B; --rd-blue:#5CB4FF; --rd-label:#7F93A4 }
-  .rd-wx, .rd-search, .rd-sum--more, .rd-sum--more + .rd-more{ display:none }
+  .rd-wx, .rd-search, .rd-more{ display:none }
   @media (max-width:31.1875em){
     :root, :root:not([data-theme="light"]), :root[data-theme="dark"]{ --module-bg:var(--rd-card); --page-bg:var(--rd-bg) }
     html body{ background:var(--rd-bg); color:var(--rd-ink) }
     html body, html body :not(svg):not(svg *){ font-family:Roboto, system-ui, -apple-system, sans-serif }
     /* the header is the original one (windmill logo, place, tag, search); only its ground is the flat page color */
-    .db-layout > header.top{ padding:14px 16px 4px; background:color-mix(in srgb, var(--rd-bg) 80%, transparent) !important; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border:0; box-shadow:none }
+    .db-layout > header.top{ padding:14px 16px 4px; background:color-mix(in srgb, var(--rd-bg) 88%, transparent) !important; border:0; box-shadow:none }   /* no backdrop-filter here: it would make the header the frame for the fixed search drawer inside it */
     /* the Weather view: the new layout replaces the hero, hourly, 7-day and air modules (they stay on tablets and desktops) */
     html[data-view="weather"] #rdWx:not([hidden]){ display:flex }
     html[data-view="weather"] #heroSection, html[data-view="weather"] #weekSection, html[data-view="weather"] #airSection, html[data-view="weather"] #todaySection{ display:none !important }
@@ -2919,12 +2919,12 @@
     .rd-labrow{ display:flex; align-items:baseline; justify-content:space-between }
     html body #rdWx .rd-labrow .rd-date{ padding:8px 4px 0; text-transform:uppercase; letter-spacing:.14em }
     .rd-card{ background:var(--rd-card); border-radius:8px}
-    .rd-hero{ padding:16px 18px; display:flex; flex-direction:column; gap:12px }
+    .rd-hero{ padding:16px; display:flex; flex-direction:column; gap:16px }
     html body #rdWx .rd-place{ font-size:16px !important; font-weight:500; color:var(--rd-ink) }
-    .rd-now{ display:flex; justify-content:space-between; align-items:center; gap:12px }
+    .rd-now{ display:flex; justify-content:space-between; align-items:center; gap:16px }
     .rd-icon{ display:block; line-height:0 }
     .rd-icon svg{ width:56px !important; height:42px !important; display:block }
-    .rd-nowtxt{ display:flex; flex-direction:column; align-items:flex-start; text-align:left; gap:2px; min-width:0; flex:1 1 auto }
+    .rd-nowtxt{ display:flex; flex-direction:column; align-items:flex-start; text-align:left; gap:2px; min-width:0 }
     html body #rdWx .rd-temp{ display:flex; align-items:flex-start; line-height:1; color:var(--rd-ink) }
     html body #rdWx .rd-temp span{ font-size:44px !important; font-weight:500; line-height:1 }
     html body #rdWx .rd-temp small{ font-size:18px !important; font-weight:500; line-height:1.2; margin-top:3px }
@@ -2934,15 +2934,24 @@
     .rd-wc svg{ display:block; width:20px; height:20px }
     html body #rdWx .rd-v .hero-band-pill{ font-size:12px !important; font-weight:700; padding:3px 10px; border-radius:8px }
     html body #rdWx .rd-wind .hero-band-pill{ font-size:12px !important; font-weight:700; padding:3px 10px; border-radius:8px}
-    .rd-sum{ display:grid; grid-template-columns:minmax(0,1fr) 24px; align-items:start; gap:8px; width:100%; min-height:44px; padding:10px 12px; border:0; border-radius:8px; background:var(--rd-panel); color:var(--rd-ink); text-align:left; cursor:pointer }
-    html body .rd-sum-t.rd-sum-t.rd-sum-t{ font-size:14px !important; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-    html body .rd-sum[aria-expanded="true"] .rd-sum-t.rd-sum-t.rd-sum-t{ white-space:normal; overflow:visible; text-overflow:clip }
-    .rd-sum svg{ width:22px; height:22px; margin-top:1px; transition:transform .2s }
+    /* the written text as a live-news timeline: a bold headline, then the sentences as points on a dotted line, opened by a See more link */
+    .rd-news{ display:flex; flex-direction:column; gap:12px }
+    html body .rd-hl.rd-hl.rd-hl, html body #healthCard .hw-ok-t, html body #actHero .vd-head, html body #actHero .vd-hl{ font-size:22px !important; font-weight:700; line-height:1.2; letter-spacing:-.01em; color:var(--rd-ink); margin:0 }
+    html body #actHero .vd-hl + .vd-hl, .rd-stop{ display:none }   /* Activity's second headline line is the first point on phones */
+    .rd-more{ display:flex; flex-direction:column; gap:12px }
+    .rd-more:empty{ display:none }
+    .rd-pts{ position:relative; list-style:none; margin:0; padding:0 0 0 20px; display:flex; flex-direction:column; gap:14px }
+    .rd-pts:not(.is-open) li:nth-child(n+3){ display:none }   /* collapsed: the first two points show under the headline */
+    .rd-pts:not(.is-open) li:nth-child(2)::after{ display:none }
+    html body .rd-pts.rd-pts.rd-pts li{ position:relative; font-size:15px !important; font-weight:400; line-height:1.4; color:var(--rd-sub) }
+    html body .rd-pts.rd-pts.rd-pts li b{ font-size:15px !important; font-weight:500; color:var(--rd-ink) }
+    .rd-pts li::before{ content:""; position:absolute; left:-20px; top:calc(.7em - 4px); width:8px; height:8px; border-radius:50%; background:var(--rd-blue); z-index:1 }
+    .rd-pts li:not(:last-child)::after{ content:""; position:absolute; left:-17px; top:.7em; width:2px; z-index:0; height:calc(100% + 14px); background:var(--rd-line) }
+    .rd-sum{ display:inline-flex; align-items:center; gap:4px; align-self:flex-start; min-height:32px; padding:0; border:0; background:none; color:var(--rd-sub); cursor:pointer }
+    html body .rd-sum-t.rd-sum-t.rd-sum-t{ font-size:12px !important; font-weight:500; letter-spacing:.14em; text-transform:uppercase }
+    .rd-sum svg{ width:16px; height:16px; transition:transform .2s }
     .rd-sum[aria-expanded="true"] svg{ transform:rotate(180deg) }
     .rd-sum:focus-visible, .rd-listen:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:8px}
-    .rd-sum--more{ display:grid }
-    .rd-more, .rd-sum--more + .rd-more:not([hidden]){ display:flex; flex-direction:column; gap:14px }
-    .rd-more[hidden], .rd-more:empty{ display:none }
     .rd-per{ display:flex; flex-direction:column; gap:2px }
     html body #rdWx .rd-per b{ font-size:15px !important; font-weight:700 }
     html body #rdWx .rd-per span{ font-size:16px !important; line-height:1.4 }
@@ -2974,6 +2983,7 @@
     .view-seg{ background:var(--rd-card) !important; -webkit-backdrop-filter:none; backdrop-filter:none; border:0 !important; box-shadow:0 2px 12px rgba(0,0,0,.18) !important; padding:6px; gap:4px }
     .vs-btn[aria-selected="true"]{ background:var(--rd-sel) !important; color:var(--rd-sel-ink) !important }
     .vs-btn{ color:var(--rd-ink) }
+    html.page-locked .view-seg{ display:none !important }   /* the bottom bar steps aside while the search drawer or a dialog is open */
     .view-seg{ border-radius:999px !important } .vs-btn{ border-radius:999px !important }
   }
   @media (max-width:31.1875em){
@@ -2982,8 +2992,6 @@
     html body #healthCard .hw-intro .hero-more, html body #actHero .hero-more{ display:none }
     html body #healthCard .hw-intro .sec-eyebrow, html body #actHero .sec-eyebrow{ padding:0 4px; margin:0; line-height:14px }   /* label to card is 14px, as on Weather */
     html body #healthCard .hw-intro .sec-eyebrow, html body #actHero .sec-eyebrow{ font-size:12px !important; font-weight:400; letter-spacing:.14em; text-transform:uppercase; color:var(--rd-label) }
-    html body #healthCard .hw-ok-t, html body #actHero .vd-head{ font-size:16px !important; font-weight:500; line-height:1.3; letter-spacing:0; color:var(--rd-ink) }
-    html body #actHero .vd-hl{ font-size:16px !important }
     .db-layout > .hw-hero{ padding:12px 16px 0 }
     html body #healthCard{ margin-top:-4px }   /* the first label sits the same distance under the header on all three tabs */
     #healthCard.hw-module{ gap:14px }
@@ -5198,13 +5206,13 @@
     var place = String((document.getElementById('mLocName') || {}).textContent || '').trim();
     var isDay = isDayAtTime(sunEvents, Date.now(), cur.isDaytime);
     var fl = s.feelsAll ? tempNum(s.feelsAll.f) : tempNum(cur.temperature);
-    var head = heroMore.weather ? (heroMore.weather.text || heroMore.weather.head) : ampText(cur.shortForecast);   // the one line is the start of our written text
     var dir = cur.windDirection;
     // the opened forecast is our own written text (the same words the headline and the read-aloud use); the raw forecast periods are the fallback
     var smart = heroMore.weather && heroMore.weather.text ? heroMore.weather.text : '';
-    var per = smart ? '' : (s.daily || []).slice(0, 3).map(function(p){
-      return '<div class="rd-per"><b>' + vdEsc(p.name) + '</b><span>' + vdEsc(p.detailedForecast || p.shortForecast || '') + '</span></div>';
-    }).join('');
+    var headline = (heroMore.weather && heroMore.weather.head ? heroMore.weather.head : ampText(cur.shortForecast)).replace(/[.\s]+$/, '');   // the headline of the written text, without its full stop
+    var pts = smart ? rdPoints(smart) : (s.daily || []).slice(0, 3).map(function(p){
+      return '<b>' + vdEsc(p.name) + '</b> ' + vdEsc(p.detailedForecast || p.shortForecast || '');
+    });
     var droplet = '<svg width="12" height="16" viewBox="0 0 12 16" fill="none" aria-hidden="true" focusable="false"><path d="M6 1C6 1 1.5 6.2 1.5 9.8a4.5 4.5 0 0 0 9 0C10.5 6.2 6 1 6 1z" fill="var(--rd-blue)"/></svg>';
     var cards = hourly.slice(0, 168).map(function(p, i){
       var pop = p.probabilityOfPrecipitation && typeof p.probabilityOfPrecipitation.value === 'number' ? Math.round(p.probabilityOfPrecipitation.value) : 0;
@@ -5229,10 +5237,7 @@
               '<span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + vdEsc(band.label) + '</span></span>' +
           '</div>' +
         '</div>' +
-        '<button type="button" class="rd-sum" id="rdSum" aria-expanded="' + rdOpen + '" aria-controls="rdMore" aria-label="' + (rdOpen ? 'Hide' : 'Show') + ' written forecast"><span class="rd-sum-t">' + vdEsc(head) + '</span>' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>' +
-        '<div class="rd-more" id="rdMore"' + (rdOpen ? '' : ' hidden') + '>' + per +
-        '</div>' +
+        '<div class="rd-news"><h2 class="rd-hl">' + vdEsc(headline) + '</h2>' + rdMoreHtml(pts, rdOpen, 'rdSum') + '</div>' +
       '</div>' +
       '<div class="rd-labrow"><span class="rd-label">Hourly</span><span class="rd-date" id="rdDate">' + vdEsc(dateLab) + '</span></div>' +
       '<div class="rd-hrs" role="list" tabindex="0" aria-label="Hourly forecast">' + cards + '</div>' +
@@ -5260,21 +5265,34 @@
       if(d && t && d.textContent !== t) d.textContent = t;
     });
   }, true);
-  // the gray button with the start of our written text, and the Listen button it opens (Weather builds its own; Health and Activity use this one)
-  function rdSumHtml(kind){
-    var c = heroMore[kind];
-    if(!c || !c.text) return '';
-    return '<button type="button" class="rd-sum rd-sum--more" aria-expanded="false" aria-label="Show full text"><span class="rd-sum-t">' + vdEsc(c.text) + '</span>' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>';
+  // The written text as a timeline, like a live news headline: the headline on top, then the sentences as points on a dotted line, opened by a See more link
+  function rdPoints(text){
+    return String(text || '').replace(/([.!?])\s+(?=[A-Z0-9\u201C"\u2018'])/g, '$1\n').split('\n').map(function(t){ return t.trim(); }).filter(Boolean).map(vdEsc);
   }
+  var RD_PEEK = 2;   // the points shown under the headline before See more
+  function rdMoreHtml(points, open, id){
+    if(!points.length) return '';
+    var more = points.length > RD_PEEK;
+    return '<div class="rd-more"><ul class="rd-pts' + (open || !more ? ' is-open' : '') + '"' + (id ? ' id="' + id + 'Pts"' : '') + '>' + points.map(function(t){ return '<li>' + t + '</li>'; }).join('') + '</ul>' +
+      (more ? '<button type="button" class="rd-sum"' + (id ? ' id="' + id + '" aria-controls="' + id + 'Pts"' : '') + ' aria-expanded="' + !!open + '" aria-label="' + (open ? 'Show less' : 'Show more') + '"><span class="rd-sum-t">' + (open ? 'See less' : 'See more') + '</span>' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></button>' : '') + '</div>';
+  }
+  // Health and Activity use this one under their headline (Weather builds its own)
+  function rdSumHtml(kind, lead){
+    var c = heroMore[kind];
+    return c && c.text ? rdMoreHtml((lead || []).map(vdEsc).concat(rdPoints(c.text)), false, '') : '';   // lead: headline lines that phones show as the first points
+  }
+  // a headline's closing full stop is kept for tablets and desktops and dropped on phones, like a news headline
+  function rdHeadText(t){ return vdEsc(String(t).replace(/\.$/, '')) + (/\.$/.test(t) ? '<span class="rd-stop">.</span>' : ''); }
   document.addEventListener('click', function(e){
     var b = e.target.closest && e.target.closest('.rd-sum');
     if(!b) return;
-    var more = b.nextElementSibling, open = b.getAttribute('aria-expanded') !== 'true';
+    var pts = b.parentNode.querySelector('.rd-pts'), open = b.getAttribute('aria-expanded') !== 'true';
     if(b.id === 'rdSum') rdOpen = open;
     b.setAttribute('aria-expanded', open);
-    b.setAttribute('aria-label', (open ? 'Hide' : 'Show') + (b.id === 'rdSum' ? ' written forecast' : ' full text'));
-    if(more && more.classList.contains('rd-more')) more.hidden = !open;
+    b.setAttribute('aria-label', open ? 'Show less' : 'Show more');
+    var t = b.querySelector('.rd-sum-t'); if(t) t.textContent = open ? 'See less' : 'See more';
+    if(pts) pts.classList.toggle('is-open', open);
   });
   (function(){
     var sb = document.getElementById('rdSearch'), mb = document.getElementById('mSearchBtn');
@@ -7723,7 +7741,7 @@
     heroMore.health = {eyebrow: 'Potential health impacts', head: O.title, text: O.body};
     healthCard.innerHTML =
       '<div class="hw-intro"><span class="sec-eyebrow">Potential health impacts</span>' +
-        '<div class="rd-card rd-hero"><h2 class="hw-ok-t" id="hwTitle">' + vdEsc(O.title) + heroMoreBtn('health') + '</h2>' + rdSumHtml('health') + '</div><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
+        '<div class="rd-card rd-hero"><div class="rd-news"><h2 class="hw-ok-t" id="hwTitle">' + rdHeadText(O.title) + heroMoreBtn('health') + '</h2>' + rdSumHtml('health') + '</div></div><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
       '<div class="hw-conds">' + plan.concat(fine).map(hwRowHtml).join('') + '</div>' +
       '<div class="hw-acts">' + (HW_WEEK_BTN ? '<button type="button" class="bp-btn bp-primary" data-hwweek aria-haspopup="dialog">' + calIco + '<span>The Week Ahead</span></button>' : '') +
         '<button type="button" class="bp-btn bp-primary hw-prefs" data-hwprefs aria-haspopup="dialog">Manage Health Preferences</button>' +
@@ -8075,7 +8093,7 @@
   // The Health and Activity headers: two headline lines and the full paragraph beneath
   function heroFill(hero, o, kind){
     if(kind) heroMore[kind] = {eyebrow: o.eyebrow || '', head: o.lines.join(' '), text: o.detail};
-    hero.innerHTML = '<div class="vd-prose">' + (o.eyebrow ? '<span class="sec-eyebrow sec-eyebrow--phone">' + vdEsc(o.eyebrow) + '</span>' : '') + '<div class="rd-card rd-hero"><span class="vd-head">' + o.lines.map(function(t, i, a){ return '<span class="vd-hl">' + vdEsc(t) + (kind && i === a.length - 1 ? heroMoreBtn(kind) : '') + '</span>'; }).join('') + '</span>' + (kind ? rdSumHtml(kind) : '') + '</div>' + '<div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
+    hero.innerHTML = '<div class="vd-prose">' + (o.eyebrow ? '<span class="sec-eyebrow sec-eyebrow--phone">' + vdEsc(o.eyebrow) + '</span>' : '') + '<div class="rd-card rd-hero"><div class="rd-news"><span class="vd-head">' + o.lines.map(function(t, i, a){ return '<span class="vd-hl">' + rdHeadText(t) + (kind && i === a.length - 1 ? heroMoreBtn(kind) : '') + '</span>'; }).join('') + '</span>' + (kind ? rdSumHtml(kind, o.lines.slice(1)) : '') + '</div></div>' + '<div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
     hero.hidden = false;
   }
 
