@@ -2944,8 +2944,8 @@
     .rd-pts{ position:relative; list-style:none; margin:0; padding:0 0 0 20px; display:flex; flex-direction:column; gap:14px }
     .rd-pts:not(.is-open) li:nth-child(n+3){ display:none }   /* collapsed: the first two points show under the headline */
     .rd-pts:not(.is-open) li:nth-child(2)::after{ display:none }
-    html body .rd-pts.rd-pts.rd-pts li{ position:relative; font-size:15px !important; font-weight:400; line-height:1.4; color:var(--rd-sub) }
-    html body .rd-pts.rd-pts.rd-pts li b{ font-size:15px !important; font-weight:500; color:var(--rd-ink) }
+    html body .rd-pts.rd-pts.rd-pts li{ position:relative; font-size:14px !important; font-weight:300; line-height:1.4; color:var(--rd-sub) }   /* the same size and weight as the Conditions labels */
+    html body .rd-pts.rd-pts.rd-pts li b{ font-size:14px !important; font-weight:500; color:var(--rd-ink) }
     .rd-pts li::before{ content:""; position:absolute; left:-20px; top:calc(.7em - 4px); width:8px; height:8px; border-radius:50%; background:var(--rd-blue); z-index:1 }
     .rd-pts li:not(:last-child)::after{ content:""; position:absolute; left:-17px; top:.7em; width:2px; z-index:0; height:calc(100% + 14px); background:var(--rd-line) }
     .rd-sum{ display:inline-flex; align-items:center; gap:4px; align-self:flex-start; min-height:32px; padding:0; border:0; background:none; color:var(--rd-sub); cursor:pointer }
@@ -2980,6 +2980,22 @@
     html body #rdWx .rd-v{ font-size:14px !important }
     .rd-dot{ flex:0 0 auto; width:10px; height:10px; border-radius:5px; background:var(--rd-good) }
     .rd-dot--warn{ background:var(--rd-warn) } .rd-dot--high{ background:var(--rd-high) } .rd-dot--bad{ background:var(--rd-bad) } .rd-dot--blue{ background:var(--rd-blue) }
+    /* the 7-day table and the radar, last on the Weather page */
+    .rd-sec{ display:flex; flex-direction:column; gap:14px }
+    .rd-sec[hidden]{ display:none }
+    .rd-wrow{ grid-template-columns:52px minmax(0,1fr) auto 28px; gap:8px }
+    .rd-wrow .rd-v{ justify-content:flex-start; text-align:left; gap:6px }
+    .rd-wi{ display:block; line-height:0 }
+    .rd-wi svg{ width:28px !important; height:21px !important; display:block }
+    html body #rdWx .rd-wt{ font-size:14px !important; font-weight:500; text-align:right }
+    html body #rdWx .rd-wrow .rd-v .hero-band-pill{ font-size:12px !important; font-weight:700; padding:3px 10px; border-radius:8px }
+    .rd-radar{ display:block }
+    #rdWx .radar{ display:block; position:relative; width:100%; height:auto; aspect-ratio:1 / .8; border:0; border-radius:8px; overflow:hidden; background:#0a0a0a }
+    #rdWx .radar .radar-head{ display:none }
+    #rdWx .radar .radar-map{ width:100%; height:100%; margin:0 }
+    #rdWx .radar .radar-tag{ left:0; right:0; bottom:0 }
+    #rdWx .radar .radar-expand-btn{ top:8px; right:8px; border-radius:8px }
+    html body #rdWx .radar-tag{ font-family:Roboto, system-ui, sans-serif; font-size:12px !important; font-weight:500; letter-spacing:.14em }
     /* the tab bar: a white pill with the chosen tab in light blue */
     .view-seg{ background:var(--rd-card) !important; -webkit-backdrop-filter:none; backdrop-filter:none; border:0 !important; box-shadow:0 2px 12px rgba(0,0,0,.18) !important; padding:6px; gap:4px }
     .vs-btn[aria-selected="true"]{ background:var(--rd-sel) !important; color:var(--rd-sel-ink) !important }
@@ -4921,6 +4937,7 @@
       }catch(e){ resolve(null); }
     });
   }
+  var nowRadarLevel = null, nowRadarBusy = false;   // the radar reading the current conditions were built on, and a guard for the re-check below
   async function fetchNowSignals(lat, lon, props){
     var obsP = (async function(){
       if(!props || !props.observationStations) return null;
@@ -4946,6 +4963,7 @@
   }
   // Correct the current hour: what is falling (or not) and the real temperature and wind
   function applyNowConditions(hourly, sig){
+    nowRadarLevel = null;
     if(!sig || !hourly.length) return hourly;
     var h0 = hourly[0], fc = String(h0.shortForecast || '');
     var pop = h0.probabilityOfPrecipitation && typeof h0.probabilityOfPrecipitation.value === 'number' ? h0.probabilityOfPrecipitation.value : 0;
@@ -4965,9 +4983,12 @@
     var obsSnow = /snow|flurr|blizzard/.test(txt) || pw.some(function(w){ return /snow/.test(w); }) || (code !== null && ((code >= 71 && code <= 77) || code === 85 || code === 86));
     var obsRain = /rain|drizzle|shower|sleet|freezing/.test(txt) || pw.some(function(w){ return /rain|drizzle|sleet|ice_pellets|freezing/.test(w); }) || (code !== null && ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)));
     var fogOnly = /fog|mist|haze|smoke/.test(txt) || (code === 45 || code === 48);
-    var corroborated = pop >= 30 || obsRain || obsSnow || mm > 0 || level >= 3;
-    var radarWet = level >= 2 && corroborated;
-    var wet = obsRain || obsSnow || mm >= 0.2 || radarWet || (level === 1 && (obsRain || obsSnow || mm > 0));
+    // Radar is what is falling right now, so it leads: a moderate or stronger echo over the place is precipitation, unless a station
+    // report under 30 minutes old says it is dry (virga, or a stray return). A faint echo counts when the forecast also gives a real chance.
+    nowRadarLevel = typeof sig.radar === 'number' ? sig.radar : null;
+    var obsDry = !!(o && txt && !obsRain && !obsSnow && !thunder && sig.obs.ageMin <= 30);
+    var radarWet = level >= 3 || (level === 2 && !obsDry);
+    var wet = obsRain || obsSnow || mm >= 0.2 || radarWet || (level === 1 && pop >= 40);
     var text = '', source = 'forecast';
     if(thunder){
       text = cold && obsSnow ? 'Snow' : 'Thunderstorms'; source = level >= 4 ? 'radar' : 'observation';
@@ -4976,7 +4997,7 @@
       var heavy = level === 3 || pwi.indexOf('heavy') > -1 || /heavy/.test(txt) || mm >= 4 || (code === 65 || code === 75 || code === 82 || code === 86);
       var light = !heavy && (level === 1 || pwi.indexOf('light') > -1 || /light/.test(txt) || (mm > 0 && mm < 0.6) || code === 61 || code === 71 || code === 51 || code === 53 || code === 80);
       text = (heavy ? 'Heavy ' : light ? 'Light ' : '') + (snow ? 'Snow' : 'Rain');
-      source = (level >= 2) ? 'radar' : 'observation';
+      source = (level >= 1) ? 'radar' : 'observation';
     }else if(fogOnly && o && txt){
       text = String(o.textDescription);
       source = 'observation';
@@ -4985,6 +5006,10 @@
     }else{
       text = fc;
       if(pop >= 70 && !/rain|shower|storm|snow|drizzle|sleet|flurr|ice/i.test(fc)) text = cold ? 'Snow Likely' : 'Rain Likely';
+      // the forecast says it is falling but the radar over the place and the model are both dry: say it is coming, not here
+      else if(level === 0 && typeof sig.radar === 'number' && mm < 0.2 && /rain|shower|storm|snow|drizzle|sleet|flurr|ice/i.test(fc) && !/chance|likely|slight|isolated|scattered|possible|patchy|areas|before|after|then/i.test(fc)){
+        text = (/thunder|tstm/i.test(fc) ? 'Thunderstorms' : (cold || /snow|flurr/i.test(fc)) ? 'Snow' : 'Rain') + ' Likely'; source = 'radar';
+      }
     }
     var next = Object.assign({}, h0, {shortForecast: text || fc, nowSource: source});
     if(o){
@@ -5165,7 +5190,7 @@
      A simple, flat layout from the design file: a current-conditions card (place, sky, temperature, feels like, wind, and a one-line
      written forecast that opens), hourly cards that scroll sideways, and one list of conditions with a status dot on each. It is built
      from the same data as the modules it replaces (those stay on tablets and desktops). */
-  var rdWx = document.getElementById('rdWx'), rdS = null, rdAirData = null, rdOpen = false;
+  var rdWx = document.getElementById('rdWx'), rdS = null, rdAirData = null, rdOpen = false, rdPhoneMq = window.matchMedia('(max-width:31.1875em)'), rdRadarHome = null;   // rdRadarHome: where the hero builds the radar, so it can go back there on a wider screen
   function rdTone(rank){ return rank <= 0 ? 'good' : rank === 1 ? 'warn' : rank === 2 ? 'high' : 'bad'; }
   function rdRow(label, tone, val){ return '<div class="rd-row"><span class="rd-k">' + label + '</span><span class="rd-v">' + (tone ? '<i class="rd-dot rd-dot--' + tone + '" aria-hidden="true"></i>' : '') + val + '</span></div>'; }
   function rdHour(p){ var h = parseInt(String(p.startTime).slice(11, 13), 10); return (h % 12 || 12) + (h >= 12 ? 'p' : 'a'); }
@@ -5223,6 +5248,14 @@
         '<span class="rd-hr-w">' + windNum(parseWind(p.windSpeed).high) + ' ' + windUnit + '</span>' +
         '<span class="rd-hr-p">' + droplet + pop + '%</span></div>';
     }).join('');
+    // on phones the live radar (built inside the hero) moves into this layout, last on the page; wider screens keep it in the hero
+    var rb = document.getElementById('radarBox');
+    var rbs = document.querySelectorAll('#radarBox');
+    if(rbs.length > 1){ for(var ri = 0; ri < rbs.length; ri++){ if(heroEl.contains(rbs[ri])){ rb = rbs[ri]; break; } } }
+    var rbInHero = !!(rb && heroEl.contains(rb));
+    if(rbInHero) rdRadarHome = rb.parentNode;
+    var carry = rb && (rdPhoneMq.matches || !rbInHero) ? rb : null;
+    if(carry && carry.parentNode) carry.parentNode.removeChild(carry);
     var dateLab = hourly[0] ? rdDayLabel(String(hourly[0].startTime).slice(0, 10)) : '', oldHrs = rdWx.querySelector('.rd-hrs'), keepX = oldHrs ? oldHrs.scrollLeft : 0;
     rdWx.innerHTML =
       '<span class="rd-label">Current conditions</span>' +
@@ -5243,11 +5276,34 @@
       '<div class="rd-labrow"><span class="rd-label">Hourly</span><span class="rd-date" id="rdDate">' + vdEsc(dateLab) + '</span></div>' +
       '<div class="rd-hrs" role="list" tabindex="0" aria-label="Hourly forecast">' + cards + '</div>' +
       '<span class="rd-label">Conditions</span>' +
-      '<div class="rd-card rd-list" id="rdConds"></div>';
+      '<div class="rd-card rd-list" id="rdConds"></div>' +
+      '<div class="rd-sec" id="rdWeekSec" hidden><span class="rd-label">7-Day Wind Outlook</span><div class="rd-card rd-list" id="rdWeek"></div></div>' +
+      '<div class="rd-sec" id="rdRadarSec" hidden><span class="rd-label">Radar</span><div class="rd-radar" id="rdRadar"></div></div>';
     rdConds();
+    rdWeek();
+    if(carry){
+      if(rdPhoneMq.matches){ rdWx.querySelector('#rdRadar').appendChild(carry); rdWx.querySelector('#rdRadarSec').hidden = false; }
+      else if(rdRadarHome && rdRadarHome.isConnected) rdRadarHome.appendChild(carry);
+      if(radarLoop) radarLoop.map.invalidateSize();
+    }
     rdWx.hidden = false;
     var nh = rdWx.querySelector('.rd-hrs'); if(nh && keepX) nh.scrollLeft = keepX;
   }
+  // the 7-day table: the day, the sky, the wind (speed, direction, tag) and the high, one row per day like the Conditions list
+  function rdWeek(){
+    var el = document.getElementById('rdWeek'), sec = document.getElementById('rdWeekSec'), w = store('week');
+    if(!el || !sec) return;
+    var days = w && w.days ? w.days : [];
+    sec.hidden = !days.length;
+    el.innerHTML = days.map(function(d){
+      return '<div class="rd-row rd-wrow"><span class="rd-k">' + vdEsc(d.label) + '</span>' +
+        '<span class="rd-v"><span>' + d.wnum + ' ' + windUnit + '</span>' + (d.wdir ? srDir(d.wdir) + '<span aria-hidden="true" class="rd-wc">' + windArrowSvg(d.wdir, d.bandCss, 20, 0, true) + '</span>' : '') +
+        '<span class="hero-band-pill wk-tag" style="background:' + d.bandPill + '; color:' + d.bandPillInk + '">' + vdEsc(d.bandLabel) + '</span></span>' +
+        '<span class="rd-wt">' + d.temp + '</span>' +
+        '<span class="rd-wi" role="img" aria-label="' + vdEsc(d.short) + '">' + d.icon + '</span></div>';
+    }).join('');
+  }
+  rdPhoneMq.addEventListener('change', function(){ rdRender(); });
   // "Thu, Oct 29" from a YYYY-MM-DD day (a calendar date, so no time zone shift)
   function rdDayLabel(ds){
     var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(ds || '');
@@ -6403,6 +6459,7 @@
         bandLabel: band.label,
         bandPill: band.pill,
         bandPillInk: band.pillInk,
+        wnum: windNum(wd.high), wdir: p.windDirection, bandCss: band.css,
         gust: extractGust(p.detailedForecast) ? String(windNum(+extractGust(p.detailedForecast))) : '',
         icon: weatherIcon(p.shortForecast, true, 28),
         short: ampText(p.shortForecast),
@@ -6410,6 +6467,7 @@
       };
     });
     w.state = 'ready';
+    rdWeek();
   }
 
   /* ---------- Best windows outside ---------- */
@@ -11518,6 +11576,23 @@
     mainRefreshBtn.classList.remove('busy');
     mainRefreshBtn.setAttribute('aria-busy', 'false');
   });
+
+  /* The radar is checked again every 5 minutes (and when the page comes back to the front). If it now shows precipitation over the place
+     that the current conditions did not, or none where they said there was, the forecast reloads quietly so the card matches the map. */
+  function radarState(lv){ return lv >= 4 ? 'heavy' : lv >= 2 ? 'wet' : 'dry'; }
+  async function recheckRadar(){
+    if(nowRadarBusy || document.hidden || !lastLoad || nowRadarLevel === null || radarRegion === 'ca') return;
+    nowRadarBusy = true;
+    try{
+      var lv = await sampleRadarLevel(lastLoad.lat, lastLoad.lon);
+      if(typeof lv === 'number' && radarState(lv) !== radarState(nowRadarLevel)){
+        await loadForLocation(lastLoad.lat, lastLoad.lon, lastLoad.label, {quiet:true});
+      }
+    }catch(e){}
+    nowRadarBusy = false;
+  }
+  setInterval(recheckRadar, 5 * 60000);
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) recheckRadar(); });
 
   var placeLoadedOnce = false;
   async function loadForLocation(lat, lon, label, opts){
