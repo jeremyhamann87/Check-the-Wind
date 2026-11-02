@@ -2920,7 +2920,6 @@
     html body #rdWx .rd-labrow .rd-date{ padding:8px 4px 0; text-transform:uppercase; letter-spacing:.14em }
     .rd-card{ background:var(--rd-card); border-radius:8px}
     .rd-hero{ padding:16px; display:flex; flex-direction:column; gap:16px }
-    html body #rdWx .rd-place{ font-size:16px !important; font-weight:500; color:var(--rd-ink) }
     .rd-now{ display:flex; justify-content:space-between; align-items:center; gap:16px }
     .rd-icon{ display:block; line-height:0 }
     .rd-icon svg{ width:56px !important; height:42px !important; display:block }
@@ -3057,6 +3056,13 @@
     html body #bestList .btc.btc--row .hw-linewrap, html body #bestList .btc.btc--row .hw-bar-l{ display:none !important }
     html body #bestList .hw-safe-t{ font-size:22px !important; font-weight:500 }
     html body #bestList .hw-safe-d{ font-size:15px !important; color:var(--rd-sub) }
+  }
+  @media (max-width:31.1875em){
+    /* every text on phones is 14px light. The only two exceptions are the current temperature and the hourly temperatures. The :not(#z) parts only
+       raise this rule's weight above the id-based type rules written earlier. */
+    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(#z1):not(#z2),
+    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(#z1):not(#z2)::before,
+    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(#z1):not(#z2)::after{ font-size:14px !important; font-weight:300 !important }
   }
 </style>
 </head>
@@ -5229,7 +5235,6 @@
     var s = rdS;
     if(!rdWx || !s) return;
     var cur = s.current, hourly = s.hourly || [], band = s.band;
-    var place = String((document.getElementById('mLocName') || {}).textContent || '').trim();
     var isDay = isDayAtTime(sunEvents, Date.now(), cur.isDaytime);
     var fl = s.feelsAll ? tempNum(s.feelsAll.f) : tempNum(cur.temperature);
     var dir = cur.windDirection;
@@ -5260,7 +5265,6 @@
     rdWx.innerHTML =
       '<span class="rd-label">Current conditions</span>' +
       '<div class="rd-card rd-hero">' +
-        '<span class="rd-place">' + vdEsc(place) + '</span>' +
         '<div class="rd-now">' +
           '<span class="rd-icon" role="img" aria-label="' + vdEsc(ampText(cur.shortForecast)) + '">' + weatherIcon(cur.shortForecast, isDay, 96) + '</span>' +
           '<span class="rd-temp" aria-label="' + tempNum(cur.temperature) + ' degrees"><span>' + tempNum(cur.temperature) + '°</span><small>' + (useCelsius ? 'C' : 'F') + '</small></span>' +
@@ -5354,8 +5358,6 @@
   (function(){
     var sb = document.getElementById('rdSearch'), mb = document.getElementById('mSearchBtn');
     if(sb && mb) sb.addEventListener('click', function(){ mb.click(); });
-    var nm = document.getElementById('mLocName');
-    if(nm) new MutationObserver(function(){ var pl = document.querySelector('#rdWx .rd-place'); if(pl) pl.textContent = String(nm.textContent || '').trim(); }).observe(nm, {childList: true, characterData: true, subtree: true});
   })();
   function renderHero(current, todayDaily, hourly, daily){
     var w = parseWind(current.windSpeed);
