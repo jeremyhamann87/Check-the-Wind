@@ -2908,7 +2908,7 @@
     html body{ background:var(--rd-bg); color:var(--rd-ink) }
     html body, html body :not(svg):not(svg *){ font-family:Roboto, system-ui, -apple-system, sans-serif }
     /* the header is the original one (windmill logo, place, tag, search); only its ground is the flat page color */
-    .db-layout > header.top{ padding:14px 16px 4px; background:color-mix(in srgb, var(--rd-bg) 88%, transparent) !important; border:0; box-shadow:none }   /* no backdrop-filter here: it would make the header the frame for the fixed search drawer inside it */
+    .db-layout > header.top{ padding:14px 16px 4px; background:color-mix(in srgb, var(--hero-band, var(--band-calm)) var(--tint-hero), var(--surface)) !important; transition:background-color .6s ease; border:0; box-shadow:none }   /* the same solid color as the wind-tinted page behind it (.wind-field), so the header blends in; no backdrop-filter here: it would make the header the frame for the fixed search drawer inside it */
     /* the Weather view: the new layout replaces the hero, hourly, 7-day and air modules (they stay on tablets and desktops) */
     html[data-view="weather"] #rdWx:not([hidden]){ display:flex }
     html[data-view="weather"] #heroSection, html[data-view="weather"] #weekSection, html[data-view="weather"] #airSection, html[data-view="weather"] #todaySection{ display:none !important }
@@ -2970,6 +2970,8 @@
     html body #rdWx .rd-hr-w, html body #rdWx .rd-hr-p{ font-size:15px !important; font-weight:300 }
     .rd-hr-p{ display:flex; align-items:center; gap:4px; color:var(--rd-sub) }
     .rd-hr.is-now .rd-hr-p{ color:var(--rd-sel-ink) }
+    .rd-daysep{ flex:0 0 0; align-self:stretch; border-left:1px dashed var(--rd-label); margin:6px 4px }   /* where a new day starts */
+    .rd-sun .rd-hr-i svg{ width:32px !important; height:32px !important; margin:-4px 0 }   /* a taller icon in the same row height, so the rows line up with the other cards */
     /* conditions: one list, a status dot before each value */
     .rd-list{ border-radius:8px; padding:0; overflow:hidden; display:flex; flex-direction:column }
     .rd-row{ padding:0 18px; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:14px; min-height:42px }
@@ -3884,7 +3886,9 @@
   }
 
   // Sunrise / sunset icon for the Wind Today strip: the animated orange sun, about 75% above a horizon line.
+  var sunClipSeq = 0;   // each icon gets its own clip id: with one shared id the browser used the first copy on the page (in a hidden module), so nothing was clipped
   function sunHorizonIcon(size, kind){
+    var cid = 'sunHalfClip' + (++sunClipSeq);
     // Arrow above the sun in the same style as the wind compass needle (round-capped shaft + filled head):
     // down for sunset, up for sunrise.
     var up = kind === 'sunrise';
@@ -3894,8 +3898,8 @@
       '<path d="M21.1 ' + base + ' L24 ' + tip + ' L26.9 ' + base + ' Z" fill="var(--text-muted)"/>' +
     '</g>';
     return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
-      '<clipPath id="sunHalfClip"><rect x="0" y="0" width="48" height="34.5"/></clipPath>' +
-      '<g clip-path="url(#sunHalfClip)">' + sunMarkup(24,30,9) + '</g>' +
+      '<clipPath id="' + cid + '"><rect x="0" y="0" width="48" height="34.5"/></clipPath>' +
+      '<g clip-path="url(#' + cid + ')">' + sunMarkup(24,30,9) + '</g>' +
       '<line x1="4" y1="34.5" x2="44" y2="34.5" stroke="var(--text-muted)" stroke-width="3.4" stroke-linecap="round" opacity="0.85"/>' +
       arrow +
     '</svg>';
@@ -5231,6 +5235,22 @@
     }
     el.innerHTML = rows;
   }
+  // every sunrise and sunset in view, for the sun cards and the day or night of each hour: the service's times for the days it gave, computed ones for the rest
+  function rdSunList(periods){
+    var list = sunEvents.slice(), have = {};
+    list.forEach(function(e){ have[dateInPlace(e.time.getTime()) + e.type] = 1; });
+    if(lastLoad && typeof lastLoad.lat === 'number'){
+      var days = {};
+      periods.forEach(function(p){ days[localDate(p.startTime)] = 1; });
+      Object.keys(days).forEach(function(d){
+        if(have[d + 'sunrise'] && have[d + 'sunset']) return;
+        var ev = solarEvents(lastLoad.lat, lastLoad.lon, d);
+        if(ev.sunrise && !have[d + 'sunrise']) list.push({type: 'sunrise', time: ev.sunrise});
+        if(ev.sunset && !have[d + 'sunset']) list.push({type: 'sunset', time: ev.sunset});
+      });
+    }
+    return list.sort(function(a, b){ return a.time - b.time; });
+  }
   function rdRender(){
     var s = rdS;
     if(!rdWx || !s) return;
@@ -5245,13 +5265,32 @@
       return '<b>' + vdEsc(p.name) + '</b> ' + vdEsc(p.detailedForecast || p.shortForecast || '');
     });
     var droplet = '<svg width="12" height="16" viewBox="0 0 12 16" fill="none" aria-hidden="true" focusable="false"><path d="M6 1C6 1 1.5 6.2 1.5 9.8a4.5 4.5 0 0 0 9 0C10.5 6.2 6 1 6 1z" fill="var(--rd-blue)"/></svg>';
-    var cards = hourly.slice(0, 168).map(function(p, i){
+    var hrs168 = hourly.slice(0, 168), sunList = rdSunList(hrs168), prevDay = null;
+    var cards = hrs168.map(function(p, i){
       var pop = p.probabilityOfPrecipitation && typeof p.probabilityOfPrecipitation.value === 'number' ? Math.round(p.probabilityOfPrecipitation.value) : 0;
-      return '<div class="rd-hr' + (i === 0 ? ' is-now' : '') + '" data-day="' + String(p.startTime).slice(0, 10) + '"><b>' + (i === 0 ? 'Now' : rdHour(p)) + '</b>' +
-        '<span class="rd-hr-i" role="img" aria-label="' + vdEsc(ampText(p.shortForecast)) + '">' + weatherIcon(p.shortForecast, isDayAtTime(sunEvents, new Date(p.startTime).getTime(), p.isDaytime), 32) + '</span>' +
-        '<span class="rd-hr-t">' + tempNum(p.temperature) + '°</span>' +
-        '<span class="rd-hr-w">' + windNum(parseWind(p.windSpeed).high) + ' ' + windUnit + '</span>' +
-        '<span class="rd-hr-p">' + droplet + pop + '%</span></div>';
+      var day = String(p.startTime).slice(0, 10), start = new Date(p.startTime).getTime();
+      // a dashed line between the last hour of one day and the first of the next
+      var sep = prevDay !== null && day !== prevDay ? '<div class="rd-daysep" data-day="' + day + '" aria-hidden="true"></div>' : '';
+      prevDay = day;
+      // one card layout for every card: the time, the sky icon, the temperature, the wind and the chance of precipitation
+      function cardHtml(cls, time, icon, aria){
+        return '<div class="rd-hr' + cls + '" data-day="' + day + '"><b>' + time + '</b>' +
+          '<span class="rd-hr-i" role="img" aria-label="' + vdEsc(aria) + '">' + icon + '</span>' +
+          '<span class="rd-hr-t">' + tempNum(p.temperature) + '°</span>' +
+          '<span class="rd-hr-w">' + windNum(parseWind(p.windSpeed).high) + ' ' + windUnit + '</span>' +
+          '<span class="rd-hr-p">' + droplet + pop + '%</span></div>';
+      }
+      var card = cardHtml(i === 0 ? ' is-now' : '', i === 0 ? 'Now' : rdHour(p), weatherIcon(p.shortForecast, isDayAtTime(sunList, start, p.isDaytime), 32), ampText(p.shortForecast));
+      // sunrise and sunset get their own card between the two hours they fall in, with that hour's temperature, wind and precipitation
+      var suns = '';
+      sunList.forEach(function(evt){
+        var t = evt.time.getTime();
+        if(t < start || t >= start + 3600000) return;
+        var o = {hour: 'numeric', minute: '2-digit'}; if(locationTZ) o.timeZone = locationTZ;
+        var lab = evt.time.toLocaleTimeString('en-US', o), nm = evt.type === 'sunrise' ? 'Sunrise' : 'Sunset';
+        suns += cardHtml(' rd-sun', vdEsc(lab.replace(/\s?([AP])M$/i, function(m, x){ return x.toLowerCase(); })), sunHorizonIcon(32, evt.type), nm + ' ' + lab);
+      });
+      return sep + card + suns;
     }).join('');
     // on phones the live radar (built inside the hero) moves into this layout, last on the page; wider screens keep it in the hero
     var rb = document.getElementById('radarBox');
@@ -10927,6 +10966,7 @@
 
     todaySection.removeAttribute('aria-hidden');
     renderHourly(hourly);
+    rdRender();   // the Weather page's hourly cards now know the sunrise and sunset times
     renderWeek(daily, todayStr);
     var bestInputs = await bestInputsPromise;
     var bestWhen = renderBest(hourly, bestInputs);
