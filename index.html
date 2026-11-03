@@ -2930,9 +2930,8 @@
     html body #rdWx .rd-sub{ font-size:14px !important; color:var(--rd-sub); line-height:1.3 }
     html body #rdWx .rd-wind{ display:flex; flex-wrap:wrap; align-items:center; gap:2px 8px; font-size:14px !important; font-weight:500 }
     html body #rdWx .rd-wind > span:first-child{ font-size:14px !important }
-    .rd-wc svg{ display:block; width:20px; height:20px }
-    html body #rdWx .rd-v .hero-band-pill{ font-size:12px !important; font-weight:700; padding:3px 10px; border-radius:8px }
-    html body #rdWx .rd-wind .hero-band-pill{ font-size:12px !important; font-weight:700; padding:3px 10px; border-radius:8px}
+    .rd-wc svg{ display:block; width:16px; height:16px }
+    .rd-wtag{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:8px; font-size:14px; font-weight:300; line-height:1.3; white-space:nowrap }   /* the wind tag: speed and direction arrow on the wind color */
     /* the written text as a live-news timeline: a bold headline, then the sentences as points on a dotted line, opened by a See more link */
     .rd-news{ display:flex; flex-direction:column; gap:12px }
     #rdWx .rd-news{ margin:0 -16px; padding:16px 16px 0; border-top:1px solid var(--rd-line) }   /* a full-width light line between the current conditions and the headline */
@@ -2984,12 +2983,12 @@
     /* the 7-day table and the radar, last on the Weather page */
     .rd-sec{ display:flex; flex-direction:column; gap:14px }
     .rd-sec[hidden]{ display:none }
-    .rd-wrow{ grid-template-columns:52px minmax(0,1fr) auto 28px; gap:8px }
-    .rd-wrow .rd-v{ justify-content:flex-start; text-align:left; gap:6px }
+    .rd-wrow{ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:8px }   /* the day on the left, the wind tag in the center of the row, the high and sky icon on the right */
+    .rd-wrow .rd-v{ justify-content:center; text-align:center; gap:6px }
+    .rd-wr{ display:flex; align-items:center; justify-content:flex-end; gap:8px }
     .rd-wi{ display:block; line-height:0 }
     .rd-wi svg{ width:28px !important; height:21px !important; display:block }
     html body #rdWx .rd-wt{ font-size:14px !important; font-weight:500; text-align:right }
-    html body #rdWx .rd-wrow .rd-v .hero-band-pill{ font-size:12px !important; font-weight:700; padding:3px 10px; border-radius:8px }
     .rd-radar{ display:block }
     #rdWx .radar{ display:block; position:relative; width:100%; height:auto; aspect-ratio:1 / .8; border:0; border-radius:8px; overflow:hidden; background:#0a0a0a }
     #rdWx .radar .radar-head{ display:none }
@@ -3062,9 +3061,9 @@
   @media (max-width:31.1875em){
     /* every text on phones is 14px light. The only two exceptions are the current temperature and the hourly temperatures. The :not(#z) parts only
        raise this rule's weight above the id-based type rules written earlier. */
-    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(#z1):not(#z2),
-    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(#z1):not(#z2)::before,
-    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(#z1):not(#z2)::after{ font-size:14px !important; font-weight:300 !important }
+    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(.rd-wtag):not(.rd-wtag *):not(#z1):not(#z2),
+    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(.rd-wtag):not(.rd-wtag *):not(#z1):not(#z2)::before,
+    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(.rd-wtag):not(.rd-wtag *):not(#z1):not(#z2)::after{ font-size:14px !important; font-weight:300 !important }
   }
 </style>
 </head>
@@ -5202,6 +5201,13 @@
      from the same data as the modules it replaces (those stay on tablets and desktops). */
   var rdWx = document.getElementById('rdWx'), rdS = null, rdAirData = null, rdOpen = false, rdPhoneMq = window.matchMedia('(max-width:31.1875em)'), rdRadarHome = null;   // rdRadarHome: where the hero builds the radar, so it can go back there on a wider screen
   function rdTone(rank){ return rank <= 0 ? 'good' : rank === 1 ? 'warn' : rank === 2 ? 'high' : 'bad'; }
+  // the phone wind tag: the speed and the direction arrow inside the wind-colored tag; the tag word and the direction are kept for screen readers
+  function rdWindTag(num, dir, pill, ink, label){
+    ink = 'color-mix(in srgb, ' + ink + ' 50%, #000)';   // light 14px text needs more than the 4.5:1 the shared tag ink gives: this is 7.8:1 or better on every wind color
+    return '<span class="rd-wtag" style="background:' + pill + '; color:' + ink + '"><span>' + num + ' ' + windUnit + '</span>' +
+      (dir ? '<span aria-hidden="true" class="rd-wc">' + windArrowSvg(dir, ink, 16, 0, true) + '</span>' : '') +
+      '<span class="sr-only">' + (dir && dirWord(dir) ? ', wind from the ' + dirWord(dir) : '') + ', ' + vdEsc(label) + '</span></span>';
+  }
   function rdRow(label, tone, val){ return '<div class="rd-row"><span class="rd-k">' + label + '</span><span class="rd-v">' + (tone ? '<i class="rd-dot rd-dot--' + tone + '" aria-hidden="true"></i>' : '') + val + '</span></div>'; }
   function rdHour(p){ var h = parseInt(String(p.startTime).slice(11, 13), 10); return (h % 12 || 12) + (h >= 12 ? 'p' : 'a'); }
   function rdConds(){
@@ -5209,7 +5215,7 @@
     if(!el || !s) return;
     var rows = '', cur = s.current;
     if(s.outlook){ var parts = String(s.outlook).split(' in ~'); rows += rdRow('Coming up', 'blue', vdEsc(parts[0]) + (parts[1] ? ' · in ~' + vdEsc(parts[1]) : '')); }
-    rows += rdRow('Wind', '', windNum(s.w.high) + ' ' + windUnit + ' <span class="hero-band-pill wk-tag" style="background:' + s.band.pill + '; color:' + s.band.pillInk + '">' + vdEsc(s.band.label) + '</span>');   // the wind tag stands in for the status dot
+    rows += rdRow('Wind', '', rdWindTag(windNum(s.w.high), cur.windDirection, s.band.pill, s.band.pillInk, s.band.label));   // the wind tag stands in for the status dot
     if(heroAir){
       var ar = AQI_CAT_INFO[heroAir.cat] ? AQI_CAT_INFO[heroAir.cat].rank : 0;
       rows += rdRow('Air quality', rdTone(ar), (heroAir.cat === 'Unhealthy for Sensitive Groups' ? 'Sensitive groups' : vdEsc(heroAir.cat)) + ' · ' + heroAir.aqi);
@@ -5310,8 +5316,7 @@
           '<div class="rd-nowtxt">' +
             '<span class="rd-sub">' + vdEsc(ampText(cur.shortForecast)) + '</span>' +
             '<span class="rd-sub">Feels like ' + fl + '</span>' +
-            '<span class="rd-wind"><span>' + windNum(s.w.high) + ' ' + windUnit + '</span>' + (dir ? srDir(dir) + '<span aria-hidden="true" class="rd-wc">' + windArrowSvg(dir, band.css, 20, 0, true) + '</span>' : '') +
-              '<span class="hero-band-pill wk-tag" style="background:' + band.pill + '; color:' + band.pillInk + '">' + vdEsc(band.label) + '</span></span>' +
+            '<span class="rd-wind">' + rdWindTag(windNum(s.w.high), dir, band.pill, band.pillInk, band.label) + '</span>' +
           '</div>' +
         '</div>' +
         '<div class="rd-news"><h2 class="rd-hl">' + vdEsc(headline) + '</h2>' + rdMoreHtml(pts, rdOpen, 'rdSum') + '</div>' +
@@ -5340,10 +5345,9 @@
     sec.hidden = !days.length;
     el.innerHTML = days.map(function(d){
       return '<div class="rd-row rd-wrow"><span class="rd-k">' + vdEsc(d.label) + '</span>' +
-        '<span class="rd-v"><span>' + d.wnum + ' ' + windUnit + '</span>' + (d.wdir ? srDir(d.wdir) + '<span aria-hidden="true" class="rd-wc">' + windArrowSvg(d.wdir, d.bandCss, 20, 0, true) + '</span>' : '') +
-        '<span class="hero-band-pill wk-tag" style="background:' + d.bandPill + '; color:' + d.bandPillInk + '">' + vdEsc(d.bandLabel) + '</span></span>' +
-        '<span class="rd-wt">' + d.temp + '</span>' +
-        '<span class="rd-wi" role="img" aria-label="' + vdEsc(d.short) + '">' + d.icon + '</span></div>';
+        '<span class="rd-v">' + rdWindTag(d.wnum, d.wdir, d.bandPill, d.bandPillInk, d.bandLabel) + '</span>' +
+        '<span class="rd-wr"><span class="rd-wt">' + d.temp + '</span>' +
+        '<span class="rd-wi" role="img" aria-label="' + vdEsc(d.short) + '">' + d.icon + '</span></span></div>';
     }).join('');
   }
   rdPhoneMq.addEventListener('change', function(){ rdRender(); });
