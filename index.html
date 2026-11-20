@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>try{ if(window.matchMedia('(max-width:31.1875em)').matches) document.documentElement.classList.add('rd-art'); }catch(e){}</script>   <!-- phones: the blue sky header shows from the first paint, while the page loads -->
 <meta charset="utf-8">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-74F2EJF0ZC"></script>
@@ -39,7 +40,7 @@
 <meta name="twitter:description" content="Live wind speed and direction, the 7-day wind outlook, alerts, air quality and the best times to get outside.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
@@ -2435,6 +2436,7 @@
   .hw-cond-body{ padding:12px 16px 16px }
   .hw-cond-body > .hw-csay:first-child{ margin-top:0 }
   .hw-cond-top:last-child{ border-bottom:0 }   /* a No Impacts card is only its header */
+  .hw-cond.hw-tile--some{ --tg:var(--hw-some) }
   .hw-cond.hw-tile--ok{ --tg:var(--hw-med) }
   .hw-cond.hw-tile--high{ --tg:var(--hw-high) }
   .hw-cond-top{ display:flex; justify-content:space-between; align-items:center; gap:12px }
@@ -2557,6 +2559,7 @@
   .hw-chip{ display:inline-flex; align-items:center; box-sizing:border-box; min-height:var(--chip-h, 26px); padding:0 10px; border-radius:var(--chip-r, 4px); font-weight:500; line-height:1.3; white-space:nowrap;
     color:color-mix(in srgb, var(--tg) 78%, var(--text)); background:color-mix(in srgb, var(--tg) 15%, var(--surface)) }
   .hw-chip--low{ --tg:var(--hw-low) }
+  .hw-chip--some{ --tg:var(--hw-some) }
   .hw-chip--medium{ --tg:var(--hw-med) }
   .hw-chip--high{ --tg:var(--hw-high) }
   .hw-today{ margin:0 0 8px; color:var(--text-muted); line-height:1.45 }
@@ -2710,10 +2713,10 @@
 
   /* Modules: white at 80% opacity (the page's pale background and wind streaks show faintly through).
      In dark mode the same idea: the dark surface at 80%. */
-  /* the three condition ratings (No Impacts, Heads Up, High Impacts) use their own blue, violet and rose so they never read as air quality levels */
-  :root{ --hw-low:#2F6FB5; --hw-med:#7B62B8; --hw-high:#B24C86 }
-  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --hw-low:#7DB2EA; --hw-med:#B09CE6; --hw-high:#E58AB8 } }
-  :root[data-theme="dark"]{ --hw-low:#7DB2EA; --hw-med:#B09CE6; --hw-high:#E58AB8 }
+  /* the four condition ratings (No Impacts, Some Impacts, Moderate Impacts, High Impacts) use their own blue, blue-violet, violet and rose so they never read as air quality levels */
+  :root{ --hw-low:#2F6FB5; --hw-some:#5B6DB6; --hw-med:#7B62B8; --hw-high:#B24C86 }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --hw-low:#7DB2EA; --hw-some:#9AA9E8; --hw-med:#B09CE6; --hw-high:#E58AB8 } }
+  :root[data-theme="dark"]{ --hw-low:#7DB2EA; --hw-some:#9AA9E8; --hw-med:#B09CE6; --hw-high:#E58AB8 }
   :root{ --module-bg:rgba(255,255,255,.8) }
   @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --module-bg:color-mix(in srgb, var(--surface) 80%, transparent) } }
   :root[data-theme="dark"]{ --module-bg:color-mix(in srgb, var(--surface) 80%, transparent) }
@@ -2931,7 +2934,10 @@
     html body #rdWx .rd-wind{ display:flex; flex-wrap:wrap; align-items:center; gap:2px 8px; font-size:14px !important; font-weight:500 }
     html body #rdWx .rd-wind > span:first-child{ font-size:14px !important }
     .rd-wc svg{ display:block; width:16px; height:16px }
-    .rd-wtag{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:8px; font-size:14px; font-weight:300; line-height:1.3; white-space:nowrap }   /* the wind tag: speed and direction arrow on the wind color */
+    .rd-wtag{ display:inline-flex; align-items:center; gap:6px; padding:0; border-radius:0; font-size:14px; font-weight:300; line-height:1.3; white-space:nowrap; background:none !important; color:var(--rd-ink) !important }   /* the wind value: speed and direction arrow in plain ink, no wind-colored tag behind it (the wind word is still read to screen readers) */
+    .rd-wtag .rd-wc svg circle{ stroke:var(--rd-ink) }
+    .rd-wtag .rd-wc svg g{ stroke:var(--rd-ink) }
+    .rd-wtag .rd-wc svg path[fill]{ fill:var(--rd-ink) }
     /* the written text as a live-news timeline: a bold headline, then the sentences as points on a dotted line, opened by a See more link */
     .rd-news{ display:flex; flex-direction:column; gap:12px }
     #rdWx .rd-news{ margin:0 -16px; padding:16px 16px 0; border-top:1px solid var(--rd-line) }   /* a full-width light line between the current conditions and the headline */
@@ -3025,7 +3031,8 @@
     html body #healthCard .hw-cond-big{ display:inline-flex; align-items:center; gap:8px; font-size:14px !important; font-weight:500 !important; letter-spacing:normal !important; line-height:normal; color:var(--rd-ink) }
     html body #healthCard .hw-tile--good .hw-cond-big{ font-weight:500 !important }   /* same weight as the Weather list (beats the light No Impacts weight) */
     html body #healthCard .hw-cond-big::before{ content:""; flex:0 0 auto; width:10px; height:10px; border-radius:5px; background:var(--rd-good) }
-    html body #healthCard .hw-tile--ok .hw-cond-big::before{ background:var(--rd-warn) }
+    html body #healthCard .hw-tile--some .hw-cond-big::before{ background:var(--rd-warn) }
+    html body #healthCard .hw-tile--ok .hw-cond-big::before{ background:var(--rd-high) }
     html body #healthCard .hw-tile--high .hw-cond-big::before{ background:var(--rd-bad) }
     html body #healthCard .hw-cond-body{ background:var(--rd-panel); border-radius:8px; padding:16px; margin:0 0 16px }
     /* Activity: pill selectors with the light-blue selected state, and rounded day cards without module headers */
@@ -3061,9 +3068,121 @@
   @media (max-width:31.1875em){
     /* every text on phones is 14px light. The only two exceptions are the current temperature and the hourly temperatures. The :not(#z) parts only
        raise this rule's weight above the id-based type rules written earlier. */
-    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(.rd-wtag):not(.rd-wtag *):not(#z1):not(#z2),
-    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(.rd-wtag):not(.rd-wtag *):not(#z1):not(#z2)::before,
-    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(.rd-wtag):not(.rd-wtag *):not(#z1):not(#z2)::after{ font-size:14px !important; font-weight:300 !important }
+    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(.rd-wtag):not(.rd-wtag *):not(.rd-sky):not(.act-big):not(#z1):not(#z2),
+    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(.rd-wtag):not(.rd-wtag *):not(.rd-sky):not(.act-big):not(#z1):not(#z2)::before,
+    html body :not(svg):not(svg *):not(.rd-temp):not(.rd-temp *):not(.rd-hr-t):not(.rd-wtag):not(.rd-wtag *):not(.rd-sky):not(.act-big):not(#z1):not(#z2)::after{ font-size:14px !important; font-weight:300 !important }
+  }
+  /* ===== Phones: the weather icons (sky icons in the hourly cards, the 7-day table, the sun cards ...) take the grainy look of the weather pictures: the same shapes and
+     animations, painted with the speckled patterns made in weatherIcon's script (wxp*). Tablets and desktops keep the flat icons. ===== */
+  @media (max-width:31.1875em){
+    .wxi [fill="var(--cloud)"]{ fill:url(#wxpCloudA) }
+    .wxi [fill="var(--cloud-2)"]{ fill:url(#wxpCloudB) }
+    .wxi circle.wx-sun-disc{ fill:url(#wxpSun) }
+    .wxi g.wx-sun-rays{ stroke:url(#wxpSun) }
+    .wxi path[fill="var(--aqi-moderate)"]{ fill:url(#wxpMoon) }
+    .wxi path.wx-bolt{ fill:url(#wxpBolt) }
+    .wxi g[stroke="var(--icon-blue)"]{ stroke:#4DB8EA }
+    .wxi g[fill="var(--icon-blue)"]{ fill:#7CCDF2 }
+    .wxi g.hc-spin{ fill:url(#wxpRed); stroke:url(#wxpRed) }
+  }
+  /* Phones, loading: until a place's weather picture is chosen, the page is a plain blue sky, and the Weather screen is a skeleton of its layout */
+  @media (max-width:31.1875em){
+    html.rd-art{ --rd-art:linear-gradient(to bottom, #1A44B0 0%, #2F6FD0 55%, #8DBCEB 100%); --rd-wash:#7FA0C8 }
+    .rd-skel{ display:flex; flex-direction:column; gap:14px }
+    .rd-sk-top{ position:relative; height:267px }
+    .rd-sk-temp{ position:absolute; left:0; top:30px; width:150px; height:104px; border-radius:14px; background:rgba(255,255,255,.28); animation:rdSkTemp 1.4s ease-in-out infinite }
+    @keyframes rdSkTemp{ 0%, 100%{ opacity:.55 } 50%{ opacity:1 } }
+    .rd-sk-hrs{ display:flex; gap:8px; margin:0 -16px; padding:0 16px; overflow:hidden }
+    .rd-sk-card{ flex:0 0 84px; box-sizing:border-box; height:134px; padding:12px 0; border-radius:8px; background:var(--rd-card); display:flex; flex-direction:column; align-items:center; gap:10px }
+    .rd-sk-card .skel{ display:block; width:36px; height:12px }
+    .rd-sk-card .skel:nth-child(2){ width:32px; height:24px; border-radius:8px }
+    .rd-sk-card .skel:nth-child(3){ width:44px; height:18px }
+    .rd-sk-lab{ display:block; width:90px; height:12px; margin:8px 4px 0 }
+    .rd-sk-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; min-height:42px; padding:0 18px }
+    .rd-sk-row + .rd-sk-row{ border-top:1px solid var(--rd-line) }
+    .rd-sk-row .skel{ display:block; height:12px }
+  }
+  @media (prefers-reduced-motion: reduce){ .rd-sk-temp{ animation:none } }
+  /* the spinning windmill wheel, drawn over the picture (same box, same scaling, same fade) */
+  #rdArtFx{ display:none }
+  @keyframes rdSpin{ to{ transform:rotate(360deg) } }
+  @media (max-width:31.1875em){
+    html.rd-art #rdArtFx{ display:block; position:fixed; left:0; right:0; top:0; height:calc(400px + var(--rd-banner, 0px)); z-index:1; pointer-events:none; overflow:hidden;
+      -webkit-mask-image:linear-gradient(to bottom, #000 0, #000 68%, rgba(0,0,0,.55) 84%, transparent 100%); mask-image:linear-gradient(to bottom, #000 0, #000 68%, rgba(0,0,0,.55) 84%, transparent 100%) }
+    #rdArtFx svg{ display:block; width:100%; height:100% }
+    .rd-wm-wheel{ transform-box:fill-box; transform-origin:center; animation:rdSpin var(--rd-spin, 10s) linear infinite }
+  }
+  @media (prefers-reduced-motion: reduce){ .rd-wm-wheel{ animation:none } }
+  /* ===== Phone Weather view: the illustrated top. One of 36 pictures (weather-art/<sky>-<dawn|day|dusk|night>.svg, chosen by rdApplyArt) fills the header and the
+     first 400px of the page, fades out under the hourly cards, and carries the temperature in big light type. html.rd-art is only set on phones with a picture chosen. ===== */
+  @media (max-width:31.1875em){
+    html.rd-art .db-layout{ position:relative }
+    html.rd-art .db-layout::before{ content:""; position:fixed; left:0; right:0; top:0; height:calc(400px + var(--rd-banner, 0px));   /* fixed: the picture stays still and the page scrolls over it */
+      z-index:1; pointer-events:none;
+      background:var(--rd-art) center top / 100% 100% no-repeat, #243A8A;   /* the dark blue shows until the picture loads, so the white text always has a ground */
+      -webkit-mask-image:linear-gradient(to bottom, #000 0, #000 68%, rgba(0,0,0,.55) 84%, transparent 100%); mask-image:linear-gradient(to bottom, #000 0, #000 68%, rgba(0,0,0,.55) 84%, transparent 100%) }
+    /* the header shows the same picture (its top slice) so the two read as one; it stays solid while the page scrolls under it */
+    /* the picture's color carries on behind the whole page: a light tint of the hills (mixed into the page color, so it stays light in light mode and deep in dark mode)
+       that is full where the picture fades out and thins to nothing at the bottom of the page, with film grain (a tiled speckle image) at full strength the whole way down. It sits above the page ground and below the picture and the cards. */
+    html.rd-art .db-layout::after{ content:""; position:fixed; left:0; right:0; top:0; bottom:0; z-index:0; pointer-events:none;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cfilter id='d' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  22 0 0 0 -14.2'/%3E%3C/filter%3E%3Cfilter id='l' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' seed='23' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -22 0 0 0 8.4'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23d)' opacity='.16'/%3E%3Crect width='240' height='240' filter='url(%23l)' opacity='.22'/%3E%3C/svg%3E") 0 0 / 240px 240px repeat, linear-gradient(to bottom, color-mix(in srgb, var(--rd-wash) 26%, var(--rd-bg)) 0, color-mix(in srgb, var(--rd-wash) 26%, var(--rd-bg)) 380px, color-mix(in srgb, var(--rd-wash) 8%, var(--rd-bg)) 100%) }   /* fixed too: the tint thins out down the screen */
+    html.rd-art .wind-field canvas, html.rd-art header.top canvas.hdr-wind{ display:none !important }   /* no wind animation on the three pages */
+    html.rd-art .db-layout > header.top{ background:var(--rd-art) center top / 100% calc(400px + var(--rd-banner, 0px)) no-repeat, #243A8A !important }   /* --rd-banner: the height a weather warning banner adds above the page, so the picture stretches down with the content instead of the temperature landing on the scene */
+    /* under the header the picture carries on and fades out, so the page scrolls under the header with no hard line (--rd-hdr is the header's height) */
+    html.rd-art .db-layout > header.top::after{ content:""; position:absolute; left:0; right:0; top:100%; height:20px; pointer-events:none;
+      background:var(--rd-art) 0 calc(-1 * var(--rd-hdr, 62px)) / 100% calc(400px + var(--rd-banner, 0px)) no-repeat;
+      -webkit-mask-image:linear-gradient(to bottom, #000, transparent); mask-image:linear-gradient(to bottom, #000, transparent) }   /* a smooth 20px fade under the header (it was 40px): no hard line */
+    html.rd-art .db-layout > header.top :is(.brand, .brand *, .m-actions .m-search-btn, .m-actions .m-search-btn *){ color:#fff !important }
+    html.rd-art .db-layout > header.top .status{ color:rgba(255,255,255,.9) !important }   /* the loading message under the header */
+    html.rd-art .db-layout > header.top :is(.vd-tag, canvas.hdr-wind, .logo > svg){ display:none !important }   /* the header is just the place and the search */
+    /* Health, phones: no text box; the icons of the conditions that may be affected sit over the picture, and the list falls below so the picture shows */
+    .hw-top{ display:none }
+    html.rd-art[data-view="health"] body #healthCard .hw-intro .rd-hero, html.rd-art[data-view="health"] body #healthCard .hw-intro .hw-ok-b{ display:none !important }
+    html.rd-art[data-view="health"] body #healthCard{ margin-top:8px }   /* 12px lower than the other tabs, so the label and icons start below the header's fade */
+    html.rd-art[data-view="health"] body #healthCard .hw-intro > .sec-eyebrow{ position:absolute !important; width:1px; height:1px; margin:0 !important; padding:0 !important; overflow:hidden; clip-path:inset(50%); white-space:nowrap }   /* the Potential health impacts label is not shown (screen readers still get it) */
+    html.rd-art[data-view="health"] body #healthCard .hw-top{ display:block; box-sizing:border-box; height:242px; padding-top:0 }   /* the icons start where the label used to (86px from the top, just under the header's fade); the fixed height keeps the list where it was */
+    html.rd-art[data-view="health"] body #healthCard .hw-ic-row{ list-style:none; margin:0 -16px; padding:0 16px; display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-padding-inline:16px; scrollbar-width:none }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic-row::-webkit-scrollbar{ display:none }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic-row li{ flex:0 0 84px; scroll-snap-align:start }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic{ width:100%; padding:0; border:0; background:none; color:#fff; font:inherit; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; text-align:center }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic:focus-visible{ outline:2px solid #fff; outline-offset:4px; border-radius:12px }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic-c{ display:flex; align-items:center; justify-content:center; width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,.16); border:2px solid rgba(255,255,255,.7); margin-bottom:2px }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic--some .hw-ic-c{ border-color:#F2D16B }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic--ok .hw-ic-c{ border-color:#FFA14A }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic--high .hw-ic-c{ border-color:#FF8A7E }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic-c svg{ width:32px; height:32px }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic-n{ color:#fff; line-height:1.2 }
+    html.rd-art[data-view="health"] body #healthCard .hw-ic-r{ position:absolute !important; width:1px; height:1px; margin:0; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap }   /* the rating word is not shown under the icon (the ring color shows it); screen readers still hear it */
+    html.rd-art[data-view="health"] body #healthCard .hw-allclear{ margin:18px 4px 0; color:#fff }
+    html.rd-art[data-view="health"] body #healthCard .hw-cond{ scroll-margin-top:84px }
+    /* Activity, phones: no text box; the best day sits big over the picture with its window and what it suits in thin type, and the filters and lists fall below */
+    .act-top{ display:none }
+    html.rd-art[data-view="activity"] body #actHero .vd-prose .rd-hero, html.rd-art[data-view="activity"] body #actHero .vd-prose .vd-detail{ display:none !important }
+    html.rd-art[data-view="activity"] body #actHero .sec-eyebrow{ position:absolute !important; width:1px; height:1px; margin:0 !important; padding:0 !important; overflow:hidden; clip-path:inset(50%); white-space:nowrap }   /* the Activity label is not shown (screen readers still get it) */
+    html.rd-art[data-view="activity"] body #actHero .act-top{ display:block; box-sizing:border-box; height:240px; margin-top:12px }
+    html.rd-art[data-view="activity"] body #actHero .act-big{ margin:0 0 0 -4px; font-size:100px !important; font-weight:300; letter-spacing:-.045em; line-height:1; color:#fff }
+    html.rd-art[data-view="activity"] body #actHero .act-s{ margin:0; font-size:14px; font-weight:100; line-height:1.4; letter-spacing:.02em; color:#fff }
+    html.rd-art[data-view="activity"] body #actHero .act-big + .act-s{ margin-top:6px }
+    /* every white module on the three pages is 90% opaque (the hourly cards, the lists, the Health and Activity cards ...) */
+    html.rd-art{ --rd-card:rgba(255,255,255,.9) }
+    html.rd-art[data-view="health"] body #healthCard .hw-cond-body{ background:color-mix(in srgb, var(--rd-panel) 90%, transparent) }   /* the inner panel of an opened condition row */
+    html.rd-art .bp-btn:not(.bp-primary){ background:var(--rd-card) }   /* the white outline buttons ("How the Health Outlook works" ...) */
+    @media (prefers-color-scheme: dark){ html.rd-art:not([data-theme="light"]){ --rd-card:rgba(22,33,44,.9) } }
+    html.rd-art[data-theme="dark"]{ --rd-card:rgba(22,33,44,.9) }
+    html.rd-art[data-view="health"] body .hw-intro > .sec-eyebrow:first-child, html.rd-art[data-view="activity"] body #actHero .sec-eyebrow:first-child{ color:#fff !important; position:relative; z-index:1 }
+    html.rd-art[data-view="weather"] body #rdWx > .rd-label:first-child{ position:absolute !important; width:1px; height:1px; margin:0; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap }   /* the Current conditions label is not shown (screen readers still get it) */
+    html.rd-art[data-view="weather"] body #rdWx .rd-hero{ background:transparent !important; box-shadow:none !important; padding:0 !important; gap:0 !important; position:relative; z-index:1 }
+    html.rd-art[data-view="weather"] body #rdWx .rd-now{ display:block !important; position:relative; min-height:236px !important; padding:31px 0 0 !important; box-sizing:content-box }   /* the 31px of top padding stands in for the hidden Current conditions label, so the temperature and the hourly cards stay where they were */
+    html.rd-art[data-view="weather"] body #rdWx .rd-now > .rd-temp{ position:absolute; left:-4px; top:1px; align-items:flex-start; color:#fff !important }
+    html.rd-art[data-view="weather"] body #rdWx .rd-now > .rd-temp span{ font-size:128px !important; font-weight:300 !important; letter-spacing:-.045em; line-height:1; color:#fff !important }
+    html.rd-art[data-view="weather"] body #rdWx .rd-now > .rd-temp .rd-deg{ font-style:normal; font-size:.66em !important; font-weight:300 !important; line-height:1; vertical-align:top; position:relative; top:.02em; margin-left:.03em }   /* the degree sign: a small ring at the top, not a full-size glyph */
+    html.rd-art[data-view="weather"] body #rdWx .rd-now > .rd-sky{ position:absolute; left:2px; top:123px; font-size:14px; font-weight:100; line-height:1.2; letter-spacing:.02em; color:#fff }   /* the sky in one to three words, thin 14px, under the temperature */
+    html.rd-art[data-view="weather"] body #rdWx .rd-now > .rd-temp small{ font-size:26px !important; font-weight:400 !important; margin:18px 0 0 6px !important; color:#fff !important }
+    /* the sky, feels like and wind stay for screen readers; the picture shows the sky. The written forecast and the Hourly heading are not shown here. */
+    html.rd-art[data-view="weather"] body #rdWx .rd-now .rd-nowtxt, html.rd-art[data-view="weather"] body #rdWx .rd-labrow{ position:absolute !important; width:1px; height:1px; margin:0; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap }
+    html.rd-art[data-view="weather"] body #rdWx .rd-news{ display:none !important }
+    html.rd-art[data-view="weather"] body #rdWx .rd-hr.is-now{ background:var(--rd-card); color:var(--rd-ink) }   /* the current hour is a plain card like the others */
+    html.rd-art[data-view="weather"] body #rdWx .rd-hr.is-now .rd-hr-p{ color:var(--rd-sub) }
   }
 </style>
 </head>
@@ -3501,9 +3620,9 @@
       <details class="hp-sec" data-hp="health">
         <summary class="hp-sum"><span class="hp-sum-name">Health Outlook</span><svg class="hp-sum-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6,9 12,15 18,9"/></svg></summary>
         <div class="hp-panel">
-          <p>The Health tab starts with an outlook card for the day: when the air is the story it says when to be active, otherwise it names the conditions worth a little care and their main causes. Below it, each condition gets a rating (No Impacts, Heads Up or High Impacts) and a sentence on what it means for you. The suggestions are general public-health guidance, not medical advice. Use Manage Health Preferences to choose which of the six conditions you see; the ratings and the headline then cover only those, and your choice is saved in this browser.</p>
+          <p>The Health tab starts with an outlook card for the day: when the air is the story it says when to be active, otherwise it names the conditions worth a little care and their main causes. Below it, each condition gets a rating (No Impacts, Some Impacts, Moderate Impacts or High Impacts) and a sentence on what it means for you. The suggestions are general public-health guidance, not medical advice. Use Manage Health Preferences to choose which of the six conditions you see; the ratings and the headline then cover only those, and your choice is saved in this browser.</p>
           <p>
-        The No Impacts, Heads Up and High Impacts ratings are a general outlook built from published research (the studies are listed below), using forecast temperature, humidity, pressure, UV
+        The No Impacts, Some Impacts, Moderate Impacts and High Impacts ratings are a general outlook built from published research (the studies are listed below), using forecast temperature, humidity, pressure, UV
         and air quality from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>, with fine particles and ozone
         adjusted to the current AirNow reading. They describe how likely a day is to be hard on a condition for people in general, not what
         will happen to you, and are not medical advice, a diagnosis or a substitute for your clinician.
@@ -3896,7 +4015,7 @@
       '<path d="M24 ' + tail + 'V' + tip + '"/>' +
       '<path d="M21.1 ' + base + ' L24 ' + tip + ' L26.9 ' + base + ' Z" fill="var(--text-muted)"/>' +
     '</g>';
-    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
+    return '<svg class="wxi" width="'+size+'" height="'+size+'" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
       '<clipPath id="' + cid + '"><rect x="0" y="0" width="48" height="34.5"/></clipPath>' +
       '<g clip-path="url(#' + cid + ')">' + sunMarkup(24,30,9) + '</g>' +
       '<line x1="4" y1="34.5" x2="44" y2="34.5" stroke="var(--text-muted)" stroke-width="3.4" stroke-linecap="round" opacity="0.85"/>' +
@@ -3917,7 +4036,7 @@
       for(k = 16; k >= 0; k--){ f = k / 16; r = R0 + (R1 - R0) * f; ang = base + sweep * Math.pow(f, 1.15) - thick * (1 - Math.pow(f, pw)); trail.push([24 + r * Math.cos(ang), 24 + r * Math.sin(ang)]); }
       blades += '<polygon points="' + lead.concat(trail).map(function(q){ return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ') + '"/>';
     }
-    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hurricane">' +
+    return '<svg class="wxi" width="' + size + '" height="' + size + '" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hurricane">' +
       '<g class="hc-spin" fill="#D32F2F" stroke="#D32F2F" stroke-width="1.1" stroke-linejoin="round"><circle cx="24" cy="24" r="13"/>' + blades + '</g></svg>';
   }
   function weatherIcon(shortForecast, isDaytime, size){
@@ -3960,8 +4079,24 @@
       default:
         body = cloudMarkup(24);
     }
-    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">'+body+'</svg>';
+    return '<svg class="wxi" width="'+size+'" height="'+size+'" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">'+body+'</svg>';
   }
+  // The grainy look for the weather icons on phones (the same stippled style as the weather pictures): flat colors speckled with darker and lighter dots, drawn
+  // as shared patterns (cheap: no filters) that the phone CSS paints the icon shapes with. The shapes and every animation stay the same.
+  (function(){
+    var seed = 7, TILE = 16;
+    function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    function scatter(n, r0, r1){ var a = []; for(var i = 0; i < n; i++) a.push([rnd() * TILE, rnd() * TILE, r0 + rnd() * (r1 - r0)]); return a; }
+    var DK = scatter(34, .35, .75), LT = scatter(22, .3, .6);   // the same scatter in every pattern: only the colors change
+    function dots(a, c){ return '<g fill="' + c + '">' + a.map(function(d){ return '<circle cx="' + d[0].toFixed(1) + '" cy="' + d[1].toFixed(1) + '" r="' + d[2].toFixed(2) + '"/>'; }).join('') + '</g>'; }
+    function pat(id, base, dark, light){ return '<pattern id="' + id + '" width="' + TILE + '" height="' + TILE + '" patternUnits="userSpaceOnUse"><rect width="' + TILE + '" height="' + TILE + '" fill="' + base + '"/>' + dots(DK, dark) + dots(LT, light) + '</pattern>'; }
+    var host = document.createElement('div');
+    host.innerHTML = '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>' +
+      pat('wxpSun', '#FFC83A', '#F2852B', '#FFE9A0') + pat('wxpCloudA', '#CBD5F3', '#8393CE', '#FFFFFF') + pat('wxpCloudB', '#B3C1EA', '#7384C4', '#E9EFFF') +
+      pat('wxpMoon', '#F7CF62', '#C88AC8', '#FFF0B0') + pat('wxpBolt', '#FFD43B', '#F29A2B', '#FFF3A8') + pat('wxpBlue', '#58C3EA', '#2F8FD0', '#CFF3FF') +
+      pat('wxpRed', '#E0443A', '#8E1F2A', '#FF9A8A') + '</defs></svg>';
+    document.body.insertBefore(host.firstChild, document.body.firstChild);
+  })();
 
   // The kind of precipitation an hour is carrying: rain, snow, sleet, mixed precip or hail. The forecast wording decides; when it only
   // gives a chance without a type, the temperature does (32°F or colder snow, up to 36°F mixed, otherwise rain).
@@ -5257,6 +5392,96 @@
     }
     return list.sort(function(a, b){ return a.time - b.time; });
   }
+  // phones, while a place loads: a skeleton of the Weather screen's layout (a blue sky with a pulsing temperature, hourly cards and a conditions list)
+  function rdSkeleton(){
+    if(!rdWx || !rdPhoneMq.matches) return;
+    var el = document.documentElement, i, cards = '', rows = '', fx = document.getElementById('rdArtFx');
+    el.classList.add('rd-art');
+    el.style.removeProperty('--rd-art'); el.style.removeProperty('--rd-wash');   // back to the plain blue sky until the picture is chosen
+    if(fx){ fx.removeAttribute('data-name'); fx.innerHTML = ''; }
+    for(i = 0; i < 4; i++) cards += '<div class="rd-sk-card"><span class="skel"></span><span class="skel"></span><span class="skel"></span><span class="skel"></span></div>';
+    for(i = 0; i < 6; i++) rows += '<div class="rd-sk-row"><span class="skel" style="width:' + (60 + (i * 17) % 40) + 'px"></span><span class="skel" style="width:' + (80 + (i * 29) % 60) + 'px"></span></div>';
+    rdWx.setAttribute('aria-busy', 'true');
+    rdWx.innerHTML = '<div class="rd-skel" aria-hidden="true"><div class="rd-sk-top"><span class="rd-sk-temp"></span></div><div class="rd-sk-hrs">' + cards + '</div><span class="skel rd-sk-lab"></span><div class="rd-card rd-list">' + rows + '</div></div>';
+    rdWx.hidden = false;
+  }
+  // the picture at the top of the phone Weather screen: one of 36 (nine skies x dawn, day, dusk, night) in weather-art/, picked from the sky, the wind, the heat and the sun
+  function rdSceneName(s, cur, sunList){
+    var kind = classifySky(cur.shortForecast), sky = kind === 'thunder' || kind === 'hurricane' ? 'storm' : kind;
+    if(sky === 'partly' && /mostly cloudy|overcast/i.test(cur.shortForecast || '')) sky = 'cloudy';
+    var band = s.band && s.band.key;
+    if((sky === 'clear' || sky === 'partly') && typeof cur.temperature === 'number' && cur.temperature >= 95) sky = 'hot';
+    else if((sky === 'clear' || sky === 'partly' || sky === 'cloudy') && (band === 'windy' || band === 'verywindy' || band === 'gale')) sky = 'wind';
+    var now = Date.now(), tod = isDayAtTime(sunEvents, now, cur.isDaytime) ? 'day' : 'night';
+    (sunList || []).forEach(function(e){ if(Math.abs(e.time.getTime() - now) <= 2400000) tod = e.type === 'sunrise' ? 'dawn' : 'dusk'; });   // 40 minutes either side of sunrise is dawn, either side of sunset is dusk
+    return sky + '-' + tod;
+  }
+  // the average color of each picture's hills: the page below the picture takes a light tint of it, which fades out all the way down the page
+  var RD_WASH = {'clear-dawn':'#639274','clear-day':'#4ba25c','clear-dusk':'#5e745e','clear-night':'#6265b4','partly-dawn':'#639274','partly-day':'#4ca35c','partly-dusk':'#5e745e','partly-night':'#6265b4',
+    'cloudy-dawn':'#6e9380','cloudy-day':'#5ba06d','cloudy-dusk':'#6a7b6f','cloudy-night':'#6c70b2','rain-dawn':'#588174','rain-day':'#4a8e65','rain-dusk':'#556d66','rain-night':'#5862a0',
+    'storm-dawn':'#667a69','storm-day':'#58835b','storm-dusk':'#6d7160','storm-night':'#6e6b8e','snow-dawn':'#d7cbd7','snow-day':'#cbd4de','snow-dusk':'#d9c5c3','snow-night':'#6f7fb3',
+    'fog-dawn':'#bac1b8','fog-day':'#aec7b5','fog-dusk':'#bbb6ab','fog-night':'#b3b1ce','wind-dawn':'#74987b','wind-day':'#78af4a','wind-dusk':'#6d7862','wind-night':'#696ab8',
+    'hot-dawn':'#bc7d5a','hot-day':'#c28141','hot-dusk':'#b05e3a','hot-night':'#7c5377'};
+  // the animated wind lines (the page's and the header's) are off on phones while the weather picture shows (all three pages); tablets and desktops keep them
+  function rdWindOff(){ return document.documentElement.classList.contains('rd-art'); }
+  function rdSyncWind(){ if(typeof windField !== 'undefined' && windField && windField.setPaused) windField.setPaused(rdWindOff() || (typeof animEffectivePaused === 'function' && animEffectivePaused())); }
+  // a warning banner pushes the page down; the picture grows by the same height (up to 160px) so the temperature still sits in the sky
+  (function(){
+    var b = document.getElementById('alertsBanner');
+    if(!b || !window.ResizeObserver) return;
+    function sync(){
+      var cs = getComputedStyle(b), h = b.offsetHeight ? b.offsetHeight + (parseFloat(cs.marginTop) || 0) + (parseFloat(cs.marginBottom) || 0) : 0;
+      document.documentElement.style.setProperty('--rd-banner', Math.min(h, 160) + 'px');
+    }
+    new ResizeObserver(sync).observe(b); sync();
+    var hd = document.querySelector('.db-layout > header.top');
+    function hsync(){ document.documentElement.style.setProperty('--rd-hdr', (hd.offsetHeight || 62) + 'px'); }
+    if(hd){ new ResizeObserver(hsync).observe(hd); hsync(); }
+  })();
+  // the windmill in each picture turns: the picture has the tower and head, and the wheel is drawn here, on top, so it can spin without redrawing the picture.
+  // Where each wheel is and its colors come from the picture generator (mockups/art/scenes.py rewrites this line).
+  /*RD_WM_START*/var RD_WM = {"clear-dawn":[56.1,564.4,"#14122E","#8F96D8"],"clear-day":[56.1,569.7,"#14122E","#8F96D8"],"clear-dusk":[46.1,556.4,"#14122E","#8F96D8"],"clear-night":[56.1,539.7,"#14122E","#8F96D8"],"partly-dawn":[56.1,564.4,"#14122E","#8F96D8"],"partly-day":[56.1,569.7,"#14122E","#8F96D8"],"partly-dusk":[46.1,556.4,"#14122E","#8F96D8"],"partly-night":[56.1,539.7,"#14122E","#8F96D8"],"cloudy-dawn":[56.1,564.4,"#14122E","#8F96D8"],"cloudy-day":[56.1,569.7,"#14122E","#8F96D8"],"cloudy-dusk":[46.1,556.4,"#14122E","#8F96D8"],"cloudy-night":[56.1,539.7,"#14122E","#8F96D8"],"rain-dawn":[56.1,564.4,"#14122E","#8F96D8"],"rain-day":[56.1,569.7,"#14122E","#8F96D8"],"rain-dusk":[46.1,556.4,"#FFFDF2","#CFC6B0"],"rain-night":[56.1,539.7,"#FFFDF2","#CFC6B0"],"storm-dawn":[56.1,564.4,"#FFFDF2","#CFC6B0"],"storm-day":[56.1,569.7,"#FFFDF2","#CFC6B0"],"storm-dusk":[46.1,556.4,"#FFFDF2","#CFC6B0"],"storm-night":[56.1,539.7,"#FFFDF2","#CFC6B0"],"snow-dawn":[56.1,564.4,"#14122E","#8F96D8"],"snow-day":[56.1,569.7,"#14122E","#8F96D8"],"snow-dusk":[46.1,556.4,"#14122E","#8F96D8"],"snow-night":[56.1,539.7,"#14122E","#8F96D8"],"fog-dawn":[56.1,564.4,"#14122E","#8F96D8"],"fog-day":[56.1,569.7,"#14122E","#8F96D8"],"fog-dusk":[46.1,556.4,"#14122E","#8F96D8"],"fog-night":[56.1,539.7,"#14122E","#8F96D8"],"wind-dawn":[56.1,564.4,"#14122E","#8F96D8"],"wind-day":[56.1,569.7,"#14122E","#8F96D8"],"wind-dusk":[46.1,556.4,"#14122E","#8F96D8"],"wind-night":[56.1,539.7,"#14122E","#8F96D8"],"hot-dawn":[56.1,564.4,"#14122E","#8F96D8"],"hot-day":[56.1,569.7,"#14122E","#8F96D8"],"hot-dusk":[46.1,556.4,"#14122E","#8F96D8"],"hot-night":[56.1,539.7,"#14122E","#8F96D8"]};/*RD_WM_END*/
+  var RD_ART_V = '6';   // bump when the pictures change, so phones fetch the new files
+  function rdWheelSvg(name){
+    var w = RD_WM[name];
+    if(!w) return '';
+    var cx = w[0], cy = w[1], col = w[2], hi = w[3], k = .62, i, d = '', a, ca, sa, dots = '', seed = 5;
+    for(i = 0; i < 16; i++){
+      a = i * Math.PI / 8 + .3; ca = Math.cos(a); sa = Math.sin(a);
+      d += 'M' + (cx + 11 * k * ca - 1.8 * k * -sa).toFixed(1) + ' ' + (cy + 11 * k * sa - 1.8 * k * ca).toFixed(1) +
+        'L' + (cx + 11 * k * ca + 1.8 * k * -sa).toFixed(1) + ' ' + (cy + 11 * k * sa + 1.8 * k * ca).toFixed(1) +
+        'L' + (cx + 38 * k * ca + 4.2 * k * -sa).toFixed(1) + ' ' + (cy + 38 * k * sa + 4.2 * k * ca).toFixed(1) +
+        'L' + (cx + 38 * k * ca - 4.2 * k * -sa).toFixed(1) + ' ' + (cy + 38 * k * sa - 4.2 * k * ca).toFixed(1) + 'Z';
+    }
+    d += 'M' + (cx + 8 * k) + ' ' + cy + 'A' + 8 * k + ' ' + 8 * k + ' 0 1 0 ' + (cx - 8 * k) + ' ' + cy + 'A' + 8 * k + ' ' + 8 * k + ' 0 1 0 ' + (cx + 8 * k) + ' ' + cy + 'Z';
+    for(i = 0; i < 14; i++){ seed = (seed * 16807) % 2147483647; var x1 = seed / 2147483647 * 12; seed = (seed * 16807) % 2147483647; var y1 = seed / 2147483647 * 12; dots += '<circle cx="' + x1.toFixed(1) + '" cy="' + y1.toFixed(1) + '" r="' + (.5 + (i % 3) * .25) + '"/>'; }
+    return '<defs><pattern id="rdWmPat" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="' + col + '"/><g fill="' + hi + '">' + dots + '</g></pattern></defs>' +
+      '<g class="rd-wm-wheel"><path d="' + d + '" fill="url(#rdWmPat)"/></g>';
+  }
+  // seconds per turn from the wind, on the same curve as the logo windmill (12 s calm, 5 s at 12 mph, 1.2 s in a gale), a bit slower because this is a backdrop
+  function rdSpinSeconds(mph){
+    var C = [[0, 30], [7, 45], [12, 72], [20, 120], [30, 200], [40, 300]], deg = C[0][1], i, a, b;
+    mph = +mph || 0;
+    if(mph > 0){ deg = C[C.length - 1][1]; for(i = 1; i < C.length; i++){ if(mph <= C[i][0]){ a = C[i - 1]; b = C[i]; deg = a[1] + (b[1] - a[1]) * (mph - a[0]) / (b[0] - a[0]); break; } } }
+    return Math.max(1.6, Math.min(16, 360 / deg * 1.5));
+  }
+  // the one to three words under the temperature, from the picture chosen: Sunny, Clear, Partly cloudy, Cloudy, Rainy, Thunderstorms, Snowy, Foggy, Windy, Hot and dry
+  function rdSkyWord(scene){
+    var p = String(scene || '').split('-'), sky = p[0];
+    return sky === 'clear' ? (p[1] === 'day' ? 'Sunny' : 'Clear') : ({partly: 'Partly cloudy', cloudy: 'Cloudy', rain: 'Rainy', storm: 'Thunderstorms', snow: 'Snowy', fog: 'Foggy', wind: 'Windy', hot: 'Hot and dry'})[sky] || '';
+  }
+  function rdApplyArt(name, mph){
+    var el = document.documentElement;
+    if(!name || !rdPhoneMq.matches){ el.classList.remove('rd-art'); rdSyncWind(); return; }
+    el.style.setProperty('--rd-art', 'url("weather-art/' + name + '.svg?v=' + RD_ART_V + '")');
+    el.style.setProperty('--rd-spin', rdSpinSeconds(mph).toFixed(2) + 's');
+    var fx = document.getElementById('rdArtFx'), layout = document.querySelector('.db-layout');
+    if(!fx && layout){ fx = document.createElement('div'); fx.id = 'rdArtFx'; fx.setAttribute('aria-hidden', 'true'); layout.insertBefore(fx, layout.firstChild); }
+    if(fx && fx.getAttribute('data-name') !== name){ fx.setAttribute('data-name', name); fx.innerHTML = '<svg viewBox="0 0 750 800" preserveAspectRatio="xMinYMin slice" focusable="false">' + rdWheelSvg(name) + '</svg>'; }
+    el.style.setProperty('--rd-wash', RD_WASH[name] || '#4ba25c');
+    el.classList.add('rd-art');
+    rdSyncWind();
+  }
   function rdRender(){
     var s = rdS;
     if(!rdWx || !s) return;
@@ -5307,12 +5532,13 @@
     var carry = rb && (rdPhoneMq.matches || !rbInHero) ? rb : null;
     if(carry && carry.parentNode) carry.parentNode.removeChild(carry);
     var dateLab = hourly[0] ? rdDayLabel(String(hourly[0].startTime).slice(0, 10)) : '', oldHrs = rdWx.querySelector('.rd-hrs'), keepX = oldHrs ? oldHrs.scrollLeft : 0;
+    var scene = rdSceneName(s, cur, sunList);
     rdWx.innerHTML =
       '<span class="rd-label">Current conditions</span>' +
       '<div class="rd-card rd-hero">' +
         '<div class="rd-now">' +
-          '<span class="rd-icon" role="img" aria-label="' + vdEsc(ampText(cur.shortForecast)) + '">' + weatherIcon(cur.shortForecast, isDay, 96) + '</span>' +
-          '<span class="rd-temp" aria-label="' + tempNum(cur.temperature) + ' degrees"><span>' + tempNum(cur.temperature) + '°</span><small>' + (useCelsius ? 'C' : 'F') + '</small></span>' +
+          '<span class="rd-temp" aria-label="' + tempNum(cur.temperature) + ' degrees"><span>' + tempNum(cur.temperature) + '<em class="rd-deg">°</em></span><small>' + (useCelsius ? 'C' : 'F') + '</small></span>' +
+          '<span class="rd-sky" aria-hidden="true">' + vdEsc(rdSkyWord(scene)) + '</span>' +
           '<div class="rd-nowtxt">' +
             '<span class="rd-sub">' + vdEsc(ampText(cur.shortForecast)) + '</span>' +
             '<span class="rd-sub">Feels like ' + fl + '</span>' +
@@ -5335,6 +5561,8 @@
       if(radarLoop) radarLoop.map.invalidateSize();
     }
     rdWx.hidden = false;
+    rdWx.removeAttribute('aria-busy');
+    rdApplyArt(scene, s.w && s.w.high);
     var nh = rdWx.querySelector('.rd-hrs'); if(nh && keepX) nh.scrollLeft = keepX;
   }
   // the 7-day table: the day, the sky, the wind (speed, direction, tag) and the high, one row per day like the Conditions list
@@ -7171,7 +7399,7 @@
     });
     rr = Math.min(rr, 2.5);
     drivers.sort(function(a, b){ return b.rr - a.rr; });
-    return {rr: rr, level: rr >= m.high ? 'high' : rr >= m.med ? 'medium' : 'low', drivers: drivers};
+    return {rr: rr, level: rr >= m.high ? 'high' : rr >= m.med ? 'medium' : rr >= 1 + (m.med - 1) / 2 ? 'some' : 'low', drivers: drivers};   // four levels: No (low), Some, Moderate (medium: the old Heads Up cut-off) and High; Some starts halfway to Moderate
   }
   function hwPrevDate(ds){ var p = ds.split('-').map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2] - 1)).toISOString().slice(0, 10); }
   // AirNow reports an index; the studies use concentrations. These invert the EPA breakpoints (fine particles in µg/m³, 8-hour ozone in ppb).
@@ -7320,7 +7548,9 @@
   /* ---------- Health Outlook ----------
      Top to bottom: today's outlook, what it means for each condition, the air and weather behind it, the best time to be outside,
      a few simple tips and two buttons (preferences, the next 7 days). The ratings still come from the same models. */
-  var HW_WORD = {low: 'No Impacts', medium: 'Heads Up', high: 'High Impacts'};
+  var HW_WORD = {low: 'No Impacts', some: 'Some Impacts', medium: 'Moderate Impacts', high: 'High Impacts'};
+  var HW_RANK = {low: 0, some: 1, medium: 2, high: 3};   // for sorting and for the top level of a group
+  function hwTopLevel(list){ var best = 'low'; list.forEach(function(x){ if(HW_RANK[x.r.level] > HW_RANK[best]) best = x.r.level; }); return best; }
   // what to try, by what is in the forecast (the first trigger with a tip wins)
   function hwTip(m, drivers){
     // [text, icon]
@@ -7402,10 +7632,10 @@
       why = parts.join(' ') || 'Studies link this to a higher chance of symptoms for people with this condition.';
       var tp = hwTip(m, r.drivers); tip = tp ? tp.t : '';
     }
-    var tone = lv === 'low' ? 'good' : lv === 'medium' ? 'ok' : 'high', d = x.d;
+    var tone = lv === 'low' ? 'good' : lv === 'some' ? 'some' : lv === 'medium' ? 'ok' : 'high', d = x.d;
     var ico = '<svg class="hw-cond-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + HW_ICO[m.id] + '</svg>';
     // each condition is its own full-width card: the name and a tinted icon, the rating, what is in the forecast, then two line charts
-    return '<div class="today-card air-card hw-cond hw-tile--' + tone + '"><div class="hw-cond-top card-head"><h3 class="hw-cond-name">' + ico + '<span>' + m.name + '</span></h3>' +
+    return '<div class="today-card air-card hw-cond hw-tile--' + tone + '" id="hwc-' + m.id + '"><div class="hw-cond-top card-head"><h3 class="hw-cond-name">' + ico + '<span>' + m.name + '</span></h3>' +
       '<span class="hw-cond-big"><span class="sr-only">Outlook: </span>' + HW_WORD[lv] + '</span></div>' +
       (lv === 'low' ? '' : '<div class="hw-cond-body"><p class="hw-csay hw-csay--what">' + vdEsc(what) + '</p><p class="hw-csay">' + vdEsc(why) + '</p>' + (tip ? '<p class="hw-csay">' + vdEsc(tip) + '</p>' : '') + hwCondCharts(m, d, r) + '</div>') + '</div>';   // No Impacts cards are just the name and rating
   }
@@ -7832,7 +8062,7 @@
       rhLo === null ? '' : 'humidity ' + hwR(rhLo) + '%',
       pLo === null ? '' : 'pressure ' + hwP(pLo),
       uv === null ? '' : 'UV ' + hwR(uv), pm === null ? '' : 'PM2.5 ' + hwR(pm) + ' µg/m³'].filter(Boolean);
-    var plan = scored.filter(function(x){ return x.r.level !== 'low'; }), fine = scored.filter(function(x){ return x.r.level === 'low'; });
+    var plan = scored.filter(function(x){ return x.r.level !== 'low'; }).sort(function(a, b){ return HW_RANK[b.r.level] - HW_RANK[a.r.level]; }), fine = scored.filter(function(x){ return x.r.level === 'low'; });
     var used = {};   // the measures charted in the condition cards above, so the four cards below show something different
     scored.forEach(function(x){ if(x.r.level !== 'low') hwChartSpecs(x.m, x.r).forEach(function(sp){ used[sp.k] = true; }); });
     var O = hwHeroBuild(scored, d), tiles = hwTiles(d, allDrivers, used), safe = hwSafest(d), tips = hwTipList(scored, d);
@@ -7843,9 +8073,16 @@
     var calIco = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>';
     var infoIco = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><circle cx="12" cy="7.9" r=".7" fill="currentColor"/></svg>';
     heroMore.health = {eyebrow: 'Potential health impacts', head: O.title, text: O.body};
+    // phones: the icons of the conditions that may be affected today, big, over the picture (a tap jumps to that condition's row)
+    var HW_SHORT = {migraine: 'Migraine', arthritis: 'Arthritis', cardio: 'Heart', resp: 'Respiratory', kidney: 'Kidney', mental: 'Mood'};
+    var affected = plan;   // already worst first
+    var iconRow = affected.length ? '<ul class="hw-ic-row" aria-label="Conditions that may be affected today">' + affected.map(function(x){
+      return '<li><button type="button" class="hw-ic hw-ic--' + (x.r.level === 'high' ? 'high' : x.r.level === 'medium' ? 'ok' : 'some') + '" data-hwjump="' + x.m.id + '"><span class="hw-ic-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + HW_ICO[x.m.id] + '</svg></span>' +
+        '<span class="hw-ic-n">' + (HW_SHORT[x.m.id] || x.m.name) + '</span><span class="hw-ic-r">' + HW_WORD[x.r.level] + '</span></button></li>';
+    }).join('') + '</ul>' : '<p class="hw-allclear">No impacts expected today</p>';
     healthCard.innerHTML =
       '<div class="hw-intro"><span class="sec-eyebrow">Potential health impacts</span>' +
-        '<div class="rd-card rd-hero"><div class="rd-news"><h2 class="hw-ok-t" id="hwTitle">' + rdHeadText(O.title) + heroMoreBtn('health') + '</h2>' + rdSumHtml('health') + '</div></div><p class="hw-ok-b">' + vdEsc(O.body) + '</p></div>' +
+        '<div class="rd-card rd-hero"><div class="rd-news"><h2 class="hw-ok-t" id="hwTitle">' + rdHeadText(O.title) + heroMoreBtn('health') + '</h2>' + rdSumHtml('health') + '</div></div><p class="hw-ok-b">' + vdEsc(O.body) + '</p><div class="hw-top">' + iconRow + '</div></div>' +
       '<div class="hw-conds">' + plan.concat(fine).map(hwRowHtml).join('') + '</div>' +
       '<div class="hw-acts">' + (HW_WEEK_BTN ? '<button type="button" class="bp-btn bp-primary" data-hwweek aria-haspopup="dialog">' + calIco + '<span>The Week Ahead</span></button>' : '') +
         '<button type="button" class="bp-btn bp-primary hw-prefs" data-hwprefs aria-haspopup="dialog">Manage Health Preferences</button>' +
@@ -7868,6 +8105,8 @@
   }
   if(healthCard){
     healthCard.addEventListener('click', function(e){
+      var jb = e.target.closest && e.target.closest('[data-hwjump]');
+      if(jb){ var row = document.getElementById('hwc-' + jb.getAttribute('data-hwjump')); if(row) row.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'}); return; }
       var b = e.target.closest && e.target.closest('[data-hw]');
       if(!b) return;
       var i = +b.getAttribute('data-hw');
@@ -7894,7 +8133,7 @@
     days.forEach(function(d, i){
       var sc = models.map(function(m){ return {m: m, r: hwScore(m, d)}; });
       var care = sc.filter(function(x){ return x.r.level !== 'low'; });
-      var lv = care.some(function(x){ return x.r.level === 'high'; }) ? 'high' : care.length ? 'medium' : 'low';
+      var lv = hwTopLevel(care);
       if(!d.hasAir) airEnds = true;
       var li = mk('li', 'hwk-row');
       var day = mk('div', 'hwk-day'); day.appendChild(mk('b', null, hwDayName(i, d))); day.appendChild(mk('span', null, new Date(d.ds + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'})));
@@ -8066,7 +8305,7 @@
       ck.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" focusable="false"><polyline points="5 12.5 10 17.5 19 7"/></svg>';
       row.appendChild(ck);
       var txt = mk('span', 'hpf-txt'), top = mk('span', 'hpf-top'); top.appendChild(mk('b', null, m.name));
-      if(lv){ var w = mk('span', 'hpf-lv' + (lv === 'low' ? ' is-low' : ''), HW_WORD[lv]); w.style.setProperty('--tg', lv === 'low' ? 'var(--hw-low)' : lv === 'medium' ? 'var(--hw-med)' : 'var(--hw-high)'); top.appendChild(w); }
+      if(lv){ var w = mk('span', 'hpf-lv' + (lv === 'low' ? ' is-low' : ''), HW_WORD[lv]); w.style.setProperty('--tg', lv === 'low' ? 'var(--hw-low)' : lv === 'some' ? 'var(--hw-some)' : lv === 'medium' ? 'var(--hw-med)' : 'var(--hw-high)'); top.appendChild(w); }
       txt.appendChild(top); txt.appendChild(mk('small', null, HW_HINT[m.id]));
       row.appendChild(txt);
       hpfList.appendChild(row);
@@ -8143,11 +8382,11 @@
     var fd = airFc && airFc.days && airFc.days[d.ds], fT = airFc && airFc.days && airFc.days[nextDateStr(d.ds)];
     function rank(e){ return e && AQI_CAT_INFO[e.catName] ? AQI_CAT_INFO[e.catName].rank : 0; }
     var ozoneHigh = !!d.alertO3 || rank(fd && fd.ozone) >= 2, pmHigh = !!d.alertPM || rank(fd && fd.pm25) >= 2;
-    var high = scored.filter(function(x){ return x.r.level === 'high'; }), med = scored.filter(function(x){ return x.r.level === 'medium'; });
-    var top = (high.length ? high : med).slice().sort(function(a, b){ return b.r.rr / b.m.med - a.r.rr / a.m.med; });
+    var high = scored.filter(function(x){ return x.r.level === 'high'; }), med = scored.filter(function(x){ return x.r.level === 'medium'; }), some = scored.filter(function(x){ return x.r.level === 'some'; });
+    var top = (high.length ? high : med.length ? med : some).slice().sort(function(a, b){ return b.r.rr / b.m.med - a.r.rr / a.m.med; });
     function names(list){ return vdList(list.map(function(x){ return x.m.name.toLowerCase(); })); }
     function clean(t){ return t.replace(/\s*[↑↓]/g, ''); }
-    var tone = high.length ? 'high' : (med.length || ozoneHigh || pmHigh) ? 'medium' : 'low';
+    var tone = high.length ? 'high' : (med.length || some.length || ozoneHigh || pmHigh) ? 'medium' : 'low';
     // the header names the primary health impact: the biggest trigger and the conditions it affects ("Changing pressure may affect arthritis today.")
     var CAUSE = {pressure: 'Changing pressure', warming: 'A warm-up', heat: 'Heat', hotnight: 'Warm nights', cold: 'Cold', ozone: ozoneHigh ? 'High ozone' : 'Ozone', pm: pmHigh ? 'High fine particles' : 'Fine particles', no2: 'Traffic pollution', sun: 'Strong sun', humid: 'Humid air'};
     function countOf(list){ return list.length <= 2 ? names(list) : list[0].m.name.toLowerCase() + ' and ' + (list.length - 1) + ' other conditions'; }
@@ -8159,7 +8398,7 @@
       var shares = function(x){ return x.r.drivers.some(function(dr){ return dr.rr >= 1.02 && hwWhyCat(dr.label || "") === wc; }); };
       group = wc ? top.filter(shares) : [top[0]];
       rest = top.filter(function(x){ return group.indexOf(x) < 0; });
-      l1 = cause + (high.length ? ' may strongly affect ' : ' may affect ') + countOf(group) + ' today.';
+      l1 = cause + (high.length ? ' may strongly affect ' : med.length ? ' may affect ' : ' may slightly affect ') + countOf(group) + ' today.';
     }else if(ozoneHigh || pmHigh){
       l1 = ozoneHigh && pmHigh ? 'Heavy air may affect breathing today.' : ozoneHigh ? 'Ozone may affect breathing today.' : 'Smoky air may affect breathing today.';
     }else{
@@ -8197,7 +8436,9 @@
   // The Health and Activity headers: two headline lines and the full paragraph beneath
   function heroFill(hero, o, kind){
     if(kind) heroMore[kind] = {eyebrow: o.eyebrow || '', head: o.lines.join(' '), text: o.detail};
-    hero.innerHTML = '<div class="vd-prose">' + (o.eyebrow ? '<span class="sec-eyebrow sec-eyebrow--phone">' + vdEsc(o.eyebrow) + '</span>' : '') + '<div class="rd-card rd-hero"><div class="rd-news"><span class="vd-head">' + o.lines.map(function(t, i, a){ return '<span class="vd-hl">' + rdHeadText(t) + (kind && i === a.length - 1 ? heroMoreBtn(kind) : '') + '</span>'; }).join('') + '</span>' + (kind ? rdSumHtml(kind, o.lines.slice(1)) : '') + '</div></div>' + '<div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
+    hero.innerHTML = '<div class="vd-prose">' + (o.eyebrow ? '<span class="sec-eyebrow sec-eyebrow--phone">' + vdEsc(o.eyebrow) + '</span>' : '') +
+      (o.top ? '<div class="act-top"><p class="act-big"><span class="sr-only">Best day: </span>' + vdEsc(o.top.big) + '</p><p class="rd-sky act-s">' + vdEsc(o.top.s1) + '</p><p class="rd-sky act-s">' + vdEsc(o.top.s2) + '</p></div>' : '') +
+      '<div class="rd-card rd-hero"><div class="rd-news"><span class="vd-head">' + o.lines.map(function(t, i, a){ return '<span class="vd-hl">' + rdHeadText(t) + (kind && i === a.length - 1 ? heroMoreBtn(kind) : '') + '</span>'; }).join('') + '</span>' + (kind ? rdSumHtml(kind, o.lines.slice(1)) : '') + '</div></div>' + '<div class="vd-detail">' + vdEsc(o.detail) + '</div></div>';
     hero.hidden = false;
   }
 
@@ -8220,7 +8461,8 @@
     });
     if(!goods.length){
       return {lines: ['No good outdoor time in the next ' + week.length + ' days.', big ? 'Better saved for museums, shows and a good dinner.' : 'Better saved for indoor plans.'],
-        detail: (week.length ? 'No day has a stretch of good weather long enough to plan around. ' + skipSents.join(' ') : 'Check back soon for the next forecast.')};
+        detail: (week.length ? 'No day has a stretch of good weather long enough to plan around. ' + skipSents.join(' ') : 'Check back soon for the next forecast.'),
+        top: {big: 'Skip', s1: 'No good outdoor time', s2: 'in the next ' + week.length + ' days'}};
     }
     var best = goods.reduce(function(a, x){ return x.score > a.score ? x : a; }, goods[0]);
     var acts = vdActivities().filter(function(x){ return x.ok(best.agg); }), pick = vdPickActs(acts, seed, 3);
@@ -8249,7 +8491,10 @@
       if(byDay[d.date].length < 2) byDay[d.date].push(x.short);
     });
     dayOrder.forEach(function(d){ sents.push(vdCap(dn(d)) + ' is best for ' + vdList(byDay[d]) + '.'); });
-    return {lines: [l1, l2], detail: sents.join(' ')};
+    // the phone top: the best day big, then its window and temperatures, then what it is good for
+    var win = sp.phrase.replace(/^from now until /, 'Now – ').replace(/^from /, '').replace(' to ', ' – ');
+    return {lines: [l1, l2], detail: sents.join(' '),
+      top: {big: best.date === c.todayStr ? 'Today' : fmtDow(best.date), s1: win + ' · ' + tempText, s2: l2.replace(/\.$/, '')}};
   }
   function actHeroRender(week, c){
     if(!actHero) return;
@@ -8263,7 +8508,7 @@
   function setView(v, opts){
     v = v === 'health' || v === 'activity' ? v : 'weather';
     document.documentElement.setAttribute('data-view', v);
-    [].forEach.call(viewSeg.querySelectorAll('.vs-btn'), function(b){ var on = b.getAttribute('data-view') === v; b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
+        [].forEach.call(viewSeg.querySelectorAll('.vs-btn'), function(b){ var on = b.getAttribute('data-view') === v; b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
     try{ localStorage.setItem(VIEW_KEY, v); }catch(e){}
     if(!(opts && opts.initial)){
       window.scrollTo(0, 0);
@@ -8289,7 +8534,7 @@
   // The "How it works" dialog: the method in plain words, then each condition's evidence, factors and studies
   function hwFillModal(body){
     body.appendChild(mk('p', 'wk-intro', 'Each day, we check the forecast for weather and air quality that research links to flare-ups of each condition. Each weather condition we find adds a little extra risk, sized against what the research for that medical condition shows.' + (HW_PERIODS ? ' The 3 Day and 1 Week views show each condition’s highest rating in that period, and the day it happens.' : '')));
-    var cut = mk('p', 'wk-intro', 'No Impacts means little or no extra risk. Heads Up and High Impacts mean the extra risk reaches the cut-off shown under each condition. The numbers come from studies of large groups of people, so they describe how likely a day is to be hard on that condition in general, not what will happen to you. Where a study gave no usable number, a small estimate in the same direction is used and marked “Our estimate”.');
+    var cut = mk('p', 'wk-intro', 'No Impacts means little or no extra risk. Some Impacts, Moderate Impacts and High Impacts mean the extra risk reaches the cut-offs shown under each condition. The numbers come from studies of large groups of people, so they describe how likely a day is to be hard on that condition in general, not what will happen to you. Where a study gave no usable number, a small estimate in the same direction is used and marked “Our estimate”.');
     body.appendChild(cut);
     if(hwData && hwData.summary){
       body.appendChild(mk('h3', 'wd-h', hwData.summary.title));
@@ -8307,7 +8552,7 @@
       det.appendChild(sum);
       var inner = mk('div', 'hw-det-body');
       inner.appendChild(mk('p', 'hw-about', m.about));
-      inner.appendChild(mk('p', 'hw-cuts', 'Heads Up at ' + hwR((m.med - 1) * 100) + '% extra risk, High Impacts at ' + hwR((m.high - 1) * 100) + '%.'));
+      inner.appendChild(mk('p', 'hw-cuts', 'Some Impacts at ' + hwR((m.med - 1) * 50) + '% extra risk, Moderate Impacts at ' + hwR((m.med - 1) * 100) + '%, High Impacts at ' + hwR((m.high - 1) * 100) + '%.'));
       inner.appendChild(mk('h3', 'wd-h', 'What the forecast adds'));
       var ul = mk('ul', 'hw-factors');
       m.factors.forEach(function(f){
@@ -10892,6 +11137,7 @@
       renderHourlySkeleton();
       renderWeekSkeleton();
       renderBestSkeleton();
+      rdSkeleton();
       airSection.hidden = true;
       hwReset();
     }
@@ -11589,7 +11835,7 @@
   function applyAnimPause(){
     var p = animEffectivePaused();
     document.documentElement.classList.toggle('anim-paused', p);
-    windField.setPaused(p);
+    windField.setPaused(p || rdWindOff());
     if(radarLoop){ if(p) radarLoop.pause(); else radarLoop.play(); }
     animBtns.forEach(function(b){ b.innerHTML = p ? PLAY_SVG : PAUSE_SVG; b.setAttribute('aria-label', p ? 'Play animations' : 'Pause animations'); });
   }
